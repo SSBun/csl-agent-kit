@@ -1,6 +1,7 @@
 ---
 description: Deep multi-report analysis of a software project.
 argument-hint: [project-path] [depth]
+disable-model-invocation: true
 ---
 
 Invoke the `analyze-project` skill to handle this request.
