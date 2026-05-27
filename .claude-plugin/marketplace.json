@@ -1,22 +1,21 @@
 {
-  "name": "SSBun-skills",
-  "description": "Agent skill collection by SSBun",
+  "name": "CSL",
+  "description": "Agent skill collection by CSL",
   "owner": {
     "name": "CSL"
   },
   "plugins": [
     {
-      "name": "SSBun-skills",
+      "name": "CSL",
       "source": "./",
-      "description": "Agent skill collection: xcode-build, app-icon-prompt, release-new-version, analyze-project",
-      "version": "1.2.2",
+      "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, passing, receiving",
       "author": {
         "name": "CSL"
       },
       "homepage": "https://github.com/SSBun/skills",
       "repository": "https://github.com/SSBun/skills",
       "license": "MIT",
-      "keywords": ["xcode", "ios", "macos", "swift", "app-icon", "release", "project-analysis", "skills"],
+      "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff"],
       "category": "workflow"
     }
   ]
