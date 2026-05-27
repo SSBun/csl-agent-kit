@@ -1,6 +1,7 @@
 ---
 name: venom-cli
 description: Use when the user mentions Zhihu iOS development, venom-cli, component dependency management, or asks to build/check/make/switch/integrate components in a Zhihu project. Use when user wants to integrate other components to local or make the projects.
+argument-hint: [project-path]
 ---
 
 ## Setup

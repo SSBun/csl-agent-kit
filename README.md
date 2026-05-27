@@ -4,7 +4,7 @@ Agent skill collection for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 ## Skills
 
-Each skill auto-triggers when Claude detects a matching intent. The slash command is a thin wrapper that invokes the same skill.
+Each skill auto-triggers when Claude detects a matching intent. Skills double as slash commands — no separate command files needed.
 
 | Skill | Slash command | Description |
 |-------|---------------|-------------|
@@ -15,6 +15,8 @@ Each skill auto-triggers when Claude detects a matching intent. The slash comman
 | venom-cli | `/SSBun-skills:venom-cli [project-path]` | Manage Zhihu iOS component dependencies, switch pod sources, check environment, and build projects. |
 | grill-me | `/SSBun-skills:grill-me` | Stress-test a plan or design by relentless questioning until shared understanding is reached. |
 | beautiful-mermaid | `/SSBun-skills:beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG or ASCII art with 15 built-in themes. |
+| passing | `/SSBun-skills:passing` | Save conversation context to `tasks/handoff.md` for next session. |
+| receiving | `/SSBun-skills:receiving` | Restore context from `tasks/handoff.md` after `/clear`. |
 
 ## Install
 

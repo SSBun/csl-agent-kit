@@ -1,6 +1,7 @@
 ---
 name: analyze-project
 description: Use when the user wants a deep multi-report analysis of a software project. Scans structure, dependencies, architecture, business logic, APIs, data model, security, quality, build/deploy, and git history via parallel subagents and writes detailed MD reports under docs/analysis/.
+argument-hint: [project-path] [depth]
 ---
 
 Analyze a software project and generate detailed analysis reports.

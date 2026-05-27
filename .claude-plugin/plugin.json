@@ -1,28 +1,20 @@
 {
-  "name": "SSBun-skills",
-  "version": "1.4.2",
-  "description": "Agent skill collection: xcode-build, app-icon-prompt, release-new-version, analyze-project",
+  "name": "bz",
+  "version": "1.5.0",
+  "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, passing, receiving",
   "author": {
     "name": "CSL"
   },
   "license": "MIT",
-  "keywords": ["xcode", "ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills"],
+  "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff"],
   "skills": [
-    "./xcode-build",
-    "./app-icon-prompt",
-    "./release-new-version",
-    "./analyze-project",
-    "./venom-cli",
-    "./grill-me",
-    "./beautiful-mermaid"
-  ],
-  "commands": [
-    "./commands/xcode-build.md",
-    "./commands/app-icon-prompt.md",
-    "./commands/release-new-version.md",
-    "./commands/analyze-project.md",
-    "./commands/venom-cli.md",
-    "./commands/grill-me.md",
-    "./commands/beautiful-mermaid.md"
+    "./skills/create-app-icon",
+    "./skills/release",
+    "./skills/analyze-project",
+    "./skills/venom-cli",
+    "./skills/grill-me",
+    "./skills/beautiful-mermaid",
+    "./skills/passing",
+    "./skills/receiving"
   ]
 }
