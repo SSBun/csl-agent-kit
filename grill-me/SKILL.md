@@ -5,8 +5,6 @@ description: Interview the user relentlessly about a plan or design until reachi
 
 Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
 
-Use `AskUserQuestion` to let the user select their preferred option or ask for modifications. This enables structured choice instead of free-form text for decisions.
-
-Ask the questions one at a time.
+Ask the questions using `AskUserQuestion` one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
