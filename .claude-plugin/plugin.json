@@ -1,6 +1,6 @@
 {
-  "name": "bz",
-  "version": "1.6.0",
+  "name": "CSL",
+  "version": "1.7.0",
   "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, passing, receiving",
   "author": {
     "name": "CSL"

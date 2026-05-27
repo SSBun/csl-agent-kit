@@ -186,6 +186,15 @@ List available targets, then build for the active device/simulator.
 venom-cli -p <project-path> gen-asset-code --path <component-path> --type all
 ```
 
+## Build Performance Tips
+
+- **Prefer `build` for compilation checks.** `make` and `make-source` clean all caches and trigger a full recompile, making subsequent `build` very slow.
+- **Only use `make` / `make-source` when structural changes require it:**
+  - Files added or deleted in the project
+  - Podspec dependency changes (new/removed pods, version bumps)
+  - After running `gen-asset-code` to integrate new assets
+- **For all other cases** (code edits, bug fixes, refactoring), run `build` directly. It compiles incrementally and is significantly faster.
+
 ## Safety Rules
 
 - **Confirm before any write operation:** make, make-source, build, integrate switch, integrate clone --integrate, integrate remove, config set
