@@ -1,7 +1,6 @@
 ---
 description: Build, run, or test iOS/macOS/watchOS/tvOS apps with Xcode.
 argument-hint: [project-path]
-disable-model-invocation: true
 ---
 
 Invoke the `xcode-build` skill to handle this request.
