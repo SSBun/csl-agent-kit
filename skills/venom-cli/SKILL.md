@@ -16,7 +16,15 @@ Invoke as `venom-cli` directly.
 
 ## Project Path
 
-The CLI accepts `-p, --project <path>` option to specify project directory. **Ask user for the root project path** if not obvious from context. Always pass `-p <path>` explicitly.
+The CLI accepts `-p, --project <path>` option to specify project directory.
+
+**Check pre-configured projects first** — venom-cli stores project paths in config:
+
+```bash
+venom-cli config list
+```
+
+If a project is listed in config, use its path. Otherwise ask user for root project path. Always pass `-p <path>` explicitly.
 
 ## Command Discovery
 
@@ -32,21 +40,38 @@ venom-cli <command> <subcommand> --help   # nested subcommand details
 
 - **`doctor`** — Check environment (Ruby, Bundler, CocoaPods, Git, Xcode). Use `--fix` to auto-repair.
 - **`devices`** — List simulators/devices. Run before `build` to pick target.
-- **`build`** — Compile project. Prefer for incremental compilation (see Build Performance Tips).
-- **`make`** — Regenerate Podfile + pod install using binary caches. Triggers full recompile.
-- **`make-source`** — Same as `make` but from source (no cache). Slower, allows source-level debugging.
+- **`build`** — Incremental compile. Fast. Use for checking build errors after code edits. Supports `--scheme`, `--run`, `--debug`, `--verbose`.
+- **`make`** — Regenerate Podfile + pod install using binary caches. Full recompile.
+- **`make-source`** — Same as `make` but from source (no cache). Full recompile, slower.
 - **`integrate list/switch/clone/remove/status`** — Component dependency management.
 - **`gen-asset-code`** — Generate Swift/ObjC resource access code for component.
 - **`config get/set/list`** — Manage venom-cli configuration.
 
-## Typical Workflows
+## Build Decision Guide
 
-- **Prefer `build` for compilation checks.** `make` and `make-source` clean all caches and trigger a full recompile, making subsequent `build` very slow.
-- **Only use `make` / `make-source` when structural changes require it:**
-  - Files added or deleted in the project
-  - Podspec dependency changes (new/removed pods, version bumps)
-  - After running `gen-asset-code` to integrate new assets
-- **For all other cases** (code edits, bug fixes, refactoring), run `build` directly. It compiles incrementally and is significantly faster.
+### Use `build` for checking compilation errors
+
+`build` compiles incrementally — fast. Use for all normal code changes (edits, bug fixes, refactoring).
+
+```bash
+venom-cli -p <project-path> build --scheme <scheme-name>
+```
+
+### Use `make` or `make-source` when you add/delete files or change dependencies
+
+`make`/`make-source` clean all caches and regenerate Podfile from scratch, triggering full recompile. Required when structure changes:
+
+- **Files added or deleted** in project or component
+- **Podspec dependency changes** (new/removed pods, version bumps)
+- **After `gen-asset-code`** to integrate new resources/strings
+
+```bash
+venom-cli -p <project-path> make
+# or
+venom-cli -p <project-path> make-source
+```
+
+**Only run `make`/`make-source` when needed.** Running them unnecessarily slows subsequent `build` since caches are cold. If no files added/deleted and no dependency changes, just `build`.
 
 ## Safety Rules
 
