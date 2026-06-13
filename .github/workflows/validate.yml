@@ -19,17 +19,31 @@ jobs:
           sudo curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
           sudo chmod +x /usr/local/bin/yq
 
-      - name: Validate plugin.json
+      - name: Validate Claude plugin.json
         run: |
           jq . .claude-plugin/plugin.json > /dev/null
           jq -e '.name and .version and .description and (.skills | type == "array")' .claude-plugin/plugin.json > /dev/null
 
-      - name: Validate marketplace.json
+      - name: Validate Cursor plugin.json
+        run: |
+          jq . .cursor-plugin/plugin.json > /dev/null
+          jq -e '.name and .version and .description and .skills' .cursor-plugin/plugin.json > /dev/null
+
+      - name: Validate Codex plugin.json
+        run: |
+          jq . .codex-plugin/plugin.json > /dev/null
+          jq -e '.name and .version and .description and .skills' .codex-plugin/plugin.json > /dev/null
+
+      - name: Validate marketplace manifests
         run: |
           jq . .claude-plugin/marketplace.json > /dev/null
           jq -e '.name and (.plugins | type == "array" and length > 0)' .claude-plugin/marketplace.json > /dev/null
+          jq . .cursor-plugin/marketplace.json > /dev/null
+          jq -e '.name and (.plugins | type == "array" and length > 0)' .cursor-plugin/marketplace.json > /dev/null
+          jq . .agents/plugins/marketplace.json > /dev/null
+          jq -e '.name and (.plugins | type == "array" and length > 0)' .agents/plugins/marketplace.json > /dev/null
 
-      - name: Verify every declared skill resolves
+      - name: Verify every declared Claude skill resolves
         run: |
           fail=0
           for s in $(jq -r '.skills[]' .claude-plugin/plugin.json); do
@@ -41,10 +55,68 @@ jobs:
           done
           exit $fail
 
+      - name: Verify Claude plugin lists every skill directory
+        run: |
+          fail=0
+          declared=$(jq -r '.skills[] | split("/") | last' .claude-plugin/plugin.json | sort)
+          for d in skills/*/; do
+            name=$(basename "$d")
+            if ! echo "$declared" | grep -qx "$name"; then
+              echo "::error::Skill directory skills/${name} not declared in .claude-plugin/plugin.json"
+              fail=1
+            fi
+          done
+          while IFS= read -r name; do
+            if [ ! -f "skills/${name}/SKILL.md" ]; then
+              echo "::error::plugin.json declares skills/${name} but SKILL.md is missing"
+              fail=1
+            fi
+          done <<< "$declared"
+          exit $fail
+
+      - name: Verify skills directory is non-empty
+        run: |
+          count=$(find skills -mindepth 1 -maxdepth 1 -type d | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::skills/ has no skill directories"
+            exit 1
+          fi
+
+      - name: Verify Cursor and Codex skill directories resolve
+        run: |
+          fail=0
+          for manifest in .cursor-plugin/plugin.json .codex-plugin/plugin.json; do
+            skills_path=$(jq -r '.skills' "$manifest" | sed 's:/*$::')
+            if [ ! -d "$skills_path" ]; then
+              echo "::error::$manifest skills path $skills_path is not a directory"
+              fail=1
+              continue
+            fi
+            for d in "$skills_path"/*/; do
+              [ -d "$d" ] || continue
+              name=$(basename "$d")
+              if [ ! -f "${d}SKILL.md" ]; then
+                echo "::error::Missing ${d}SKILL.md (declared via $manifest)"
+                fail=1
+              fi
+            done
+          done
+          exit $fail
+
+      - name: Verify analyze-project prompt output paths
+        run: |
+          fail=0
+          if rg -q '{{PROJECT_PATH}}/docs/[^a]' skills/analyze-project/prompts/; then
+            echo "::error::analyze-project prompts must write under docs/analysis/, not docs/"
+            rg '{{PROJECT_PATH}}/docs/[^a]' skills/analyze-project/prompts/
+            fail=1
+          fi
+          exit $fail
+
       - name: Validate SKILL.md frontmatter
         run: |
           fail=0
-          for f in $(find . -name SKILL.md -not -path './node_modules/*'); do
+          for f in $(find skills -name SKILL.md); do
             # Frontmatter must start at line 1 and contain name + description
             if ! head -1 "$f" | grep -q '^---$'; then
               echo "::error::$f missing frontmatter opener"
@@ -56,6 +128,15 @@ jobs:
             desc=$(echo "$fm" | yq -r '.description // ""' 2>/dev/null || true)
             if [ -z "$name" ] || [ -z "$desc" ]; then
               echo "::error::$f frontmatter missing name or description"
+              fail=1
+            fi
+            dir=$(basename "$(dirname "$f")")
+            if [ "$name" != "$dir" ]; then
+              echo "::error::$f frontmatter name '$name' must match directory '$dir'"
+              fail=1
+            fi
+            if ! echo "$desc" | grep -qi 'use when'; then
+              echo "::error::$f description should include 'Use when' trigger phrasing"
               fail=1
             fi
           done
@@ -80,3 +161,6 @@ jobs:
             fi
           done
           exit $fail
+
+      - name: Validate install script syntax
+        run: bash -n scripts/install.sh

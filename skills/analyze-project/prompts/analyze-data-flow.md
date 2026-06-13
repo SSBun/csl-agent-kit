@@ -6,9 +6,9 @@ You are analyzing the data flow and tech stack of a project. Your task is to inv
 
 ## Context
 Read these Phase 1 reports first for context:
-- {{PROJECT_PATH}}/docs/project-structure.md
-- {{PROJECT_PATH}}/docs/dependencies.md
-- {{PROJECT_PATH}}/docs/build-and-deploy.md
+- {{PROJECT_PATH}}/docs/analysis/project-structure.md
+- {{PROJECT_PATH}}/docs/analysis/dependencies.md
+- {{PROJECT_PATH}}/docs/analysis/build-and-deploy.md
 
 ## Instructions
 
@@ -46,7 +46,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/data-flow.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/data-flow.md
+{{PROJECT_PATH}}/docs/analysis/data-flow.md
 
 ## Rules
 - Read-only. Do not modify any files.

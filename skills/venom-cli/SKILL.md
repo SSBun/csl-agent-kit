@@ -1,8 +1,24 @@
 ---
 name: venom-cli
-description: Use when the user mentions Zhihu iOS development, venom-cli, component dependency management, or asks to build/check/make/switch/integrate components in a Zhihu project. Use when user wants to integrate other components to local or make the projects.
+description: Manages Zhihu iOS component dependencies and builds via venom-cli. Use when the user mentions Zhihu iOS development, venom-cli, component dependency management, or asks to build/check/make/switch/integrate components in a Zhihu project.
 argument-hint: [project-path]
 ---
+
+## Preflight
+
+Before running venom-cli commands, verify the binary is on PATH:
+
+```bash
+command -v venom-cli && venom-cli --version
+```
+
+If missing, install globally and retry:
+
+```bash
+npm install --global @ssbun/venom-cli
+```
+
+Do not run build/make/integrate commands until preflight passes.
 
 ## Setup
 

@@ -7,23 +7,12 @@
   },
   "license": "MIT",
   "keywords": ["ios", "macos", "swift", "app-icon", "create-app-icon", "release", "project-analysis", "analyze-project", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "figma", "figma-describe", "brainstorming", "same-page", "sop-creator", "grill-me", "beautiful-mermaid"],
-  "commands": [
-    "./commands/sop-activate.md",
-    "./commands/doc-sync.md"
-  ],
-  "skills": [
-    "./skills/create-app-icon",
-    "./skills/release",
-    "./skills/analyze-project",
-    "./skills/venom-cli",
-    "./skills/grill-me",
-    "./skills/beautiful-mermaid",
-    "./skills/handoff-save",
-    "./skills/handoff-restore",
-    "./skills/code-reviewer",
-    "./skills/sop-creator",
-    "./skills/brainstorming",
-    "./skills/figma-describe",
-    "./skills/same-page"
-  ]
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "CSL Skills",
+    "shortDescription": "iOS/macOS dev agent skills",
+    "longDescription": "Agent skill collection for app icons, releases, project analysis, code review, session handoff, Figma describe, and more.",
+    "developerName": "CSL",
+    "category": "Productivity"
+  }
 }

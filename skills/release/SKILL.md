@@ -6,9 +6,10 @@ argument-hint: [version] [--skip-push]
 
 ## Arguments
 
-- `$ARGUMENTS` — optional: `[version] [--skip-push]`
-  - `version` — target version (e.g. `1.2.3`). Skips version confirmation prompt.
-  - `--skip-push` — skip remote push. Skips push confirmation prompt.
+Parse from the user's message or slash-command args (Claude Code may pass these via `argument-hint`):
+
+- `version` — optional target version (e.g. `1.2.3`). When provided, skip version confirmation.
+- `--skip-push` — skip remote push entirely (no push confirmation).
 
 ## Project Detection Table
 

@@ -22,7 +22,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/development-history.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/development-history.md
+{{PROJECT_PATH}}/docs/analysis/development-history.md
 
 ## Rules
 - Read-only. Do not modify git state.

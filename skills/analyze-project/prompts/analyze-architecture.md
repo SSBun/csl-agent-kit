@@ -6,8 +6,8 @@ You are analyzing the software architecture of a project. Your task is to identi
 
 ## Context
 Read these Phase 1 reports first for context:
-- {{PROJECT_PATH}}/docs/project-structure.md
-- {{PROJECT_PATH}}/docs/dependencies.md
+- {{PROJECT_PATH}}/docs/analysis/project-structure.md
+- {{PROJECT_PATH}}/docs/analysis/dependencies.md
 
 ## Instructions
 
@@ -35,7 +35,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/architecture.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/architecture.md
+{{PROJECT_PATH}}/docs/analysis/architecture.md
 
 ## Rules
 - Read-only. Do not modify any files.

@@ -30,7 +30,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/dependencies.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/dependencies.md
+{{PROJECT_PATH}}/docs/analysis/dependencies.md
 
 ## Rules
 - Read-only. Do not install, update, or modify any packages.

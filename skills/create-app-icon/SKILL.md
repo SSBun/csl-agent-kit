@@ -24,7 +24,7 @@ Based on analysis, propose 3-5 icon concepts. Each with:
 3. **Colors** — suggested palette
 4. **Reasoning** — why it fits
 
-Use `AskUserQuestion` to let user select or modify.
+Let the user select or modify (use `AskUserQuestion` on Claude Code; otherwise ask in chat).
 
 ## Platform Specs
 

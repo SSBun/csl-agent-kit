@@ -1,6 +1,6 @@
 ---
 name: analyze-project
-description: Use when the user wants a deep multi-report analysis of a software project. Scans structure, dependencies, architecture, business logic, APIs, data model, security, quality, build/deploy, and git history via parallel subagents and writes detailed MD reports under docs/analysis/.
+description: Performs deep multi-report analysis of a software project. Use when the user wants project analysis, codebase audit, architecture review, or reports under docs/analysis/.
 argument-hint: [project-path] [depth]
 ---
 
@@ -14,6 +14,17 @@ Analyze a software project and generate detailed analysis reports.
 
 - `project_path`: defaults to current directory
 - `depth`: `quick` | `standard` | `deep` (default: `standard`)
+
+## Execution Modes
+
+Choose based on platform capabilities:
+
+| Mode | When | How |
+|------|------|-----|
+| **Parallel** (preferred) | Subagents/Task tool available | Spawn one agent per report; run Phase 1 then Phase 2 concurrently |
+| **Sequential** (fallback) | No subagent support (some Codex/compact sessions) | Run each prompt in the main thread, one report at a time, same order as below |
+
+Sequential mode produces identical outputs — only wall-clock time differs. Never skip reports required by the chosen depth.
 
 ## Depth Levels
 
@@ -64,10 +75,29 @@ docs/analysis/
    - `composer.json` / `composer.lock` → PHP
    - `mix.exs` / `mix.lock` → Elixir
 
+### Step 1b: Prepare Prompts (Placeholder Substitution)
+
+Every prompt under `prompts/` uses placeholders. **Replace them before handing the prompt to a subagent or running it in the main thread** — never spawn with literal `{{…}}` tokens.
+
+| Placeholder | Value |
+|-------------|-------|
+| `{{PROJECT_PATH}}` | Absolute path to the target project (from Step 1) |
+| `{{SKILL_PATH}}` | Absolute path to this skill directory (`…/skills/analyze-project`) |
+| `{{TECH_STACK}}` | Comma-separated stack detected in Step 1 (e.g. `Node.js, TypeScript`) |
+
+**How to substitute:**
+
+1. Read the prompt file for the report (e.g. `prompts/scan-structure.md`).
+2. Replace each placeholder with the resolved value above.
+3. Pass the **filled prompt** to the subagent (Task tool) or execute it yourself in sequential mode.
+
+Subagents must write outputs only under `{{PROJECT_PATH}}/docs/analysis/` — paths in prompts already target that directory after substitution.
+
 ### Step 2: Phase 1 — Discovery (Parallel Subagents)
 
 Spawn parallel subagents for each Phase 1 scan. Each subagent:
-- Reads the corresponding prompt from `prompts/`
+- Receives the **substituted** prompt from Step 1b (not the raw template file)
+- Reads the corresponding template from `templates/`
 - Writes output using the corresponding template from `templates/`
 - Saves to `docs/analysis/<report>.md`
 
@@ -83,8 +113,9 @@ Agent 4: scan-git-history   → docs/analysis/development-history.md
 ### Step 3: Phase 2 — Deep Analysis (Parallel Subagents)
 
 Spawn parallel subagents for each Phase 2 analysis. Each subagent:
-- Reads Phase 1 outputs for context
-- Reads the corresponding prompt
+- Receives the **substituted** prompt from Step 1b
+- Reads Phase 1 outputs from `docs/analysis/` for context
+- Reads the corresponding template
 - Writes output using the corresponding template
 - Saves to `docs/analysis/<report>.md`
 
@@ -135,8 +166,8 @@ Each template defines the report structure. Prompts guide the subagent on what t
 
 ## ALWAYS
 
-- Use subagents for parallel execution
-- Keep main context clean — offload scanning to subagents
+- Prefer parallel subagents when available; fall back to sequential execution otherwise
+- Keep main context clean — offload scanning when subagents exist
 - Respect the depth level — skip reports not in scope
 - Use absolute paths when referencing target project files
 - Redact any found secrets with `***REDACTED***`

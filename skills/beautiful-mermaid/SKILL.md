@@ -3,6 +3,22 @@ name: beautiful-mermaid
 description: Use when the user wants to render Mermaid diagrams as SVG, generate polished diagram visuals, create flowcharts, sequence diagrams, state diagrams, class diagrams, ER diagrams, or XY charts. Use for diagram visualization, theming, or presentation-quality diagram output.
 ---
 
+## Preflight
+
+Before rendering, verify the CLI dependency is available:
+
+```bash
+node -e "require('beautiful-mermaid'); console.log('ok')"
+```
+
+If that fails, install globally and retry:
+
+```bash
+npm install -g beautiful-mermaid
+```
+
+Do not proceed with inline render scripts until preflight passes.
+
 ## Setup
 
 Installed globally via npm:

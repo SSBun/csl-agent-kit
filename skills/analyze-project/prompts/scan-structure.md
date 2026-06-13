@@ -20,7 +20,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/project-structure.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/project-structure.md
+{{PROJECT_PATH}}/docs/analysis/project-structure.md
 
 ## Rules
 - Read-only. Do not modify any source files.

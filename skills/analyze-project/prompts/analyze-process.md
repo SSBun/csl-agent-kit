@@ -6,9 +6,9 @@ You are analyzing the business logic and functional processes of a software proj
 
 ## Context
 Read these reports first for context:
-- {{PROJECT_PATH}}/docs/project-structure.md
-- {{PROJECT_PATH}}/docs/architecture.md
-- {{PROJECT_PATH}}/docs/api-surface.md
+- {{PROJECT_PATH}}/docs/analysis/project-structure.md
+- {{PROJECT_PATH}}/docs/analysis/architecture.md
+- {{PROJECT_PATH}}/docs/analysis/api-surface.md
 
 ## Instructions
 
@@ -57,7 +57,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/process-analysis.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/process-analysis.md
+{{PROJECT_PATH}}/docs/analysis/process-analysis.md
 
 ## Rules
 - Read-only. Do not modify any files.

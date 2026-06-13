@@ -24,7 +24,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/build-and-deploy.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/build-and-deploy.md
+{{PROJECT_PATH}}/docs/analysis/build-and-deploy.md
 
 ## Rules
 - Read-only. Do not run builds or deployments.

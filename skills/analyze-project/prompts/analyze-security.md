@@ -6,11 +6,11 @@ You are performing a security review of a software project. Your task is to iden
 
 ## Context
 Read ALL previous reports for context:
-- {{PROJECT_PATH}}/docs/project-structure.md
-- {{PROJECT_PATH}}/docs/dependencies.md
-- {{PROJECT_PATH}}/docs/api-surface.md
-- {{PROJECT_PATH}}/docs/data-model.md
-- {{PROJECT_PATH}}/docs/architecture.md
+- {{PROJECT_PATH}}/docs/analysis/project-structure.md
+- {{PROJECT_PATH}}/docs/analysis/dependencies.md
+- {{PROJECT_PATH}}/docs/analysis/api-surface.md
+- {{PROJECT_PATH}}/docs/analysis/data-model.md
+- {{PROJECT_PATH}}/docs/analysis/architecture.md
 
 ## Instructions
 
@@ -54,7 +54,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/security-review.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/security-review.md
+{{PROJECT_PATH}}/docs/analysis/security-review.md
 
 ## Rules
 - Read-only. Do not modify any files.

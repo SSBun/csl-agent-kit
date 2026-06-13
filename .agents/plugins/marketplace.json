@@ -7,7 +7,9 @@
   "plugins": [
     {
       "name": "CSL",
-      "source": "./",
+      "source": {
+        "path": "./"
+      },
       "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, sop-creator, brainstorming, figma-describe, same-page",
       "author": {
         "name": "CSL"

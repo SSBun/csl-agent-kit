@@ -6,8 +6,8 @@ You are analyzing the API surface of a software project. Your task is to documen
 
 ## Context
 Read these reports first for context:
-- {{PROJECT_PATH}}/docs/project-structure.md
-- {{PROJECT_PATH}}/docs/architecture.md
+- {{PROJECT_PATH}}/docs/analysis/project-structure.md
+- {{PROJECT_PATH}}/docs/analysis/architecture.md
 
 ## Instructions
 
@@ -48,7 +48,7 @@ Write your analysis using the template at:
 {{SKILL_PATH}}/templates/api-surface.md
 
 Save the filled template to:
-{{PROJECT_PATH}}/docs/api-surface.md
+{{PROJECT_PATH}}/docs/analysis/api-surface.md
 
 ## Rules
 - Read-only. Do not modify any files.
