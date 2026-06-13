@@ -3,6 +3,7 @@
 
 # Editor / tooling caches
 .ruff_cache/
+.ai/
 .cursor/
 .vscode/
 .idea/
