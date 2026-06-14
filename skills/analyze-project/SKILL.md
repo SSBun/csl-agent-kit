@@ -1,7 +1,7 @@
 ---
 name: analyze-project
 description: Performs deep multi-report analysis of a software project. Use when the user wants project analysis, codebase audit, architecture review, or reports under docs/analysis/.
-argument-hint: [project-path] [depth]
+argument-hint: "[project-path] [depth]"
 ---
 
 Analyze a software project and generate detailed analysis reports.

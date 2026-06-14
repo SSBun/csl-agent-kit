@@ -1,7 +1,7 @@
 ---
 name: release
 description: Use when the user wants to release a new version of a project (npm, PyPI, Cargo, Xcode/agvtool, Homebrew, CocoaPods, generic). Bumps version across all locations, commits, tags, optionally pushes, and walks through publishing — confirming each destructive step.
-argument-hint: [version] [--skip-push]
+argument-hint: "[version] [--skip-push]"
 ---
 
 ## Arguments
