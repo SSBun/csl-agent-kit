@@ -24,13 +24,55 @@ Claude-only slash commands: `/CSL:sop-activate`, `/CSL:doc-sync`.
 
 ## Canonical source and duplicates
 
-This repository is the **canonical source** for all CSL skills. `./scripts/install.sh` symlinks `skills/*` into Codex (`~/.agents/skills/`) and the full repo into Cursor (`~/.cursor/plugins/local/CSL`).
+This repository is the **canonical source** for all CSL skills. Install via [`npx skills`](#npx-skills-cursor-codex-and-other-agents), `./scripts/install.sh` (Cursor plugin / Codex symlinks), or each platform's plugin marketplace.
 
 If you also have same-named skills from other marketplaces or personal folders (e.g. `grill-me`, `create-app-icon`, `code-reviewer`), remove or rename those copies to avoid the agent loading the wrong version. After installing CSL, prefer invoking skills from this plugin only.
 
 Removed skills (no longer shipped): `passing`, `receiving`.
 
 ## Install
+
+### npx skills (Cursor, Codex, and other agents)
+
+Use the [Agent Skills CLI](https://skills.sh/) to install individual skills or the full collection into `~/.agents/skills/` (Cursor and other agents discover this path automatically).
+
+**Install all 13 skills globally for Cursor:**
+
+```bash
+npx skills add SSBun/skills --all -a cursor -g -y
+```
+
+**Install from a local clone (development):**
+
+```bash
+git clone https://github.com/SSBun/skills
+cd skills
+npx skills add . --all -a cursor -g -y
+```
+
+**Install specific skills:**
+
+```bash
+# List available skills in this repo
+npx skills add SSBun/skills --list
+
+# Install by name
+npx skills add SSBun/skills --skill grill-me --skill release -a cursor -g -y
+```
+
+**Other useful commands:**
+
+```bash
+npx skills list -g -a cursor          # list installed global skills
+npx skills update -g -y               # update installed skills
+npx skills remove grill-me -g -a cursor -y
+```
+
+Reload Cursor (`Developer: Reload Window`) after installing. Skills also appear under **Settings → Rules → Agent Decides**.
+
+For Codex or other agents, replace `-a cursor` with the target agent (e.g. `-a codex`) or omit `-a` to install for all supported agents.
+
+Browse skills at [skills.sh](https://skills.sh/).
 
 ### Claude Code
 
@@ -87,7 +129,7 @@ skills/                  # Shared skill source (all platforms)
 .codex-plugin/           # Codex plugin manifest
 .agents/plugins/         # Codex repo marketplace
 commands/                # Claude Code slash commands only
-scripts/install.sh       # Local installer for Cursor + Codex
+scripts/install.sh       # Local installer for Cursor plugin + Codex symlinks
 ```
 
 ## License
