@@ -7,9 +7,9 @@ description: Re-explains and re-verifies prior assistant messages with evidence-
 
 ## Overview
 
-Re-explain your previous message so the user fully understands your reasoning. Every run must still deliver **evidence with confidence** and **at least one ASCII visualization** — but the **shape of the explanation** (sections, order, density, diagram style) is **designed for that specific message**, not copied from a single template.
+Re-explain your previous message so the user fully understands your reasoning. Every run must still deliver **evidence with confidence for substantive claims**. Include **at least one ASCII visualization** when it clarifies the explanation, but you may skip the diagram for narrowly trivial clarification where a diagram would add no value. The **shape of the explanation** (sections, order, density, diagram style) is **designed for that specific message**, not copied from a single template.
 
-**Announce at start:** "Let me make sure we're on the same page."
+**Announce at start:** Use a short opener in the user's required response language that says you are aligning understanding. Do not hardcode English if the conversation or project requires another language.
 
 ## The Process
 
@@ -34,7 +34,7 @@ Before writing the body, decide **how** to present the explanation. Pick a layou
 | Heavy uncertainty or mixed confidence | Open with a confidence overview (e.g. bullet summary of High/Medium/Low counts), then drill down |
 | Debugging / root-cause narrative | Timeline or chain diagram, evidence ordered as discovery happened |
 
-**You MUST briefly state your format choice** (one or two sentences): what structure you picked and why it fits this message. Place it right after the announce line or as a short `## How I'll explain this` section.
+**You MUST briefly state your format choice** (one or two sentences): what structure you picked and why it fits this message. Place it right after the announce line or as a short section. For a narrowly trivial clarification, this may be one compact sentence.
 
 **Rules:**
 
@@ -67,7 +67,16 @@ Whatever layout you chose, each material claim must still be **supportable**. Ex
 
 ### Step 4: Visual Explanation (ASCII)
 
-Include **at least one** ASCII art diagram (or a small set of related mini-diagrams if the format you designed needs it). **Choose the visual style dynamically:**
+Include **at least one** ASCII art diagram (or a small set of related mini-diagrams if the format you designed needs it), unless the request is a narrowly trivial clarification.
+
+A clarification is narrowly trivial only when all of these are true:
+
+- The prior message contains one small wording, sequencing, or terminology issue.
+- No architectural, security, financial, legal, medical, data-loss, or production-risk claim is being justified.
+- The answer can be resolved in a few sentences with direct evidence and confidence.
+- A diagram would repeat the prose rather than clarify structure.
+
+If any condition is false, include a diagram. **Choose the visual style dynamically:**
 
 | Prior message suggests | Visual style |
 | ---------------------- | ------------ |
@@ -84,6 +93,7 @@ Include **at least one** ASCII art diagram (or a small set of related mini-diagr
 - Prefer one strong diagram over many weak ones unless parallelism truly requires multiples.
 - Keep each diagram compact (aim under ~20 lines, under ~72 columns) for terminal readability.
 - Add a one-line caption: what the reader should take away.
+- When skipping a diagram for a narrowly trivial clarification, say so briefly.
 
 ### Step 5: Close
 
@@ -94,6 +104,6 @@ End in a way that matches your format: a short synthesis, a checklist of caveats
 - **Format follows content** — Design the explanation shape after you understand the prior message; do not force one template.
 - **Evidence over assertion** — Layout is flexible; evidentiary discipline is not.
 - **Honesty over completeness** — Prefer explicit Low confidence over implied certainty.
-- **Visual over verbal where it helps** — Use ASCII where a picture clarifies structure; skip decoration.
+- **Visual over verbal where it helps** — Use ASCII where a picture clarifies structure; skip decoration and narrowly trivial diagrams.
 - **Concise over exhaustive** — Match depth to stakes; avoid padding.
 - **Re-verify, don't recall** — Re-read files and re-run checks rather than trusting memory of earlier tool output.

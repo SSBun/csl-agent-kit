@@ -1,99 +1,45 @@
 # Code Review Checklist
 
-## Overview
-This reference guide provides comprehensive information for code reviewer.
+Use this as a focused pass over a diff. Start with correctness and risk; leave style comments only when they affect maintainability or violate local standards.
 
-## Patterns and Practices
+## Review Order
 
-### Pattern 1: Best Practice Implementation
-**Description:**
-Detailed explanation of the pattern.
+1. **Intent**
+   - Does the change match the PR description or user request?
+   - Are unrelated files, generated artifacts, or broad refactors mixed in?
+   - Is the smallest reasonable surface area touched?
 
-**When to Use:**
-- Scenario 1
-- Scenario 2
-- Scenario 3
+2. **Correctness**
+   - Check boundary cases, empty input, invalid input, duplicate input, ordering, time zones, concurrency, and retry behavior where relevant.
+   - Verify changed call sites still satisfy function contracts.
+   - Look for partial updates: model changed but serializer, validator, migration, UI state, or tests were not updated.
 
-**Implementation:**
-```typescript
-// Example code implementation
-export class Example {
-  // Implementation details
-}
-```
+3. **Security and data safety**
+   - Flag secrets, tokens, unsafe logging, weak defaults, injection risks, path traversal, SSRF, XSS, auth bypass, and permission checks that moved client-side only.
+   - Check destructive operations for confirmation, scoping, transactions, rollback, and idempotency.
+   - Confirm sensitive data is not persisted, cached, or exposed unnecessarily.
 
-**Benefits:**
-- Benefit 1
-- Benefit 2
-- Benefit 3
+4. **Compatibility**
+   - Check migrations, API contracts, feature flags, config defaults, and backwards compatibility.
+   - Confirm error shapes, status codes, event names, analytics payloads, and public types remain stable unless the change intends otherwise.
 
-**Trade-offs:**
-- Consider 1
-- Consider 2
-- Consider 3
+5. **Tests and verification**
+   - New or changed logic should have focused tests for the risky branch, not only happy paths.
+   - UI changes should cover important states: loading, empty, error, disabled, long text, and small viewport when applicable.
+   - If tests are missing, explain the specific behavior that is unprotected.
 
-### Pattern 2: Advanced Technique
-**Description:**
-Another important pattern for code reviewer.
+6. **Maintainability**
+   - Prefer existing helpers and patterns over one-off code.
+   - Names should describe domain meaning, not implementation mechanics.
+   - Comments should explain surprising intent, not repeat the code.
 
-**Implementation:**
-```typescript
-// Advanced example
-async function advancedExample() {
-  // Code here
-}
-```
+## Finding Format
 
-## Guidelines
+Each finding should include:
 
-### Code Organization
-- Clear structure
-- Logical separation
-- Consistent naming
-- Proper documentation
+- Location: `file:line`
+- Impact: what can go wrong
+- Evidence: the code path or scenario that proves the risk
+- Suggested fix: specific enough to act on
 
-### Performance Considerations
-- Optimization strategies
-- Bottleneck identification
-- Monitoring approaches
-- Scaling techniques
-
-### Security Best Practices
-- Input validation
-- Authentication
-- Authorization
-- Data protection
-
-## Common Patterns
-
-### Pattern A
-Implementation details and examples.
-
-### Pattern B
-Implementation details and examples.
-
-### Pattern C
-Implementation details and examples.
-
-## Anti-Patterns to Avoid
-
-### Anti-Pattern 1
-What not to do and why.
-
-### Anti-Pattern 2
-What not to do and why.
-
-## Tools and Resources
-
-### Recommended Tools
-- Tool 1: Purpose
-- Tool 2: Purpose
-- Tool 3: Purpose
-
-### Further Reading
-- Resource 1
-- Resource 2
-- Resource 3
-
-## Conclusion
-Key takeaways for using this reference guide effectively.
+Avoid speculative feedback. If a concern depends on an assumption, state the assumption and confidence.

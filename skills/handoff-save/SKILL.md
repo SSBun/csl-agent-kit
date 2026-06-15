@@ -101,8 +101,9 @@ Save only what the next agent needs to **resume work**, not to **learn the proje
 
 1. Resolve `{project-name}` and `{handoff_path}` = `~/.agents/handoffs/{project-name}.md`.
 2. Gather only the sections above from the current session. Prefer paths and line numbers over prose.
-3. Write the file (overwrite previous handoff for this project).
-4. Tell the user: `Handoff saved to ~/.agents/handoffs/{project-name}.md`
+3. If `{handoff_path}` already exists, inspect its saved timestamp. Ask the user before overwriting it, or write a timestamped backup first (for example `{project-name}.YYYYMMDD-HHMMSS.md`) and tell the user which backup path was created.
+4. Write the file to `{handoff_path}`.
+5. Tell the user: `Handoff saved to ~/.agents/handoffs/{project-name}.md`
 
 ## Rules
 
@@ -110,3 +111,4 @@ Save only what the next agent needs to **resume work**, not to **learn the proje
 - Pinboard: max ~15 entries; only files/dirs touched or central to the task.
 - Reference artifacts by path — never copy their bodies.
 - Redact secrets (`***REDACTED***`).
+- Never silently overwrite an existing handoff. Confirm overwrite or create a backup first.

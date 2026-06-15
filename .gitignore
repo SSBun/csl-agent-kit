@@ -7,3 +7,6 @@
 .cursor/
 .vscode/
 .idea/
+
+# Local generated install state. Keep .agents/plugins tracked.
+.agents/skills

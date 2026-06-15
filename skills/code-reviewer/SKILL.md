@@ -5,7 +5,7 @@ description: Reviews pull requests and code changes for bugs, security, clarity,
 
 # Code Reviewer
 
-Structured review for pull requests and local diffs. Read `references/` for checklists and standards — do not run placeholder automation scripts.
+Structured review for pull requests and local diffs. Read `references/` for checklists and standards — do not run generated demo automation scripts.
 
 ## PR / MR Preparation
 

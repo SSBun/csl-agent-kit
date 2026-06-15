@@ -79,13 +79,15 @@ git tag --list | head -20
 grep -r "version" --include="*.json" --include="*.py" --include="*.js" --include="*.ts" --include="*.sh" --include="*.toml" --include="*.yml" --include="*.yaml" --include="*.h" --include="*.swift" --include="*.go" --include="*.rs" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build . 2>/dev/null | grep -v "lockfile\|lock\b" | grep -i "version"
 ```
 
-Show user all files changed. Ask to confirm.
+List the detected version files before editing, including ecosystem-specific files from the detection table such as `project.pbxproj`, lockfiles, `*.gemspec`, `lib/**/version.rb`, `*.podspec`, or `VERSION` when applicable.
+
+Show user all files changed. Ask the user to confirm the version changes before proceeding.
 
 ### 7. Documentation Check
 
 Single pass — check README.md, CHANGELOG.md / HISTORY.md, and website dirs (`website/`, `docs/`, `site/`, `web/`, `www/`, `index.html`).
 
-If any need updates for this release, ask user whether to update now. If yes, help update, then stage doc files separately:
+If any need updates for this release, ask user whether to update now. If yes, help update, then show the doc files changed and ask before committing documentation. Stage doc files separately:
 
 ```bash
 git add README.md CHANGELOG.md docs/
@@ -96,12 +98,16 @@ git commit -m "Update documentation for vX.Y.Z"
 
 Stage **only** version-bump files. Never `git add -A`.
 
+List `<detected-version-files>` before staging and ask the user to confirm creating the version bump commit.
+
 ```bash
-git add package.json Cargo.toml pyproject.toml VERSION
+git add <detected-version-files>
 git commit -m "Bump version to X.Y.Z"
 ```
 
 ### 9. Create Tag
+
+Ask the user to confirm creating the annotated release tag.
 
 ```bash
 git tag -a vX.Y.Z -m "Release vX.Y.Z"
@@ -134,5 +140,7 @@ Check publishing table. If project type has a publish command, ask user whether 
 
 - Never automatically push without user confirmation (unless `--skip-push` used, which means no push at all).
 - Never publish to package managers without explicit user approval.
+- Never commit documentation updates, commit version changes, or create release tags without explicit user confirmation.
 - Never assume version number without asking (unless provided as argument).
 - Refuse to proceed with dirty working tree.
+- Never use `git add -A`; stage only the listed files needed for the current release step.

@@ -1,9 +1,9 @@
 ---
-description: Activate a built-in SOP as a native rule (Claude Code or Cursor). Codex users should use /sop-creator instead.
+description: Activate a built-in SOP as a Claude Code rule. Cursor users should use sop-creator instead.
 allowed-tools: Bash, Read, Write, AskUserQuestion, Glob
 ---
 
-Activate a built-in SOP so it loads as a native rule. **Claude Code only** — Cursor users invoke `/sop-creator` (Activate SOP section); Codex has no rules directory.
+Activate a built-in SOP so it loads as a native Claude Code rule. **Claude Code only** — Cursor users should use the `sop-creator` skill's Activate SOP workflow; this command does not write Cursor rules. Codex has no rules directory.
 
 ## Step 1: List Available SOPs
 
@@ -16,8 +16,8 @@ ls "${CLAUDE_PLUGIN_ROOT}/skills/sop-creator/sops/" 2>/dev/null
 Also check for custom SOPs already activated:
 
 ```bash
-ls ~/.claude/rules/sop-*.md ~/.cursor/rules/sop-*.md 2>/dev/null
-ls .claude/rules/sop-*.md .cursor/rules/sop-*.md 2>/dev/null
+ls ~/.claude/rules/sop-*.md 2>/dev/null
+ls .claude/rules/sop-*.md 2>/dev/null
 ```
 
 Present the list to the user using `AskUserQuestion`.
@@ -39,8 +39,8 @@ Use `AskUserQuestion` with two questions:
 **Question 1 — Scope:**
 - **Header:** "Scope"
 - **Options:**
-  - "Global (`~/.claude/rules/` or `~/.cursor/rules/`)" — applies to all projects
-  - "Project (`.claude/rules/` or `.cursor/rules/`)" — applies to this project only
+  - "Global (`~/.claude/rules/`)" — applies to all projects
+  - "Project (`.claude/rules/`)" — applies to this project only
 
 **Question 2 — Activation mode:**
 - **Header:** "Activation"
@@ -77,19 +77,12 @@ cat "${CLAUDE_PLUGIN_ROOT}/skills/sop-creator/sops/{selected}.md"
 
 Then write to the destination with activation frontmatter prepended/replaced.
 
-**Destination paths (Claude Code):**
+**Destination paths:**
 
 | Scope | Path |
 |-------|------|
 | Global | `~/.claude/rules/sop-{name}.md` |
 | Project | `.claude/rules/sop-{name}.md` |
-
-**Destination paths (Cursor):**
-
-| Scope | Path |
-|-------|------|
-| Global | `~/.cursor/rules/sop-{name}.md` |
-| Project | `.cursor/rules/sop-{name}.md` |
 
 **Frontmatter to write:**
 
@@ -119,8 +112,8 @@ Preserve the original SOP body content below the frontmatter. If the source SOP 
 ## Step 6: Create Directory if Missing
 
 ```bash
-mkdir -p ~/.claude/rules/ ~/.cursor/rules/  # for global
-mkdir -p .claude/rules/ .cursor/rules/      # for project
+mkdir -p ~/.claude/rules/  # for global
+mkdir -p .claude/rules/    # for project
 ```
 
 ## Step 7: Confirm
@@ -140,5 +133,5 @@ The rule takes effect immediately — no restart needed.
 List the activated SOPs after:
 
 ```bash
-ls ~/.claude/rules/sop-*.md ~/.cursor/rules/sop-*.md .claude/rules/sop-*.md .cursor/rules/sop-*.md 2>/dev/null
+ls ~/.claude/rules/sop-*.md .claude/rules/sop-*.md 2>/dev/null
 ```

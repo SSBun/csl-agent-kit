@@ -12,17 +12,17 @@ Before running venom-cli commands, verify the binary is on PATH:
 command -v venom-cli && venom-cli --version
 ```
 
-If missing, install globally and retry:
+If missing, ask the user before installing globally. Explain that this installs the `venom-cli` executable on their system via npm:
 
 ```bash
 npm install --global @ssbun/venom-cli
 ```
 
-Do not run build/make/integrate commands until preflight passes.
+If the user declines installation, stop. Do not run build/make/integrate commands until preflight passes.
 
 ## Setup
 
-venom-cli is installed globally via npm:
+venom-cli is installed globally via npm only after explicit user approval:
 
 ```bash
 npm install --global @ssbun/venom-cli
@@ -91,6 +91,7 @@ venom-cli -p <project-path> make-source
 
 ## Safety Rules
 
-- **Confirm before any write operation:** make, make-source, build, integrate switch, integrate clone --integrate, integrate remove, config set
-- **Read operations** (doctor, devices, integrate list, integrate status, config list/get, gen-asset-code) are safe to run without confirmation
+- **Confirm before any write operation:** make, make-source, build, integrate switch, integrate clone --integrate, integrate remove, config set, gen-asset-code
+- **Read operations** (doctor, devices, integrate list, integrate status, config list/get) are safe to run without confirmation
 - When running make/make-source, warn that it triggers pod install which modifies Podfile.lock and Pods directory
+- Before running gen-asset-code, warn that it may generate Swift/ObjC resource access files

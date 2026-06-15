@@ -128,6 +128,7 @@ skills/                  # Shared skill source (all platforms)
 .cursor-plugin/          # Cursor plugin manifest
 .codex-plugin/           # Codex plugin manifest
 .agents/plugins/         # Codex repo marketplace
+.agents/skills           # Generated local symlink to skills/ (ignored)
 commands/                # Claude Code slash commands only
 scripts/install.sh       # Local installer for Cursor plugin + Codex symlinks
 ```

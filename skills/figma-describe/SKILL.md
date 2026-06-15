@@ -29,7 +29,9 @@ URL format: `https://figma.com/design/:fileKey/:fileName?node-id=1-2`
 
 ### Step 2: Discover MCP Tools
 
-Inspect the connected Figma MCP tool schema before calling anything. Use whichever set is available:
+Inspect the connected Figma MCP tool schema before calling anything when runtime schema introspection is available. Use whichever set is available.
+
+If runtime MCP schema introspection is unavailable, but Figma tools are statically exposed in the current session, proceed with those visible tool definitions instead of stopping. Prefer the official Figma tool family when both official and alternate tools are visible.
 
 **Official Figma MCP** (preferred when present):
 
@@ -45,7 +47,7 @@ If `get_design_context` response is truncated: fetch metadata, then fetch childr
 - Re-fetch with `depth` only if the user explicitly requests deeper traversal
 - Use `download_figma_images` only when image assets are needed
 
-If neither tool family exists, report which MCP servers are connected and ask the user to fix configuration.
+If neither tool family exists, report which MCP servers are connected or which static tools are visible, then ask the user to fix configuration.
 
 ### Step 3: Capture Visual Reference
 

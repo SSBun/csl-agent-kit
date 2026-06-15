@@ -1,5 +1,9 @@
 # Figma Describe — Design Spec
 
+**Status:** Historical design artifact. This document records the original design for the Figma Describe skill and is not the canonical implementation location.
+
+**Current canonical skill location:** `skills/figma-describe/SKILL.md`
+
 ## Goal
 Create a skill that takes a Figma URL, calls Figma MCP to extract design data, and outputs a structured text description of the UI layer architecture. Output is framework-agnostic — raw design facts only. Primary consumer: human reviews first, then feeds to agent for any-platform (web/iOS/Android) implementation.
 
@@ -73,4 +77,4 @@ Page: "Dashboard"
 ```
 
 ## Skill Location
-`~/.claude/skills/figma-describe/SKILL.md`
+Historical note: the original draft targeted a Claude-local skill path. The current canonical implementation lives at `skills/figma-describe/SKILL.md`.

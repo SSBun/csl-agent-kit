@@ -19,9 +19,9 @@ Resume work from `~/.agents/handoffs/{project-name}.md`. Trust the handoff — d
 ## Steps
 
 1. Set `handoff_path = ~/.agents/handoffs/{project-name}.md`.
-2. If file exists → go to step 3.
-3. If missing → `ls ~/.agents/handoffs/*.md`, list available handoffs, ask user to pick one or save a new handoff first. Stop if none.
-4. Read the entire handoff file.
+2. If file exists → read the entire handoff file, then continue to step 5.
+3. If file is missing → `ls ~/.agents/handoffs/*.md`, list available handoffs, ask user to pick one or save a new handoff first.
+4. If no handoffs exist, stop. If the user picks an available handoff, set `handoff_path` to that file and read it, then continue to step 5.
 5. Show the user **only**:
    - **Next Action** (verbatim from file)
    - **Where Left Off** (file:line + remaining step)

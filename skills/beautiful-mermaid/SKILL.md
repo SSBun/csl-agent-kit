@@ -11,17 +11,17 @@ Before rendering, verify the CLI dependency is available:
 node -e "require('beautiful-mermaid'); console.log('ok')"
 ```
 
-If that fails, install globally and retry:
+If that fails, ask the user before installing globally. Explain that this installs the `beautiful-mermaid` package on their system via npm:
 
 ```bash
 npm install -g beautiful-mermaid
 ```
 
-Do not proceed with inline render scripts until preflight passes.
+If the user declines installation, stop. Do not proceed with inline render scripts until preflight passes.
 
 ## Setup
 
-Installed globally via npm:
+Installed globally via npm only after explicit user approval:
 
 ```bash
 npm install -g beautiful-mermaid

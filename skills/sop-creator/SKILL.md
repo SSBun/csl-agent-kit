@@ -3,7 +3,7 @@ name: sop-creator
 description: Use when the user wants to create an SOP document, write a standard operating procedure, document a workflow or process, or mentions "SOP", "procedure", "playbook", "runbook", "process doc". Also use when the user asks to follow a procedure, check the process for something, or mentions "per our SOP".
 ---
 
-Generate structured SOP (Standard Operating Procedure) documents from process/workflow descriptions. Created SOPs behave as persistent rules — the agent reads and follows them when relevant work arises.
+Generate structured SOP (Standard Operating Procedure) documents from process/workflow descriptions. Created SOPs behave as persistent rules within their applicable scope — the agent reads and follows them when relevant work arises.
 
 ## SOP Storage Convention
 
@@ -11,7 +11,7 @@ SOP files are stored in three levels:
 
 | Level | Path | Scope |
 |-------|------|-------|
-| Built-in | `skills/sop-creator/sops/` (relative to plugin/skill root) | General SOPs shipped with the skill |
+| Built-in | `skills/sop-creator/sops/` (relative to plugin/skill root), routed by `skills/sop-creator/sops/INDEX.md` | General SOPs shipped with the skill |
 | Global | See platform table below | Cross-project user procedures |
 | Project | `docs/sops/` | Project-specific procedures (build, test, release) |
 
@@ -33,7 +33,9 @@ SOP files are stored in three levels:
 
 If uncertain, locate this skill's directory and walk up until you find `skills/sop-creator/sops/`. Use that ancestor as `{plugin_root}`.
 
-Priority: project > global > built-in. Later sources override earlier ones when same-named SOP exists.
+SOP source priority: project > global > built-in. Later SOP sources override earlier SOP sources when same-named SOP exists.
+
+Instruction precedence: SOPs never override system, developer, explicit user, platform safety, repository, or tool permission constraints. Treat SOPs as authoritative only inside their applicable scope and only when they do not conflict with higher-priority instructions.
 
 File naming: `docs/sops/{descriptive-name}.md` or `{global_sops_dir}/{descriptive-name}.md`. Use kebab-case. Examples: `deploy-production.md`, `onboard-engineer.md`, `hotfix-process.md`.
 
@@ -43,10 +45,11 @@ When writing an SOP, ask the user: "Global or project scope?" Default to project
 
 Before starting any procedural work (deploy, release, incident response, onboarding, etc.), **always**:
 
-1. Scan `docs/sops/`, `{global_sops_dir}`, and `skills/sop-creator/sops/` (under plugin root) for matching SOP files
-2. Read the relevant SOP before taking action
-3. Follow it step-by-step — SOPs are authoritative instructions, not suggestions
-4. If a step is unclear or impossible, stop and ask the user before deviating
+1. Check `docs/sops/` and `{global_sops_dir}` for matching project/global SOP files.
+2. For built-in SOPs, read `skills/sop-creator/sops/INDEX.md` first and use it to choose the smallest relevant SOP set. Do not read unrelated built-in SOP files.
+3. Read the relevant SOP before taking action.
+4. Follow it step-by-step — SOPs are authoritative instructions within their applicable scope, not suggestions.
+5. If a step is unclear or impossible, stop and ask the user before deviating.
 
 Matching heuristic: if the user's task aligns with an SOP's title, purpose, or scope section, that SOP applies.
 
