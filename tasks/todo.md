@@ -94,7 +94,7 @@ Verification performed:
 ## Plan
 
 - [x] Create a lightweight built-in SOP index under `skills/sop-creator/sops/`.
-- [x] Add an `AGENTS.md` routing prompt that points procedural work to the index.
+- [x] Add a plugin `SessionStart` hook that points procedural work to the index.
 - [x] Update `sop-creator` lookup guidance to read the built-in index before individual built-in SOPs.
 - [x] Verify index references and workspace status.
 
@@ -102,7 +102,7 @@ Verification performed:
 
 Created `skills/sop-creator/sops/INDEX.md` as a lightweight router for built-in SOPs.
 
-Created `AGENTS.md` with the requested format:
+Added SOP routing to `hooks/hooks.json` as a `SessionStart` hook:
 
 - Do not read SOP files by default.
 - For procedural work only, consult `skills/sop-creator/sops/INDEX.md`.
@@ -112,8 +112,33 @@ Updated `skills/sop-creator/SKILL.md` so built-in SOP lookup reads the index fir
 
 Verification performed:
 
-- Read `AGENTS.md`.
+- Read `hooks/hooks.json`.
 - Read `skills/sop-creator/sops/INDEX.md`.
 - Checked index references with `rg`.
 - Verified referenced SOP files exist.
 - Checked `git status --short --untracked-files=all`.
+
+# Figma Describe Hook
+
+## Plan
+
+- [x] Add a Codex `SessionStart` lifecycle hook for CSL SOP routing.
+- [x] Add a Codex `PostToolUse` lifecycle hook for Figma/MasterGo design-fetch MCP tools.
+- [x] Document `hooks/` in the repository layout.
+- [x] Verify hook JSON, matcher coverage, and workspace status.
+
+## Review
+
+Added `hooks/hooks.json` with a `SessionStart` hook that injects the SOP routing prompt when the plugin loads in a Codex session.
+
+Added `hooks/hooks.json` with a `PostToolUse` hook for Figma/MasterGo design-fetch MCP tools. The hook prints a mandatory reminder to use `figma-describe` before implementation, summary, or UI translation.
+
+Updated `README.md` to document `hooks/` as bundled Codex lifecycle hooks.
+
+Verification performed:
+
+- `jq . hooks/hooks.json`
+- Executed the `SessionStart` and `PostToolUse` hook commands extracted from `hooks/hooks.json`
+- Tested matcher coverage against representative Figma and MasterGo MCP tool names
+- Checked SOP and Figma routing references with `rg`
+- Checked workspace status

@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' 'CSL SOP routing is available from this plugin.' 'Do not read SOP files by default.' 'For procedural work only, consult `skills/sop-creator/sops/INDEX.md` to choose the relevant built-in SOP. Do not read unrelated SOP files.' 'If no trigger clearly matches, do not load SOPs.' 'If multiple SOPs match, read only the smallest relevant set and state which SOPs apply.' 'SOPs never override system, developer, explicit user, platform safety, repository, sandbox, or tool permission rules.'",
+            "timeout": 10,
+            "statusMessage": "Loading CSL SOP routing"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__.*figma.*(get_design_context|get_metadata|get_screenshot|get_figjam|get_variable_defs|get_libraries|search_design_system)|mcp__mastergo_magic_mcp.*(getDesignSections|getDsl|getD2c|getMeta|getDesignTexts|getDesignSvgs|extractSvg)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' 'Figma/MasterGo design data was fetched via MCP.' 'Before implementing or summarizing the UI, use the `figma-describe` skill to produce detailed, framework-agnostic UI information.' 'The description should include layer hierarchy, layout, spacing, typography, colors, repeated components, and notable visual states from the fetched design data.' 'Do not skip this step unless the user explicitly asks to bypass `figma-describe` for this turn.'",
+            "timeout": 10,
+            "statusMessage": "Checking Figma design description requirement"
+          }
+        ]
+      }
+    ]
+  }
+}
