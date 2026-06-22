@@ -73,7 +73,7 @@ Verification performed:
 
 Implementation completed across four file groups:
 
-- Safety/workflow skills: `handoff-restore`, `venom-cli`, `beautiful-mermaid`, `release`, `handoff-save`, `sop-creator`.
+- Safety/workflow skills: `handoff-restore`, `venom-cli`, `beautiful-mermaid`, `release`, `handoff-save`, `sop-manager`.
 - Installer/CI: `scripts/install.sh`, `.gitignore`, `.github/workflows/validate.yml`, `README.md`.
 - Skill content quality: `code-reviewer` references, `same-page`, `brainstorming`, `figma-describe`.
 - Platform docs: `commands/sop-activate.md`, `docs/superpowers/specs/2026-06-04-figma-describe-design.md`.
@@ -93,27 +93,27 @@ Verification performed:
 
 ## Plan
 
-- [x] Create a lightweight built-in SOP index under `skills/sop-creator/sops/`.
+- [x] Create a lightweight built-in SOP index under `skills/sop-manager/sops/`.
 - [x] Add a plugin `SessionStart` hook that points procedural work to the index.
-- [x] Update `sop-creator` lookup guidance to read the built-in index before individual built-in SOPs.
+- [x] Update `sop-manager` lookup guidance to read the built-in index before individual built-in SOPs.
 - [x] Verify index references and workspace status.
 
 ## Review
 
-Created `skills/sop-creator/sops/INDEX.md` as a lightweight router for built-in SOPs.
+Created a lightweight frontmatter summary router for built-in SOPs.
 
 Added SOP routing to `hooks/hooks.json` as a `SessionStart` hook:
 
 - Do not read SOP files by default.
-- For procedural work only, consult `skills/sop-creator/sops/INDEX.md`.
+- For procedural work only, consult SOP summaries from frontmatter.
 - Do not read unrelated SOP files.
 
-Updated `skills/sop-creator/SKILL.md` so built-in SOP lookup reads the index first.
+Updated `skills/sop-manager/SKILL.md` so built-in SOP lookup reads the index first.
 
 Verification performed:
 
 - Read `hooks/hooks.json`.
-- Read `skills/sop-creator/sops/INDEX.md`.
+- Read SOP frontmatter summaries.
 - Checked index references with `rg`.
 - Verified referenced SOP files exist.
 - Checked `git status --short --untracked-files=all`.
@@ -142,3 +142,53 @@ Verification performed:
 - Tested matcher coverage against representative Figma and MasterGo MCP tool names
 - Checked SOP and Figma routing references with `rg`
 - Checked workspace status
+# SOP Manager Dynamic User SOPs
+
+## Plan
+
+- [x] Rename `sop-creator` to `sop-manager` in the skill and docs.
+- [x] Define `sop-manager list`, `create`, and `see` behavior in the skill.
+- [x] Standardize SOP frontmatter on `name` and `description`.
+- [x] Add a hook script that summarizes built-in SOPs and `~/.sops/*.md`.
+- [x] Update `SessionStart` hook to run the summary script.
+- [x] Verify JSON, script output, references, and workspace status.
+
+## Review
+
+- Renamed the skill to `sop-manager` and updated plugin manifests, README, Claude command docs, and analysis references.
+- Replaced the old built-in SOP index with per-SOP YAML frontmatter summaries.
+- Added `skills/sop-manager/scripts/sop-summaries.sh` to summarize built-in SOPs and user SOPs under `~/.sops/*.md`.
+- Updated the Codex `SessionStart` hook to run the summary script, with a minimal fallback if the script is not found.
+- Updated `scripts/install.sh` to remove the old Codex `sop-creator` symlink during install.
+
+Verification performed:
+
+- `jq . hooks/hooks.json .codex-plugin/plugin.json .claude-plugin/plugin.json .cursor-plugin/plugin.json .agents/plugins/marketplace.json .claude-plugin/marketplace.json .cursor-plugin/marketplace.json`
+- `bash -n skills/sop-manager/scripts/sop-summaries.sh`
+- `bash -n scripts/install.sh`
+- `skills/sop-manager/scripts/sop-summaries.sh`
+- `jq -r '.hooks.SessionStart[0].hooks[0].command' hooks/hooks.json | sh`
+- Temporary `HOME` test with `~/.sops/release-hotfix.md`
+- `rg` check for stale `sop-creator`, `skills/sop-creator`, `INDEX.md`, and `~/.agents/sops` references in active files
+- `git status --short --untracked-files=all`
+# SOP Manager Lessons
+
+## Plan
+
+- [x] Add `sop-manager learn` behavior for reusable mistake/lesson capture.
+- [x] Extend SOP templates with a lessons section.
+- [x] Record the user correction in `tasks/lessons.md`.
+- [x] Verify the updated skill text.
+
+## Review
+
+- Added `sop-manager learn` for reusable mistake/lesson capture.
+- Added `## Lessons` to the SOP creation template.
+- Defined companion user SOPs like `~/.sops/{built-in-name}-lessons.md` for lessons related to built-in SOPs, so built-in SOP files are not modified or shadowed.
+- Recorded the correction in `tasks/lessons.md`.
+
+Verification performed:
+
+- `rg` check for `sop-manager learn`, `## Lessons`, and companion lesson references.
+- Read the updated `sop-manager` command section.
+- `git diff --check`

@@ -1,16 +1,16 @@
 ---
-description: Activate a built-in SOP as a Claude Code rule. Cursor users should use sop-creator instead.
+description: Activate a built-in SOP as a Claude Code rule. Cursor users should use sop-manager instead.
 allowed-tools: Bash, Read, Write, AskUserQuestion, Glob
 ---
 
-Activate a built-in SOP so it loads as a native Claude Code rule. **Claude Code only** — Cursor users should use the `sop-creator` skill's Activate SOP workflow; this command does not write Cursor rules. Codex has no rules directory.
+Activate a built-in SOP so it loads as a native Claude Code rule. **Claude Code only** — Cursor users should use the `sop-manager` skill's Activate SOP workflow; this command does not write Cursor rules. Codex has no rules directory.
 
 ## Step 1: List Available SOPs
 
 List all built-in SOPs:
 
 ```bash
-ls "${CLAUDE_PLUGIN_ROOT}/skills/sop-creator/sops/" 2>/dev/null
+ls "${CLAUDE_PLUGIN_ROOT}/skills/sop-manager/sops/" 2>/dev/null
 ```
 
 Also check for custom SOPs already activated:
@@ -72,7 +72,7 @@ Use `AskUserQuestion` to confirm the glob or let the user type a custom one.
 Read the source SOP:
 
 ```bash
-cat "${CLAUDE_PLUGIN_ROOT}/skills/sop-creator/sops/{selected}.md"
+cat "${CLAUDE_PLUGIN_ROOT}/skills/sop-manager/sops/{selected}.md"
 ```
 
 Then write to the destination with activation frontmatter prepended/replaced.
@@ -93,7 +93,7 @@ For conditional mode:
 description: "{description from source SOP, or one-line summary}"
 globs: {globs array}
 alwaysApply: false
-source: sop-creator:{original-name}
+source: sop-manager:{original-name}
 ---
 ```
 
@@ -103,7 +103,7 @@ For always-on mode:
 ---
 description: "{description}"
 alwaysApply: true
-source: sop-creator:{original-name}
+source: sop-manager:{original-name}
 ---
 ```
 

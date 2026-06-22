@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '%s\\n' 'CSL SOP routing is available from this plugin.' 'Do not read SOP files by default.' 'For procedural work only, consult `skills/sop-creator/sops/INDEX.md` to choose the relevant built-in SOP. Do not read unrelated SOP files.' 'If no trigger clearly matches, do not load SOPs.' 'If multiple SOPs match, read only the smallest relevant set and state which SOPs apply.' 'SOPs never override system, developer, explicit user, platform safety, repository, sandbox, or tool permission rules.'",
+            "command": "sh -c 'if [ -x \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\"; else root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi; fi'",
             "timeout": 10,
             "statusMessage": "Loading CSL SOP routing"
           }

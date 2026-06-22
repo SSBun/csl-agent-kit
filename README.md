@@ -15,7 +15,7 @@ Agent skill collection for [Claude Code](https://docs.claude.com/en/docs/claude-
 | handoff-save | `/CSL:handoff-save` | `/handoff-save` | Save task context to `~/.agents/handoffs/` for the next session. |
 | handoff-restore | `/CSL:handoff-restore` | `/handoff-restore` | Restore handoff and continue without re-exploring the project. |
 | code-reviewer | `/CSL:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
-| sop-creator | `/CSL:sop-creator` | `/sop-creator` | Create or edit standard operating procedure documents. |
+| sop-manager | `/CSL:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
 | brainstorming | `/CSL:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/CSL:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | same-page | `/CSL:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |

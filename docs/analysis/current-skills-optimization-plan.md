@@ -128,7 +128,7 @@ Acceptance:
 
 Files:
 
-- `skills/sop-creator/SKILL.md`
+- `skills/sop-manager/SKILL.md`
 
 Change:
 
@@ -306,7 +306,7 @@ Files:
 Change:
 
 - Choose one of two options:
-  - Claude-only command: update frontmatter/description to Claude-only and point Cursor users to `sop-creator`.
+  - Claude-only command: update frontmatter/description to Claude-only and point Cursor users to `sop-manager`.
   - Cross-platform command: keep Cursor paths and add explicit platform branching.
 - Recommended: Claude-only, because README already says slash commands are Claude-only.
 

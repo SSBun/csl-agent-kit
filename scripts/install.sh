@@ -72,6 +72,11 @@ install_cursor() {
 }
 
 install_codex() {
+  if [ -L "$HOME/.agents/skills/sop-creator" ]; then
+    rm "$HOME/.agents/skills/sop-creator"
+    echo "✓ Codex: removed old ~/.agents/skills/sop-creator"
+  fi
+
   for skill_dir in "$REPO_ROOT"/skills/*/; do
     name="$(basename "$skill_dir")"
     ensure_symlink "$HOME/.agents/skills/$name" "$skill_dir" "Codex: ~/.agents/skills/$name"

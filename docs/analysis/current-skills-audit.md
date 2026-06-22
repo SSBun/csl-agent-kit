@@ -86,7 +86,7 @@ Recommendation: if a handoff exists, read its timestamp and either ask before ov
 
 ### 8. SOP authority is too broad
 
-Evidence: [skills/sop-creator/SKILL.md](/Users/caishilin/Desktop/personal/skills/skills/sop-creator/SKILL.md:44), [skills/sop-creator/SKILL.md](/Users/caishilin/Desktop/personal/skills/skills/sop-creator/SKILL.md:48)
+Evidence: [skills/sop-manager/SKILL.md](/Users/caishilin/Desktop/personal/skills/skills/sop-manager/SKILL.md:44), [skills/sop-manager/SKILL.md](/Users/caishilin/Desktop/personal/skills/skills/sop-manager/SKILL.md:48)
 
 The skill says SOPs are authoritative instructions before any procedural work. It does not explicitly say they cannot override system, developer, user, platform safety, or repository-specific rules.
 
@@ -164,7 +164,7 @@ Evidence: [commands/sop-activate.md](/Users/caishilin/Desktop/personal/skills/co
 
 Frontmatter says Claude Code or Cursor, body says Claude Code only, and later sections include Cursor rule paths.
 
-Recommendation: pick one: Claude-only command that delegates Cursor to `sop-creator`, or cross-platform command with clear platform branching.
+Recommendation: pick one: Claude-only command that delegates Cursor to `sop-manager`, or cross-platform command with clear platform branching.
 
 ### 18. Old Figma spec points to pre-plugin location
 
