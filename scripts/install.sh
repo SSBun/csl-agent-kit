@@ -84,6 +84,19 @@ install_codex() {
   echo "  Ensure [features] skills = true in ~/.codex/config.toml"
 }
 
+install_codex_plugin() {
+  if ! command -v codex >/dev/null 2>&1; then
+    echo "  Codex CLI not found; skipped Codex plugin install."
+    echo "  Later run: codex plugin marketplace add $REPO_ROOT && codex plugin add csl@CSL"
+    return
+  fi
+
+  codex plugin marketplace add "$REPO_ROOT" --json >/dev/null
+  codex plugin add csl@CSL --json >/dev/null
+  echo "✓ Codex: installed CSL plugin marketplace and plugin"
+  echo "  Restart Codex, then review/trust hooks with /hooks if prompted."
+}
+
 install_portable_link() {
   ensure_symlink "$REPO_ROOT/.agents/skills" "../skills" "Repo: .agents/skills"
 }
@@ -95,11 +108,13 @@ case "$TARGET" in
   codex)
     install_codex
     install_portable_link
+    install_codex_plugin
     ;;
   all)
     install_cursor
     install_codex
     install_portable_link
+    install_codex_plugin
     echo ""
     echo "Claude Code: use /plugin marketplace add $REPO_ROOT && /plugin install CSL@SSBun-skills"
     ;;
