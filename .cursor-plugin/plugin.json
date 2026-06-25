@@ -1,6 +1,6 @@
 {
   "name": "CSL",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, sop-manager, brainstorming, figma-describe, same-page",
   "author": {
     "name": "CSL"
