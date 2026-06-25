@@ -192,3 +192,56 @@ Verification performed:
 - `rg` check for `sop-manager learn`, `## Lessons`, and companion lesson references.
 - Read the updated `sop-manager` command section.
 - `git diff --check`
+# Rewrite Swift API Design SOP
+
+## Plan
+
+- [x] Rewrite `skills/sop-manager/sops/swift-api-design.md` against the official Swift API Design Guidelines.
+- [x] Remove rules not present in that official guideline from this SOP.
+- [x] Remove the built-in Google Swift style SOP so only the Swift API design SOP remains.
+- [x] Add `PostCompact` SOP summary reload and `PreToolUse` SOP reminder hooks.
+- [x] Verify frontmatter, hook summary output, and diff.
+
+## Review
+
+- Rewrote `swift-api-design` as a Chinese SOP based on the official Swift API Design Guidelines.
+- Removed the `#fileID/#filePath/#file` production/test-helper rule because it is not part of that official API design page.
+- Removed `swift-google-style` from built-in SOPs.
+- Added `PostCompact` to reload SOP summaries after compaction and `PreToolUse` to remind the agent to check matching SOPs before procedural tool use.
+- Added missing guidance for introduction-level intent, documentation summaries, associated type role naming, fluent-usage limits, mutating/nonmutating naming details, argument-label exceptions, tuple/closure names, and unconstrained polymorphism.
+
+Verification performed:
+
+- `skills/sop-manager/scripts/sop-summaries.sh | rg -n 'swift-api-design|Swift API|用于设计'`
+- `rg -n "swift-google-style|Google Swift" -S .`
+- `rg -n '#fileID|#filePath|#file\\b|Last Updated|version: 1.1|description:' skills/sop-manager/sops/swift-api-design.md`
+- `jq . hooks/hooks.json`
+- Executed `SessionStart`, `PostCompact`, and `PreToolUse` hook commands from `hooks/hooks.json`
+- `git diff --stat`
+# Release Skill Routing
+
+## Plan
+
+- [x] Replace the broad release skill with a thin release-orchestrator router.
+- [x] Remove ecosystem-specific publish commands from the release skill.
+- [x] Add built-in `release-orchestrator` SOP.
+- [x] Make user SOPs override same-named built-in SOP summaries.
+- [x] Remove built-in `npm-publish-tool-or-native-app` and keep it user-defined under `~/.sops`.
+- [x] Update README wording for the release skill.
+- [x] Verify release skill no longer contains direct publish commands.
+
+## Review
+
+- Replaced the broad cross-ecosystem release skill with a thin release-orchestrator.
+- Removed direct npm/PyPI/Cargo/Xcode/Homebrew/CocoaPods publish commands from the release skill.
+- Added built-in release routing while keeping the npm publish SOP user-defined under `~/.sops`.
+- Updated the SOP summary script so `~/.sops/{name}.md` overrides same-named built-in SOP summaries.
+- Updated README release description to say it routes release work to matching SOPs.
+
+Verification performed:
+
+- `rg -n "npm publish|twine upload|cargo publish|pod trunk|agvtool|git push|git tag|Bump version|walk through publishing|publishing itself" skills/release/SKILL.md README.md`
+- Read `skills/release/SKILL.md`
+- `skills/sop-manager/scripts/sop-summaries.sh`
+- `bash -n skills/sop-manager/scripts/sop-summaries.sh`
+- `test ! -e skills/sop-manager/sops/npm-publish-tool-or-native-app.md`

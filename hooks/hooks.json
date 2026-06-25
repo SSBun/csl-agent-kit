@@ -13,6 +13,32 @@
         ]
       }
     ],
+    "PostCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'if [ -x \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\"; else root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi; fi'",
+            "timeout": 10,
+            "statusMessage": "Reloading CSL SOP routing"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' 'Before this tool call, check matching SOP names/descriptions if the task is procedural. Read the full SOP before following it.'",
+            "timeout": 5,
+            "statusMessage": "Checking SOP reminder"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "mcp__.*figma.*(get_design_context|get_metadata|get_screenshot|get_figjam|get_variable_defs|get_libraries|search_design_system)|mcp__mastergo_magic_mcp.*(getDesignSections|getDsl|getD2c|getMeta|getDesignTexts|getDesignSvgs|extractSvg)",

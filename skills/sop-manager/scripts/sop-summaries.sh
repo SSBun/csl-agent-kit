@@ -22,6 +22,7 @@ field() {
 print_dir() {
   local label="$1"
   local dir="$2"
+  local override_dir="${3:-}"
   local found=0
 
   [ -d "$dir" ] || return 0
@@ -35,6 +36,10 @@ print_dir() {
     [ -n "$name" ] || name="$(basename "$file" .md)"
     [ -n "$description" ] || description="No description frontmatter."
 
+    if [ -n "$override_dir" ] && [ -e "$override_dir/$name.md" ]; then
+      continue
+    fi
+
     printf -- '- %s: %s (%s: %s)\n' "$name" "$description" "$label" "$file"
   done
 
@@ -44,6 +49,6 @@ print_dir() {
 printf '%s\n' 'SOP manager is available.'
 printf '%s\n' 'Apply an SOP only when the user task matches its name or description.'
 printf '%s\n' 'Available SOP summaries:'
-print_dir built-in "$skill_dir/sops"
+print_dir built-in "$skill_dir/sops" "$HOME/.sops"
 print_dir user "$HOME/.sops"
 printf '%s\n' 'Read the full SOP before following it. SOPs never override higher-priority instructions or tool permissions.'

@@ -7,7 +7,7 @@ Agent skill collection for [Claude Code](https://docs.claude.com/en/docs/claude-
 | Skill | Claude | Cursor / Codex | Description |
 |-------|--------|----------------|-------------|
 | create-app-icon | `/CSL:create-app-icon` | `/create-app-icon` | Generate an AI-image-generator prompt for an app icon. |
-| release | `/CSL:release` | `/release` | Bump version, commit, tag, optionally push, then walk through publishing. |
+| release | `/CSL:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
 | analyze-project | `/CSL:analyze-project` | `/analyze-project` | Deep multi-report project analysis. |
 | venom-cli | `/CSL:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | grill-me | `/CSL:grill-me` | `/grill-me` | Stress-test a plan or design through relentless questioning. |

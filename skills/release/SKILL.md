@@ -1,146 +1,41 @@
 ---
 name: release
-description: Use when the user wants to release a new version of a project (npm, PyPI, Cargo, Xcode/agvtool, Homebrew, CocoaPods, generic). Bumps version across all locations, commits, tags, optionally pushes, and walks through publishing — confirming each destructive step.
+description: Use when the user wants to release a project. This skill only routes to the matching release SOP, checks readiness, and gathers confirmation items; it does not perform ecosystem-specific publishing itself.
 argument-hint: "[version] [--skip-push]"
 ---
 
+# Release Skill Router
+
+这是发布入口 skill。实际流程由 `release-orchestrator` SOP 和它选择的专用发布 SOP 处理。
+
+## Responsibilities
+
+1. 读取完整 `release-orchestrator` SOP。
+2. 按 SOP 检查工作区、识别项目类型、选择专用发布 SOP。
+3. 只执行 SOP 明确允许且用户确认过的步骤。
+
+## Non-Goals
+
+- 不内置 npm、PyPI、Cargo、Xcode、Homebrew、CocoaPods 的发布命令。
+- 不猜测版本号。
+- 不自动创建 tag、push 或 publish。
+- 不在没有匹配 SOP 时编造生态发布流程。
+
 ## Arguments
 
-Parse from the user's message or slash-command args (Claude Code may pass these via `argument-hint`):
-
-- `version` — optional target version (e.g. `1.2.3`). When provided, skip version confirmation.
-- `--skip-push` — skip remote push entirely (no push confirmation).
-
-## Project Detection Table
-
-Detect project type by checking files top-down. Use first match.
-
-| Detection file(s) | Type | Version locations | Bump command |
-|---|---|---|---|
-| `*.xcodeproj/project.pbxproj` | xcode | `project.pbxproj` (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`) | `agvtool new-marketing-version "X.Y.Z"` + `agvtool new-version -all "N"` |
-| `package.json` | npm | `package.json`, `package-lock.json`, `npm-shrinkwrap.json` | Edit `package.json` version field, then `npm install --package-lock-only` |
-| `pyproject.toml` or `setup.py` or `setup.cfg` | python | `pyproject.toml`, `setup.py`, `setup.cfg`, `**/__init__.py` (`__version__`) | Edit version field |
-| `Cargo.toml` | cargo | `Cargo.toml`, `Cargo.lock` | Edit `Cargo.toml` version, then `cargo generate-lockfile` |
-| `*.gemspec` | ruby | `*.gemspec`, `lib/**/version.rb` | Edit version field |
-| `go.mod` + `goreleaser.yml` | go | goreleaser config, `main.go` version var | Edit version variable |
-| `*.podspec` | cocoapods | `*.podspec` | Edit `s.version` |
-| `VERSION` file | generic | `VERSION` | Edit file |
-
-**Fallback**: check `Makefile`, `conf.py`, shell scripts for `VERSION=` or `__version__` patterns.
-
-## Publishing Table
-
-| Type | Detection | Publish command |
-|---|---|---|
-| npm | `package.json` exists | `npm publish` |
-| python | `pyproject.toml` or `setup.py` exists | `python -m build && twine upload dist/*` |
-| cocoapods | `*.podspec` exists | `pod trunk push *.podspec` |
-| homebrew | Homebrew formula in repo or tap | Update formula, push tap |
+- `version`：可选目标版本。提供后仍需按 SOP 验证。
+- `--skip-push`：跳过远端 push。不能跳过发布前验证。
 
 ## Flow
 
-### 1. Check Git Status
+### 1. Load Release Orchestrator SOP
 
-```bash
-git status
-```
+读取：
 
-If uncommitted changes exist: **stop and tell user to commit or stash first.** Do not offer discard.
+`skills/sop-manager/sops/release-orchestrator.md`
 
-### 2. Detect Project Type
+如果用户在 `~/.sops/release-orchestrator.md` 有自定义版本，优先读取用户版本。
 
-Run detection table top-down. Identify type, version locations, and bump method.
+### 2. Execute Through SOP
 
-### 3. Detect Current Version
-
-Read version from all locations in the version-locations column. If values disagree, **report mismatch and ask user which is correct** before proceeding.
-
-### 4. Determine New Version
-
-- If `version` argument provided: use it, skip confirmation.
-- Otherwise: show current version, ask user for target version.
-
-### 5. Determine Tag Prefix
-
-```bash
-git tag --list | head -20
-```
-
-- If existing tags match `v*`: use `v` prefix.
-- If existing tags match `[0-9]*`: no prefix.
-- If no tags exist: ask user.
-
-### 6. Bump Version
-
-**Primary**: update all locations from version-locations column.
-
-**Fallback grep** for edge cases:
-```bash
-grep -r "version" --include="*.json" --include="*.py" --include="*.js" --include="*.ts" --include="*.sh" --include="*.toml" --include="*.yml" --include="*.yaml" --include="*.h" --include="*.swift" --include="*.go" --include="*.rs" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build . 2>/dev/null | grep -v "lockfile\|lock\b" | grep -i "version"
-```
-
-List the detected version files before editing, including ecosystem-specific files from the detection table such as `project.pbxproj`, lockfiles, `*.gemspec`, `lib/**/version.rb`, `*.podspec`, or `VERSION` when applicable.
-
-Show user all files changed. Ask the user to confirm the version changes before proceeding.
-
-### 7. Documentation Check
-
-Single pass — check README.md, CHANGELOG.md / HISTORY.md, and website dirs (`website/`, `docs/`, `site/`, `web/`, `www/`, `index.html`).
-
-If any need updates for this release, ask user whether to update now. If yes, help update, then show the doc files changed and ask before committing documentation. Stage doc files separately:
-
-```bash
-git add README.md CHANGELOG.md docs/
-git commit -m "Update documentation for vX.Y.Z"
-```
-
-### 8. Commit Version Bump
-
-Stage **only** version-bump files. Never `git add -A`.
-
-List `<detected-version-files>` before staging and ask the user to confirm creating the version bump commit.
-
-```bash
-git add <detected-version-files>
-git commit -m "Bump version to X.Y.Z"
-```
-
-### 9. Create Tag
-
-Ask the user to confirm creating the annotated release tag.
-
-```bash
-git tag -a vX.Y.Z -m "Release vX.Y.Z"
-```
-
-### 10. Push
-
-- If `--skip-push` argument: skip.
-- Otherwise: ask user. If yes:
-  ```bash
-  git push
-  git push origin vX.Y.Z
-  ```
-
-### 11. Publish
-
-Check publishing table. If project type has a publish command, ask user whether to publish. If yes, run it.
-
-### 12. Summary
-
-| Item | Value |
-|---|---|
-| **Version** | X.Y.Z |
-| **Git Tag** | vX.Y.Z |
-| **Commit** | [hash] |
-| **Remote** | Pushed / Not pushed |
-| **Published to** | [type] / None |
-
-## Rules
-
-- Never automatically push without user confirmation (unless `--skip-push` used, which means no push at all).
-- Never publish to package managers without explicit user approval.
-- Never commit documentation updates, commit version changes, or create release tags without explicit user confirmation.
-- Never assume version number without asking (unless provided as argument).
-- Refuse to proceed with dirty working tree.
-- Never use `git add -A`; stage only the listed files needed for the current release step.
+按 `release-orchestrator` 选择专用发布 SOP。没有匹配专用 SOP 时停止，不继续发布。
