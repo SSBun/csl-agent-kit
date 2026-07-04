@@ -97,7 +97,7 @@ handoff-restore,repo-map,skills/handoff-restore,skills/repo-map,0.067,clear,True
 handoff-restore,same-page,skills/handoff-restore,skills/same-page,0.062,clear,True,release,release
 handoff-restore,sop-manager,skills/handoff-restore,skills/sop-manager,0.043,clear,True,release,release
 handoff-restore,test-triage,skills/handoff-restore,skills/test-triage,0.039,clear,True,release,release
-handoff-restore,tips,skills/handoff-restore,skills/tips,0.0,clear,True,release,release
+handoff-restore,tips,skills/handoff-restore,skills/tips,0.026,clear,True,release,release
 handoff-restore,venom-cli,skills/handoff-restore,skills/venom-cli,0.043,clear,True,release,release
 handoff-save,inject-may-agents,skills/handoff-save,skills/inject-may-agents,0.087,clear,True,release,release
 handoff-save,release,skills/handoff-save,skills/release,0.077,clear,True,release,release
@@ -112,7 +112,7 @@ inject-may-agents,repo-map,skills/inject-may-agents,skills/repo-map,0.047,clear,
 inject-may-agents,same-page,skills/inject-may-agents,skills/same-page,0.059,clear,True,release,release
 inject-may-agents,sop-manager,skills/inject-may-agents,skills/sop-manager,0.04,clear,True,release,release
 inject-may-agents,test-triage,skills/inject-may-agents,skills/test-triage,0.057,clear,True,release,release
-inject-may-agents,tips,skills/inject-may-agents,skills/tips,0.024,clear,True,release,release
+inject-may-agents,tips,skills/inject-may-agents,skills/tips,0.0,clear,True,release,release
 inject-may-agents,venom-cli,skills/inject-may-agents,skills/venom-cli,0.106,clear,True,release,release
 release,repo-map,skills/release,skills/repo-map,0.035,clear,True,release,release
 release,same-page,skills/release,skills/same-page,0.022,clear,True,release,release
@@ -130,7 +130,7 @@ same-page,test-triage,skills/same-page,skills/test-triage,0.061,clear,True,relea
 same-page,tips,skills/same-page,skills/tips,0.0,clear,True,release,release
 same-page,venom-cli,skills/same-page,skills/venom-cli,0.067,clear,True,release,release
 sop-manager,test-triage,skills/sop-manager,skills/test-triage,0.042,clear,True,release,release
-sop-manager,tips,skills/sop-manager,skills/tips,0.0,clear,True,release,release
+sop-manager,tips,skills/sop-manager,skills/tips,0.028,clear,True,release,release
 sop-manager,venom-cli,skills/sop-manager,skills/venom-cli,0.07,clear,True,release,release
 test-triage,tips,skills/test-triage,skills/tips,0.0,clear,True,release,release
 test-triage,venom-cli,skills/test-triage,skills/venom-cli,0.111,clear,True,release,release

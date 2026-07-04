@@ -10,3 +10,6 @@
 
 # Local generated install state. Keep .agents/plugins tracked.
 .agents/skills
+
+# Project agent rules are tracked even if a global gitignore ignores AGENTS.md.
+!/AGENTS.md

@@ -1,6 +1,6 @@
 {
   "workspace_root": "/Users/caishilin/Desktop/personal/skills",
-  "generated_at": "2026-07-03",
+  "generated_at": "2026-07-04",
   "skills": [
     {
       "name": "analyze-project",
@@ -811,7 +811,7 @@
     {
       "name": "tips",
       "path": "skills/tips",
-      "description": "用于保存、查看或整理用户的短命令、个人偏好和轻量提醒。用户明确提到 tips、tip、short command、preference、remember this preference、保存提示、记录偏好、记录短命令时使用。",
+      "description": "仅在用户明确要求把一条短提示、短命令或偏好保存、记录、添加到 tips 文件时使用；不要因普通偏好陈述、纠正、长期回答风格、SOP、handoff、任务记录或 lessons 请求而触发。",
       "owner": "",
       "version": "",
       "status": "",
@@ -824,20 +824,20 @@
         "scripts/tips-inject.sh"
       ],
       "token_set": [
-        "command",
-        "preference",
-        "remember",
-        "short",
-        "this",
-        "tip",
+        "handoff",
+        "lessons",
+        "sop",
         "tips",
-        "个人偏好和轻量提醒",
-        "保存提示",
-        "查看或整理用户的短命令",
-        "用于保存",
-        "用户明确提到",
-        "记录偏好",
-        "记录短命令时使用"
+        "不要因普通偏好陈述",
+        "仅在用户明确要求把一条短提示",
+        "任务记录或",
+        "文件时使用",
+        "添加到",
+        "短命令或偏好保存",
+        "纠正",
+        "记录",
+        "请求而触发",
+        "长期回答风格"
       ],
       "atlas_scope": "release",
       "actionable": true,

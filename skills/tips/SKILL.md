@@ -53,7 +53,17 @@ skills/tips/scripts/tips-add.sh --confirmed "Always use Typora to open generated
 skills/tips/scripts/tips-inject.sh
 ```
 
-这个脚本也是 hook 使用的注入入口。
+这个脚本也是 hook 使用的注入入口。输出会明确说明 tips 是持续用户偏好，但不能覆盖更高优先级的 system、developer 或当前用户指令。
+
+### 诊断 tips 是否注入
+
+运行：
+
+```bash
+skills/tips/scripts/tips-doctor.sh
+```
+
+用它检查 tips 文件、注入脚本、hook 引用和当前注入预览。如果某条 tip 经常不生效，先看 doctor 输出里的潜在优先级冲突。
 
 ### 手动整理
 
