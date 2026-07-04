@@ -1,7 +1,6 @@
 ---
 name: release
 description: Use when the user wants to release a project. This skill only routes to the matching release SOP, checks readiness, and gathers confirmation items; it does not perform ecosystem-specific publishing itself.
-argument-hint: "[version] [--skip-push]"
 ---
 
 # Release Skill Router
@@ -34,7 +33,7 @@ argument-hint: "[version] [--skip-push]"
 
 `skills/sop-manager/sops/release-orchestrator.md`
 
-如果用户在 `~/.sops/release-orchestrator.md` 有自定义版本，优先读取用户版本。
+如果用户在 `~/.ssbun-skills/sops/release-orchestrator.md` 有自定义版本，优先读取用户版本。
 
 ### 2. Execute Through SOP
 

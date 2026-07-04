@@ -1,10 +1,13 @@
 ---
 name: handoff-restore
 description: Restores task context from a saved handoff file and continues work immediately. Use when the user says handoff restore, restore context, resume handoff, load handoff, pick up where we left off, or starts a new session to continue a previous task.
-argument-hint: [optional project-name]
 ---
 
 Resume work from `~/.agents/handoffs/{project-name}.md`. Trust the handoff — do not re-introduce the project or re-explore unless stale.
+
+## Usage
+
+`handoff-restore [optional project-name]`
 
 ## Storage
 

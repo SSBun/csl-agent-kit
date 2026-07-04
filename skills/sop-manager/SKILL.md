@@ -12,7 +12,7 @@ description: Use when the user wants to list, create, inspect, or follow SOPs, p
 | 类型 | 路径 | 说明 |
 |---|---|---|
 | 内置 SOP | `skills/sop-manager/sops/*.md` | 随插件发布 |
-| 用户 SOP | `~/.sops/*.md` | 用户动态创建，跨项目生效 |
+| 用户 SOP | `~/.ssbun-skills/sops/*.md` | 用户动态创建，跨项目生效 |
 
 用户 SOP 优先于同名内置 SOP。
 
@@ -45,7 +45,7 @@ alwaysApply: false
 
 列出可用 SOP：
 
-1. 运行 `skills/sop-manager/scripts/sop-summaries.sh`，或等价读取 `skills/sop-manager/sops/*.md` 与 `~/.sops/*.md`。
+1. 运行 `skills/sop-manager/scripts/sop-summaries.sh`，或等价读取 `skills/sop-manager/sops/*.md` 与 `~/.ssbun-skills/sops/*.md`。
 2. 只展示 `name`、`description`、来源路径。
 3. 不读取完整 SOP 正文，除非用户要求查看或任务明确匹配。
 
@@ -55,9 +55,17 @@ alwaysApply: false
 
 1. 收集 `name`、`description`、步骤、错误处理、参考资料。
 2. 如果 `name` 或 `description` 缺失，先询问用户。
-3. 如果 `~/.sops/` 不存在，先创建它。
-4. 写入 `~/.sops/{name}.md`。
-5. 使用下面模板。不要写到内置 SOP 目录，除非用户明确要求修改插件内置 SOP。
+3. 读取 `skills/sop-manager/references/good-sop-example.md`，把它作为质量样板；不要复制示例里的具体事实。
+4. 确认新 SOP 具备：
+   - 清楚的触发型 `description`。
+   - 明确的适用和不适用范围。
+   - 可执行步骤和可观察的 Expected Result。
+   - destructive、remote、publish、delete、overwrite 等动作前的确认点。
+   - 具体 Error Handling，不只写 “ask user”。
+   - 只沉淀可复用 Lessons，不写一次性偏好。
+5. 如果 `~/.ssbun-skills/sops/` 不存在，先创建它。
+6. 写入 `~/.ssbun-skills/sops/{name}.md`。
+7. 使用下面模板。不要写到内置 SOP 目录，除非用户明确要求修改插件内置 SOP。
 
 ```markdown
 ---
@@ -108,9 +116,9 @@ owner: {role-or-team}
 把可复用的错误模式、容易遗漏的步骤、用户纠正、审查结论沉淀到 SOP。用于跨项目和跨 agent 复用，不只是当前仓库的临时 lesson。
 
 1. 判断 lesson 属于哪个 SOP：
-   - 如果匹配用户 SOP，追加到 `~/.sops/{name}.md` 的 `## Lessons`。
-   - 如果匹配内置 SOP，不要修改内置文件；创建或更新 `~/.sops/{name}-lessons.md`。
-   - 如果没有匹配 SOP，创建新的 `~/.sops/{topic}.md`，并写入 `description` 说明何时应用。
+   - 如果匹配用户 SOP，追加到 `~/.ssbun-skills/sops/{name}.md` 的 `## Lessons`。
+   - 如果匹配内置 SOP，不要修改内置文件；创建或更新 `~/.ssbun-skills/sops/{name}-lessons.md`。
+   - 如果没有匹配 SOP，创建新的 `~/.ssbun-skills/sops/{topic}.md`，并写入 `description` 说明何时应用。
 2. 每条 lesson 必须包含：
    - **Trigger:** 何时应用这条经验。
    - **Rule:** 下次必须怎么做。
@@ -145,7 +153,7 @@ Capture user/project-independent lessons for `{built-in-name}` without modifying
 
 查看一个 SOP：
 
-1. 先查 `~/.sops/{name}.md`，再查 `skills/sop-manager/sops/{name}.md`。
+1. 先查 `~/.ssbun-skills/sops/{name}.md`，再查 `skills/sop-manager/sops/{name}.md`。
 2. 如果找不到精确文件名，按 frontmatter 的 `name` 匹配。
 3. 读取并总结完整 SOP。不要改写它，除非用户明确要求。
 

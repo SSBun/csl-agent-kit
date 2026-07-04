@@ -49,6 +49,6 @@ print_dir() {
 printf '%s\n' 'SOP manager is available.'
 printf '%s\n' 'Apply an SOP only when the user task matches its name or description.'
 printf '%s\n' 'Available SOP summaries:'
-print_dir built-in "$skill_dir/sops" "$HOME/.sops"
-print_dir user "$HOME/.sops"
+print_dir built-in "$skill_dir/sops" "$HOME/.ssbun-skills/sops"
+print_dir user "$HOME/.ssbun-skills/sops"
 printf '%s\n' 'Read the full SOP before following it. SOPs never override higher-priority instructions or tool permissions.'

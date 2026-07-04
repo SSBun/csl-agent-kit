@@ -15,12 +15,18 @@ Agent skill collection for [Claude Code](https://docs.claude.com/en/docs/claude-
 | handoff-save | `/CSL:handoff-save` | `/handoff-save` | Save task context to `~/.agents/handoffs/` for the next session. |
 | handoff-restore | `/CSL:handoff-restore` | `/handoff-restore` | Restore handoff and continue without re-exploring the project. |
 | code-reviewer | `/CSL:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
+| test-triage | `/CSL:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
+| repo-map | `/CSL:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
+| inject-may-agents | `/CSL:inject-may-agents` | `/inject-may-agents` | Propose AGENTS.md updates from the May agent-principles template. |
 | sop-manager | `/CSL:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
+| tips | `/CSL:tips` | `/tips` | Save and inject short user commands and preferences. |
 | brainstorming | `/CSL:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/CSL:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | same-page | `/CSL:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |
 
 Claude-only slash commands: `/CSL:sop-activate`, `/CSL:doc-sync`.
+
+User-created SOPs are stored under `~/.ssbun-skills/sops/`. User tips are stored under `~/.ssbun-skills/tips/tips.md`.
 
 ## Canonical source and duplicates
 
@@ -36,7 +42,7 @@ Removed skills (no longer shipped): `passing`, `receiving`.
 
 Use the [Agent Skills CLI](https://skills.sh/) to install individual skills or the full collection into `~/.agents/skills/` (Cursor and other agents discover this path automatically).
 
-**Install all 13 skills globally for Cursor:**
+**Install all 17 skills globally for Cursor:**
 
 ```bash
 npx skills add SSBun/skills --all -a cursor -g -y
@@ -113,6 +119,8 @@ skills = true
 ```bash
 ./scripts/install.sh codex
 ```
+
+For Codex, skills are linked into `~/.agents/skills/`. The Codex plugin is installed only for lifecycle hooks, so the same skill is not loaded twice.
 
 ### All platforms
 

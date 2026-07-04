@@ -1,0 +1,27 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Save this tip: Use Typora to open generated Markdown reports.",
+    "Add this to tips: Always output full paths for generated docs.",
+    "Please record this in tips: do not send optional commentary.",
+    "记到 tips：生成 Markdown 后用 Typora 打开。",
+    "保存提示：报告文档要输出完整路径。",
+    "记录偏好：回答最终结果时保持简洁。"
+  ],
+  "should_not_trigger": [
+    "I prefer concise answers.",
+    "Always answer me in Chinese.",
+    "No, the AGENTS file must be written in English.",
+    "Use Typora to open the report.",
+    "You should not send optional commentary.",
+    "Please remember that this bug is caused by the parser."
+  ],
+  "near_neighbor": [
+    "Update tasks/lessons.md with that correction.",
+    "Create an SOP for release steps.",
+    "Save this handoff for next session.",
+    "Open the generated Markdown in Typora.",
+    "Write this project rule into AGENTS.md.",
+    "Add this item to tasks/todo.md."
+  ]
+}

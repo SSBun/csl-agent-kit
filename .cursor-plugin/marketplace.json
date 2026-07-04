@@ -8,14 +8,14 @@
     {
       "name": "CSL",
       "source": "./",
-      "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, sop-manager, brainstorming, figma-describe, same-page",
+      "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, test-triage, repo-map, inject-may-agents, sop-manager, tips, brainstorming, figma-describe, same-page",
       "author": {
         "name": "CSL"
       },
       "homepage": "https://github.com/SSBun/skills",
       "repository": "https://github.com/SSBun/skills",
       "license": "MIT",
-      "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "figma"],
+      "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "test-triage", "repo-map", "inject-may-agents", "tips", "figma"],
       "category": "workflow"
     }
   ]

@@ -1,11 +1,11 @@
 {
   "name": "CSL",
   "version": "1.7.1",
-  "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, sop-manager, brainstorming, figma-describe, same-page",
+  "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, test-triage, repo-map, inject-may-agents, sop-manager, tips, brainstorming, figma-describe, same-page",
   "author": {
     "name": "CSL"
   },
   "license": "MIT",
-  "keywords": ["ios", "macos", "swift", "app-icon", "create-app-icon", "release", "project-analysis", "analyze-project", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "figma", "figma-describe", "brainstorming", "same-page", "sop-manager", "grill-me", "beautiful-mermaid"],
+  "keywords": ["ios", "macos", "swift", "app-icon", "create-app-icon", "release", "project-analysis", "analyze-project", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "test-triage", "repo-map", "inject-may-agents", "tips", "figma", "figma-describe", "brainstorming", "same-page", "sop-manager", "grill-me", "beautiful-mermaid"],
   "skills": "./skills"
 }

@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "scope_rules": [
+    {
+      "path_prefix": "skills",
+      "scope": "release",
+      "actionable": true,
+      "reason": "OpenAI/Codex is the primary runtime for this skill collection. Yao interface/governance metadata gaps are tracked as release-only gates, not day-to-day runtime blockers."
+    }
+  ]
+}

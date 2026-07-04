@@ -1,0 +1,58 @@
+{
+  "fallback_positive_concepts": ["explicit_tips_save"],
+  "positive_concepts": {
+    "explicit_tips_save": {
+      "weight": 1.0,
+      "phrases": [
+        "save this tip",
+        "add this to tips",
+        "record this in tips",
+        "save this preference",
+        "remember this preference in tips",
+        "write this to tips",
+        "保存提示",
+        "记到 tips",
+        "记录到 tips",
+        "写入 tips",
+        "添加到 tips",
+        "记录偏好"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "casual_preference_or_correction": {
+      "weight": 0.4,
+      "exclusive": false,
+      "phrases": [
+        "i prefer",
+        "always answer",
+        "from now on",
+        "you should",
+        "please use",
+        "do not",
+        "don't",
+        "我希望",
+        "以后",
+        "请用",
+        "不要",
+        "必须"
+      ]
+    },
+    "other_memory_target": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "tasks/lessons.md",
+        "tasks/todo.md",
+        "handoff",
+        "sop",
+        "agents.md",
+        "claude.md",
+        "写到 lessons",
+        "写到 todo",
+        "保存 handoff",
+        "创建 sop"
+      ]
+    }
+  }
+}

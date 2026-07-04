@@ -1,0 +1,6 @@
+interface:
+  display_name: "Inject May Agents"
+  short_description: "Merge AGENTS principles into a project."
+  default_prompt: "Use $inject-may-agents to review this project AGENTS.md and propose the merged final content."
+policy:
+  allow_implicit_invocation: false

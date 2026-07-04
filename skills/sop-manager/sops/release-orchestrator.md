@@ -50,7 +50,7 @@ alwaysApply: false
 | Rust crate, `Cargo.toml` | `cargo-crates-release` |
 
 5. 读取完整 SOP。
-   - Action: 先查 `~/.sops/{name}.md`，再查 built-in SOP。
+   - Action: 先查 `~/.ssbun-skills/sops/{name}.md`，再查 built-in SOP。
    - Expected Result: 发布细节来自完整 SOP，不来自当前 orchestrator。
 
 6. 如果没有匹配 SOP，停止。
@@ -80,4 +80,4 @@ alwaysApply: false
 
 ## References
 
-- `~/.sops/npm-publish-tool-or-native-app.md`
+- `~/.ssbun-skills/sops/npm-publish-tool-or-native-app.md`

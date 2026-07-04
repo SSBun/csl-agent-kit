@@ -1,8 +1,11 @@
 ---
 name: create-app-icon
 description: Use when the user wants to design an app icon or generate a prompt for AI image generators. Analyzes the project's category, platform (iOS/macOS/web/CLI), audience, and brand to produce icon concepts plus a refined prompt with safe-zone and clipping guidance.
-argument-hint: [project-path]
 ---
+
+## Usage
+
+Use `/create-app-icon [project-path]`. If no path is provided, inspect the current working directory.
 
 ## Analyze Project
 

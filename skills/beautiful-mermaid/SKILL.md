@@ -21,12 +21,6 @@ If the user declines installation, stop. Do not proceed with inline render scrip
 
 ## Setup
 
-Installed globally via npm only after explicit user approval:
-
-```bash
-npm install -g beautiful-mermaid
-```
-
 Use via inline Node scripts. The library exposes two main functions:
 
 - `renderMermaidSVG(mermaidCode)` — returns SVG string synchronously

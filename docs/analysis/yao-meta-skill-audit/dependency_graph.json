@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "name": "analyze-project",
+      "path": "skills/analyze-project"
+    },
+    {
+      "name": "beautiful-mermaid",
+      "path": "skills/beautiful-mermaid"
+    },
+    {
+      "name": "brainstorming",
+      "path": "skills/brainstorming"
+    },
+    {
+      "name": "code-reviewer",
+      "path": "skills/code-reviewer"
+    },
+    {
+      "name": "create-app-icon",
+      "path": "skills/create-app-icon"
+    },
+    {
+      "name": "figma-describe",
+      "path": "skills/figma-describe"
+    },
+    {
+      "name": "grill-me",
+      "path": "skills/grill-me"
+    },
+    {
+      "name": "handoff-restore",
+      "path": "skills/handoff-restore"
+    },
+    {
+      "name": "handoff-save",
+      "path": "skills/handoff-save"
+    },
+    {
+      "name": "inject-may-agents",
+      "path": "skills/inject-may-agents"
+    },
+    {
+      "name": "release",
+      "path": "skills/release"
+    },
+    {
+      "name": "repo-map",
+      "path": "skills/repo-map"
+    },
+    {
+      "name": "same-page",
+      "path": "skills/same-page"
+    },
+    {
+      "name": "sop-manager",
+      "path": "skills/sop-manager"
+    },
+    {
+      "name": "test-triage",
+      "path": "skills/test-triage"
+    },
+    {
+      "name": "tips",
+      "path": "skills/tips"
+    },
+    {
+      "name": "venom-cli",
+      "path": "skills/venom-cli"
+    }
+  ],
+  "shared_resources": []
+}

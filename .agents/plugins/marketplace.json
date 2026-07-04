@@ -12,16 +12,16 @@
       "name": "csl",
       "source": {
         "source": "local",
-        "path": "./plugins/csl"
+        "path": "./.codex-plugin"
       },
-      "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, sop-manager, brainstorming, figma-describe, same-page",
+      "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, test-triage, repo-map, inject-may-agents, sop-manager, tips, brainstorming, figma-describe, same-page",
       "author": {
         "name": "CSL"
       },
       "homepage": "https://github.com/SSBun/skills",
       "repository": "https://github.com/SSBun/skills",
       "license": "MIT",
-      "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "figma"],
+      "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "test-triage", "repo-map", "inject-may-agents", "tips", "figma"],
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
