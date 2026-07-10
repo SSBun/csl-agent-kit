@@ -1,0 +1,80 @@
+{
+  "name": "@ssbun/csl-agent-kit",
+  "version": "2.0.0",
+  "description": "Personal agent toolkit for skills, plugins, commands, hooks, and Pi extensions across Claude Code, Codex, Cursor, and Pi.",
+  "author": {
+    "name": "CSL"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/SSBun/csl-agent-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SSBun/csl-agent-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SSBun/csl-agent-kit/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "bin/",
+    "commands/",
+    "hooks/",
+    "pi/",
+    "scripts/install.sh",
+    "skills/",
+    ".agents/plugins/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    ".cursor-plugin/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "csl-agent-kit": "bin/csl-agent-kit.js"
+  },
+  "scripts": {
+    "test:cli": "node --test tests/cli-install-output.test.js",
+    "check:cli": "node --check bin/csl-agent-kit.js && npm run test:cli && node bin/csl-agent-kit.js install --yes --dry-run --json"
+  },
+  "keywords": [
+    "pi-package",
+    "skills",
+    "agent-skills",
+    "agent-toolkit",
+    "plugins",
+    "commands",
+    "hooks",
+    "ios",
+    "macos",
+    "swift",
+    "app-icon",
+    "release",
+    "project-analysis",
+    "code-review",
+    "figma",
+    "sop"
+  ],
+  "pi": {
+    "extensions": [
+      "./pi/extensions"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "dependencies": {
+    "prompts": "^2.4.2"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  }
+}

@@ -18,7 +18,7 @@ description: 仅在用户明确要求把一条短提示、短命令或偏好保�
 用户数据固定写入：
 
 ```text
-~/.ssbun-skills/tips/tips.md
+~/.csl-agent-kit/tips/tips.md
 ```
 
 不要把用户 tips 写入 skill 目录。skill 目录只放工具实现。
@@ -70,5 +70,5 @@ skills/tips/scripts/tips-doctor.sh
 打开：
 
 ```bash
-${EDITOR:-vi} ~/.ssbun-skills/tips/tips.md
+${EDITOR:-vi} ~/.csl-agent-kit/tips/tips.md
 ```

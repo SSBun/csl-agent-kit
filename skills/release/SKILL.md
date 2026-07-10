@@ -5,13 +5,14 @@ description: Use when the user wants to release a project. This skill only route
 
 # Release Skill Router
 
-这是发布入口 skill。实际流程由 `release-orchestrator` SOP 和它选择的专用发布 SOP 处理。
+这是发布入口 skill。它只路由到真实存在的具体发布 SOP；没有匹配 SOP 时停止，不临时编造发布流程。
 
 ## Responsibilities
 
-1. 读取完整 `release-orchestrator` SOP。
-2. 按 SOP 检查工作区、识别项目类型、选择专用发布 SOP。
-3. 只执行 SOP 明确允许且用户确认过的步骤。
+1. 检查工作区状态。
+2. 列出当前可用 SOP，并筛选真实存在的发布 SOP。
+3. 读取匹配 SOP 的完整内容。
+4. 只执行匹配 SOP 明确允许且用户确认过的步骤。
 
 ## Non-Goals
 
@@ -19,6 +20,7 @@ description: Use when the user wants to release a project. This skill only route
 - 不猜测版本号。
 - 不自动创建 tag、push 或 publish。
 - 不在没有匹配 SOP 时编造生态发布流程。
+- 不使用空壳 orchestrator 代替具体发布 SOP。
 
 ## Arguments
 
@@ -27,14 +29,42 @@ description: Use when the user wants to release a project. This skill only route
 
 ## Flow
 
-### 1. Load Release Orchestrator SOP
+### 1. Check Workspace
 
-读取：
+运行：
 
-`skills/sop-manager/sops/release-orchestrator.md`
+```bash
+git status --short --branch --untracked-files=all
+```
 
-如果用户在 `~/.ssbun-skills/sops/release-orchestrator.md` 有自定义版本，优先读取用户版本。
+如果存在无关未提交改动，停止并让用户确认提交、stash 或继续策略。
 
-### 2. Execute Through SOP
+### 2. Discover Concrete Release SOPs
 
-按 `release-orchestrator` 选择专用发布 SOP。没有匹配专用 SOP 时停止，不继续发布。
+运行 `skills/sop-manager/scripts/sop-summaries.sh`，或等价读取：
+
+- `~/.csl-agent-kit/sops/*.md`
+- `skills/sop-manager/sops/*.md`
+
+只考虑真实存在、且 `name` 或 `description` 明确指向 release、publish、upload、notarize、package publishing 或 installer publishing 的具体 SOP。
+
+`project-version-update` 是版本准备 SOP，不是发布 SOP；只有用户要求更新版本或匹配发布 SOP 明确要求时才使用。
+
+### 3. Select One Matching SOP
+
+- 如果只有一个匹配发布 SOP，读取它的完整内容。
+- 如果多个 SOP 匹配，列出候选项并让用户选择。
+- 如果没有匹配 SOP，停止，并建议先用 `sop-manager create` 创建具体发布 SOP。
+
+### 4. Confirm Before Remote Actions
+
+在任何 tag、push、publish、upload、notarize 或远端 release 前，必须列出：
+
+- 匹配 SOP
+- 当前版本和目标版本
+- 将修改的文件
+- 将创建的 tag
+- 将 push 的 remote/branch
+- 将执行的 publish/upload/notarize 命令
+
+用户明确确认后才继续。

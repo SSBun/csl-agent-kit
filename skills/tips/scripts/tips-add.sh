@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-tips_dir="${SSBUN_TIPS_DIR:-$HOME/.ssbun-skills/tips}"
-tips_file="${SSBUN_TIPS_FILE:-$tips_dir/tips.md}"
+data_dir="${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}"
+tips_dir="${CSL_AGENT_KIT_TIPS_DIR:-$data_dir/tips}"
+tips_file="${CSL_AGENT_KIT_TIPS_FILE:-$tips_dir/tips.md}"
 max_chars=240
 confirmed=0
 
@@ -33,7 +34,7 @@ mkdir -p "$tips_dir"
 if [ ! -s "$tips_file" ]; then
   {
     printf '%s\n\n' '# Tips'
-    printf '%s\n' '<!-- Short user preferences and commands. This file is injected into sessions by ssbun-skills hooks. -->'
+    printf '%s\n' '<!-- Short user preferences and commands. This file is injected into sessions by CSL Agent Kit hooks. -->'
     printf '\n'
   } >"$tips_file"
 fi

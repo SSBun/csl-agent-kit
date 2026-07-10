@@ -1,21 +1,43 @@
 {
-  "name": "CSL",
-  "description": "Agent skill collection by CSL",
+  "name": "csl",
+  "description": "Personal agent toolkit by CSL",
   "owner": {
     "name": "CSL"
   },
   "plugins": [
     {
-      "name": "CSL",
+      "name": "csl",
       "source": "./",
-      "description": "Agent skill collection: create-app-icon, release, analyze-project, venom-cli, grill-me, beautiful-mermaid, handoff-save, handoff-restore, code-reviewer, test-triage, repo-map, inject-may-agents, sop-manager, tips, brainstorming, figma-describe, same-page",
+      "description": "CSL Agent Kit: skills, commands, hooks, and workflow tools for Claude Code, Codex, Cursor, and Pi.",
       "author": {
         "name": "CSL"
       },
-      "homepage": "https://github.com/SSBun/skills",
-      "repository": "https://github.com/SSBun/skills",
+      "homepage": "https://github.com/SSBun/csl-agent-kit",
+      "repository": "https://github.com/SSBun/csl-agent-kit",
       "license": "MIT",
-      "keywords": ["ios", "macos", "swift", "app-icon", "release", "project-analysis", "venom", "zhihu", "skills", "handoff-save", "handoff-restore", "code-reviewer", "test-triage", "repo-map", "inject-may-agents", "tips", "figma"],
+      "keywords": [
+        "agent-toolkit",
+        "plugins",
+        "commands",
+        "hooks",
+        "ios",
+        "macos",
+        "swift",
+        "app-icon",
+        "release",
+        "project-analysis",
+        "venom",
+        "zhihu",
+        "skills",
+        "handoff-save",
+        "handoff-restore",
+        "code-reviewer",
+        "test-triage",
+        "repo-map",
+        "super-agent",
+        "tips",
+        "figma"
+      ],
       "category": "workflow"
     }
   ]

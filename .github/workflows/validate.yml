@@ -12,6 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Validate npm CLI
+        run: npm run check:cli
+
       - name: Install jq
         run: |
           sudo apt-get update -y
@@ -30,7 +41,7 @@ jobs:
       - name: Validate Codex plugin.json
         run: |
           jq . .codex-plugin/plugin.json > /dev/null
-          jq -e '.name and .version and .description and .skills' .codex-plugin/plugin.json > /dev/null
+          jq -e '.name and .version and .description and .interface.displayName' .codex-plugin/plugin.json > /dev/null
 
       - name: Validate marketplace manifests
         run: |
@@ -80,24 +91,21 @@ jobs:
             exit 1
           fi
 
-      - name: Verify Cursor and Codex skill directories resolve
+      - name: Verify Cursor skill directory resolves
         run: |
           fail=0
-          for manifest in .cursor-plugin/plugin.json .codex-plugin/plugin.json; do
-            skills_path=$(jq -r '.skills' "$manifest" | sed 's:/*$::')
-            if [ ! -d "$skills_path" ]; then
-              echo "::error::$manifest skills path $skills_path is not a directory"
+          manifest=.cursor-plugin/plugin.json
+          skills_path=$(jq -r '.skills' "$manifest" | sed 's:/*$::')
+          if [ ! -d "$skills_path" ]; then
+            echo "::error::$manifest skills path $skills_path is not a directory"
+            exit 1
+          fi
+          for d in "$skills_path"/*/; do
+            [ -d "$d" ] || continue
+            if [ ! -f "${d}SKILL.md" ]; then
+              echo "::error::Missing ${d}SKILL.md (declared via $manifest)"
               fail=1
-              continue
             fi
-            for d in "$skills_path"/*/; do
-              [ -d "$d" ] || continue
-              name=$(basename "$d")
-              if [ ! -f "${d}SKILL.md" ]; then
-                echo "::error::Missing ${d}SKILL.md (declared via $manifest)"
-                fail=1
-              fi
-            done
           done
           exit $fail
 
@@ -137,8 +145,8 @@ jobs:
               echo "::error::$f frontmatter name '$name' must match directory '$dir'"
               fail=1
             fi
-            if ! echo "$desc" | grep -qi 'use when'; then
-              echo "::error::$f description should include 'Use when' trigger phrasing"
+            if ! echo "$desc" | grep -Eqi 'use when|use before|仅在|当.*时|用于'; then
+              echo "::error::$f description should state when the skill applies"
               fail=1
             fi
           done

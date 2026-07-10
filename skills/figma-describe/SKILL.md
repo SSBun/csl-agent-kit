@@ -11,7 +11,7 @@ A Figma MCP server must be connected with a valid token. If no Figma MCP tools a
 
 ## Usage
 
-`/figma-describe <figma-url>` or `/CSL:figma-describe <figma-url>`.
+`/figma-describe <figma-url>` or `/csl:figma-describe <figma-url>`.
 
 ## Workflow
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Super Agent"
+  short_description: "Symlink the bundled AGENTS.md into another agent config."
+  default_prompt: "Use $super-agent to install the bundled default AGENTS.md into another agent configuration by symlink."
+policy:
+  allow_implicit_invocation: false

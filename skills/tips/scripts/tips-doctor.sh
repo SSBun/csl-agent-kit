@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-tips_file="${SSBUN_TIPS_FILE:-$HOME/.ssbun-skills/tips/tips.md}"
+data_dir="${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}"
+tips_file="${CSL_AGENT_KIT_TIPS_FILE:-$data_dir/tips/tips.md}"
 script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)"
 inject_script="$script_dir/tips-inject.sh"
 repo_root="$(git -C "$script_dir" rev-parse --show-toplevel 2>/dev/null || true)"

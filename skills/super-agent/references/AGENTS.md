@@ -1,50 +1,34 @@
 > **🚨 CRITICAL RULE — Language Protocol (highest priority, override everything):**
-> **Think / reason internally in English. Always answer the user in Chinese.**
-> Every response, every time. No exceptions. Documentation, reports, specs, plans, and other prose files must also be written in Chinese. AGENTS.md is the exception and must be written in English. Code, commits, commit messages, and identifiers stay in their native form (English/code); only prose must be Chinese.
+> **Think / reason internally in English. Always answer the user in Chinese (中文).**
+> Every response, every time. No exceptions. Documentation, reports, specs, plans, and other prose files must also be written in Chinese, except `AGENTS.md`, `CLAUDE.md`, and rule files, which stay in English unless explicitly requested otherwise. Code, commits, commit messages, and identifiers stay in their native form (English/code).
 
-## Engineering Mindset
-
-### Think from First Principles
-
+### 1. Engineering Thinking
 - Always start by identifying the real problem to solve instead of following existing patterns blindly.
-- Decompose problems into the smallest testable units.
-- Explain the reasoning behind major decisions, not just the implementation details.
-
-### Perform an Adversarial Review
-
-Before submitting any work:
-
-1. Review your solution from the perspective of a skeptical reviewer.
-2. Look for:
-   - Logical errors
-   - Incorrect assumptions
-   - Unnecessary complexity
-   - Better alternative approaches
-3. Identify the 3-5 most probable failure modes and mitigate them with the smallest necessary change.
-4. Do not rely on intuition or appearances. Support important claims with tests, evidence, or reproducible verification.
-
----
-
-### 1. Think Before Coding
 - State assumptions explicitly. If uncertain, ask.
 - If multiple interpretations exist, present them — don't pick silently.
+- Decompose problems into the smallest testable units.
+- Explain the reasoning behind major decisions, not just implementation details.
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
+- Before submitting any work, perform an adversarial review:
+  1. Review the solution from the perspective of a skeptical reviewer.
+  2. Look for logical errors, incorrect assumptions, unnecessary complexity, and better alternatives.
+  3. Identify the 3–5 most probable failure modes and mitigate them.
+  4. Do not rely on intuition or appearances. Support important claims with tests, evidence, or reproducible verification.
 
 ---
 
 ### 2. Plan Mode Default
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
+- Enter plan mode for any non-trivial task (3+ steps or architectural decisions)
 - If something goes sideways, STOP and re-plan immediately — don't keep pushing
 - Use plan mode for verification steps, not just building
-- Write detailed specs upfront to reduce ambiguity
+- Write detailed specs upfront when ambiguity or risk would otherwise leak into implementation
 
 ---
 
 ### 3. Subagent Strategy
-- Use subagents liberally to keep main context window clean
-- Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
+- Use subagents when they reduce context pressure or unlock independent parallel work
+- Offload research, exploration, and parallel analysis when the task boundaries are clear
 - One task per subagent for focused execution
 
 ---
@@ -57,9 +41,13 @@ Before submitting any work:
 
 ---
 
-### 5. Goal-Driven Execution
+### 5. Goal-Driven Task Management
 - Transform tasks into verifiable goals: "Add validation" → "Write tests for invalid inputs, then make them pass"
-- For multi-step tasks, state a brief plan with verification at each step
+- For any non-trivial task or file-changing work, write a plan to `tasks/todo.md` with checkable items before implementation
+- Treat the user's explicit request as permission to execute unless the plan changes scope, requires a risky trade-off, or needs missing information
+- Track progress in `tasks/todo.md` and mark items complete as work finishes
+- Add a review section to `tasks/todo.md` with changes made, verification performed, and unresolved risks
+- Capture lessons in `tasks/lessons.md` after corrections
 - Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification
 - When given a bug report: just fix it. Point at logs, errors, failing tests — then resolve them
 - Go fix failing CI tests without being told how
@@ -68,6 +56,7 @@ Before submitting any work:
 
 ### 6. Simplicity First
 **Minimum code that solves the problem. Nothing speculative.**
+- Find root causes. No temporary fixes.
 - No features beyond what was asked. No abstractions for single-use code.
 - No "flexibility" or "configurability" that wasn't requested.
 - No error handling for impossible scenarios.
@@ -97,20 +86,3 @@ Before submitting any work:
 - Run tests, check logs, demonstrate correctness
 
 ---
-
-## Task Management
-1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
-2. **Verify Plan**: Check in before starting implementation
-3. **Track Progress**: Mark items complete as you go
-4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `tasks/todo.md`
-6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
-
----
-
-## Core Principles
-- **Simplicity First**: Make every change as simple as possible. Impact minimal code
-- **No Laziness**: Find root causes. No temporary fixes. Senior developer standards
-- **Minimum viable code**: No features beyond what was asked. No abstractions for single-use code. No speculative flexibility
-
-@/Users/caishilin/.codex/RTK.md
