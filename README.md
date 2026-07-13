@@ -165,6 +165,7 @@ The Pi package manifest in `package.json` exposes:
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
 - `pi/extensions/csl-skill-commands.ts`, dynamically discovering `skills/*/SKILL.md` and adding Cursor/Codex-style slash aliases such as `/repo-map`, `/code-reviewer`, and `/handoff-save`.
+- `pi/extensions/csl-context-hooks.ts`, injecting persistent tips and SOP summaries into Pi, matching prompt-time SOP candidates, showing one pre-mutation SOP reminder, and appending `figma-describe` guidance after Figma/MasterGo design fetches.
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
 Fast Mode usage:
@@ -184,7 +185,7 @@ Inside Pi:
 
 The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
 
-For local development after changes, restart Pi or run `/reload`.
+The context hooks read user data from `~/.csl-agent-kit/tips/tips.md` and `~/.csl-agent-kit/sops/*.md`. They refresh on session start, compaction, and before each agent run, so the guidance survives context compaction. For local development after changes, restart Pi or run `/reload`.
 
 The CSL Agent Kit CLI also supports:
 

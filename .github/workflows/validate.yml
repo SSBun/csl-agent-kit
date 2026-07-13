@@ -7,6 +7,24 @@ on:
     branches: [main]
 
 jobs:
+  node-supported:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Validate supported CLI and tips runtime
+        run: |
+          npm ci
+          npm test
+
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -14,14 +32,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.19.0
           cache: npm
 
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Validate npm CLI
-        run: npm run check:cli
+      - name: Validate npm package and Pi hooks
+        run: npm run check
 
       - name: Install jq
         run: |

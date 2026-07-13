@@ -1,3 +1,281 @@
+# 修复复审发现的全部问题
+
+## 计划
+
+- [x] 为自定义 tips 路径、C locale Unicode 边界、Node 18 测试面和发布版本归属补回归检查。
+- [x] 统一 Pi 与 shell readers 的 `CSL_AGENT_KIT_TIPS_FILE`/`CSL_AGENT_KIT_TIPS_DIR` 路径解析。
+- [x] 使用 Node Unicode code-point 计数替代 locale-sensitive 的 Bash/AWK 长度计算。
+- [x] 将未发布功能移回 CHANGELOG `[Unreleased]`，保留已发布 `2.0.0` 的真实内容，不执行版本发布动作。
+- [x] 拆分 Node 18 CLI/tips 测试与 Node 22.19+ Pi 测试，并在 CI 覆盖两条运行时边界。
+- [x] 运行 Node 18/20/22、全量检查、npm pack、trigger eval、Yao audit 和 diff 验证。
+- [x] 调用独立只读 Pi reviewer 复审完整 diff；若发现有效问题则继续修复并重复验证。
+
+## 复核
+
+- Pi、inject、doctor 和 add 现在按 `TIPS_FILE > TIPS_DIR > CSL_AGENT_KIT_HOME` 解析路径；跨客户端 override 回归通过。
+- tips 单条与总量、doctor overlong 诊断均改为 Node Unicode code-point 计数，`LC_ALL=C` 下 120/121 个中文字符边界通过。
+- tips 并发写入改用 Linux `flock` / macOS `lockf` 原生进程锁；进程退出或崩溃后内核自动释放，已有 lock file 可安全复用。doctor 改为 JSON 解析 hooks，不再依赖格式或事件名正则。
+- CHANGELOG 将新功能移回 `[Unreleased]`；当前 source of truth 仍为已发布 `2.0.0`，package-lock 无需变化，未执行 tag、push 或 publish。
+- CI 以 Node 18/20 matrix 验证 CLI/tips，并以固定 Node 22.19.0 验证 Pi；本地 Node 18、20、22 全部通过。Node 22 共通过 26 个测试，Node 18/20 各通过 19 个并明确跳过不受支持的 Pi runtime。
+- npm pack、TypeScript no-emit、Bash/Node/YAML/JSON、hook parity、trigger eval 与 `git diff --check` 通过；quick validation 通过。Yao lint、governance、resource boundary 通过，聚合结果仅保留仓库既有 `Missing agents/interface.yaml` 约定缺口。
+- 两个独立只读 Pi reviewer 经过多轮复审；修复原生锁、JSON hook 解析、Node 20 CI 和 Node 22.19 pin 后，最终均返回“无发现”。
+
+# 复审全部本地更改
+
+## 计划
+
+- [x] 重新梳理全部 tracked 与 untracked 改动及其业务目标。
+- [x] 复查跨客户端 hook、tips/SOP 数据边界、Pi 生命周期、打包表面和规则变更。
+- [x] 运行聚焦与全量验证，按严重级别记录仍可复现的问题。
+
+## 复核
+
+- 仍发现 4 个问题：Pi 忽略自定义 tips 文件路径、CHANGELOG 把未发布功能写入已发布版本、字符限制受 locale 影响，以及新增质量门禁无法在声明支持的 Node 18/20 上运行。
+- 已复现 Pi 与 shell 注入分别读取 default/custom tips；`LC_ALL=C` 下 120 个中文字符被误算为 360；Node 18 的 tips 测试和 Node 18/20 的 Pi 测试命令均失败。
+- npm registry 的 `2.0.0` 发布于 2026-07-10，已发布 tarball 不含 `csl-context-hooks.ts`，而本地 CHANGELOG 将该功能列入 `2.0.0`。
+- `npm run check` 的 22 个测试通过；本地 npm pack 包含 Pi context hook，hook parity 与 `git diff --check` 通过。
+
+# 修复本地审计问题
+
+## 假设与成功标准
+
+- 假设本次修复覆盖审计发现的全部 5 个问题，不扩展 tips、SOP 或 Pi 的产品语义。
+- 并发添加后仍严格满足 20 条、单条 120 字符和总计 2,000 字符限制，文件格式不损坏。
+- 任一畸形 SOP、被其他 extension 消费的输入、排队输入或失败的设计工具调用，都不能污染下一轮上下文或阻断 tips 注入。
+- `tips-doctor.sh` 在源码仓库和无 `.git` 的 npm 包目录中都能报告 hook 与 Pi lifecycle。
+
+## 计划
+
+- [x] 先补回归测试：并发 tips 写入、畸形用户 SOP、跨轮 prompt 残留、失败的设计工具结果，以及无 Git 元数据的 doctor 包目录。
+- [x] 在 `tips-add.sh` 中用实际 tips 文件旁的可移植锁包住“读取—校验—初始化—追加”整个临界区；锁等待有上限并通过 `trap` 清理，避免并发越限、重复和部分初始化。
+- [x] 在共享 SOP loader 中把 `name`、`when_to_use` 和 `globs` 规范为安全类型，并让单个不可读或畸形 SOP 降级而非破坏整批加载；Pi 候选匹配继续单独容错，确保 tips 始终可注入。
+- [x] 删除 Pi 的单槽 `latestPrompt`/`input` 缓存，直接使用当前 `before_agent_start` 的 `event.prompt`，消除被消费输入和排队输入造成的串轮状态。
+- [x] 仅在匹配的设计工具成功时追加 `figma-describe` 提醒，并覆盖成功、失败和重复提醒三种结果。
+- [x] 让 doctor 从脚本物理位置解析 package root，不再依赖 `.git`；保持现有源码仓库输出格式。
+- [x] 运行聚焦测试、`npm run check`、Bash/Node/JSON/TypeScript 检查、hook parity、npm pack 隔离验证和 `git diff --check`。
+- [x] 做对抗性复核：强制终止后的锁清理、并发首次创建、畸形 SOP 与有效 SOP 共存、多条排队 prompt、失败工具结果，以及 npm 安装目录无 Git 元数据。
+
+## 复核
+
+- 新增并发回归后先复现 30 个写入全部成功，再用同文件锁把完整检查与追加临界区串行化；最终仅 20 个成功、文件保留单一标题且无重复，聚焦并发测试连续运行 3 次通过。
+- SOP loader 现在逐文件容错并规范关键字段；Pi 候选匹配失败只清空候选，不再阻断 mandatory tips。畸形与有效 SOP 共存测试通过。
+- Pi 删除原始输入单槽状态，连续 prompt 直接按当前 `event.prompt` 重算候选；失败和已提醒的设计工具结果不再追加提醒。
+- doctor 改为从脚本物理路径定位 package root；临时无 Git 包目录测试和真实 `npm pack` 解包检查均能发现 UserPromptSubmit 与 before_agent_start lifecycle。
+- `npm run check` 通过：6 个 CLI、10 个 tips、6 个 Pi 测试，共 22 个测试；Bash、Node、JSON、TypeScript、hook parity、signal lock cleanup、npm pack 隔离和 `git diff --check` 均通过。
+- tips trigger eval 为 0 false positive、0 false negative；两个相关 skill 的 quick validation 通过。Yao 聚合审计的 lint、governance 和 resource boundary 通过，仅继续报告仓库既有的 `Missing agents/interface.yaml` 约定缺口。
+- 已知边界：不可捕获的 `SIGKILL` 可能遗留 `.lock` 目录；命令会在 5 秒后失败并报告完整锁路径，不会绕过限制或损坏 tips 文件。
+
+# 审计本地更改
+
+## 计划
+
+- [x] 梳理本地 diff 的业务目标、改动边界与相关运行时契约。
+- [x] 检查正确性、安全性、兼容性、边界条件和测试覆盖。
+- [x] 运行聚焦验证，并按严重级别记录可复现的问题与剩余风险。
+
+## 复核
+
+- 发现 5 个需处理的问题：tips 并发写入可突破硬限制，畸形用户 SOP 可中断 Pi 的整块上下文注入，Pi 的原始 prompt 缓存可能串轮，失败的设计工具结果仍会宣称已取得设计数据，以及 npm 安装环境中的 doctor 不会检查 lifecycle。
+- `npm run check` 全部通过；Bash/JSON/Node 语法、hook parity 与 `git diff --check` 通过。
+- 并发复现中 30 个写入最终保存了 26–30 条，稳定突破 20 条上限；隔离的非 git 包目录复现了 doctor 完全省略 hook/Pi lifecycle 输出。
+- 独立 TypeScript no-emit 命令因仓库默认 CommonJS 推断拒绝 `import.meta`，这不是当前 npm/CI 测试采用的加载模式，未作为代码 finding。
+
+# 精简默认 Agent 原则
+
+## 计划
+
+- [x] 从默认 `AGENTS.md` 模板删除 Plan Mode 和 Subagent Strategy 两节，并连续重编号。
+- [x] 保留所有文件修改必须写 `tasks/todo.md` 的规则及 context 日常维护例外，记录已确认的长期决策。
+- [x] 验证模板内容、`~/.agents/AGENTS.md` 软链接生效情况和 diff，并运行 Yao 规则审计。
+
+## 复核
+
+- 删除了 `Plan Mode Default` 和 `Subagent Strategy`；默认规则不再规定何时进入 plan mode 或调用 subagent。
+- 保留所有文件修改或非简单任务必须先写 `tasks/todo.md` 的要求，并保留 context 日常维护的唯一例外。
+- 将剩余章节连续调整为 1–7，未改动其他原则内容。
+- 已把确认后的组件来源与长期决策沉淀到 `tasks/context.md`，并记录 todo、plan mode、subagent 的职责边界 lesson。
+- 验证目标章节已删除、todo/context 规则仍存在、`~/.agents/AGENTS.md` 解析到更新后的模板，`git diff --check` 通过。
+- 已运行 Yao 审计：lint、governance 和 resource boundary 通过；聚合验证仅因当前工作区已删除的 `skills/super-agent/agents/openai.yaml` 报告已知的 `Missing agents/interface.yaml`。
+
+# 添加工作区上下文沉淀机制
+
+## 计划
+
+- [x] 在默认 `AGENTS.md` 模板中加入 `tasks/context.md` 的读取、自动沉淀和当前事实维护规则。
+- [x] 创建默认的零字节 `tasks/context.md`。
+- [x] 验证规则内容、空文件状态、`~/.agents/AGENTS.md` 软链接生效情况，并运行 Yao 规则审计。
+
+## 复核
+
+- 默认规则现在以会话启动目录为 workspace root，在 session start、resume 和 compact 后读取 `tasks/context.md`，并于当前 turn 结束前自动沉淀对话中确认的稳定事实。
+- 上下文文件采用可更新的当前事实快照，限定工作区结构、组件关系、领域术语和工作区级决策；明确排除推测、秘密、任务进度、lessons 和对话历史。
+- 创建了零字节 `tasks/context.md`；首次实际写入时才添加标题和所需分区。
+- 增加常规 context 维护无需创建 todo 计划的例外，避免规则之间互相递归。
+- 验证 `~/.agents/AGENTS.md` 仍准确解析到默认模板，九个规则章节连续，`git diff --check` 通过，npm dry-run 包含更新后的默认模板。
+- 已运行 Yao 审计：lint、governance 和 resource boundary 通过；聚合验证仅因当前工作区已删除的 `skills/super-agent/agents/openai.yaml` 报告已知的 `Missing agents/interface.yaml`。
+
+# Install Super Agent Instructions Globally
+
+## Plan
+
+- [x] Back up the existing Codex and Claude instruction targets.
+- [x] Link Codex, Agent Skills, and Claude Code to the bundled Super Agent instructions.
+- [x] Verify all symlinks and backups, then run the required Yao rule audit.
+
+## Review
+
+- Codex, Agent Skills, and Claude Code now link directly to the bundled Super Agent instructions.
+- Preserved the previous Codex file and Claude symlink in timestamped adjacent backups.
+- Verified all three targets with `test -L` and exact `readlink` comparison; verified both backups and the original Claude link destination.
+- Required Yao audit ran: lint, governance, and resource-boundary checks passed. Aggregate validation reports the repository's known release-only `Missing agents/interface.yaml` gap.
+
+# 在 Pi 中安装 Caveman 和 Ponytail
+
+## 计划
+
+- [x] 记录当前 Pi package/settings 状态，并确认目标资源尚未安装。
+- [x] 通过官方原生 Pi package 安装 Ponytail。
+- [x] 从现有可信 Codex plugin 源中只安装 Caveman 主回答风格 skill。
+- [x] 验证 Pi package 注册、Caveman 发现路径、源文件完整性和目标资源冲突。
+
+## 复核
+
+- 通过 `pi install git:github.com/DietrichGebert/ponytail` 安装 Ponytail 4.8.4；Pi settings 和 `pi list` 均已登记该 package。
+- 创建 `~/.pi/agent/skills/caveman` 软链接，只暴露主 `caveman` skill；未安装 `caveman-stats`、`cavecrew` 或 `caveman-compress`。
+- Pi RPC `get_commands` 实际发现 `/ponytail`、全部 Ponytail 扩展命令、`/skill:ponytail*` 和 `/skill:caveman`。
+- Ponytail 的 Pi extension 专项测试 23/23 通过，目标资源没有名称冲突。
+- Ponytail 上游完整测试 82 项中 81 项通过；唯一失败是 correctness benchmark 需要本机未安装的 Python `pandas`，与 Pi extension 加载无关，未擅自修改全局 Python 环境。
+- 当前 Pi 会话需要执行 `/reload`，或重启 Pi，才能加载新资源。
+
+# Clarify Caveman And Ponytail Roles
+
+## Plan
+
+- [x] Stop the proposed Caveman disablement before making any configuration changes.
+- [x] Record the distinct responsibility of each plugin for future recommendations.
+
+## Review
+
+- No plugin or Pi configuration was changed.
+- Caveman remains the natural-language verbosity reducer; Ponytail remains the concise, clear code-output discipline.
+
+# Remove Super Agent Interface Folder
+
+## Plan
+
+- [x] Confirm the folder contents and search for runtime, packaging, and documentation references.
+- [x] Remove `skills/super-agent/agents/` without changing the skill workflow or bundled AGENTS source.
+- [x] Run package tests, diff checks, and the required `yao-meta-skill` audit.
+
+## Review
+
+- Removed the unreferenced `skills/super-agent/agents/openai.yaml` and its now-empty directory.
+- Kept `skills/super-agent/SKILL.md` and `skills/super-agent/references/AGENTS.md` unchanged.
+- Verified no runtime, package, or documentation references remain.
+- `npm run check` passed: 6 CLI, 8 tips, and 4 Pi tests, plus install dry-run.
+- Package dry-run contains the skill and bundled AGENTS reference but no super-agent `agents/` path.
+- `git diff --check` passed.
+- Required Yao audit ran; lint, governance, and resource checks passed. Its aggregate validator reports `Missing agents/interface.yaml`, which is expected after intentionally removing the one-off interface directory and is not a runtime/package requirement in this repository.
+
+# Implement Stronger Tips Compliance
+
+## Plan
+
+- [x] Inspect the current tips implementation, hook adapters, tests, and dirty workspace without disturbing unrelated work.
+- [x] Add failing coverage for confirmation, normalization boundaries, per-tip/quantity/total limits, duplicates, multiline input, and mandatory injection wording.
+- [x] Implement the minimum shared validation and injection changes.
+- [x] Wire complete tips injection into every supported per-turn lifecycle while preserving session and compaction coverage.
+- [x] Extend doctor diagnostics for limits, malformed data, injection preview, and lifecycle coverage.
+- [x] Update user-facing skill guidance and trigger evaluations without broadening automatic capture.
+- [x] Run focused tests, shell/static checks, diff review, and the required `yao-meta-skill` audit.
+
+## Review
+
+Implemented stronger tips capture and compliance semantics:
+
+- Kept explicit preview and confirmation mandatory before every write; ordinary preferences still do not trigger automatic saving.
+- Added semantic guidance for durable, cross-task, single-behavior, non-sensitive tips and allowed normalization before confirmation.
+- Enforced 120 characters per tip, 20 tips, 2,000 total tip characters, single-line/nonblank input, and exact duplicate rejection.
+- Changed injected tips into confirmed persistent user instructions that are mandatory whenever applicable.
+- Added complete per-turn refresh through `UserPromptSubmit` hooks and Pi `before_agent_start`, while preserving session start, resume, and compaction refresh.
+- Expanded doctor output with limits, malformed/overlong/duplicate diagnostics, lifecycle coverage, and the full injection preview.
+- Added eight tips tests and strengthened Pi tests to prove that changed tips are reloaded before the next agent turn.
+
+Verification performed:
+
+- `npm run check`: 6 CLI tests, 8 tips tests, and 4 Pi tests passed; install dry-run passed.
+- Trigger evaluation: 0 false positives, 0 false negatives, precision 1.0, recall 1.0 across 20 cases.
+- Bash syntax, JSON parsing, hook parity, TypeScript no-emit check, Unicode 120/121-character boundary, doctor lifecycle smoke test, and `git diff --check` passed.
+- Required `yao-meta-skill` audit ran: lint, governance, and resource-boundary checks passed; the aggregate validator still reports the repository-wide packaging convention gap `Missing agents/interface.yaml`, which predates this change and is not added speculatively for tips alone.
+
+Unresolved risk:
+
+- Hook-only clients may retain repeated `UserPromptSubmit` context in conversation history because they lack Pi-style ephemeral system-prompt replacement; the agreed 20-tip/2,000-character limits bound each injection, but host-specific accumulation remains outside this repository's control.
+
+# Brainstorm Stronger Tips Compliance
+
+## Plan
+
+- [x] Clarify whether “more positive” refers to saving tips or complying with already injected tips.
+- [x] Compare compliance-strength designs while preserving explicit confirmation before every write.
+- [x] Agree on the desired execution semantics and document the validated design only if requested.
+
+## Review
+
+- Confirmed that saved tips are mandatory whenever applicable but remain below system, developer, and explicit current-turn user instructions.
+- Kept exact-preview and explicit-confirmation requirements before every write.
+- Defined tips as normalized, single-line, single-behavior persistent instructions.
+- Agreed limits: 120 characters per tip, 20 tips, and 2,000 total tip characters.
+- Agreed to inject the complete current tips block before every agent turn, plus session start and post-compaction/resume.
+- No standalone design document was requested or written.
+
+# Add Pi Tips And SOP Lifecycle Hooks
+
+## Plan
+
+- [x] Add test fixtures for Pi session context injection, SOP candidate routing, tool reminders, and Figma result reminders.
+- [x] Refactor SOP candidate routing into a reusable module without changing the Codex hook behavior.
+- [x] Add a Pi extension using `session_start`, `session_compact`, `input`, `before_agent_start`, `tool_call`, and `tool_result`.
+- [x] Inject tips and SOP summaries from `~/.csl-agent-kit/` into Pi's per-turn system prompt.
+- [x] Update package scripts, README, and changelog.
+- [x] Run Node tests, Pi extension loading tests, skill validation, package checks, and Yao audit.
+
+## Review
+
+Added `pi/extensions/csl-context-hooks.ts` with Pi-native lifecycle integration:
+
+- `session_start` and `session_compact` refresh tips and SOP metadata.
+- `input` captures the raw interactive prompt for SOP candidate routing.
+- `before_agent_start` injects persistent tips, available SOP summaries, and prompt-specific SOP candidates into Pi's system prompt each run.
+- `tool_call` shows one mutation-time SOP reminder when the current prompt has matching candidates.
+- `tool_result` appends `figma-describe` guidance after matching Figma/MasterGo design-fetch tools.
+- Missing or unreadable tips/SOP files degrade to empty context without blocking Pi.
+
+Supporting changes:
+
+- Refactored `skills/sop-manager/scripts/sop-candidates.js` to export reusable `loadSops`, `findCandidates`, and formatting functions while preserving its CLI hook behavior.
+- Added `tests/pi-context-hooks.test.mjs` covering context formatting, all event registrations, candidate injection, mutation reminder, and Figma reminder.
+- Added `npm run test:pi`, aggregate `npm test`, and `npm run check`; CI now runs the aggregate check.
+- Updated README and the `2.0.0` changelog entry.
+
+Verification performed:
+
+- `npm run check`: 6 CLI tests and 3 Pi context-hook tests passed.
+- `node --experimental-strip-types --test tests/pi-context-hooks.test.mjs`
+- TypeScript no-emit check for `pi/extensions/csl-context-hooks.ts`.
+- All three Pi extensions loaded successfully with Node type stripping.
+- Codex SOP candidate CLI compatibility test passed.
+- `quick_validate.py skills/sop-manager` passed.
+- `yao.py validate skills/sop-manager` ran; the only failure remains the intentionally non-blocking `Missing agents/interface.yaml`, with lint/governance/resource checks passing apart from the existing heavy-SKILL warning.
+- `npm pack --dry-run --json` includes `pi/extensions/csl-context-hooks.ts` (83 package files).
+- `npm publish --dry-run --access public` passed.
+- `git diff --check` passed.
+
+Unresolved risk:
+
+- User-authored tips and SOP summaries are injected into every Pi agent run; very large local datasets may need a future context-size cap.
+- The live npm `2.0.0` publish is still pending an OTP and these new changes are not committed or pushed yet.
+
 # Commit And Release CSL Agent Kit
 
 ## Plan

@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- 新增 Pi tips/SOP lifecycle context hooks。
+
+### Changed
+
+- tips 改为每轮注入已确认的持续用户指令，并增加长度、数量、重复和并发写入校验。
+
 ## [2.0.0] - 2026-07-10
 
 ### Added

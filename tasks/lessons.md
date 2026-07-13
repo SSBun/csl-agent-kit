@@ -1,5 +1,41 @@
 # Lessons
 
+## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents
+
+- **Trigger:** 精简默认 agent 原则但仍要求任务计划时。
+  - **Rule:** 保留在 `tasks/todo.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；后两者由 agent 按实际需要自行决定。
+  - **Why:** todo 是持久化任务控制和验证记录，plan mode 与 subagent 是可选执行能力，三者不应绑定。
+
+## 2026-07-13 Distinguish Agent-Specific And Parent AGENTS Files
+
+- **Trigger:** 判断当前 agent 使用哪份全局 `AGENTS.md`，或决定默认规则模板的更新范围时。
+  - **Rule:** 同时检查 harness 实际注入的规则来源和 `~/.agents/AGENTS.md`；不要把 `~/AGENTS.md` 自动等同于 agent-specific 全局配置。当前 `~/.agents/AGENTS.md` 软链接到 super-agent 的默认模板，而 Pi 本会话另行加载了 `~/AGENTS.md`。
+  - **Why:** 不同 agent 客户端可能从不同位置加载规则，仅检查 home 根目录会错误判断模板更新是否能对目标客户端生效。
+
+## 2026-07-13 Keep Workspace Context Conversation-Derived
+
+- **Trigger:** 设计跨会话工作区上下文记录机制时。
+  - **Rule:** 使用 `tasks/context.md`，默认保持为空；只沉淀对话中确认的、可供后续 agent 复用的工作区事实，不要默认生成仓库结构地图或改用根目录 `CONTEXT.md`。
+  - **Why:** 工作区上下文来自持续协作中形成的认知，职责不同于一次性的 repo-map，也不同于任务进度和纠错经验。
+
+## 2026-07-10 Keep Caveman And Ponytail Responsibilities Distinct
+
+- **Trigger:** 比较、配置或推荐 Caveman 与 Ponytail 时。
+  - **Rule:** Caveman 用于压缩回答中的冗词和填充表达；Ponytail 用于让代码输出简洁、清晰并避免过度实现。不要因为两者都强调精简就把它们视为重复插件或建议二选一。
+  - **Why:** 两者作用对象不同：一个约束自然语言回答风格，一个约束代码设计与实现规模；同时保留可以形成互补。
+
+## 2026-07-10 Avoid One-Off Skill Interface Folders
+
+- **Trigger:** 某个 skill 单独包含 `agents/` 接口元数据，但项目中的其他 skills 不采用该结构，且运行时和打包配置都不依赖它。
+  - **Rule:** 先检查引用和运行依赖；没有实际用途时删除这个一次性目录，不要为了形式完整保留孤立元数据。
+  - **Why:** 单个 skill 的特殊目录会制造错误的项目约定，并增加维护和审计噪声。
+
+## 2026-07-10 Separate Tips Capture From Tips Compliance
+
+- **Trigger:** 用户要求让 tips 更积极或更主动时。
+  - **Rule:** 先区分用户是在要求更主动地发现/保存新 tip，还是要求更稳定地遵守已注入的 tip；不要默认把“积极”解释为主动保存。
+  - **Why:** tips 写入必须始终经过明确确认，但已确认并注入的 tips 可以具有更强的默认遵循语义，这是两个独立的设计维度。
+
 ## 2026-07-10 Keep Repository Name Aligned With Product
 
 - **Trigger:** Renaming the product, npm package, CLI, and local data namespace.

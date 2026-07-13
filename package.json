@@ -37,7 +37,12 @@
     "csl-agent-kit": "bin/csl-agent-kit.js"
   },
   "scripts": {
+    "test": "npm run test:cli && npm run test:tips",
+    "test:all": "npm test && npm run test:pi",
     "test:cli": "node --test tests/cli-install-output.test.js",
+    "test:tips": "node --test tests/tips.test.mjs",
+    "test:pi": "node tests/run-pi-tests.js",
+    "check": "node --check bin/csl-agent-kit.js && npm run test:all && node bin/csl-agent-kit.js install --yes --dry-run --json",
     "check:cli": "node --check bin/csl-agent-kit.js && npm run test:cli && node bin/csl-agent-kit.js install --yes --dry-run --json"
   },
   "keywords": [

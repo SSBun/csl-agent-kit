@@ -18,22 +18,7 @@
 
 ---
 
-### 2. Plan Mode Default
-- Enter plan mode for any non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing
-- Use plan mode for verification steps, not just building
-- Write detailed specs upfront when ambiguity or risk would otherwise leak into implementation
-
----
-
-### 3. Subagent Strategy
-- Use subagents when they reduce context pressure or unlock independent parallel work
-- Offload research, exploration, and parallel analysis when the task boundaries are clear
-- One task per subagent for focused execution
-
----
-
-### 4. Self-Improvement Loop
+### 2. Self-Improvement Loop
 - After ANY correction from the user: update `tasks/lessons.md` with the pattern
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
@@ -41,7 +26,18 @@
 
 ---
 
-### 5. Goal-Driven Task Management
+### 3. Workspace Context
+- Treat the directory where the agent session started as the workspace root, even when it contains multiple repositories or components.
+- Ensure `tasks/context.md` exists under the workspace root; create it as a zero-byte file when missing. Read it before planning or exploration when non-empty, and re-read it after resume or compaction.
+- Before ending each turn, automatically capture durable workspace facts confirmed in the conversation: workspace structure, component responsibilities and relationships, domain terms, and workspace-level decisions or conventions. No separate confirmation is required.
+- Maintain the file as a current snapshot, not a history log: add new facts, update superseded facts, and remove invalid facts. If a conflict cannot be resolved from current evidence, ask before changing it.
+- On the first write, add `# Workspace Context` and only the sections needed from `Workspace`, `Components`, `Relationships`, `Domain`, and `Decisions and Conventions`. Keep each fact compact and include concrete paths, types, or entry points when known.
+- Never store speculation, secrets, global preferences, task progress, lessons, dates, confidence ratings, or conversation history. Context reduces repeated orientation but never replaces verification of code relevant to the current task.
+- Routine creation and maintenance of `tasks/context.md` does not require a `tasks/todo.md` plan.
+
+---
+
+### 4. Goal-Driven Task Management
 - Transform tasks into verifiable goals: "Add validation" → "Write tests for invalid inputs, then make them pass"
 - For any non-trivial task or file-changing work, write a plan to `tasks/todo.md` with checkable items before implementation
 - Treat the user's explicit request as permission to execute unless the plan changes scope, requires a risky trade-off, or needs missing information
@@ -54,7 +50,7 @@
 
 ---
 
-### 6. Simplicity First
+### 5. Simplicity First
 **Minimum code that solves the problem. Nothing speculative.**
 - Find root causes. No temporary fixes.
 - No features beyond what was asked. No abstractions for single-use code.
@@ -68,8 +64,9 @@
 
 ---
 
-### 7. Surgical Changes
+### 6. Surgical Changes
 **Touch only what you must. Clean up only your own mess.**
+
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken. Match existing style.
 - If you notice unrelated dead code, mention it — don't delete it.
@@ -79,7 +76,7 @@
 
 ---
 
-### 8. Verification Before Done
+### 7. Verification Before Done
 - Never mark a task complete without proving it works
 - Diff behavior between main and your changes when relevant
 - Ask yourself: "Would a staff engineer approve this?"

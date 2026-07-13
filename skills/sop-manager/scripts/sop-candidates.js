@@ -3,8 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 const repoSkillDir = path.resolve(__dirname, '..');
-const dataDir = process.env.CSL_AGENT_KIT_HOME || path.join(process.env.HOME || '', '.csl-agent-kit');
-const userSopDir = process.env.CSL_AGENT_KIT_SOPS_DIR || path.join(dataDir, 'sops');
 
 function readStdin() {
   return new Promise((resolve) => {
@@ -64,18 +62,33 @@ function listMarkdown(dir) {
   }
 }
 
-function loadSops() {
+function loadSops(userSopDir = resolveUserSopDir()) {
   const builtIn = listMarkdown(path.join(repoSkillDir, 'sops')).map((file) => ({ file, source: 'built-in' }));
   const user = listMarkdown(userSopDir).map((file) => ({ file, source: 'user' }));
   const byName = new Map();
 
   for (const item of [...builtIn, ...user]) {
-    const fm = parseFrontmatter(fs.readFileSync(item.file, 'utf8'));
-    const name = fm.name || path.basename(item.file, '.md');
-    byName.set(name, { ...item, ...fm, name });
+    try {
+      const fm = parseFrontmatter(fs.readFileSync(item.file, 'utf8'));
+      const name = typeof fm.name === 'string' && fm.name.trim()
+        ? fm.name
+        : path.basename(item.file, '.md');
+      const whenToUse = typeof fm.when_to_use === 'string' ? fm.when_to_use : undefined;
+      const globs = Array.isArray(fm.globs)
+        ? fm.globs.filter((glob) => typeof glob === 'string')
+        : typeof fm.globs === 'string' ? [fm.globs] : [];
+      byName.set(name, { ...item, ...fm, name, when_to_use: whenToUse, globs });
+    } catch {
+      // One malformed or unreadable SOP must not disable all routing.
+    }
   }
 
   return [...byName.values()];
+}
+
+function resolveUserSopDir() {
+  const dataDir = process.env.CSL_AGENT_KIT_HOME || path.join(process.env.HOME || '', '.csl-agent-kit');
+  return process.env.CSL_AGENT_KIT_SOPS_DIR || path.join(dataDir, 'sops');
 }
 
 function terms(value) {
@@ -110,31 +123,51 @@ function scoreSop(sop, prompt) {
   return score;
 }
 
-function printCandidates(candidates) {
-  if (candidates.length === 0) return;
-  console.log('Likely SOP candidates:');
-  for (const sop of candidates.slice(0, 3)) {
-    const globs = Array.isArray(sop.globs) && sop.globs.length ? ` [globs: ${sop.globs.join(', ')}]` : '';
-    console.log(`- ${sop.name}: ${sop.when_to_use}${globs} (${sop.source}: ${sop.file})`);
-  }
-  console.log('Read the full matching SOP before tool use and verify its completion criteria before final.');
+function findCandidates(prompt, sops = loadSops()) {
+  return sops
+    .filter((sop) => sop.when_to_use)
+    .map((sop) => ({ ...sop, score: scoreSop(sop, prompt) }))
+    .filter((sop) => sop.score >= 5)
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+    .slice(0, 3);
 }
 
-(async () => {
+function formatCandidates(candidates) {
+  if (candidates.length === 0) return '';
+  const lines = ['Likely SOP candidates:'];
+  for (const sop of candidates) {
+    const globs = Array.isArray(sop.globs) && sop.globs.length ? ` [globs: ${sop.globs.join(', ')}]` : '';
+    lines.push(`- ${sop.name}: ${sop.when_to_use}${globs} (${sop.source}: ${sop.file})`);
+  }
+  lines.push('Read the full matching SOP before tool use and verify its completion criteria before final.');
+  return lines.join('\n');
+}
+
+function printCandidates(candidates) {
+  const output = formatCandidates(candidates);
+  if (output) console.log(output);
+}
+
+async function main() {
   try {
     const raw = await readStdin();
     const data = raw.trim() ? JSON.parse(raw.replace(/^\uFEFF/, '')) : {};
     const prompt = String(data.prompt || '').trim();
     if (!prompt) return;
-
-    const candidates = loadSops()
-      .filter((sop) => sop.when_to_use)
-      .map((sop) => ({ ...sop, score: scoreSop(sop, prompt) }))
-      .filter((sop) => sop.score >= 5)
-      .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
-
-    printCandidates(candidates);
+    printCandidates(findCandidates(prompt));
   } catch {
     // Hook output is advisory; never block the session.
   }
-})();
+}
+
+module.exports = {
+  findCandidates,
+  formatCandidates,
+  loadSops,
+  parseFrontmatter,
+  scoreSop,
+};
+
+if (require.main === module) {
+  main();
+}

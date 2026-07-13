@@ -14,7 +14,8 @@
     "No, the AGENTS file must be written in English.",
     "Use Typora to open the report.",
     "You should not send optional commentary.",
-    "Please remember that this bug is caused by the parser."
+    "Please remember that this bug is caused by the parser.",
+    "From now on, keep final answers concise."
   ],
   "near_neighbor": [
     "Update tasks/lessons.md with that correction.",
@@ -22,6 +23,7 @@
     "Save this handoff for next session.",
     "Open the generated Markdown in Typora.",
     "Write this project rule into AGENTS.md.",
-    "Add this item to tasks/todo.md."
+    "Add this item to tasks/todo.md.",
+    "Please follow all of my already saved tips in this task."
   ]
 }
