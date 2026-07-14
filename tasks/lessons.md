@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-07-14 Separate Product, Plugin, And Marketplace Names
+
+- **Trigger:** 为同一个 agent toolkit 设计项目名、plugin 名和 marketplace 名，尤其是平台 identity 使用 `<plugin>@<marketplace>` 时。
+  - **Rule:** 不要机械地把完整产品名复制到两个 identity 槽位；分别选择清楚且稳定的 plugin 与 marketplace 名，并先展示最终组合给用户确认。当前 Codex 使用 `csl-agent-kit@csl-agent-market`。
+  - **Why:** `csl-agent-kit@csl-agent-kit` 重复且冗长；将产品和分发来源分开命名更容易理解，也避免大小写 alias 迁移问题。
+
 ## 2026-07-13 Remove Handoff Skills When Existing State Files Cover Continuity
 
 - **Trigger:** handoff-save/restore 主要复制 `tasks/todo.md` 的进度和 `tasks/context.md` 的稳定事实，剩余会话状态没有明确独立价值时。

@@ -30,7 +30,7 @@ const targets = {
   },
   "codex-plugin": {
     title: "Codex plugin hooks",
-    description: "Run codex plugin marketplace add and codex plugin add csl@csl.",
+    description: "Install csl-agent-kit@csl-agent-market and remove legacy Codex registrations.",
     default: false,
     external: true,
     run: installCodexPlugin,
@@ -210,9 +210,14 @@ function installCodexPlugin(options) {
     return [{ action: "skip", reason: "Codex CLI not found", command: "codex" }];
   }
   return runCommands([
+    ["codex", ["plugin", "remove", "csl-agent-kit@csl-agent-market", "--json"], true],
+    ["codex", ["plugin", "remove", "csl@CSL", "--json"], true],
     ["codex", ["plugin", "remove", "csl@csl", "--json"], true],
+    ["codex", ["plugin", "marketplace", "remove", "csl-agent-market", "--json"], true],
+    ["codex", ["plugin", "marketplace", "remove", "CSL", "--json"], true],
+    ["codex", ["plugin", "marketplace", "remove", "csl", "--json"], true],
     ["codex", ["plugin", "marketplace", "add", repoRoot, "--json"], false],
-    ["codex", ["plugin", "add", "csl@csl", "--json"], false],
+    ["codex", ["plugin", "add", "csl-agent-kit@csl-agent-market", "--json"], false],
   ], options);
 }
 

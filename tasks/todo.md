@@ -1,3 +1,51 @@
+# 复核并提交 Codex Plugin Identity
+
+## 计划
+
+- [x] 逐项审查当前 diff 的正确性、迁移兼容性、破坏性操作和测试覆盖。
+- [x] 重跑全量检查，更新复核记录并提交全部当前仓库改动。
+- [x] 验证提交后工作区 clean；不执行 push。
+
+## 复核
+
+- Code review 无 Critical、Suggestion 或 Nit findings；改动范围与用户确认的 `csl-agent-kit@csl-agent-market` identity 一致。
+- 迁移覆盖 clean install、legacy `csl@CSL`/`csl@csl`、重复安装和旧 marketplace 清理；本机已实际迁移并连续安装两次验证幂等。
+- `npm run check` 通过 27 项测试；npm pack 包含 79 个文件且关键 manifests/hooks 齐全；manifest identity、hook parity、local Codex identity 与 `git diff --check` 通过。
+- 已提交为 `fix: migrate Codex plugin identity`；提交后工作区 clean，本地 `main` 比 `origin/main` 领先 3 个提交，未执行 push。
+
+# 统一 Codex Plugin Identity
+
+## 计划
+
+- [x] 将 Codex marketplace/plugin identity 改为 `csl-agent-kit@csl-agent-market`，不改 Claude、Cursor 或独立 skill 名称。
+- [x] 修正 installer 的迁移流程和最小回归测试，清理 `csl@CSL`、`csl@csl` 旧注册。
+- [x] 运行全量检查，迁移本机 Codex 配置并验证 hooks 只注册一次。
+- [x] 更新复核；本轮未收到 commit/push 请求，因此保留仓库改动未提交。
+
+## 复核
+
+- `.agents/plugins/marketplace.json` 现使用 marketplace `csl-agent-market` 和 plugin `csl-agent-kit`；`.codex-plugin/plugin.json` 与之对齐。
+- Installer 会先移除新 identity 以支持幂等重装，再清理 `csl@CSL`、`csl@csl` 及旧 marketplaces，最后安装 `csl-agent-kit@csl-agent-market`；新增 CLI regression test 固定该命令序列。
+- 本机 `/Users/caishilin/.codex/config.toml` 和旧 cache 已清理；`codex plugin list` 只显示一个启用项 `csl-agent-kit@csl-agent-market`，连续运行 installer 两次仍保持单一注册。
+- `npm run check` 共通过 27 项测试（CLI 7、tips 13、Pi 7）；manifest contract、hook parity、npm pack 和 `git diff --check` 通过。
+- Yao audit 不适用：本轮未修改 agent rule、skill、SOP 或 hook 定义，只修改 Codex distribution identity、installer、文档和测试。
+
+# 诊断重复 Hook 执行
+
+## 计划
+
+- [x] 确认当前客户端实际加载的 CSL plugin/hook 来源及重复注册路径。
+- [x] 对照两个 hook manifests、安装 symlink 和客户端配置复现重复数量。
+- [x] 给出根因与最小修复；未经确认不删除用户安装配置。
+
+## 复核
+
+- 根因不是单个 manifest 内重复，而是 Codex 同时启用了 `csl@CSL` 和 `csl@csl`；两个 marketplace 名称仅大小写不同，且都指向 `/Users/caishilin/Desktop/personal/skills`。
+- `/Users/caishilin/.codex/config.toml` 同时包含 `[marketplaces.CSL]`、`[marketplaces.csl]`、`[plugins."csl@CSL"]`、`[plugins."csl@csl"]`，hook trust state 也分别记录了两套相同 hash，因此 CSL 的 SessionStart 和 UserPromptSubmit hooks 各运行两次。
+- 当前 manifest 和 `codex plugin list` 的 canonical identity 是小写 `csl@csl`；最小修复是删除 legacy uppercase `CSL` marketplace/plugin/state，保留 lowercase 注册。
+- 该重复由 installer 的升级迁移遗漏造成：v2.0.0 将 marketplace 从 `CSL` 改为 `csl`，但 `installCodexPlugin()` 只删除 `csl@csl`，没有清理旧的 `csl@CSL` marketplace/plugin/state；旧安装在升级重装后变为双注册。
+- 后续用户确认采用 `csl-agent-kit@csl-agent-market`；本机旧配置已清理，installer 也已加入迁移步骤。
+
 # 复查 Hooks 并提交 Handoff 删除
 
 ## 计划

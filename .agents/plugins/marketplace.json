@@ -1,5 +1,5 @@
 {
-  "name": "csl",
+  "name": "csl-agent-market",
   "interface": {
     "displayName": "CSL Agent Kit"
   },
@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "csl",
+      "name": "csl-agent-kit",
       "source": {
         "source": "local",
         "path": "./.codex-plugin"

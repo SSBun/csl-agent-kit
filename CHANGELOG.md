@@ -10,6 +10,7 @@
 
 ### Changed
 
+- Codex plugin identity 改为 `csl-agent-kit@csl-agent-market`，installer 会清理旧的 `csl@CSL` 和 `csl@csl` 注册。
 - tips 改为每轮注入已确认的持续用户指令，并增加长度、数量、重复和并发写入校验。
 
 ### Removed

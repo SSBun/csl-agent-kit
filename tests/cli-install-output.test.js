@@ -32,6 +32,23 @@ test("default install output is colorful and summarizes integrations without pat
   assert.doesNotMatch(plain, /\.agents\/skills\/analyze-project/);
 });
 
+test("Codex plugin install migrates legacy identities", () => {
+  const result = run(["install", "--target", "codex-plugin", "--dry-run", "--json"]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const commands = JSON.parse(result.stdout).results[0].changes.map((change) => change.command);
+  assert.deepEqual(commands, [
+    "codex plugin remove csl-agent-kit@csl-agent-market --json",
+    "codex plugin remove csl@CSL --json",
+    "codex plugin remove csl@csl --json",
+    "codex plugin marketplace remove csl-agent-market --json",
+    "codex plugin marketplace remove CSL --json",
+    "codex plugin marketplace remove csl --json",
+    `codex plugin marketplace add ${root} --json`,
+    "codex plugin add csl-agent-kit@csl-agent-market --json",
+  ]);
+});
+
 test("verbose install output includes underlying paths", () => {
   const result = run(["install", "--yes", "--dry-run", "--verbose"]);
 

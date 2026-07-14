@@ -204,7 +204,7 @@ skills = true
 csl-agent-kit install --target codex-skills,codex-plugin,repo-link
 ```
 
-For Codex, skills are linked into `~/.agents/skills/`. The Codex plugin is installed only for lifecycle hooks, so the same skill is not loaded twice.
+For Codex, skills are linked into `~/.agents/skills/`. The `csl-agent-kit@csl-agent-market` plugin is installed only for lifecycle hooks, so the same skill is not loaded twice. Re-running the installer removes the legacy `csl@CSL` and `csl@csl` registrations.
 
 ### All platforms
 
