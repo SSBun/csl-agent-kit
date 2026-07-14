@@ -12,6 +12,10 @@
 
 - tips 改为每轮注入已确认的持续用户指令，并增加长度、数量、重复和并发写入校验。
 
+### Removed
+
+- 移除与 `tasks/todo.md`、`tasks/context.md` 职责重复的 `handoff-save` 和 `handoff-restore` skills。
+
 ## [2.0.0] - 2026-07-10
 
 ### Added

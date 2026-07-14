@@ -1,5 +1,17 @@
 # Lessons
 
+## 2026-07-13 Remove Handoff Skills When Existing State Files Cover Continuity
+
+- **Trigger:** handoff-save/restore 主要复制 `tasks/todo.md` 的进度和 `tasks/context.md` 的稳定事实，剩余会话状态没有明确独立价值时。
+  - **Rule:** 先问这两个 skill 是否还需要存在；如果 todo/context 已能可靠恢复工作，优先删除 handoff skills，而不是继续压缩模板或引入线程、归档和生命周期机制。
+  - **Why:** 为很少出现的“思考前沿”维护额外命令、文件格式、存储目录和恢复协议，会制造重复 source of truth 与不必要的认知负担。
+
+## 2026-07-13 Keep Handoff State Distinct From Todo Progress
+
+- **Trigger:** 设计跨会话 handoff，并且 handoff 模板包含 Done、In Progress、Task Scope 或 acceptance criteria 时。
+  - **Rule:** 不要在 handoff 中复制 `tasks/todo.md` 的计划和完成状态；handoff 只引用 todo 路径，并保存 todo 无法表达的会话边界信息，例如当前思考前沿、下一步切入点、临时假设和恢复所需导航。
+  - **Why:** 同一进度维护两个副本会立即产生漂移，让新会话无法判断哪一个才是 source of truth。
+
 ## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents
 
 - **Trigger:** 精简默认 agent 原则但仍要求任务计划时。

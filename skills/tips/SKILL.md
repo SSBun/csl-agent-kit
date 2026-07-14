@@ -32,7 +32,7 @@ description: 仅在用户明确要求把一条短提示、短命令或偏好保�
 - 当前仓库工程规范：写入 `AGENTS.md` 或对应项目规则；
 - 当前任务进度：写入 `tasks/todo.md`；
 - 对某次错误的经验总结：写入 `tasks/lessons.md`；
-- 会话恢复信息：使用 handoff；
+- 会话恢复信息：按内容更新 `tasks/todo.md` 或 `tasks/context.md`；
 - 临时要求：只作为当前用户指令执行；
 - 原因、背景、长篇说明或敏感信息：不要写入 tip。
 

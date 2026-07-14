@@ -36,7 +36,7 @@ Do **not** use for bug fixes, typo edits, or changes with an already-approved sp
 ## After the Design
 
 **Documentation:**
-- Before writing any file under `docs/plans/`, ask for confirmation unless the user explicitly requested a document artifact such as a design doc, plan file, written spec, or saved handoff.
+- Before writing any file under `docs/plans/`, ask for confirmation unless the user explicitly requested a document artifact such as a design doc, plan file, or written spec.
 - If confirmed or explicitly requested, write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
 - Use clear, concise prose (no dependency on external writing skills)
 

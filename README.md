@@ -12,8 +12,6 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | grill-me | `/csl:grill-me` | `/grill-me` | Stress-test a plan or design through relentless questioning. |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
-| handoff-save | `/csl:handoff-save` | `/handoff-save` | Save task context to `~/.agents/handoffs/` for the next session. |
-| handoff-restore | `/csl:handoff-restore` | `/handoff-restore` | Restore handoff and continue without re-exploring the project. |
 | code-reviewer | `/csl:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
@@ -164,7 +162,7 @@ The Pi package manifest in `package.json` exposes:
 
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
-- `pi/extensions/csl-skill-commands.ts`, dynamically discovering `skills/*/SKILL.md` and adding Cursor/Codex-style slash aliases such as `/repo-map`, `/code-reviewer`, and `/handoff-save`.
+- `pi/extensions/csl-skill-commands.ts`, dynamically discovering `skills/*/SKILL.md` and adding Cursor/Codex-style slash aliases such as `/repo-map`, `/code-reviewer`, and `/brainstorming`.
 - `pi/extensions/csl-context-hooks.ts`, injecting persistent tips and SOP summaries into Pi, matching prompt-time SOP candidates, showing one pre-mutation SOP reminder, and appending `figma-describe` guidance after Figma/MasterGo design fetches.
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
