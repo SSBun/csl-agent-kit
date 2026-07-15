@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-07-15 Prefer Explicit Style Rules Over a Code-Only Sample
+
+- **Trigger:** 用户指出纯 `swift.swift` 样例无法完整表达应遵循的 Swift 风格限制。
+  - **Rule:** 当语言参考的用途是约束 agent 的代码组织行为时，参考文件只保留按主题分组的具体规则；只有文字无法清楚表达字面语法或布局时，才在对应规则下加入最小代码块。触发条件、适用边界、使用顺序、例外处理与完成检查放在主 SOP。
+  - **Why:** 代码样例无法完整表达规则，而不加选择地堆叠样例会降低可读性并让参考文件重新变成代码模板。
+
 ## 2026-07-14 Preserve Confirmed Tip Text When Limits Change
 
 - **Trigger:** 迁移被 120 字符上限阻止后，用户要求将限制放宽到 150，而不是缩短 130 字符的原 tip。

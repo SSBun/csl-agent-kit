@@ -1,3 +1,134 @@
+# 提交本地技能规则改动
+
+## 计划
+
+- [x] 复核工作树并暂存全部当前改动。
+- [x] 用英文提交信息创建本地提交，不推送。
+- [x] 验证工作树干净。
+
+## 复核
+
+- 当前全部五个改动已写入一个本地提交；未推送。
+
+---
+
+# 补充 Swift 小型代码风格规则
+
+## 计划
+
+- [x] 将已调研的十项可执行 Swift 规则按主题写入 `swift-style.md`。
+- [x] 保留现有 API Design SOP 的语义边界，不加入行宽、`self`、import 排序等纯团队偏好。
+- [x] 验证 Markdown、差异格式与技能规则审计。
+
+## 复核
+
+- `swift-style.md` 新增可选值、失败路径、控制流、类型表达式和文档注释规则，覆盖强制操作、`T!`、`guard`、`for ... where`、合并 `switch` case、`@unknown default`、类型简写、冗余语法与公开声明 summary。
+- 保留 Swift API Design SOP 对文档语义的要求；未加入行宽、`self`、import 排序等纯团队偏好。
+- Markdown 代码围栏成对，`git diff --check` 通过；Yao lint 通过，资源与治理检查只有既有警告，聚合校验仍只报告既有的 `agents/interface.yaml` 缺失。
+
+---
+
+# 调研 Swift 小型代码风格坏味道
+
+## 计划
+
+- [x] 搜索 Swift、Apple 和公开团队的一手规范，收集小型代码风格坏味道。
+- [x] 区分可作为跨项目默认规则的建议与团队偏好。
+- [x] 输出有来源的建议，不修改现有规则文件。
+
+## 复核
+
+- 基于 Swift.org、Apple、swift-format 与 Google 的公开 Swift 规范，整理了十项高收益小型坏味道及其边界；本轮未修改现有 Swift 规则文件。
+- 安全性与局部可读性规则可作为跨项目默认建议；行宽、self、导入顺序、尾随闭包和访问控制写法应保留为团队偏好。
+
+---
+
+# 为 Swift 规则按需加入代码块
+
+## 计划
+
+- [x] 在 enum 注释、MARK、功能 extension、protocol conformance extension 和多参数方法规则下加入最小代码块。
+- [x] 明确主 SOP 中代码块只在规则需要精确语法参考时使用。
+- [x] 更新 workspace context，并验证 Markdown、路由、差异格式与技能规则审计。
+
+## 复核
+
+- `swift-style.md` 在五条需要精确 Swift 语法或布局的规则下加入短代码块：enum case 注释、MARK、功能 extension、单 protocol conformance extension 和多参数方法。
+- `code-style.md` 明确代码块仅在文字无法充分表达语法或布局时使用，且必须紧邻对应规则；规则仍是参考文件的主体。
+- 五组 Swift 代码围栏均成对；SOP 摘要和候选路由保持不变，`git diff --check` 与空白检查通过。
+- Yao lint、资源边界和治理检查通过；聚合校验仍只报告既有的 `agents/interface.yaml` 缺失，资源边界与治理仅有既有警告。
+
+---
+
+# 收紧 Swift 风格参考边界
+
+## 计划
+
+- [x] 将 `swift-style.md` 改为仅含按主题分组的具体 Swift 规则与短示例。
+- [x] 将适用边界和使用顺序移至 `code-style.md`，不重复保留在参考文件。
+- [x] 更新 workspace context，并验证 Markdown、路由、差异格式与技能审计。
+
+## 复核
+
+- `swift-style.md` 现仅保留五个规则分区：类型与状态、enum 与 MARK、extension 组织、方法布局、改动边界与验证；不再包含范围、使用顺序、例外、坏味道或完成检查章节。
+- `code-style.md` 的使用方式现在承载 Swift 的使用说明：结构改动前读取目标文件和必要调用方，确认局部结构；参考只处理文件内组织，不决定 API 命名或 protocol 是否应采用。
+- 分区检查确认参考文件只有五个规则标题且没有被移走的章节；SOP 摘要和 Swift 风格候选路由仍只命中 `code-style`。空白与 `git diff --check` 通过。
+- Yao lint、资源边界和治理检查通过；聚合校验仍只报告既有的 `agents/interface.yaml` 缺失，资源边界与治理仅有既有警告。
+
+---
+
+# 将 Swift 样例迁移为样式规则参考
+
+## 计划
+
+- [x] 用逐条规则和短示例创建 `swift-style.md`，覆盖 enum 注释、`MARK`、extension 与多参数方法布局。
+- [x] 合并旧用户级 `swift-code-style.md` 的适用规则并删除该文件，同时删除被替代的 `swift.swift`。
+- [x] 更新 Code Style SOP 的引用和 workspace context。
+- [x] 验证 Markdown、引用、差异格式与技能规则审计。
+
+## 复核
+
+- 新增 `skills/sop-manager/references/code-style/swift-style.md`：逐条定义 Swift 的局部结构规则，并用短代码片段说明 enum case 的 `///` 注释、`// MARK: -`、职责 extension、单 protocol conformance extension 和多参数方法换行。
+- 已合并旧用户级 `~/.csl-agent-kit/sops/swift-code-style.md` 的局部一致性、`private(set)`、lowerCamelCase、最小改动、坏味道与验证规则，并删除该文件和被替代的 `swift.swift`。
+- `code-style.md` 现引用 `swift-style.md`，且明确只排除“协议设计”，不排除 protocol conformance 的文件内组织。SOP 摘要和候选路由的 Swift 风格正例只命中 `code-style`。
+- 文件存在性、旧文件缺失、空白与 `git diff --check` 均通过。Yao lint、资源边界和治理检查通过；聚合校验仍只报告既有的 `agents/interface.yaml` 缺失，资源边界与治理仅有既有警告。
+
+---
+
+# 扩展 Swift 代码风格模板结构
+
+## 计划
+
+- [x] 为 enum case 增加文档注释示例。
+- [x] 按职责和协议分别拆分 extension，并示范多参数方法换行。
+- [x] 验证 Swift 语法、差异格式与技能规则审计。
+
+## 复核
+
+- `swift.swift` 现在示范 enum case 的 `///` 文档注释、`// MARK: - <分组名>`、按派生状态、重试操作和报告职责拆分的方法 extension，以及 `CustomStringConvertible` 和 `Equatable` 各自独立的协议 extension。
+- `retrySummary` 展示多参数方法声明的逐行折叠。类型检查同时发现原模板的默认参数不能引用协变 `Self`，已改为 `RetryState.defaultMaximumRetryCount`。
+- `swiftc -parse`、`swiftc -typecheck`、`git diff --check` 与空白检查通过。`yao-meta-skill` 的 lint、资源边界和治理检查通过；资源边界仅提示既有 `SKILL.md` 已接近 1,000 token 上限，聚合校验仍仅报告既有的 `agents/interface.yaml` 缺失，治理检查仍仅提示可选 `manifest.json` 缺失。
+
+---
+
+# 新增内置 Code Style SOP 与 Swift 模板
+
+## 计划
+
+- [x] 创建跨语言的内置 `code-style` 规则型 SOP，并明确不与 API 设计、架构或业务规则混用。
+- [x] 创建首个 Swift 参考模板 `skills/sop-manager/references/code-style/swift.swift`。
+- [x] 验证 SOP 候选路由、Swift 语法和差异格式。
+- [x] 按仓库规则运行 `yao-meta-skill` 审计。
+
+## 复核
+
+- 新增 `skills/sop-manager/sops/code-style.md`：按语言读取模板、以项目局部风格为高优先级、限制为当前任务的最小风格改动。
+- 新增 `skills/sop-manager/references/code-style/swift.swift`：展示 lowerCamelCase 属性、`private(set)` 源状态与相邻的派生状态和行为。
+- `swiftc -parse` 通过；候选路由正例命中 `code-style`，Swift API 设计与架构反例不命中；`git diff --check` 通过。
+- `yao-meta-skill` 的 lint 与资源边界检查通过；governance 仅报告既有的可选 `manifest.json` 缺失，`validate_skill.py` 仅报告既有的 `agents/interface.yaml` 缺失，均未在本次扩大范围修复。
+
+---
+
 # 压缩 Tips 候选上下文
 
 ## 计划
@@ -21,7 +152,9 @@
 - [x] 获得用户对目标版本、远端发布动作和 npm 登录后的明确确认。
 - [x] 更新版本号、CHANGELOG 与必要发布元数据，并运行规则审计。
 - [x] 运行完整测试、打包与 npm 发布演练，复核发布内容。
-- [ ] 提交全部本地改动，创建版本标签、推送并发布 npm 包。
+- [x] 提交全部本地改动并创建本地版本标签。
+- [x] 推送 `main` 与 `v3.0.0`。
+- [ ] 使用 npm 一次性验证码发布公开包。
 - [ ] 验证远端提交、标签与 npm dist-tag，记录发布结果和剩余风险。
 
 ## 复核
@@ -29,7 +162,9 @@
 - npm 当前最新版本为 `2.0.0`；未提交改动移除了 `tips.md` 运行时 fallback，并改为关键词 JSON，因此建议下一个版本为破坏性变更的 `3.0.0`。
 - `env -u NO_COLOR npm run check` 通过 37 项测试与安装 dry-run；`git diff --check` 通过。Yao lint 与资源边界审计通过，`validate_skill.py` 仅报告两个既有 skills 缺少 `agents/interface.yaml`。
 - `npm pack --dry-run` 通过并仅包含 82 个预期文件；保留用户要求提交的 `AGENTS.md.backup-*`，但从 npm `files` 白名单中排除，避免将临时备份发布。
-- npm `whoami` 返回 401，尚不能发布；`origin` 的 SSH 连接失败，但 GitHub CLI 登录有效，HTTPS 远端可读，可在用户确认后以 HTTPS 推送而不修改 `origin`。
+- npm 登录用户为 `ssbun`，`npm publish --dry-run --access public` 通过；发布提交为 `c97ece7`，本地 `v3.0.0` 标签已创建。
+- GitHub OAuth token 补充 `workflow` scope 后，HTTPS 已将 `main` 推送至 `c97ece7`，并创建远端 `v3.0.0` 标签。
+- 实际 `npm publish --access public` 被 npm 的 `EOTP` 拦下；registry 仍仅有 `2.0.0`，因此尚未发布。需要当前的一次性验证码后重试。
 
 # 关键词化 Tips 按需注入
 
