@@ -6,12 +6,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'if [ -x \"$HOME/.agents/skills/tips/scripts/tips-inject.sh\" ]; then \"$HOME/.agents/skills/tips/scripts/tips-inject.sh\"; exit; fi; root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/tips/scripts/tips-inject.sh\" ]; then \"$root/skills/tips/scripts/tips-inject.sh\"; fi'",
-            "timeout": 10,
-            "statusMessage": "Loading CSL Agent Kit tips"
-          },
-          {
-            "type": "command",
             "command": "sh -c 'if [ -x \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\"; exit; fi; root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Loading CSL SOP routing"
@@ -23,12 +17,6 @@
       {
         "matcher": "manual|auto",
         "hooks": [
-          {
-            "type": "command",
-            "command": "sh -c 'if [ -x \"$HOME/.agents/skills/tips/scripts/tips-inject.sh\" ]; then \"$HOME/.agents/skills/tips/scripts/tips-inject.sh\"; exit; fi; root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/tips/scripts/tips-inject.sh\" ]; then \"$root/skills/tips/scripts/tips-inject.sh\"; fi'",
-            "timeout": 10,
-            "statusMessage": "Reloading CSL Agent Kit tips"
-          },
           {
             "type": "command",
             "command": "sh -c 'if [ -x \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$HOME/.agents/skills/sop-manager/scripts/sop-summaries.sh\"; exit; fi; root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
@@ -43,9 +31,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'if [ -x \"$HOME/.agents/skills/tips/scripts/tips-inject.sh\" ]; then \"$HOME/.agents/skills/tips/scripts/tips-inject.sh\"; exit; fi; root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/tips/scripts/tips-inject.sh\" ]; then \"$root/skills/tips/scripts/tips-inject.sh\"; fi'",
+            "command": "sh -c 'if [ -x \"$HOME/.agents/skills/tips/scripts/tips-candidates.js\" ]; then \"$HOME/.agents/skills/tips/scripts/tips-candidates.js\"; exit; fi; root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x \"$root/skills/tips/scripts/tips-candidates.js\" ]; then \"$root/skills/tips/scripts/tips-candidates.js\"; fi'",
             "timeout": 5,
-            "statusMessage": "Refreshing confirmed user tips"
+            "statusMessage": "Checking matching tips"
           },
           {
             "type": "command",

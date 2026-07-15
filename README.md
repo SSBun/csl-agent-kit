@@ -24,7 +24,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-User-created SOPs are stored under `~/.csl-agent-kit/sops/`. User tips are stored under `~/.csl-agent-kit/tips/tips.md`.
+用户创建的 SOP 存放在 `~/.csl-agent-kit/sops/`；用户 tips 以带关键词的 JSON 形式存放在 `~/.csl-agent-kit/tips/tips.json`。
 
 ## Canonical source and duplicates
 
@@ -66,6 +66,8 @@ csl-agent-kit install
 - Repo-local `.agents/skills` link
 - Codex plugin hooks
 - Pi package
+
+交互式确认后会把勾选项保存到 `~/.csl-agent-kit/install-selection.json`，下次运行会自动预选这些项。显式的 `--target`、`--all` 与 `--yes` 保持一次性命令语义，不会改写这份记录。
 
 Non-interactive examples:
 
@@ -163,7 +165,7 @@ The Pi package manifest in `package.json` exposes:
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
 - `pi/extensions/csl-skill-commands.ts`, dynamically discovering `skills/*/SKILL.md` and adding Cursor/Codex-style slash aliases such as `/repo-map`, `/code-reviewer`, and `/brainstorming`.
-- `pi/extensions/csl-context-hooks.ts`, injecting persistent tips and SOP summaries into Pi, matching prompt-time SOP candidates, showing one pre-mutation SOP reminder, and appending `figma-describe` guidance after Figma/MasterGo design fetches.
+- `pi/extensions/csl-context-hooks.ts`：向 Pi 注入与当前 prompt 匹配的持续 tips 和 SOP 摘要，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
 Fast Mode usage:
@@ -183,7 +185,7 @@ Inside Pi:
 
 The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
 
-The context hooks read user data from `~/.csl-agent-kit/tips/tips.md` and `~/.csl-agent-kit/sops/*.md`. They refresh on session start, compaction, and before each agent run, so the guidance survives context compaction. For local development after changes, restart Pi or run `/reload`.
+context hooks 从 `~/.csl-agent-kit/tips/tips.json` 和 `~/.csl-agent-kit/sops/*.md` 读取用户数据；每次 agent 运行前刷新，并且只注入确认关键词匹配当前 prompt 的 tips。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
 
 The CSL Agent Kit CLI also supports:
 
@@ -204,7 +206,7 @@ skills = true
 csl-agent-kit install --target codex-skills,codex-plugin,repo-link
 ```
 
-For Codex, skills are linked into `~/.agents/skills/`. The `csl-agent-kit@csl-agent-market` plugin is installed only for lifecycle hooks, so the same skill is not loaded twice. Re-running the installer removes the legacy `csl@CSL` and `csl@csl` registrations.
+对于 Codex，skills 链接到 `~/.agents/skills/`。`csl-agent-kit@csl-agent-market` plugin 仅负责 lifecycle hooks，因此同一 skill 不会被重复加载。它的 `UserPromptSubmit` hook 只注入关键词匹配的 tips 和匹配的 SOP candidates。重新运行安装器会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
 
 ### All platforms
 

@@ -10,16 +10,18 @@ import cslContextHooks, {
   loadTips,
 } from "../pi/extensions/csl-context-hooks.ts";
 
+function writeTips(root, tips) {
+  writeFileSync(join(root, "tips", "tips.json"), `${JSON.stringify({ version: 1, tips }, null, 2)}\n`);
+}
+
 function createFixture() {
   const root = mkdtempSync(join(tmpdir(), "csl-pi-context-"));
   mkdirSync(join(root, "tips"), { recursive: true });
   mkdirSync(join(root, "sops"), { recursive: true });
-  writeFileSync(join(root, "tips", "tips.md"), [
-    "# Tips",
-    "",
-    "<!-- ignored -->",
-    "- Prefer concise reports.",
-  ].join("\n"));
+  writeTips(root, [
+    { text: "Prefer concise reports.", keywords: ["report", "summary"] },
+    { text: "Do not send optional commentary.", keywords: ["commentary"] },
+  ]);
   writeFileSync(join(root, "sops", "deploy-production.md"), `---
 name: deploy-production
 description: Deploy the frobnicator production service.
@@ -43,37 +45,42 @@ function fakePi() {
   };
 }
 
-test("loads tips and formats reusable Pi system context", () => {
+test("loads JSON tips and formats reusable Pi system context", () => {
   const root = createFixture();
   try {
     const tips = loadTips(root);
-    assert.equal(tips, "- Prefer concise reports.");
-    const context = formatSystemContext(tips, [{
+    assert.deepEqual(tips, [
+      { text: "Prefer concise reports.", keywords: ["report", "summary"] },
+      { text: "Do not send optional commentary.", keywords: ["commentary"] },
+    ]);
+    const context = formatSystemContext([tips[0]], [{
       name: "deploy-production",
       when_to_use: "Use when deploying production.",
       source: "user",
       file: join(root, "sops", "deploy-production.md"),
     }], []);
-    assert.match(context, /CONFIRMED PERSISTENT USER INSTRUCTIONS/);
-    assert.match(context, /mandatory whenever applicable, not optional suggestions/);
-    assert.match(context, /Before responding or using tools/);
+    assert.match(context, /### Confirmed user instructions \(follow unless higher-priority instructions conflict\)/);
+    assert.doesNotMatch(context, /Before responding or using tools|These instructions were explicitly confirmed/);
+    assert.match(context, /Prefer concise reports/);
     assert.match(context, /deploy-production/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
 
-test("loads tips from the configured file override", () => {
+test("loads JSON tips from the configured file override", () => {
   const root = createFixture();
   const customRoot = mkdtempSync(join(tmpdir(), "csl-pi-custom-tips-"));
   const previousFile = process.env.CSL_AGENT_KIT_TIPS_FILE;
   try {
-    mkdirSync(customRoot, { recursive: true });
-    const customFile = join(customRoot, "tips.md");
-    writeFileSync(customFile, "# Tips\n\n- Custom tip.\n");
+    const customFile = join(customRoot, "tips.json");
+    writeFileSync(customFile, JSON.stringify({
+      version: 1,
+      tips: [{ text: "Custom tip.", keywords: ["custom"] }],
+    }));
     process.env.CSL_AGENT_KIT_TIPS_FILE = customFile;
 
-    assert.equal(loadTips(root), "- Custom tip.");
+    assert.deepEqual(loadTips(root), [{ text: "Custom tip.", keywords: ["custom"] }]);
   } finally {
     if (previousFile === undefined) delete process.env.CSL_AGENT_KIT_TIPS_FILE;
     else process.env.CSL_AGENT_KIT_TIPS_FILE = previousFile;
@@ -82,7 +89,7 @@ test("loads tips from the configured file override", () => {
   }
 });
 
-test("registers Pi lifecycle hooks and injects tips plus matching SOP candidates", async () => {
+test("injects only prompt-matched tips plus matching SOP candidates", async () => {
   const root = createFixture();
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
@@ -99,12 +106,13 @@ test("registers Pi lifecycle hooks and injects tips plus matching SOP candidates
 
     await handlers.get("session_start")({}, ctx);
     const injected = await handlers.get("before_agent_start")({
-      prompt: "deploy frobnicator production",
+      prompt: "deploy frobnicator production report",
       systemPrompt: "base prompt",
     }, ctx);
 
     assert.match(injected.systemPrompt, /base prompt/);
     assert.match(injected.systemPrompt, /Prefer concise reports/);
+    assert.doesNotMatch(injected.systemPrompt, /Do not send optional commentary/);
     assert.match(injected.systemPrompt, /Likely SOP Candidates For This Prompt/);
     assert.match(injected.systemPrompt, /deploy-production/);
 
@@ -117,7 +125,49 @@ test("registers Pi lifecycle hooks and injects tips plus matching SOP candidates
   }
 });
 
-test("reloads the latest complete tips before every Pi agent turn", async () => {
+test("does not inject an unmatched JSON tip into a Pi turn", async () => {
+  const root = createFixture();
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = root;
+  const { api, handlers } = fakePi();
+
+  try {
+    cslContextHooks(api);
+    const injected = await handlers.get("before_agent_start")({
+      prompt: "deploy frobnicator production",
+      systemPrompt: "base prompt",
+    }, {});
+    assert.doesNotMatch(injected.systemPrompt, /Prefer concise reports/);
+    assert.doesNotMatch(injected.systemPrompt, /Do not send optional commentary/);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("does not treat a stale wildcard tip as prompt-matched in Pi", async () => {
+  const root = createFixture();
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = root;
+  writeTips(root, [{ text: "Apply this everywhere.", keywords: ["*"] }]);
+  const { api, handlers } = fakePi();
+
+  try {
+    cslContextHooks(api);
+    const injected = await handlers.get("before_agent_start")({
+      prompt: "Any unrelated prompt.",
+      systemPrompt: "base prompt",
+    }, {});
+    assert.doesNotMatch(injected.systemPrompt, /Apply this everywhere/);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("reloads the latest matching JSON tips before every Pi agent turn", async () => {
   const root = createFixture();
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
@@ -126,19 +176,15 @@ test("reloads the latest complete tips before every Pi agent turn", async () => 
   try {
     cslContextHooks(api);
     const first = await handlers.get("before_agent_start")({
-      prompt: "first turn",
+      prompt: "write a report",
       systemPrompt: "base prompt",
     }, {});
     assert.match(first.systemPrompt, /Prefer concise reports/);
 
-    writeFileSync(join(root, "tips", "tips.md"), [
-      "# Tips",
-      "",
-      "- Show absolute file paths.",
-    ].join("\n"));
+    writeTips(root, [{ text: "Show absolute file paths.", keywords: ["path"] }]);
 
     const second = await handlers.get("before_agent_start")({
-      prompt: "second turn",
+      prompt: "show this path",
       systemPrompt: "base prompt",
     }, {});
     assert.match(second.systemPrompt, /Show absolute file paths/);
@@ -150,7 +196,7 @@ test("reloads the latest complete tips before every Pi agent turn", async () => 
   }
 });
 
-test("keeps tips available when a user SOP has malformed frontmatter", async () => {
+test("keeps matching tips available when a user SOP has malformed frontmatter", async () => {
   const root = createFixture();
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
@@ -167,7 +213,7 @@ globs: "*.ts"
   try {
     cslContextHooks(api);
     const injected = await handlers.get("before_agent_start")({
-      prompt: "an unrelated request",
+      prompt: "write a report",
       systemPrompt: "base prompt",
     }, {});
     assert.match(injected.systemPrompt, /Prefer concise reports/);

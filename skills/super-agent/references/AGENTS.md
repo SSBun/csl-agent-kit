@@ -3,50 +3,43 @@
 > Every response, every time. No exceptions. Documentation, reports, specs, plans, and other prose files must also be written in Chinese, except `AGENTS.md`, `CLAUDE.md`, and rule files, which stay in English unless explicitly requested otherwise. Code, commits, commit messages, and identifiers stay in their native form (English/code).
 
 ### 1. Engineering Thinking
-- Always start by identifying the real problem to solve instead of following existing patterns blindly.
-- State assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them — don't pick silently.
-- Decompose problems into the smallest testable units.
-- Explain the reasoning behind major decisions, not just implementation details.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
-- Before submitting any work, perform an adversarial review:
-  1. Review the solution from the perspective of a skeptical reviewer.
-  2. Look for logical errors, incorrect assumptions, unnecessary complexity, and better alternatives.
-  3. Identify the 3–5 most probable failure modes and mitigate them.
-  4. Do not rely on intuition or appearances. Support important claims with tests, evidence, or reproducible verification.
+
+- Start from first principles: define the desired outcome, governing facts and constraints, and causal path before choosing a solution. Use existing patterns as evidence, and reuse them only when their rationale fits.
+- Make uncertainty explicit: state material assumptions and interpretations. If a material fact, intent, or constraint remains unclear after checking available evidence, ask focused questions rather than guessing or silently choosing.
+- Decompose work into the smallest testable units, and explain the reasoning behind material decisions.
+- Challenge unnecessary complexity: prefer the simplest solution that meets the constraints, and raise a simpler alternative or scope concern when it matters.
+- Before submitting, review adversarially: check key assumptions, likely failure modes, and avoidable complexity; support important claims with tests, evidence, or reproducible verification.
 
 ---
 
-### 2. Self-Improvement Loop
-- After ANY correction from the user: update `tasks/lessons.md` with the pattern
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
+### 2. Workspace Context
+
+- Use the session-start directory as the workspace root and keep `tasks/context.md` there as a compact, current map. Save only confirmed, durable facts a later agent would otherwise need to rediscover: workspace structure, component roles and relationships, domain terms, and workspace-level decisions or conventions.
+- At the start of a session or after resuming, read it first for orientation, then verify task-relevant details in the workspace itself; context guides exploration, but the workspace is the source of truth.
+- Before ending a turn, add newly confirmed facts at the top of their list; update or remove superseded facts. Do not save task progress or history, lessons, speculation, secrets, or global preferences.
+- If a material fact is missing or conflicts with evidence, investigate first, then ask focused questions if unresolved. Routine context maintenance needs no task record.
 
 ---
 
-### 3. Workspace Context
-- Treat the directory where the agent session started as the workspace root, even when it contains multiple repositories or components.
-- Ensure `tasks/context.md` exists under the workspace root; create it as a zero-byte file when missing. Read it before planning or exploration when non-empty, and re-read it after resume or compaction.
-- Before ending each turn, automatically capture durable workspace facts confirmed in the conversation: workspace structure, component responsibilities and relationships, domain terms, and workspace-level decisions or conventions. No separate confirmation is required.
-- Maintain the file as a current snapshot, not a history log: add new facts, update superseded facts, and remove invalid facts. If a conflict cannot be resolved from current evidence, ask before changing it.
-- On the first write, add `# Workspace Context` and only the sections needed from `Workspace`, `Components`, `Relationships`, `Domain`, and `Decisions and Conventions`. Keep each fact compact and include concrete paths, types, or entry points when known.
-- Never store speculation, secrets, global preferences, task progress, lessons, dates, confidence ratings, or conversation history. Context reduces repeated orientation but never replaces verification of code relevant to the current task.
-- Routine creation and maintenance of `tasks/context.md` does not require a `tasks/todo.md` plan.
+### 3. Goal-Driven Task Management
+
+- Use one shared, newest-first `tasks/todo.md`; multiple tasks may be active at once.
+- For non-trivial or file-changing work, create or update a task record before execution; keep it current during work and complete its review before closing it.
+- Give each task an outcome-oriented title, a status with date, testable goals, and a review of results and verification.
+- Add plans or boundaries when they help execution.
+- Keep completed tasks as history and avoid changing unrelated task entries.
+- Read recent tasks first and search older entries only when relevant.
 
 ---
 
-### 4. Goal-Driven Task Management
-- Transform tasks into verifiable goals: "Add validation" → "Write tests for invalid inputs, then make them pass"
-- For any non-trivial task or file-changing work, write a plan to `tasks/todo.md` with checkable items before implementation
-- Treat the user's explicit request as permission to execute unless the plan changes scope, requires a risky trade-off, or needs missing information
-- Track progress in `tasks/todo.md` and mark items complete as work finishes
-- Add a review section to `tasks/todo.md` with changes made, verification performed, and unresolved risks
-- Capture lessons in `tasks/lessons.md` after corrections
-- Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification
-- When given a bug report: just fix it. Point at logs, errors, failing tests — then resolve them
-- Go fix failing CI tests without being told how
+### 4. Self-Improvement Loop
+
+- Treat `tasks/lessons.md` as a compact, current set of durable rules that prevent repeated agent mistakes—not a task diary or project knowledge base.
+- After each user correction, review `tasks/lessons.md`; add, refine, merge, replace, or remove a lesson only as needed to preserve a reusable prevention rule.
+- Keep new or revised lessons at the top of their list.
+- Express each lesson as an observable trigger and the required better behavior.
+- Keep project facts in `tasks/context.md` and task history in `tasks/todo.md`; put only reusable prevention rules in lessons.
+- Before work, review only the lessons relevant to the current workspace and task.
 
 ---
 

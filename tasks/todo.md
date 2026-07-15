@@ -1,3 +1,129 @@
+# 压缩 Tips 候选上下文
+
+## 计划
+
+- [x] 先补回归断言，要求候选 hook 与 Pi 上下文保留服从语义但删除冗余说明。
+- [x] 将候选 tips 头部压缩为最少的确认、适用与优先级信息。
+- [x] 运行聚焦与全量检查、规则审计及打包检查，再继续 v3.0.0 发布。
+
+## 复核
+
+- 候选 hook 现在只输出一行“当前 prompt 已命中的已确认指令，除非高优先级指令冲突则遵守”说明与 tip 条目；不再输出来源路径、编号检查清单或重复的确认语句。Pi 使用相同的精简优先级语义。
+- 测试先行确认 RED：旧输出缺少新短头部且仍含冗余前言；实现后 tips 的 18 项测试、Pi 的 9 项测试与全量 37 项检查均通过。
+- `yao-meta-skill` lint、资源边界与 trigger eval（20/20）通过；governance 仅报告既有的可选 `manifest.json` 缺失。
+- 已存在会话中的旧长上下文无法回写删除；当前本机插件直接链接工作区，后续匹配 prompt 会使用新格式。
+
+# 发布 CSL Agent Kit 新版本
+
+## 计划
+
+- [x] 审查全部本地改动、版本来源、git 远端与 npm 已发布版本，建议最小合适的目标版本。
+- [x] 获得用户对目标版本、远端发布动作和 npm 登录后的明确确认。
+- [x] 更新版本号、CHANGELOG 与必要发布元数据，并运行规则审计。
+- [x] 运行完整测试、打包与 npm 发布演练，复核发布内容。
+- [ ] 提交全部本地改动，创建版本标签、推送并发布 npm 包。
+- [ ] 验证远端提交、标签与 npm dist-tag，记录发布结果和剩余风险。
+
+## 复核
+
+- npm 当前最新版本为 `2.0.0`；未提交改动移除了 `tips.md` 运行时 fallback，并改为关键词 JSON，因此建议下一个版本为破坏性变更的 `3.0.0`。
+- `env -u NO_COLOR npm run check` 通过 37 项测试与安装 dry-run；`git diff --check` 通过。Yao lint 与资源边界审计通过，`validate_skill.py` 仅报告两个既有 skills 缺少 `agents/interface.yaml`。
+- `npm pack --dry-run` 通过并仅包含 82 个预期文件；保留用户要求提交的 `AGENTS.md.backup-*`，但从 npm `files` 白名单中排除，避免将临时备份发布。
+- npm `whoami` 返回 401，尚不能发布；`origin` 的 SSH 连接失败，但 GitHub CLI 登录有效，HTTPS 远端可读，可在用户确认后以 HTTPS 推送而不修改 `origin`。
+
+# 关键词化 Tips 按需注入
+
+## 记住交互式安装选择
+
+### 计划
+
+- [x] 先补 CLI 回归测试，覆盖保存选择、下次交互预选、无效状态回退默认项，以及显式参数不改写已保存选择。
+- [x] 用 Node 标准库在用户数据目录保存交互式已确认选择，并在交互 checklist 中读取它。
+- [x] 更新 CLI 说明与变更记录，保持非交互参数和现有安装行为不变。
+- [x] 运行聚焦与全量检查、打包检查和差异复核。
+
+### 复核
+
+- 仅记住交互式 checklist 的已确认选择；`--target`、`--all` 和 `--yes` 继续使用其当前显式语义。
+- 选择文件以原子替换方式写入；无效、损坏或只包含未知目标的文件会回退到原有三个默认预选项。外部命令未确认、取消或保存失败不会阻断既有安装流程。
+- 回归测试先确认缺少存储 API 时失败；实现后 `env -u NO_COLOR npm run test:cli` 的 10 项测试、`env -u NO_COLOR npm run check` 的 37 项测试与安装 dry-run 均通过。
+- `npm pack --dry-run` 成功生成 83 文件的发布清单，`git diff --check` 通过。当前命令软链接到本工作区；已将截图中确认的 5 项写入 `/Users/caishilin/.csl-agent-kit/install-selection.json`。
+- 未解决但不属于本改动的风险：`/Users/caishilin/.agents/skills/grill-me` 是普通目录而非符号链接，勾选 `Codex skills symlinks` 时仍会因该冲突失败。
+
+## 删除全局 Wildcard Tip
+
+### 计划
+
+- [x] 先补回归测试，明确所有 tips 都会被静默检查，但 `"*"` 不是合法关键词且不会匹配每条 prompt。
+- [x] 移除 wildcard 校验与匹配分支，并更新 skill、诊断和相关说明。
+- [x] 通过共享 JSON 写入逻辑删除本地 `DO NOT send optional commentary` tip，不改动其余 5 条。
+- [x] 运行聚焦与全量验证、打包检查和必需的 `yao-meta-skill` 审计。
+
+### 复核
+
+- 范围仅限删除用户指定的全局 tip 及其 `"*"` 机制；其他 tips 保持“每轮静默检查、仅命中注入”的现有行为。
+- 测试先行确认 RED：新增 `"*"` 能写入且会命中任意 prompt；实现后 `tips` 的 18 个测试和 Pi 的 9 个测试均通过。
+- 本地 JSON 在文件锁内按精确正文删除目标条目，再用共享原子写入器校验；现在保留 5 条显式关键词 tips，未命中 prompt 不输出任何 tip。
+- `env -u NO_COLOR npm run check` 通过 34 个测试与 install dry-run；Bash/Node/JSON 静态检查、manifest parity、`npm pack --dry-run`（82 个文件）和 `git diff --check` 通过。
+- `yao-meta-skill` 的 lint、governance、resource-boundary 通过；聚合校验仍仅报告既有的 `Missing agents/interface.yaml`，并提示可选的 `manifest.json` 未提供。
+- 已有会话历史中的旧完整 tips developer context 无法由 hook 删除；新会话和后续 prompt 不会再注入该 wildcard tip。
+
+## 计划
+
+- [x] 审查现有 tips 存储、Codex/Pi 生命周期、SOP candidate 实现及回归测试。
+- [x] 确定 JSON 存储、关键词匹配、`"*"` 全局关键词及 6 条本地 tip 的候选映射。
+- [x] 将 tips 改为按 prompt 关键词匹配，只把命中的 tip 注入对应 turn 的上下文。
+- [x] 更新跨客户端实现、诊断、文档与回归测试。
+- [x] 按用户确认的 150 字符单条上限迁移本地数据，并重装本地 Codex plugin。
+- [x] 完成全量静态、打包与 `yao-meta-skill` 审计。
+
+## 复核
+
+- JSON 存储、写入锁、候选 hook、Pi 动态匹配、诊断与回归测试均已实现；旧 Markdown 不再作为运行时 fallback。
+- 单条上限已按用户要求调整为 150 个字符；150/151 的 ASCII 与中文边界回归通过。
+- 已迁移 `/Users/caishilin/.csl-agent-kit/tips/tips.md`：现在有 6 条 JSON tips，旧文件安全保留为 `tips.md.bak`，`tips-doctor.sh` 未报告数据或 lifecycle 警告。
+- `csl-agent-kit@csl-agent-market` 已重新安装并启用，来源为当前工作区。
+- `env -u NO_COLOR npm run check` 通过 32 个测试与 install dry-run；Bash/Node/JSON 静态检查、hook manifest parity、`npm pack --dry-run`（82 个文件且包含新运行时脚本）和 `git diff --check` 均通过。
+- `yao-meta-skill` 的 lint、governance、resource-boundary 检查通过；聚合校验仅报告既有的 `Missing agents/interface.yaml`，governance 另提示未提供可选 `manifest.json`。
+- 对抗性复核覆盖 150/151 字符边界、失败迁移不改动原文件、目标/源同路径拒绝、JSON 候选只命中相关 tip、`"*"` 全局匹配与旧 Markdown 备份；未发现需要修复的问题。
+
+# 移除 Tips 的逐轮注入
+
+## 计划
+
+- [x] 确认范围：仅移除 tips 的 `UserPromptSubmit` hook，保留该事件下的 SOP candidates。
+- [x] 检查 hook manifests、doctor 诊断、相关测试、工作区状态和近期提交。
+- [x] 写入并复核最小设计规格，等待用户确认书面规格。
+- [x] 按 TDD 先更新契约测试并验证预期失败，再修改两个 hook manifests 与 doctor。
+- [x] 运行聚焦测试、全量检查、hook parity、安装包检查和 Yao 审计。
+- [x] 更新复核并确认不影响 `SessionStart`、`PostCompact`、Pi `before_agent_start` 与 SOP candidates。
+
+## 复核
+
+- 两个 hook manifests 的 `UserPromptSubmit` 已删除 `tips-inject.sh`，仍保留 `sop-candidates.js`；`SessionStart` 与 `PostCompact` 的 tips hooks 未变。
+- 新增 manifest 契约测试，先确认 RED（`true !== false`），完成最小修改后 14 个 tips tests 全部通过；Pi 的 7 个 tests 继续通过。
+- `env -u NO_COLOR npm run check` 通过 28 个 tests 和 install dry-run；原始环境因外部 `NO_COLOR=1` 与“默认彩色”测试冲突而失败，未修改无关 CLI 行为。
+- JSON、Bash、hook parity、残留 lifecycle 契约、npm pack 与 `git diff --check` 通过；发布包保留两个 manifests、tips skill/doctor 和 Pi context extension。
+- Yao lint、governance 与 resource boundary 通过；聚合验证仅保留仓库既有的 `Missing agents/interface.yaml`，且 tips 仍没有可选的 `manifest.json` 治理元数据。
+- 已重装本机 `csl-agent-kit@csl-agent-market` local plugin；cache 验证 `tips=false`、`sop=true`。SOP hook 索引变化后需在新会话通过 `/hooks` 复核 trust。
+
+# 清理废弃 Agent Skills
+
+## 计划
+
+- [x] 删除 4 个上游明确 deprecated 的技能目录。
+- [x] 删除 4 个已重命名或移除的旧技能目录。
+- [x] 从 `~/.agents/.skill-lock.json` 删除对应安装记录。
+- [x] 验证目录、锁文件和当前有效替代技能，记录复核结果。
+
+## 复核
+
+- 已删除 `design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`diagnose`、`to-issues`、`to-prd` 和 `zoom-out`。
+- `~/.agents/.skill-lock.json` 可正常解析，8 个对应键和所有指向 `deprecated/` 的记录均已清除。
+- 逐项验证 8 个目录均不存在；有效替代技能 `diagnosing-bugs`、`to-spec`、`to-tickets` 仍存在。
+- Yao 安装一致性审计通过：42 条锁记录均有安装目录，35 个 `mattpocock/skills` 记录均指向当前上游文件，deprecated 与 stale 路径均为 0。
+- 未改动 `~/Desktop/test/skills` 上游参考仓库，也未清理 `~/.claude/skills` 等未授权目录。
+
 # 复核并提交 Codex Plugin Identity
 
 ## 计划

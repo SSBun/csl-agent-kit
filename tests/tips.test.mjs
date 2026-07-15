@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   chmodSync,
   cpSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -16,8 +17,11 @@ import test from "node:test";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const addScript = join(root, "skills", "tips", "scripts", "tips-add.sh");
-const injectScript = join(root, "skills", "tips", "scripts", "tips-inject.sh");
+const candidateScript = join(root, "skills", "tips", "scripts", "tips-candidates.js");
 const doctorScript = join(root, "skills", "tips", "scripts", "tips-doctor.sh");
+const injectScript = join(root, "skills", "tips", "scripts", "tips-inject.sh");
+const migrateScript = join(root, "skills", "tips", "scripts", "tips-migrate.sh");
+const storeScript = join(root, "skills", "tips", "scripts", "tips-store.js");
 
 function createDataDir() {
   return mkdtempSync(join(tmpdir(), "csl-tips-"));
@@ -45,23 +49,39 @@ function runAsync(script, args, dataDir) {
   });
 }
 
-function writeTips(dataDir, tips) {
+function writeJsonTips(dataDir, tips) {
   const tipsDir = join(dataDir, "tips");
   mkdirSync(tipsDir, { recursive: true });
-  writeFileSync(join(tipsDir, "tips.md"), [
-    "# Tips",
-    "",
-    "<!-- Short user preferences and commands. This file is injected into sessions by CSL Agent Kit hooks. -->",
-    "",
-    ...tips.map((tip) => `- ${tip}`),
-    "",
-  ].join("\n"));
+  writeFileSync(join(tipsDir, "tips.json"), `${JSON.stringify({ version: 1, tips }, null, 2)}\n`);
+}
+
+function writeTips(dataDir, texts) {
+  writeJsonTips(dataDir, texts.map((text) => ({ text, keywords: ["test"] })));
+}
+
+function writeLegacyTips(dataDir, tips) {
+  const tipsDir = join(dataDir, "tips");
+  mkdirSync(tipsDir, { recursive: true });
+  writeFileSync(join(tipsDir, "tips.md"), ["# Tips", "", ...tips.map((tip) => `- ${tip}`), ""].join("\n"));
+}
+
+function readJsonTips(dataDir) {
+  return JSON.parse(readFileSync(join(dataDir, "tips", "tips.json"), "utf8"));
+}
+
+function runCandidates(prompt, dataDir, extraEnv = {}) {
+  return spawnSync(process.execPath, [candidateScript], {
+    cwd: root,
+    encoding: "utf8",
+    input: JSON.stringify({ prompt }),
+    env: { ...process.env, CSL_AGENT_KIT_HOME: dataDir, ...extraEnv },
+  });
 }
 
 test("requires explicit confirmation before writing", () => {
   const dataDir = createDataDir();
   try {
-    const result = run(addScript, ["Keep final answers concise."], dataDir);
+    const result = run(addScript, ["--keywords", "answer", "Keep final answers concise."], dataDir);
     assert.equal(result.status, 2);
     assert.match(result.stderr, /without --confirmed/);
   } finally {
@@ -69,15 +89,20 @@ test("requires explicit confirmation before writing", () => {
   }
 });
 
-test("accepts 120 characters and rejects 121 characters", () => {
+test("requires keywords and writes a JSON tip within the text limit", () => {
   const dataDir = createDataDir();
   try {
-    const accepted = run(addScript, ["--confirmed", "a".repeat(120)], dataDir);
-    assert.equal(accepted.status, 0, accepted.stderr);
+    const missingKeywords = run(addScript, ["--confirmed", "Keep final answers concise."], dataDir);
+    assert.equal(missingKeywords.status, 2);
+    assert.match(missingKeywords.stderr, /--keywords/);
 
-    const rejected = run(addScript, ["--confirmed", "b".repeat(121)], dataDir);
+    const accepted = run(addScript, ["--confirmed", "--keywords", "answer,concise", "a".repeat(150)], dataDir);
+    assert.equal(accepted.status, 0, accepted.stderr);
+    assert.deepEqual(readJsonTips(dataDir).tips, [{ text: "a".repeat(150), keywords: ["answer", "concise"] }]);
+
+    const rejected = run(addScript, ["--confirmed", "--keywords", "answer", "b".repeat(151)], dataDir);
     assert.equal(rejected.status, 2);
-    assert.match(rejected.stderr, /120 characters or fewer/);
+    assert.match(rejected.stderr, /150 characters or fewer/);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
   }
@@ -88,7 +113,7 @@ test("counts Unicode characters consistently in the C locale", () => {
   try {
     const accepted = run(
       addScript,
-      ["--confirmed", "中".repeat(120)],
+      ["--confirmed", "--keywords", "中文", "中".repeat(150)],
       dataDir,
       { LC_ALL: "C" },
     );
@@ -96,35 +121,38 @@ test("counts Unicode characters consistently in the C locale", () => {
 
     const rejected = run(
       addScript,
-      ["--confirmed", "文".repeat(121)],
+      ["--confirmed", "--keywords", "中文", "文".repeat(151)],
       dataDir,
       { LC_ALL: "C" },
     );
     assert.equal(rejected.status, 2);
-    assert.match(rejected.stderr, /121 characters/);
+    assert.match(rejected.stderr, /151 characters/);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
   }
 });
 
-test("rejects blank, multiline, and duplicate tips", () => {
+test("rejects blank, multiline, duplicate, and malformed keyworded tips", () => {
   const dataDir = createDataDir();
   try {
-    const blank = run(addScript, ["--confirmed", "   "], dataDir);
+    const blank = run(addScript, ["--confirmed", "--keywords", "answer", "   "], dataDir);
     assert.equal(blank.status, 2);
     assert.match(blank.stderr, /cannot be blank/);
 
-    const multiline = run(addScript, ["--confirmed", "First line\nSecond line"], dataDir);
+    const multiline = run(addScript, ["--confirmed", "--keywords", "answer", "First line\nSecond line"], dataDir);
     assert.equal(multiline.status, 2);
     assert.match(multiline.stderr, /single line/);
 
-    writeTips(dataDir, ["Show absolute file paths."]);
-    const tipsFile = join(dataDir, "tips", "tips.md");
-    writeFileSync(
-      tipsFile,
-      readFileSync(tipsFile, "utf8").replace("- Show absolute", "  - Show absolute"),
-    );
-    const duplicate = run(addScript, ["--confirmed", "Show absolute file paths."], dataDir);
+    const emptyKeyword = run(addScript, ["--confirmed", "--keywords", "answer,,format", "Use plain text."], dataDir);
+    assert.equal(emptyKeyword.status, 2);
+    assert.match(emptyKeyword.stderr, /non-empty/);
+
+    const wildcard = run(addScript, ["--confirmed", "--keywords", "*", "Apply this everywhere."], dataDir);
+    assert.equal(wildcard.status, 2);
+    assert.match(wildcard.stderr, /The "\*" keyword is not supported/);
+
+    writeJsonTips(dataDir, [{ text: "Show absolute file paths.", keywords: ["path"] }]);
+    const duplicate = run(addScript, ["--confirmed", "--keywords", "path", "Show absolute file paths."], dataDir);
     assert.equal(duplicate.status, 2);
     assert.match(duplicate.stderr, /already exists/);
     assert.doesNotMatch(duplicate.stderr, /timed out/);
@@ -137,7 +165,7 @@ test("rejects a twenty-first tip", () => {
   const dataDir = createDataDir();
   try {
     writeTips(dataDir, Array.from({ length: 20 }, (_, index) => `Saved tip ${index + 1}.`));
-    const result = run(addScript, ["--confirmed", "One more tip."], dataDir);
+    const result = run(addScript, ["--confirmed", "--keywords", "more", "One more tip."], dataDir);
     assert.equal(result.status, 2);
     assert.match(result.stderr, /20 tips/);
   } finally {
@@ -145,38 +173,36 @@ test("rejects a twenty-first tip", () => {
   }
 });
 
-test("serializes concurrent additions without exceeding the hard limit", async () => {
+test("serializes concurrent JSON additions without exceeding the hard limit", async () => {
   const dataDir = createDataDir();
   try {
     const results = await Promise.all(
       Array.from(
         { length: 30 },
-        (_, index) => runAsync(addScript, ["--confirmed", `Concurrent tip ${index + 1}.`], dataDir),
+        (_, index) => runAsync(addScript, ["--confirmed", "--keywords", "concurrent", `Concurrent tip ${index + 1}.`], dataDir),
       ),
     );
-    const saved = readFileSync(join(dataDir, "tips", "tips.md"), "utf8");
-    const tips = saved.split("\n").filter((line) => line.startsWith("- "));
+    const saved = readJsonTips(dataDir);
 
     assert.equal(results.filter((result) => result.status === 0).length, 20);
-    assert.equal(tips.length, 20);
-    assert.equal(new Set(tips).size, 20);
-    assert.equal(saved.match(/^# Tips$/gm)?.length, 1);
+    assert.equal(saved.tips.length, 20);
+    assert.equal(new Set(saved.tips.map((tip) => tip.text)).size, 20);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
   }
 });
 
-test("reuses a lock file after its previous process exits", () => {
+test("reuses a JSON lock file after its previous process exits", () => {
   const dataDir = createDataDir();
   const tipsDir = join(dataDir, "tips");
-  const lockFile = join(tipsDir, "tips.md.lock");
+  const lockFile = join(tipsDir, "tips.json.lock");
   try {
     mkdirSync(tipsDir, { recursive: true });
     writeFileSync(lockFile, "stale contents\n");
 
-    const result = run(addScript, ["--confirmed", "Recovered tip."], dataDir);
+    const result = run(addScript, ["--confirmed", "--keywords", "recover", "Recovered tip."], dataDir);
     assert.equal(result.status, 0, result.stderr);
-    assert.equal(readFileSync(join(tipsDir, "tips.md"), "utf8").includes("Recovered tip."), true);
+    assert.equal(readJsonTips(dataDir).tips[0].text, "Recovered tip.");
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
   }
@@ -190,7 +216,7 @@ test("accepts exactly 20 tips and 2000 total tip characters", () => {
       (_, index) => `${String(index).padStart(2, "0")}${"x".repeat(97)}`,
     );
     writeTips(dataDir, existing);
-    const result = run(addScript, ["--confirmed", "y".repeat(119)], dataDir);
+    const result = run(addScript, ["--confirmed", "--keywords", "limit", "y".repeat(119)], dataDir);
     assert.equal(result.status, 0, result.stderr);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
@@ -205,7 +231,7 @@ test("rejects additions that exceed 2000 total tip characters", () => {
       (_, index) => `${String(index).padStart(2, "0")}${"x".repeat(98)}`,
     );
     writeTips(dataDir, existing);
-    const result = run(addScript, ["--confirmed", "y".repeat(101)], dataDir);
+    const result = run(addScript, ["--confirmed", "--keywords", "limit", "y".repeat(101)], dataDir);
     assert.equal(result.status, 2);
     assert.match(result.stderr, /2,000 total characters/);
   } finally {
@@ -213,34 +239,28 @@ test("rejects additions that exceed 2000 total tip characters", () => {
   }
 });
 
-test("injects saved tips as confirmed mandatory instructions", () => {
+test("renders a complete JSON tips preview on demand", () => {
   const dataDir = createDataDir();
   try {
-    writeTips(dataDir, ["Keep final answers concise."]);
+    writeJsonTips(dataDir, [{ text: "Keep final answers concise.", keywords: ["answer"] }]);
     const result = run(injectScript, [], dataDir);
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /CONFIRMED PERSISTENT USER INSTRUCTIONS/);
-    assert.match(result.stdout, /mandatory whenever applicable, not optional suggestions/);
-    assert.match(result.stdout, /Before responding or using tools/);
+    assert.match(result.stdout, /Confirmed saved user instructions \(follow when applicable unless higher-priority instructions conflict\):/);
+    assert.doesNotMatch(result.stdout, /Before responding or using tools|Loaded from/);
     assert.match(result.stdout, /Keep final answers concise/);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
   }
 });
 
-test("injects tips from the configured file override", () => {
+test("reads a JSON tips file from the configured file override", () => {
   const dataDir = createDataDir();
   const customDir = createDataDir();
   try {
-    writeTips(dataDir, ["Default tip."]);
-    writeTips(customDir, ["Custom tip."]);
-    const customFile = join(customDir, "tips", "tips.md");
-    const result = run(
-      injectScript,
-      [],
-      dataDir,
-      { CSL_AGENT_KIT_TIPS_FILE: customFile },
-    );
+    writeJsonTips(dataDir, [{ text: "Default tip.", keywords: ["default"] }]);
+    writeJsonTips(customDir, [{ text: "Custom tip.", keywords: ["custom"] }]);
+    const customFile = join(customDir, "tips", "tips.json");
+    const result = run(injectScript, [], dataDir, { CSL_AGENT_KIT_TIPS_FILE: customFile });
     assert.match(result.stdout, /Custom tip/);
     assert.doesNotMatch(result.stdout, /Default tip/);
   } finally {
@@ -249,31 +269,145 @@ test("injects tips from the configured file override", () => {
   }
 });
 
-test("doctor reports limits, malformed data, preview, and lifecycle coverage", () => {
+test("injects only JSON tips whose keywords match the prompt", () => {
   const dataDir = createDataDir();
   try {
-    const duplicate = "中".repeat(121);
-    writeTips(dataDir, [duplicate, duplicate]);
-    const tipsFile = join(dataDir, "tips", "tips.md");
-    writeFileSync(tipsFile, `${readFileSync(tipsFile, "utf8")}unexpected continuation\n`);
+    writeJsonTips(dataDir, [
+      { text: "修复前先说明根因。", keywords: ["修复", "bug"] },
+      { text: "用 Typora 打开生成的 Markdown 文件。", keywords: ["Typora", "Markdown"] },
+      { text: "不要发送可选的过程更新。", keywords: ["commentary"] },
+    ]);
 
-    const result = run(doctorScript, [], dataDir, { LC_ALL: "C" });
+    const result = runCandidates("Please fix this BUG.", dataDir);
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /120 characters per tip/);
-    assert.match(result.stdout, /warning: overlong tips/);
-    assert.match(result.stdout, /121 characters/);
-    assert.match(result.stdout, /warning: duplicate tips/);
-    assert.match(result.stdout, /warning: malformed or multiline content/);
-    assert.match(result.stdout, /hook_lifecycle: UserPromptSubmit=found/);
-    assert.match(result.stdout, /pi_lifecycle: before_agent_start=found/);
-    assert.match(result.stdout, /Injection preview:/);
-    assert.match(result.stdout, /CONFIRMED PERSISTENT USER INSTRUCTIONS/);
+    assert.match(result.stdout, /Confirmed user instructions matching this prompt \(follow unless higher-priority instructions conflict\):/);
+    assert.doesNotMatch(result.stdout, /Before responding or using tools|Loaded from|These instructions were explicitly confirmed/);
+    assert.match(result.stdout, /修复前先说明根因/);
+    assert.doesNotMatch(result.stdout, /不要发送可选的过程更新/);
+    assert.doesNotMatch(result.stdout, /Typora/);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
   }
 });
 
-test("doctor finds lifecycle files in an installed package without git metadata", () => {
+test("silently ignores a stale wildcard tip instead of matching every prompt", () => {
+  const dataDir = createDataDir();
+  try {
+    writeJsonTips(dataDir, [{ text: "Apply this everywhere.", keywords: ["*"] }]);
+    const result = runCandidates("Any unrelated prompt.", dataDir);
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout, "");
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("migrates a confirmed legacy tips file with its exact keyword mapping", () => {
+  const dataDir = createDataDir();
+  const legacyTips = ["Show absolute file paths.", "Use Typora for Markdown."];
+  try {
+    writeLegacyTips(dataDir, legacyTips);
+    const legacyFile = join(dataDir, "tips", "tips.md");
+    const sameFile = run(migrateScript, [
+      "--confirmed",
+      "--keywords-json",
+      JSON.stringify({
+        "Show absolute file paths.": ["path", "Markdown"],
+        "Use Typora for Markdown.": ["Typora", "Markdown"],
+      }),
+      "--destination",
+      legacyFile,
+    ], dataDir);
+    assert.equal(sameFile.status, 2);
+    assert.match(sameFile.stderr, /must be different files/);
+
+    const result = run(migrateScript, [
+      "--confirmed",
+      "--keywords-json",
+      JSON.stringify({
+        "Show absolute file paths.": ["path", "Markdown"],
+        "Use Typora for Markdown.": ["Typora", "Markdown"],
+      }),
+    ], dataDir);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(readJsonTips(dataDir).tips, [
+      { text: "Show absolute file paths.", keywords: ["path", "Markdown"] },
+      { text: "Use Typora for Markdown.", keywords: ["Typora", "Markdown"] },
+    ]);
+    assert.equal(existsSync(join(dataDir, "tips", "tips.md")), false);
+    assert.equal(existsSync(join(dataDir, "tips", "tips.md.bak")), true);
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("preserves legacy data when a migration violates the tip length limit", () => {
+  const dataDir = createDataDir();
+  const overlong = "x".repeat(151);
+  try {
+    writeLegacyTips(dataDir, [overlong]);
+    const result = run(migrateScript, [
+      "--confirmed",
+      "--keywords-json",
+      JSON.stringify({ [overlong]: ["limit"] }),
+    ], dataDir);
+
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /150 characters or fewer/);
+    assert.equal(existsSync(join(dataDir, "tips", "tips.md")), true);
+    assert.equal(existsSync(join(dataDir, "tips", "tips.json")), false);
+    assert.equal(existsSync(join(dataDir, "tips", "tips.md.bak")), false);
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("uses prompt-time tips candidates while preserving SOP candidates", () => {
+  for (const relativePath of ["hooks/hooks.json", ".codex-plugin/hooks/hooks.json"]) {
+    const document = JSON.parse(readFileSync(join(root, relativePath), "utf8"));
+    const sessionCommands = ["SessionStart", "PostCompact"].flatMap((eventName) => (document.hooks[eventName] || []))
+      .flatMap((entry) => entry.hooks || [])
+      .map((hook) => hook.command || "");
+    const promptCommands = (document.hooks.UserPromptSubmit || [])
+      .flatMap((entry) => entry.hooks || [])
+      .map((hook) => hook.command || "");
+
+    assert.equal(sessionCommands.some((command) => command.includes("tips-inject.sh")), false);
+    assert.equal(promptCommands.some((command) => command.includes("tips-candidates.js")), true);
+    assert.equal(promptCommands.some((command) => command.includes("sop-candidates.js")), true);
+  }
+});
+
+test("doctor reports JSON validation, preview, and candidate lifecycle coverage", () => {
+  const dataDir = createDataDir();
+  try {
+    writeJsonTips(dataDir, [
+      { text: "中".repeat(151), keywords: ["诊断"] },
+      { text: "中".repeat(151), keywords: ["重复"] },
+    ]);
+
+    const invalid = run(doctorScript, [], dataDir, { LC_ALL: "C" });
+    assert.equal(invalid.status, 0, invalid.stderr);
+    assert.match(invalid.stdout, /150 characters per tip/);
+    assert.match(invalid.stdout, /warning: overlong tips/);
+    assert.match(invalid.stdout, /151 characters/);
+    assert.match(invalid.stdout, /warning: duplicate tips/);
+    assert.match(invalid.stdout, /warning: invalid tips data/);
+
+    writeJsonTips(dataDir, [{ text: "Show absolute file paths.", keywords: ["path"] }]);
+    const valid = run(doctorScript, [], dataDir);
+    assert.match(valid.stdout, /hook_lifecycle: UserPromptSubmit=found/);
+    assert.match(valid.stdout, /hook_lifecycle: SessionStart=not-used/);
+    assert.match(valid.stdout, /pi_lifecycle: before_agent_start=found/);
+    assert.match(valid.stdout, /Injection preview:/);
+    assert.match(valid.stdout, /Confirmed saved user instructions/);
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("doctor finds candidate lifecycle files in an installed package without git metadata", () => {
   const fixture = createDataDir();
   const packageRoot = join(fixture, "package");
   const scriptsDir = join(packageRoot, "skills", "tips", "scripts");
@@ -283,23 +417,20 @@ test("doctor finds lifecycle files in an installed package without git metadata"
     mkdirSync(join(packageRoot, "hooks"), { recursive: true });
     mkdirSync(join(packageRoot, ".codex-plugin", "hooks"), { recursive: true });
     mkdirSync(join(packageRoot, "pi", "extensions"), { recursive: true });
-    cpSync(doctorScript, copiedDoctor);
-    cpSync(injectScript, join(scriptsDir, "tips-inject.sh"));
-    const minifiedHooks = JSON.stringify(
-      JSON.parse(readFileSync(join(root, "hooks", "hooks.json"), "utf8")),
-    );
+    for (const script of [doctorScript, injectScript, storeScript, candidateScript]) {
+      cpSync(script, join(scriptsDir, script.split("/").at(-1)));
+    }
+    const minifiedHooks = JSON.stringify(JSON.parse(readFileSync(join(root, "hooks", "hooks.json"), "utf8")));
     writeFileSync(join(packageRoot, "hooks", "hooks.json"), minifiedHooks);
     writeFileSync(join(packageRoot, ".codex-plugin", "hooks", "hooks.json"), minifiedHooks);
-    cpSync(
-      join(root, "pi", "extensions", "csl-context-hooks.ts"),
-      join(packageRoot, "pi", "extensions", "csl-context-hooks.ts"),
-    );
+    cpSync(join(root, "pi", "extensions", "csl-context-hooks.ts"), join(packageRoot, "pi", "extensions", "csl-context-hooks.ts"));
     chmodSync(copiedDoctor, 0o755);
     chmodSync(join(scriptsDir, "tips-inject.sh"), 0o755);
 
     const result = run(copiedDoctor, [], join(fixture, "data"));
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /hook_lifecycle: UserPromptSubmit=found/);
+    assert.match(result.stdout, /hook_lifecycle: SessionStart=not-used/);
     assert.match(result.stdout, /pi_lifecycle: before_agent_start=found/);
   } finally {
     rmSync(fixture, { recursive: true, force: true });

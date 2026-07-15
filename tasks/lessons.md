@@ -1,5 +1,17 @@
 # Lessons
 
+## 2026-07-14 Preserve Confirmed Tip Text When Limits Change
+
+- **Trigger:** 迁移被 120 字符上限阻止后，用户要求将限制放宽到 150，而不是缩短 130 字符的原 tip。
+  - **Rule:** 当可配置的校验限制阻碍已确认用户内容时，先明确确认用户要调整限制还是改写内容；若用户选择调整限制，只更新该限制、对应边界测试和说明后再迁移。
+  - **Why:** 不得把用户已确认的持续指令静默缩短、改写或丢失。
+
+## 2026-07-14 Match Persistent Tips By Prompt Relevance
+
+- **Trigger:** 用户指出把整份 tips 注入上下文会造成重复，并要求每条 tip 带关键词、仅在 prompt 匹配时注入。
+  - **Rule:** 当持续指令只在特定任务中适用时，不要把整份文件作为通用 session context；存储显式关键词，并以当前 prompt 选择候选 tip。
+  - **Why:** session 级全量注入既会携带无关规则，也不能解决同一线程中反复注入导致的历史重复。
+
 ## 2026-07-14 Separate Product, Plugin, And Marketplace Names
 
 - **Trigger:** 为同一个 agent toolkit 设计项目名、plugin 名和 marketplace 名，尤其是平台 identity 使用 `<plugin>@<marketplace>` 时。

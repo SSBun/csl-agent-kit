@@ -1,6 +1,6 @@
 {
   "name": "@ssbun/csl-agent-kit",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Personal agent toolkit for skills, plugins, commands, hooks, and Pi extensions across Claude Code, Codex, Cursor, and Pi.",
   "author": {
     "name": "CSL"
@@ -25,6 +25,7 @@
     "pi/",
     "scripts/install.sh",
     "skills/",
+    "!skills/super-agent/references/AGENTS.md.backup-*",
     ".agents/plugins/",
     ".claude-plugin/",
     ".codex-plugin/",

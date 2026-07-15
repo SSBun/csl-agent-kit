@@ -132,6 +132,8 @@ async function resolveInstallTargets(options) {
     die("The prompts dependency is not installed. Run npm install, or use --target/--all for non-interactive install.");
   }
 
+  const savedSelection = loadInstallSelection();
+
   const response = await prompts([
     {
       type: "multiselect",
@@ -139,12 +141,7 @@ async function resolveInstallTargets(options) {
       message: "Select CSL Agent Kit integrations to install",
       hint: "Space to select. Enter to continue.",
       instructions: false,
-      choices: Object.entries(targets).map(([name, spec]) => ({
-        title: spec.title,
-        description: spec.description,
-        value: name,
-        selected: spec.default,
-      })),
+      choices: buildInstallChoices(savedSelection),
       min: 1,
     },
     {
@@ -163,7 +160,55 @@ async function resolveInstallTargets(options) {
   if (selected.some((name) => targets[name].external) && !response.confirmExternal) {
     die("External integrations were not confirmed.");
   }
+  try {
+    saveInstallSelection(selected);
+  } catch (error) {
+    console.error(`Warning: Could not remember install selections: ${error.message}`);
+  }
   return selected;
+}
+
+function buildInstallChoices(savedSelection) {
+  const selected = new Set(savedSelection || Object.entries(targets)
+    .filter(([, spec]) => spec.default)
+    .map(([name]) => name));
+  return Object.entries(targets).map(([name, spec]) => ({
+    title: spec.title,
+    description: spec.description,
+    value: name,
+    selected: selected.has(name),
+  }));
+}
+
+function loadInstallSelection(file = installSelectionFile()) {
+  try {
+    const value = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (value?.version !== 1 || !Array.isArray(value.selectedTargets)) return null;
+    const selected = Object.keys(targets).filter((name) => value.selectedTargets.includes(name));
+    return selected.length > 0 ? selected : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveInstallSelection(selectedTargets, file = installSelectionFile()) {
+  const selected = Object.keys(targets).filter((name) => selectedTargets.includes(name));
+  if (selected.length === 0) throw new Error("No valid install targets were selected.");
+
+  const directory = path.dirname(file);
+  const temporary = path.join(directory, `.${path.basename(file)}.${process.pid}.${Date.now()}.tmp`);
+  fs.mkdirSync(directory, { recursive: true });
+  try {
+    fs.writeFileSync(temporary, `${JSON.stringify({ version: 1, selectedTargets: selected }, null, 2)}\n`, { mode: 0o600 });
+    fs.renameSync(temporary, file);
+  } finally {
+    fs.rmSync(temporary, { force: true });
+  }
+}
+
+function installSelectionFile() {
+  const dataDir = process.env.CSL_AGENT_KIT_HOME || path.join(home(), ".csl-agent-kit");
+  return path.join(dataDir, "install-selection.json");
 }
 
 function validateTargets(selected) {
@@ -378,7 +423,15 @@ function die(message) {
   process.exit(2);
 }
 
-main().catch((error) => {
-  console.error(`Error: ${error.message}`);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  buildInstallChoices,
+  loadInstallSelection,
+  saveInstallSelection,
+};

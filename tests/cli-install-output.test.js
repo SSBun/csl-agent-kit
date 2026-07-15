@@ -1,10 +1,17 @@
 const assert = require("node:assert/strict");
 const { spawnSync } = require("node:child_process");
+const { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } = require("node:fs");
+const { tmpdir } = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
 const root = path.resolve(__dirname, "..");
 const cli = path.join(root, "bin/csl-agent-kit.js");
+const {
+  buildInstallChoices,
+  loadInstallSelection,
+  saveInstallSelection,
+} = require(cli);
 
 function run(args, env = {}) {
   return spawnSync(process.execPath, [cli, ...args], {
@@ -86,4 +93,60 @@ test("JSON output remains valid and color-free when --color is passed", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(JSON.parse(result.stdout).ok, true);
   assert.doesNotMatch(result.stdout, /\u001b\[/);
+});
+
+test("interactive checklist reuses the last confirmed selection", () => {
+  const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
+  const selectionFile = path.join(dataDir, "install-selection.json");
+  try {
+    saveInstallSelection(["codex-plugin", "pi"], selectionFile);
+
+    assert.deepEqual(loadInstallSelection(selectionFile), ["codex-plugin", "pi"]);
+    assert.deepEqual(
+      buildInstallChoices(loadInstallSelection(selectionFile))
+        .filter((choice) => choice.selected)
+        .map((choice) => choice.value),
+      ["codex-plugin", "pi"],
+    );
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("invalid saved selection falls back to the existing default checklist", () => {
+  const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
+  const selectionFile = path.join(dataDir, "install-selection.json");
+  try {
+    writeFileSync(selectionFile, "not json\n");
+
+    assert.equal(loadInstallSelection(selectionFile), null);
+    assert.deepEqual(
+      buildInstallChoices(loadInstallSelection(selectionFile))
+        .filter((choice) => choice.selected)
+        .map((choice) => choice.value),
+      ["cursor", "codex-skills", "repo-link"],
+    );
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("explicit target installs do not overwrite the saved interactive selection", () => {
+  const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
+  const selectionFile = path.join(dataDir, "install-selection.json");
+  try {
+    writeFileSync(selectionFile, `${JSON.stringify({ version: 1, selectedTargets: ["cursor", "pi"] })}\n`);
+    const result = run(["install", "--target", "codex-plugin", "--dry-run", "--json"], {
+      CSL_AGENT_KIT_HOME: dataDir,
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(existsSync(selectionFile), true);
+    assert.deepEqual(JSON.parse(readFileSync(selectionFile, "utf8")), {
+      version: 1,
+      selectedTargets: ["cursor", "pi"],
+    });
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
 });

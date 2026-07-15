@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-07-15
+
 ### Added
 
 - 新增 Pi tips/SOP lifecycle context hooks。
@@ -11,7 +13,9 @@
 ### Changed
 
 - Codex plugin identity 改为 `csl-agent-kit@csl-agent-market`，installer 会清理旧的 `csl@CSL` 和 `csl@csl` 注册。
-- tips 改为每轮注入已确认的持续用户指令，并增加长度、数量、重复和并发写入校验。
+- tips 改为带必填关键词的 JSON；Codex 与 Pi 每轮静默检查全部 tips，仅在当前 prompt 命中关键词时注入对应 tip；不再支持 `"*"` 全局关键词，旧 Markdown 可经确认后迁移并保留 `.bak` 备份。
+- tips 候选上下文压缩为一行适用/优先级说明和命中的条目，避免每轮重复注入冗余前言。
+- 交互式 `csl-agent-kit install` 会记住已确认的 integrations，并在下次打开 checklist 时自动预选；显式安装参数不会覆盖该记录。
 
 ### Removed
 
@@ -49,5 +53,6 @@
 - 旧 `~/.ssbun-skills/` 路径不再读取；用户数据只使用 `~/.csl-agent-kit/`。
 - 旧 `inject-may-agents` invocation 不再存在；改用 `super-agent`。
 
-[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.0.0
 [2.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v2.0.0
