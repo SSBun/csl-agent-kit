@@ -1,0 +1,20 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "把 https://github.com/example/skills 的选定技能整合进 CSL Agent Kit，并保留来源信息。",
+    "Import selected third-party skills from mattpocock/skills into this repository.",
+    "我有一个外部 skills 仓库链接，请列出候选技能让我选择导入。",
+    "检查已 vendor 的第三方技能是否有上游更新，并比较本地副本。"
+  ],
+  "should_not_trigger": [
+    "Install the existing research skill into ~/.agents/skills.",
+    "Create a new skill from our deployment SOP.",
+    "Update this repository's README skill table."
+  ],
+  "near_neighbor": [
+    "比较当前 vendor 技能与上游文档的差异，但不要导入任何内容。",
+    "把这个 skills 包安装为全局 Codex symlink。",
+    "列出当前 CSL Agent Kit 已有的全部技能。",
+    "将 CSV 导入当前应用的数据库。"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "fallback_positive_concepts": ["third_party_skill_import"],
+  "positive_concepts": {
+    "third_party_skill_import": {
+      "weight": 1.0,
+      "phrases": [
+        "third-party skills",
+        "third party skills",
+        "external skills",
+        "skills repository",
+        "import selected skills",
+        "vendor skills",
+        "upstream skill update",
+        "compare local skill with upstream",
+        "第三方技能",
+        "外部 skills",
+        "技能仓库",
+        "整合进 csl agent kit",
+        "检查第三方技能更新",
+        "比较本地副本"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "global_installation": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "~/.agents/skills",
+        "global codex symlink",
+        "全局 codex symlink",
+        "全局安装"
+      ]
+    },
+    "do_not_import": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "do not import",
+        "不要导入",
+        "不导入任何内容"
+      ]
+    }
+  }
+}

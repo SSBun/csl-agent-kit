@@ -11,6 +11,7 @@ const result = spawnSync(process.execPath, [
   "--experimental-strip-types",
   "--test",
   "tests/pi-context-hooks.test.mjs",
+  "tests/pi-skill-commands.test.mjs",
 ], { stdio: "inherit" });
 
 process.exit(result.status ?? 1);

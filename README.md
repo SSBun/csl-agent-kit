@@ -1,6 +1,6 @@
 # CSL Agent Kit
 
-Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-code), [Cursor](https://cursor.com/docs/plugins), [Codex](https://developers.openai.com/codex/skills), and [Pi](https://pi.dev). It packages reusable skills, plugins, commands, hooks, and Pi extensions. Skills follow the open [Agent Skills](https://agentskills.io) standard (`skills/<name>/SKILL.md`).
+Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-code), [Cursor](https://cursor.com/docs/plugins), [Codex](https://developers.openai.com/codex/skills), and [Pi](https://pi.dev). It packages reusable skills, plugins, commands, hooks, and Pi extensions. Skills follow the open [Agent Skills](https://agentskills.io) standard; CSL recursively discovers leaf `SKILL.md` files below `skills/`.
 
 ## Skills
 
@@ -11,6 +11,18 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | analyze-project | `/csl:analyze-project` | `/analyze-project` | Deep multi-report project analysis. |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | grill-me | `/csl:grill-me` | `/grill-me` | Stress-test a plan or design through relentless questioning. |
+| code-review | `/csl:code-review` | `/code-review` | 按代码规范与原始需求审查改动。 |
+| domain-modeling | `/csl:domain-modeling` | `/domain-modeling` | 建立领域术语、统一语言与架构决策。 |
+| grill-with-docs | `/csl:grill-with-docs` | `/grill-with-docs` | 深入澄清方案，并同步产出 ADR 与术语文档。 |
+| improve-codebase-architecture | `/csl:improve-codebase-architecture` | `/improve-codebase-architecture` | 扫描架构改进机会并生成可视化报告。 |
+| research | `/csl:research` | `/research` | 基于高可信来源调研并产出带引用的 Markdown。 |
+| resolving-merge-conflicts | `/csl:resolving-merge-conflicts` | `/resolving-merge-conflicts` | 按双方意图解决进行中的 merge 或 rebase 冲突。 |
+| tdd | `/csl:tdd` | `/tdd` | 以 red-green-refactor 流程进行测试驱动开发。 |
+| grilling | `/csl:grilling` | `/grilling` | 对计划、决策或想法进行逐项压力测试。 |
+| handoff | `/csl:handoff` | `/handoff` | 将当前对话压缩为可继续工作的交接文档。 |
+| teach | `/csl:teach` | `/teach` | 在当前工作区中分多轮教授概念或技能。 |
+| writing-great-skills | `/csl:writing-great-skills` | `/writing-great-skills` | 编写和维护高质量 Agent Skill 的参考。 |
+| ubiquitous-language | `/csl:ubiquitous-language` | `/ubiquitous-language` | 提取 DDD 风格术语表；该技能在上游已废弃，但按用户选择保留。 |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
 | code-reviewer | `/csl:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
@@ -31,6 +43,25 @@ Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 This repository is the **canonical source** for CSL Agent Kit. Install via the [`csl-agent-kit` CLI](#csl-agent-kit-cli), [`npx skills`](#npx-skills-cursor-codex-and-other-agents), `pi install`, or each platform's plugin marketplace.
 
 If you also have same-named skills from other marketplaces or personal folders (e.g. `grill-me`, `create-app-icon`, `code-reviewer`), remove or rename those copies to avoid the agent loading the wrong version. After installing CSL Agent Kit, prefer invoking skills from this plugin only.
+
+第三方导入技能位于 `skills/<来源分组>/<技能名>/`。每个含 `SKILL.md` 的第三方叶子目录都必须有 `.repository.json`，记录上游仓库 URL、上游相对路径、导入 ref 与 commit、许可证及上游状态。该文件描述上游基线；更新时必须先比较本地改写，不能直接覆盖。
+
+### 检查第三方技能更新
+
+本仓库的 `.agents/skills/integrate-third-skills/` 附带只读 Git 子命令；它是项目本地流程，不会随 CSL 的共享技能、全局 Codex symlink 或 Pi 命令分发，并以 `metadata.internal: true` 从 `npx skills` 的普通可安装清单中排除：
+
+```bash
+# 汇总所有导入技能源路径的上游变化状态
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js status
+
+# 比较某项技能：上游自导入后的变化，以及当前上游与本地副本的差异
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff code-review
+
+# 需要完整 unified diff 时才输出补丁
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff code-review --patch
+```
+
+它们从 `.repository.json` 获取上游地址、ref 与导入 commit；不会更新本地技能或 `~/.agents/skills`。每个来源/ref 只在系统临时目录中检出一次上游，并在结束后删除。
 
 Removed skills (no longer shipped): `passing`, `receiving`.
 
@@ -63,7 +94,6 @@ csl-agent-kit install
 
 - Cursor local plugin
 - Codex skills symlinks
-- Repo-local `.agents/skills` link
 - Codex plugin hooks
 - Pi package
 
@@ -73,7 +103,7 @@ Non-interactive examples:
 
 ```bash
 csl-agent-kit install --yes
-csl-agent-kit install --target cursor,codex-skills,repo-link
+csl-agent-kit install --target cursor,codex-skills
 csl-agent-kit install --all --dry-run
 csl-agent-kit install --all --verbose
 csl-agent-kit install --all --json
@@ -85,7 +115,7 @@ The default output is a concise, colored integration summary. Add `--verbose` (`
 
 Use the [Agent Skills CLI](https://skills.sh/) to install individual skills or the full collection into `~/.agents/skills/` (Cursor and other agents discover this path automatically).
 
-**Install all 17 skills globally for Cursor:**
+**为 Cursor 全量安装 27 个技能：**
 
 ```bash
 npx skills add SSBun/csl-agent-kit --all -a cursor -g -y
@@ -164,7 +194,7 @@ The Pi package manifest in `package.json` exposes:
 
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
-- `pi/extensions/csl-skill-commands.ts`, dynamically discovering `skills/*/SKILL.md` and adding Cursor/Codex-style slash aliases such as `/repo-map`, `/code-reviewer`, and `/brainstorming`.
+- `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-reviewer`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：向 Pi 注入与当前 prompt 匹配的持续 tips 和 SOP 摘要，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
@@ -203,10 +233,10 @@ skills = true
 ```
 
 ```bash
-csl-agent-kit install --target codex-skills,codex-plugin,repo-link
+csl-agent-kit install --target codex-skills,codex-plugin
 ```
 
-对于 Codex，skills 链接到 `~/.agents/skills/`。`csl-agent-kit@csl-agent-market` plugin 仅负责 lifecycle hooks，因此同一 skill 不会被重复加载。它的 `UserPromptSubmit` hook 只注入关键词匹配的 tips 和匹配的 SOP candidates。重新运行安装器会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
+对于 Codex，共享 skills 链接到 `~/.agents/skills/`。`integrate-third-skills` 仅位于此仓库的 `.agents/skills/`，不会进入全局链接。`csl-agent-kit@csl-agent-market` plugin 仅负责 lifecycle hooks，因此同一 skill 不会被重复加载。它的 `UserPromptSubmit` hook 只注入关键词匹配的 tips 和匹配的 SOP candidates。重新运行安装器会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
 
 ### All platforms
 
@@ -218,11 +248,13 @@ csl-agent-kit install --all
 
 ```
 skills/                  # Shared skill source (all platforms)
+skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
+.agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest
 .cursor-plugin/          # Cursor plugin manifest
 .codex-plugin/           # Codex plugin manifest
 .agents/plugins/         # Codex repo marketplace
-.agents/skills           # Generated local symlink to skills/ (ignored)
+.agents/skills/          # 仅当前仓库发现的项目本地技能
 commands/                # Claude Code slash commands only
 hooks/                   # Codex lifecycle hooks bundled with the plugin
 pi/extensions/           # Pi-specific extensions and commands

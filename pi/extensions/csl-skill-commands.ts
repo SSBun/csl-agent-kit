@@ -41,15 +41,16 @@ function discoverSkills(root: string): SkillCommand[] {
 
 	return readdirSync(root)
 		.filter((entry) => isValidSkillName(entry))
-		.map((entry) => {
+		.flatMap((entry) => {
 			const skillDir = join(root, entry);
 			const skillFile = join(skillDir, "SKILL.md");
-			if (!statSync(skillDir).isDirectory() || !existsSync(skillFile)) return undefined;
+			if (!statSync(skillDir).isDirectory()) return [];
+			if (!existsSync(skillFile)) return discoverSkills(skillDir);
 
 			const frontmatter = readFrontmatter(skillFile);
 			if (!frontmatter?.description) {
 				console.warn(`[csl-skill-commands] Missing description in ${skillFile}; skipping /${entry}.`);
-				return undefined;
+				return [];
 			}
 
 			if (frontmatter.name && frontmatter.name !== entry) {
@@ -58,12 +59,11 @@ function discoverSkills(root: string): SkillCommand[] {
 				);
 			}
 
-			return {
+			return [{
 				name: entry,
 				description: frontmatter.description,
-			};
+			}];
 		})
-		.filter((skill): skill is SkillCommand => skill !== undefined)
 		.sort((a, b) => a.name.localeCompare(b.name));
 }
 

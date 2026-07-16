@@ -4,6 +4,22 @@
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-07-16
+
+### Added
+
+- 导入 13 个选定的 Matt Pocock skills，并为每个技能保留可比较上游更新的 `.repository.json` 元数据。
+- 新增仅当前仓库可发现的 `integrate-third-skills` 流程及上游状态/差异检查脚本。
+
+### Changed
+
+- `csl-agent-kit install` 的默认选择改为 Codex skills symlinks 与 Codex plugin hooks。
+- CLI 与 Pi 递归发现共享 `skills/` 下的叶子技能，以支持按来源分组的第三方技能。
+
+### Removed
+
+- 移除 `Repo-local .agents/skills links` 安装目标；`.agents/skills/` 仅用于项目本地技能。
+
 ## [3.0.0] - 2026-07-15
 
 ### Added
@@ -53,6 +69,7 @@
 - 旧 `~/.ssbun-skills/` 路径不再读取；用户数据只使用 `~/.csl-agent-kit/`。
 - 旧 `inject-may-agents` invocation 不再存在；改用 `super-agent`。
 
-[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.1.0
 [3.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.0.0
 [2.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v2.0.0

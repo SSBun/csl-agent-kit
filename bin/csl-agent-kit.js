@@ -10,7 +10,7 @@ const targets = {
   cursor: {
     title: "Cursor local plugin",
     description: "Link this package to ~/.cursor/plugins/local/csl.",
-    default: true,
+    default: false,
     external: false,
     run: installCursor,
   },
@@ -21,17 +21,10 @@ const targets = {
     external: false,
     run: installCodexSkills,
   },
-  "repo-link": {
-    title: "Repo-local .agents/skills link",
-    description: "Create .agents/skills -> ../skills for local tooling.",
-    default: true,
-    external: false,
-    run: installRepoLink,
-  },
   "codex-plugin": {
     title: "Codex plugin hooks",
     description: "Install csl-agent-kit@csl-agent-market and remove legacy Codex registrations.",
-    default: false,
+    default: true,
     external: true,
     run: installCodexPlugin,
   },
@@ -246,10 +239,6 @@ function installCodexSkills(options) {
   return changes;
 }
 
-function installRepoLink(options) {
-  return [ensureSymlink(path.join(repoRoot, ".agents/skills"), path.join(repoRoot, "skills"), options)];
-}
-
 function installCodexPlugin(options) {
   if (!options.dryRun && !hasCommand("codex")) {
     return [{ action: "skip", reason: "Codex CLI not found", command: "codex" }];
@@ -273,12 +262,16 @@ function installPi(options) {
   return runCommands([["pi", ["install", repoRoot], false]], options);
 }
 
-function discoverSkills() {
-  const skillsDir = path.join(repoRoot, "skills");
+function discoverSkills(skillsDir = path.join(repoRoot, "skills")) {
   return fs.readdirSync(skillsDir)
-    .map((name) => ({ name, path: path.join(skillsDir, name) }))
-    .filter((skill) => fs.statSync(skill.path).isDirectory())
-    .filter((skill) => fs.existsSync(path.join(skill.path, "SKILL.md")))
+    .flatMap((name) => {
+      const skillPath = path.join(skillsDir, name);
+      if (!fs.statSync(skillPath).isDirectory()) return [];
+      if (fs.existsSync(path.join(skillPath, "SKILL.md"))) {
+        return [{ name, path: skillPath }];
+      }
+      return discoverSkills(skillPath);
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -415,7 +408,7 @@ function printHelp() {
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-skills\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>  Comma-separated target list.\n  --all            Select every target.\n  --yes, -y        Select default local targets without prompting.\n  --dry-run        Print planned actions without changing files.\n  --verbose, -v    Show underlying paths and commands.\n  --color          Force ANSI colors.\n  --no-color       Disable ANSI colors.\n  --json           Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-skills\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>  Comma-separated target list.\n  --all            Select every target.\n  --yes, -y        Select default targets without prompting.\n  --dry-run        Print planned actions without changing files.\n  --verbose, -v    Show underlying paths and commands.\n  --color          Force ANSI colors.\n  --no-color       Disable ANSI colors.\n  --json           Print machine-readable result JSON.\n`);
 }
 
 function die(message) {

@@ -1,3 +1,149 @@
+# 发布 CSL Agent Kit 3.1.0
+
+状态：进行中（2026-07-16）
+
+## 目标
+
+- 将当前全部本地改动以 `3.1.0` minor 版本提交、打 tag、推送并发布到 npm。
+
+## 计划
+
+- [x] 更新版本元数据和 changelog，复核 npm 发布表面。
+- [x] 运行项目检查、npm 发布演练及已改技能/钩子的 Yao 审计。
+- [ ] 提交全部本地改动，创建并推送 `v3.1.0`，发布 npm 包并验证 registry。
+
+## 发布前复核
+
+- npm registry 仅有 `2.0.0`，目标 `3.1.0` 尚未发布；当前 npm 登录用户为 `ssbun`。
+- `npm run check` 的 45 项测试、`npx skills add . --list --full-depth`、`npm pack --dry-run --json` 与 `npm publish --dry-run --access public` 均通过；发布包含 133 个文件、13 份第三方来源元数据，未包含项目本地 `.agents/skills/` 流程。
+- Yao：`integrate-third-skills` 的 lint、资源边界与 11/11 trigger eval 通过；治理仅提示既有的无 `manifest.json` 约定。13 个导入上游技能均通过 lint；`code-review`、`improve-codebase-architecture`、`teach`、`ubiquitous-language`、`writing-great-skills` 超过 1,000-token 入口预算，保留上游原文以维持可比较更新性。
+
+# 收敛安装器默认选项并移除项目本地链接
+
+状态：已完成（2026-07-16）
+
+## 目标
+
+- `csl-agent-kit install` 在没有已保存选择时，仅默认勾选 `codex-skills` 与 `codex-plugin`。
+- 移除 `Repo-local .agents/skills links` 目标、实现、文档和测试；`.agents/skills/` 仅保留项目本地技能职责。
+
+## 计划
+
+- [x] 删除安装器中的 `repo-link` 目标及其专用逻辑，并调整默认目标。
+- [x] 更新 CLI 回归测试、README、忽略规则和工作区上下文。
+- [x] 运行全量检查、默认安装预览与差异检查，并完成复核。
+
+## 复核
+
+- 默认目标现在仅为 `codex-skills` 与 `codex-plugin`；Cursor 和 Pi 保留为可选目标。
+- `repo-link` 及其创建/迁移 `.agents/skills` 的实现已删除；显式传入该目标会以“Unknown target”失败。
+- `env -u NO_COLOR npm run check` 通过 45 项测试；其默认 dry-run JSON 仅返回这两个目标，`git diff --check` 通过。
+
+# 将 integrate-third-skills 限定为项目本地技能
+
+状态：已完成（2026-07-16）
+
+## 目标
+
+- `integrate-third-skills` 仅位于并由本仓库 `.agents/skills/` 发现，不再进入共享技能目录、全局 Codex symlink 安装或 Pi 命令发现。
+
+## 计划
+
+- [x] 检查现有 `.agents/skills` 链接、共享发现器和所有公开引用，确定最小迁移边界。
+- [x] 将技能和附带脚本迁入受版本控制的项目本地目录，并调整 CLI 的 repo-local 安装逻辑以保留该目录。
+- [x] 更新测试、README、忽略规则与工作区上下文，证明全局发现不再包含该技能而当前项目仍可发现它。
+- [x] 运行聚焦与全量验证、打包检查、差异检查和 `yao-meta-skill` 审计。
+
+## 复核
+
+- 已将 `skills/integrate-third-skills/` 迁至 `.agents/skills/integrate-third-skills/`；该目录不再是指向共享 `skills/` 的符号链接。
+- `metadata.internal: true` 让 `npx skills add . --list --full-depth` 只列出 27 项可安装共享技能；Codex 仍可在本仓库发现项目本地目录。
+- `csl-agent-kit install` 的 `codex-skills` 只处理共享技能；`repo-link` 现在在项目 `.agents/skills/` 中逐项链接共享技能，因此不会覆盖本地流程。
+- 临时副本验证了旧 `.agents/skills -> skills/` 链接会被 `repo-link` 迁移为真实目录，并生成共享技能的单独链接。
+- `env -u NO_COLOR npm run check` 通过 43 项测试；`quick_validate.py`、Yao lint、资源边界、治理和 11/11 trigger eval 通过。治理仅提示项目既有的无 `manifest.json` 约定。
+
+# 为第三方技能增加上游检查子命令
+
+## 计划
+
+- [x] 确认子命令作为 `integrate-third-skills` 的附带脚本实现，不扩展主安装 CLI。
+- [x] 设计 `status` 与 `diff <技能名>` 的只读 Git 契约、错误输出和临时目录边界。
+- [x] 实现脚本并更新技能说明、README 与最小回归测试。
+- [x] 运行聚焦与全量验证、打包检查和技能审计。
+
+## 复核
+
+- 新增 `skills/integrate-third-skills/scripts/third-party-skills.js`：`status` 按每个 `.repository.json` 的 `sourcePath` 判断上游内容是否变化；`diff <技能名>` 先展示导入后上游差异，再展示当前上游与本地副本的差异；`--patch` 才输出完整补丁。
+- 所有命令只读：每个 `repository/ref` 只在系统临时目录克隆一次，结束后删除；不修改 vendor 文件、`~/.agents/skills` 或 Git 工作树。`.repository.json` 从本地内容差异中排除，并拒绝越出上游仓库的 `sourcePath`。
+- 回归测试覆盖分支名称后缀误匹配、仓库有新提交但某技能路径未变、本地差异、元数据排除与路径越界拒绝；`env -u NO_COLOR npm run check` 通过 42 项测试，打包检查包含脚本，发现器仍列出 28 项技能。
+- `yao-meta-skill` lint、资源边界、治理与 11 条 trigger eval 通过；初始技能体为 509/1,000 token。治理仍仅警告项目既有的无 `manifest.json` 约定；`validate_skill.py` 仍仅要求未采用的 `agents/interface.yaml`，按现有避免一次性 agents 元数据目录的约定不新增。
+
+# 建立第三方技能集成流程
+
+## 计划
+
+- [x] 确认第三方技能以每个叶子技能目录为来源元数据边界，并定义最小 `.repository.json` 结构。
+- [x] 为现有 `skills/mattpocock/*/` 技能补充来源元数据。
+- [x] 创建 `integrate-third-skills` 技能，固化选择、导入、许可证、冲突、测试与审计流程。
+- [x] 添加回归覆盖、更新技能目录文档与数量，并完成验证和规则审计。
+
+## 复核
+
+- 13 个 `skills/mattpocock/<技能>/` 叶子目录各有 `.repository.json`；记录上游 URL、原始相对路径、`main`、导入 commit `66898f60e8c744e269f8ce06c2b2b99ce7660d5f`、MIT 与上游状态。`ubiquitous-language` 明确标记为 `deprecated`。
+- 新增 `skills/integrate-third-skills/`：接收第三方技能仓库链接后先列候选、等待选择，再按来源分组导入；它要求逐技能元数据、保留许可证、显式处理重名与本地修改，并禁止把源码导入误当作 `~/.agents/skills` 安装。
+- README 已说明第三方目录与元数据约定，技能总数更新为 28；CLI/Pi 回归测试验证新技能被发现，CLI 测试还验证现有第三方叶子和来源数据一一对应。
+- `env -u NO_COLOR npm run check` 通过 40 项测试；`npx skills add . --list --full-depth` 发现 28 项；`npm pack --dry-run --json` 包含新流程和全部来源文件；`git diff --check` 通过。未运行真实安装、发布或推送，`~/.agents/skills` 保持为空。
+- `yao-meta-skill` 的 lint、资源边界和治理审计通过；资源边界为 361/1,000 初始 token，路由 eval 10/10 通过。治理仅警告全项目采用的无 `manifest.json` 约定；聚合 `validate_skill.py` 仅要求未采用的 `agents/interface.yaml`，按既有“避免一次性 agents 元数据目录”约定不新增该目录。
+
+# 集成选定的 Matt Pocock Skills
+
+## 计划
+
+- [x] 确认 13 个选定上游技能、现有发现机制与同名 `grill-me` 冲突。
+- [x] 将选定技能放入专用的 `skills/mattpocock/` 目录，并移除顶层旧版 `grill-me` 以避免重复名称。
+- [x] 让 CLI 安装器和 Pi 命令发现递归识别该专用目录中的独立技能。
+- [x] 添加最小回归测试，验证嵌套技能进入 symlink 安装与 Pi 命令发现。
+- [x] 运行聚焦与全量检查、打包检查和 `yao-meta-skill` 审计。
+
+## 复核
+
+- 专用目录采用 `skills/mattpocock/<skill>/`；公开技能名保持上游原名，避免把来源前缀暴露给用户。
+- 现有顶层 `skills/grill-me` 与选定上游技能同名；将由专用目录版本替代，而不是同时保留两个候选。
+- 已导入 13 项用户指定的上游包，并保留 `skills/mattpocock/LICENSE`；`ubiquitous-language` 虽位于上游 `deprecated/`，仍按用户明确选择保留。
+- CLI 与 Pi 均改为在没有 `SKILL.md` 的分组目录中递归寻找叶子技能；Codex 安装 dry-run 现在为 27 个唯一名称创建 symlink 计划，Pi 新增别名回归测试。
+- 测试先确认 RED：新增 CLI 与 Pi 用例均找不到嵌套技能；实现后 `npm run check` 的 39 项测试通过，`npx skills add . --list --full-depth` 发现 27 项，`npm pack --dry-run` 包含 120 个文件与全部导入资源。
+- `yao-meta-skill` 审计记录上游包的既有质量缺口：13 项均缺少 `agents/interface.yaml`，5 项超过 1,000-token 入口预算，所有项缺少可选 `manifest.json`。为保持上游来源可更新且不引入一次性元数据，未做本地改写。
+- README 已更新为 27 个可安装技能，并说明 CSL 递归发现 `skills/` 下的叶子 `SKILL.md`；专用来源目录与上游已废弃技能的保留状态也已标注。
+
+# 纠正全局技能清理范围
+
+## 计划
+
+- [x] 确认用户要的是清空后的空目录，而不是按推荐清单重装。
+- [x] 删除 `~/.agents/skills` 的全部剩余条目，并清空对应技能锁记录。
+- [x] 从 Matt Pocock 上游列出全部可选技能；不执行任何整合或重装。
+
+## 复核
+
+- 上一轮错误地将“选择常用技能”理解成可立即重装；本轮以空目录为完成标准，整合清单须等待用户明确选择。
+- `~/.agents/skills` 已为空，`~/.agents/.skill-lock.json` 的 `skills` 映射也为空；没有保留或重装任何技能。
+- `npx skills@latest add mattpocock/skills --list --full-depth` 从上游发现 40 个技能；本轮仅列出它们，不执行 CSL Agent Kit 整合。
+
+# 精简全局 Agent Skills
+
+## 计划
+
+- [x] 对照 `mattpocock/skills` 当前 README 与本机目录，确定稳定、日常使用的最小技能集合。
+- [x] 清空 `~/.agents/skills` 及其过期锁记录，再从上游安装选定技能。
+- [x] 验证仅保留选定目录、每项均含 `SKILL.md`，并复核锁文件。
+
+## 复核
+
+- 选定集合：`grill-with-docs`、`grilling`、`to-spec`、`implement`、`tdd`、`diagnosing-bugs`、`code-review`、`research`、`codebase-design`、`domain-modeling`、`resolving-merge-conflicts`、`handoff`。它覆盖需求澄清、规格、实现、测试、诊断、审查、研究、设计和交接；`grilling` 是 `grill-with-docs` 的直接依赖。不安装上游标记为 `in-progress` 的技能，也不安装功能重叠的 `grill-me`、一次性项目配置的 `setup-matt-pocock-skills` 或依赖特定 issue tracker 的工作流。
+- 用户明确要求清空 `~/.agents/skills`，因此不保留其中的个人、第三方或旧版技能。
+- 已清除 57 个原有条目（包括 14 个 CSL Agent Kit 符号链接），并从 `mattpocock/skills` 的 `main` 重装选定 12 项；锁记录从 42 项收敛为相同的 12 项，来源均为 `mattpocock/skills`。
+- 目录枚举、12 个 `SKILL.md`、零符号链接及 `skills list --global --json` 均与预期一致。`yao-meta-skill` 审计发现上游 12 项均缺少 `agents/interface.yaml`；`code-review`、`codebase-design` 和 `diagnosing-bugs` 也超出其 1,000-token 入口预算。为保持上游技能原样，未在本地补丁修复这些上游质量问题。
+
 # 提交本地技能规则改动
 
 ## 计划

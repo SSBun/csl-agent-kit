@@ -11,8 +11,11 @@ node_modules/
 .vscode/
 .idea/
 
-# Local generated install state. Keep .agents/plugins tracked.
-.agents/skills
+# 仅跟踪项目本地的第三方技能集成流程。
+.agents/skills/*
+!.agents/skills/
+!.agents/skills/integrate-third-skills/
+!.agents/skills/integrate-third-skills/**
 
 # Project agent rules are tracked even if a global gitignore ignores AGENTS.md.
 !/AGENTS.md
