@@ -48,7 +48,7 @@ If you also have same-named skills from other marketplaces or personal folders (
 
 ### 检查第三方技能更新
 
-本仓库的 `.agents/skills/integrate-third-skills/` 附带只读 Git 子命令；它是项目本地流程，不会随 CSL 的共享技能、全局 Codex symlink 或 Pi 命令分发，并以 `metadata.internal: true` 从 `npx skills` 的普通可安装清单中排除：
+本仓库的 `.agents/skills/integrate-third-skills/` 附带只读 Git 子命令；它是项目本地流程，不会随 CSL 的共享技能、Codex plugin 或 Pi 命令分发，并以 `metadata.internal: true` 从 `npx skills` 的普通可安装清单中排除：
 
 ```bash
 # 汇总所有导入技能源路径的上游变化状态
@@ -93,8 +93,7 @@ csl-agent-kit install
 `csl-agent-kit install` opens an interactive checklist powered by `prompts` so you can choose integrations:
 
 - Cursor local plugin
-- Codex skills symlinks
-- Codex plugin hooks
+- Codex plugin (shared skills and lifecycle hooks)
 - Pi package
 
 交互式确认后会把勾选项保存到 `~/.csl-agent-kit/install-selection.json`，下次运行会自动预选这些项。显式的 `--target`、`--all` 与 `--yes` 保持一次性命令语义，不会改写这份记录。
@@ -103,7 +102,7 @@ Non-interactive examples:
 
 ```bash
 csl-agent-kit install --yes
-csl-agent-kit install --target cursor,codex-skills
+csl-agent-kit install --target cursor,codex-plugin
 csl-agent-kit install --all --dry-run
 csl-agent-kit install --all --verbose
 csl-agent-kit install --all --json
@@ -233,10 +232,12 @@ skills = true
 ```
 
 ```bash
-csl-agent-kit install --target codex-skills,codex-plugin
+csl-agent-kit install --target codex-plugin
 ```
 
-对于 Codex，共享 skills 链接到 `~/.agents/skills/`。`integrate-third-skills` 仅位于此仓库的 `.agents/skills/`，不会进入全局链接。`csl-agent-kit@csl-agent-market` plugin 仅负责 lifecycle hooks，因此同一 skill 不会被重复加载。它的 `UserPromptSubmit` hook 只注入关键词匹配的 tips 和匹配的 SOP candidates。重新运行安装器会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
+`csl-agent-kit@csl-agent-market` 是 Codex 的唯一默认安装目标；repository-root plugin 同时包含共享 `skills/` 与 `hooks/hooks.json`，不再创建 `~/.agents/skills` 链接。安装成功后，安装器会删除仍指向本包 `skills/` 树的旧 CSL symlink（包括已经失效的旧 skill 链接），但保留普通文件、目录与外部 symlink。dry-run 只报告这些迁移，不修改文件。
+
+`integrate-third-skills` 仅位于本仓库的 `.agents/skills/`，不会进入 Codex plugin。`UserPromptSubmit` hook 只注入关键词匹配的 tips 和 SOP candidates；hook scripts 从安装后的 plugin root 解析。重新运行安装器仍会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
 
 ### All platforms
 
@@ -252,8 +253,8 @@ skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest
 .cursor-plugin/          # Cursor plugin manifest
-.codex-plugin/           # Codex plugin manifest
-.agents/plugins/         # Codex repo marketplace
+.codex-plugin/           # Codex repository-root plugin manifest
+.agents/plugins/         # Codex repo marketplace pointing at the repository root
 .agents/skills/          # 仅当前仓库发现的项目本地技能
 commands/                # Claude Code slash commands only
 hooks/                   # Codex lifecycle hooks bundled with the plugin

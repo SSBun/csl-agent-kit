@@ -14,16 +14,9 @@ const targets = {
     external: false,
     run: installCursor,
   },
-  "codex-skills": {
-    title: "Codex skills symlinks",
-    description: "Link each skill into ~/.agents/skills/<name>.",
-    default: true,
-    external: false,
-    run: installCodexSkills,
-  },
   "codex-plugin": {
-    title: "Codex plugin hooks",
-    description: "Install csl-agent-kit@csl-agent-market and remove legacy Codex registrations.",
+    title: "Codex plugin",
+    description: "Install shared skills and hooks as csl-agent-kit@csl-agent-market.",
     default: true,
     external: true,
     run: installCodexPlugin,
@@ -231,19 +224,11 @@ function installCursor(options) {
   return [ensureSymlink(path.join(home(), ".cursor/plugins/local/csl"), repoRoot, options)];
 }
 
-function installCodexSkills(options) {
-  const changes = [];
-  for (const skill of discoverSkills()) {
-    changes.push(ensureSymlink(path.join(home(), ".agents/skills", skill.name), skill.path, options));
-  }
-  return changes;
-}
-
 function installCodexPlugin(options) {
   if (!options.dryRun && !hasCommand("codex")) {
     return [{ action: "skip", reason: "Codex CLI not found", command: "codex" }];
   }
-  return runCommands([
+  const changes = runCommands([
     ["codex", ["plugin", "remove", "csl-agent-kit@csl-agent-market", "--json"], true],
     ["codex", ["plugin", "remove", "csl@CSL", "--json"], true],
     ["codex", ["plugin", "remove", "csl@csl", "--json"], true],
@@ -253,6 +238,7 @@ function installCodexPlugin(options) {
     ["codex", ["plugin", "marketplace", "add", repoRoot, "--json"], false],
     ["codex", ["plugin", "add", "csl-agent-kit@csl-agent-market", "--json"], false],
   ], options);
+  return [...changes, ...removeLegacyCodexSkillLinks(options)];
 }
 
 function installPi(options) {
@@ -262,17 +248,60 @@ function installPi(options) {
   return runCommands([["pi", ["install", repoRoot], false]], options);
 }
 
-function discoverSkills(skillsDir = path.join(repoRoot, "skills")) {
-  return fs.readdirSync(skillsDir)
-    .flatMap((name) => {
-      const skillPath = path.join(skillsDir, name);
-      if (!fs.statSync(skillPath).isDirectory()) return [];
-      if (fs.existsSync(path.join(skillPath, "SKILL.md"))) {
-        return [{ name, path: skillPath }];
-      }
-      return discoverSkills(skillPath);
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
+function removeLegacyCodexSkillLinks(options) {
+  const skillsRoot = fs.realpathSync(path.join(repoRoot, "skills"));
+  const legacySkillsDir = path.join(home(), ".agents/skills");
+  let legacySkillsStat;
+  try {
+    legacySkillsStat = fs.lstatSync(legacySkillsDir);
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+  if (legacySkillsStat.isSymbolicLink() || !legacySkillsStat.isDirectory()) return [];
+
+  let entries;
+  try {
+    entries = fs.readdirSync(legacySkillsDir).sort();
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+
+  return entries.flatMap((name) => {
+    const target = path.join(legacySkillsDir, name);
+    let targetStat;
+    try {
+      targetStat = fs.lstatSync(target);
+    } catch (error) {
+      if (error.code === "ENOENT") return [];
+      throw error;
+    }
+    if (!targetStat.isSymbolicLink()) return [];
+
+    const linkedSource = fs.readlinkSync(target);
+    const source = path.isAbsolute(linkedSource)
+      ? path.normalize(linkedSource)
+      : path.resolve(path.dirname(target), linkedSource);
+    let resolvedSource;
+    try {
+      resolvedSource = fs.realpathSync(target);
+    } catch {
+      resolvedSource = null;
+    }
+    if (!isWithin(skillsRoot, source) && !isWithin(skillsRoot, resolvedSource)) return [];
+
+    const change = { action: "remove", target, source };
+    if (options.dryRun) return [{ ...change, dryRun: true }];
+    fs.unlinkSync(target);
+    return [change];
+  });
+}
+
+function isWithin(root, candidate) {
+  if (!candidate) return false;
+  const relative = path.relative(root, candidate);
+  return relative === "" || (!path.isAbsolute(relative) && relative !== ".." && !relative.startsWith(`..${path.sep}`));
 }
 
 function ensureSymlink(target, source, options) {
@@ -368,6 +397,7 @@ function summarizeChanges(changes, dryRun) {
   if (counts.symlink) parts.push(`${counts.symlink} ${plural(counts.symlink, "link")} ${dryRun ? "planned" : "updated"}`);
   if (counts.unchanged) parts.push(`${counts.unchanged} up to date`);
   if (counts.command) parts.push(`${counts.command} ${plural(counts.command, "command")} ${dryRun ? "planned" : "completed"}`);
+  if (counts.remove) parts.push(`${counts.remove} legacy ${plural(counts.remove, "link")} ${dryRun ? "planned for removal" : "removed"}`);
   if (counts.skip) parts.push(`${counts.skip} skipped`);
 
   return parts.join(" · ") || "no changes";
@@ -378,6 +408,7 @@ function printChangeDetails(changes, colors) {
     if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}`));
     if (change.action === "unchanged") console.log(colors.dim(`    ↳ ${change.target} (up to date)`));
     if (change.action === "command") console.log(colors.dim(`    ↳ ${change.command}${change.dryRun ? " (dry run)" : ""}`));
+    if (change.action === "remove") console.log(colors.dim(`    ↳ remove ${change.target} → ${change.source}${change.dryRun ? " (dry run)" : ""}`));
     if (change.action === "skip") console.log(colors.yellow(`    ↳ skipped: ${change.reason}`));
   }
 }
@@ -408,7 +439,7 @@ function printHelp() {
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-skills\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>  Comma-separated target list.\n  --all            Select every target.\n  --yes, -y        Select default targets without prompting.\n  --dry-run        Print planned actions without changing files.\n  --verbose, -v    Show underlying paths and commands.\n  --color          Force ANSI colors.\n  --no-color       Disable ANSI colors.\n  --json           Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>  Comma-separated target list.\n  --all            Select every target.\n  --yes, -y        Select default targets without prompting.\n  --dry-run        Print planned actions without changing files.\n  --verbose, -v    Show underlying paths and commands.\n  --color          Force ANSI colors.\n  --no-color       Disable ANSI colors.\n  --json           Print machine-readable result JSON.\n`);
 }
 
 function die(message) {

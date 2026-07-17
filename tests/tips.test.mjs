@@ -364,19 +364,17 @@ test("preserves legacy data when a migration violates the tip length limit", () 
 });
 
 test("uses prompt-time tips candidates while preserving SOP candidates", () => {
-  for (const relativePath of ["hooks/hooks.json", ".codex-plugin/hooks/hooks.json"]) {
-    const document = JSON.parse(readFileSync(join(root, relativePath), "utf8"));
-    const sessionCommands = ["SessionStart", "PostCompact"].flatMap((eventName) => (document.hooks[eventName] || []))
-      .flatMap((entry) => entry.hooks || [])
-      .map((hook) => hook.command || "");
-    const promptCommands = (document.hooks.UserPromptSubmit || [])
-      .flatMap((entry) => entry.hooks || [])
-      .map((hook) => hook.command || "");
+  const document = JSON.parse(readFileSync(join(root, "hooks/hooks.json"), "utf8"));
+  const sessionCommands = ["SessionStart", "PostCompact"].flatMap((eventName) => (document.hooks[eventName] || []))
+    .flatMap((entry) => entry.hooks || [])
+    .map((hook) => hook.command || "");
+  const promptCommands = (document.hooks.UserPromptSubmit || [])
+    .flatMap((entry) => entry.hooks || [])
+    .map((hook) => hook.command || "");
 
-    assert.equal(sessionCommands.some((command) => command.includes("tips-inject.sh")), false);
-    assert.equal(promptCommands.some((command) => command.includes("tips-candidates.js")), true);
-    assert.equal(promptCommands.some((command) => command.includes("sop-candidates.js")), true);
-  }
+  assert.equal(sessionCommands.some((command) => command.includes("tips-inject.sh")), false);
+  assert.equal(promptCommands.some((command) => command.includes("tips-candidates.js")), true);
+  assert.equal(promptCommands.some((command) => command.includes("sop-candidates.js")), true);
 });
 
 test("doctor reports JSON validation, preview, and candidate lifecycle coverage", () => {
@@ -415,14 +413,12 @@ test("doctor finds candidate lifecycle files in an installed package without git
   try {
     mkdirSync(scriptsDir, { recursive: true });
     mkdirSync(join(packageRoot, "hooks"), { recursive: true });
-    mkdirSync(join(packageRoot, ".codex-plugin", "hooks"), { recursive: true });
     mkdirSync(join(packageRoot, "pi", "extensions"), { recursive: true });
     for (const script of [doctorScript, injectScript, storeScript, candidateScript]) {
       cpSync(script, join(scriptsDir, script.split("/").at(-1)));
     }
     const minifiedHooks = JSON.stringify(JSON.parse(readFileSync(join(root, "hooks", "hooks.json"), "utf8")));
     writeFileSync(join(packageRoot, "hooks", "hooks.json"), minifiedHooks);
-    writeFileSync(join(packageRoot, ".codex-plugin", "hooks", "hooks.json"), minifiedHooks);
     cpSync(join(root, "pi", "extensions", "csl-context-hooks.ts"), join(packageRoot, "pi", "extensions", "csl-context-hooks.ts"));
     chmodSync(copiedDoctor, 0o755);
     chmodSync(join(scriptsDir, "tips-inject.sh"), 0o755);

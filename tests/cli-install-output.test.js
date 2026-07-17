@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const { spawnSync } = require("node:child_process");
-const { existsSync, lstatSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } = require("node:fs");
+const { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } = require("node:fs");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
@@ -25,16 +25,32 @@ function stripAnsi(text) {
   return text.replace(/\u001b\[[0-9;]*m/g, "");
 }
 
+function createFakeCodex(directory) {
+  const bin = path.join(directory, "bin");
+  const executable = path.join(bin, "codex");
+  mkdirSync(bin, { recursive: true });
+  writeFileSync(executable, `#!/bin/sh
+if [ "$1" = "--version" ]; then exit 0; fi
+if [ "$FAIL_PLUGIN_ADD" = "1" ] && [ "$1" = "plugin" ] && [ "$2" = "add" ]; then
+  echo "plugin add failed" >&2
+  exit 9
+fi
+exit 0
+`);
+  chmodSync(executable, 0o755);
+  return bin;
+}
+
 test("default install output is colorful and summarizes integrations without path noise", () => {
-  const result = run(["install", "--yes", "--dry-run"]);
+  const result = run(["install", "--yes", "--dry-run"], { NO_COLOR: undefined });
 
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /\u001b\[32m✓\u001b\[0m/);
   assert.match(stripAnsi(result.stdout), /CSL Agent Kit · install preview/);
   const plain = stripAnsi(result.stdout);
-  assert.match(plain, /✓ Codex skills symlinks\s+\d+ links planned/);
-  assert.match(plain, /✓ Codex plugin hooks\s+8 commands planned/);
+  assert.match(plain, /✓ Codex plugin\s+8 commands planned/);
   assert.doesNotMatch(plain, /Cursor local plugin/);
+  assert.doesNotMatch(plain, /Codex skills symlinks/);
   assert.doesNotMatch(plain, /Repo-local \.agents\/skills links/);
   assert.doesNotMatch(plain, /\/Users\//);
   assert.doesNotMatch(plain, /\.agents\/skills\/analyze-project/);
@@ -44,7 +60,9 @@ test("Codex plugin install migrates legacy identities", () => {
   const result = run(["install", "--target", "codex-plugin", "--dry-run", "--json"]);
 
   assert.equal(result.status, 0, result.stderr);
-  const commands = JSON.parse(result.stdout).results[0].changes.map((change) => change.command);
+  const commands = JSON.parse(result.stdout).results[0].changes
+    .filter((change) => change.action === "command")
+    .map((change) => change.command);
   assert.deepEqual(commands, [
     "codex plugin remove csl-agent-kit@csl-agent-market --json",
     "codex plugin remove csl@CSL --json",
@@ -58,39 +76,69 @@ test("Codex plugin install migrates legacy identities", () => {
 });
 
 test("verbose install output includes underlying paths", () => {
-  const result = run(["install", "--yes", "--dry-run", "--verbose"]);
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-codex-cleanup-"));
+  const home = path.join(directory, "home");
+  const legacySkills = path.join(home, ".agents", "skills");
+  mkdirSync(legacySkills, { recursive: true });
+  symlinkSync(path.join(root, "skills", "analyze-project"), path.join(legacySkills, "analyze-project"));
+  const result = run(["install", "--yes", "--dry-run", "--verbose"], { HOME: home });
 
-  assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /Codex skills symlinks/);
-  assert.match(result.stdout, /\.agents\/skills\/analyze-project/);
-  assert.match(result.stdout, /skills\/analyze-project/);
+  try {
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Codex plugin/);
+    assert.match(result.stdout, /remove .*\.agents\/skills\/analyze-project → .*skills\/analyze-project \(dry run\)/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
-test("Codex skill install discovers nested Matt Pocock skills but excludes project-local workflows", () => {
-  const result = run(["install", "--target", "codex-skills", "--dry-run", "--json"]);
+test("Codex plugin exports root skills and uses the root hook manifest", () => {
+  const manifest = JSON.parse(readFileSync(path.join(root, ".codex-plugin", "plugin.json"), "utf8"));
+  const marketplace = JSON.parse(readFileSync(path.join(root, ".agents", "plugins", "marketplace.json"), "utf8"));
+  const hooks = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8"));
+  const commands = Object.values(hooks.hooks).flatMap((entries) => entries)
+    .flatMap((entry) => entry.hooks || [])
+    .map((hook) => hook.command || "");
 
-  assert.equal(result.status, 0, result.stderr);
-  const changes = JSON.parse(result.stdout).results[0].changes;
-  const selectedNames = [
-    "code-review",
-    "domain-modeling",
-    "grill-me",
-    "grill-with-docs",
-    "grilling",
-    "handoff",
-    "improve-codebase-architecture",
-    "research",
-    "resolving-merge-conflicts",
-    "tdd",
-    "teach",
-    "ubiquitous-language",
-    "writing-great-skills",
-  ];
-  const mattPocockChanges = changes.filter((change) => change.source.includes(path.join("skills", "mattpocock")));
+  assert.equal(manifest.skills, "./skills/");
+  assert.equal(Object.hasOwn(manifest, "hooks"), false);
+  assert.equal(marketplace.plugins[0].source.path, "./");
+  assert.equal(commands.some((command) => command.includes("PLUGIN_ROOT")), true);
+  assert.equal(commands.some((command) => command.includes("CLAUDE_PLUGIN_ROOT")), true);
+  assert.equal(commands.some((command) => command.includes(".agents/skills")), false);
+  assert.equal(existsSync(path.join(root, ".codex-plugin", "hooks", "hooks.json")), false);
+});
 
-  assert.deepEqual(mattPocockChanges.map((change) => path.basename(change.target)).sort(), selectedNames);
-  assert.equal(changes.filter((change) => path.basename(change.target) === "grill-me").length, 1);
-  assert.equal(changes.some((change) => path.basename(change.target) === "integrate-third-skills"), false);
+test("root hook commands execute bundled scripts from plugin root variables", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-hook-root-"));
+  const pluginRoot = path.join(directory, "plugin");
+  const claudePluginRoot = path.join(directory, "claude-plugin");
+  const hook = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8"))
+    .hooks.SessionStart[0].hooks[0].command;
+  try {
+    for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
+      const script = path.join(fakeRoot, "skills", "sop-manager", "scripts", "sop-summaries.sh");
+      mkdirSync(path.dirname(script), { recursive: true });
+      writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' '${output}'\n`);
+      chmodSync(script, 0o755);
+    }
+
+    const pluginResult = spawnSync("/bin/sh", ["-c", hook], {
+      encoding: "utf8",
+      env: { ...process.env, HOME: path.join(directory, "home"), PLUGIN_ROOT: pluginRoot, CLAUDE_PLUGIN_ROOT: claudePluginRoot },
+    });
+    assert.equal(pluginResult.status, 0, pluginResult.stderr);
+    assert.equal(pluginResult.stdout.trim(), "plugin-root");
+
+    const claudeResult = spawnSync("/bin/sh", ["-c", hook], {
+      encoding: "utf8",
+      env: { ...process.env, HOME: path.join(directory, "home"), PLUGIN_ROOT: "", CLAUDE_PLUGIN_ROOT: claudePluginRoot },
+    });
+    assert.equal(claudeResult.status, 0, claudeResult.stderr);
+    assert.equal(claudeResult.stdout.trim(), "claude-plugin-root");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("third-party integration workflow is a tracked project-local skill", () => {
@@ -165,7 +213,9 @@ test("JSON output remains valid and color-free when --color is passed", () => {
   const result = run(["install", "--yes", "--dry-run", "--json", "--color"]);
 
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(JSON.parse(result.stdout).ok, true);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, true);
+  assert.deepEqual(payload.results.map((item) => item.target), ["codex-plugin"]);
   assert.doesNotMatch(result.stdout, /\u001b\[/);
 });
 
@@ -198,7 +248,7 @@ test("invalid saved selection falls back to the Codex default checklist", () => 
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
         .map((choice) => choice.value),
-      ["codex-skills", "codex-plugin"],
+      ["codex-plugin"],
     );
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
@@ -213,6 +263,18 @@ test("repo-local skills links are not an install target", () => {
   assert.doesNotMatch(result.stderr, /Valid targets: .*repo-link/);
 });
 
+test("Codex skill symlinks are no longer an install target or help option", () => {
+  const result = run(["install", "--target", "codex-skills", "--dry-run"]);
+  const help = run(["install", "--help"]);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unknown target: codex-skills/);
+  assert.doesNotMatch(result.stderr, /Valid targets: .*codex-skills/);
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, /codex-plugin/);
+  assert.doesNotMatch(help.stdout, /codex-skills/);
+});
+
 test("an obsolete repo-local saved selection falls back to the Codex defaults", () => {
   const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
   const selectionFile = path.join(dataDir, "install-selection.json");
@@ -224,10 +286,154 @@ test("an obsolete repo-local saved selection falls back to the Codex defaults", 
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
         .map((choice) => choice.value),
-      ["codex-skills", "codex-plugin"],
+      ["codex-plugin"],
     );
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("an obsolete Codex skills selection retains the valid plugin target", () => {
+  const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
+  const selectionFile = path.join(dataDir, "install-selection.json");
+  try {
+    writeFileSync(selectionFile, `${JSON.stringify({ version: 1, selectedTargets: ["codex-skills", "codex-plugin"] })}\n`);
+
+    assert.deepEqual(loadInstallSelection(selectionFile), ["codex-plugin"]);
+    assert.deepEqual(
+      buildInstallChoices(loadInstallSelection(selectionFile))
+        .filter((choice) => choice.selected)
+        .map((choice) => choice.value),
+      ["codex-plugin"],
+    );
+  } finally {
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("Codex plugin cleanup dry-run reports owned links without mutating them", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-codex-cleanup-"));
+  const home = path.join(directory, "home");
+  const legacySkills = path.join(home, ".agents", "skills");
+  const owned = path.join(legacySkills, "analyze-project");
+  const stale = path.join(legacySkills, "removed-csl-skill");
+  mkdirSync(legacySkills, { recursive: true });
+  symlinkSync(path.join(root, "skills", "analyze-project"), owned);
+  symlinkSync(path.join(root, "skills", "removed-csl-skill"), stale);
+
+  try {
+    const result = run(["install", "--target", "codex-plugin", "--dry-run", "--json"], { HOME: home });
+    assert.equal(result.status, 0, result.stderr);
+    const changes = JSON.parse(result.stdout).results[0].changes;
+    assert.equal(changes.slice(0, 8).every((change) => change.action === "command"), true);
+    assert.deepEqual(changes.slice(8).map((change) => ({
+      action: change.action,
+      target: path.basename(change.target),
+      dryRun: change.dryRun,
+    })), [
+      { action: "remove", target: "analyze-project", dryRun: true },
+      { action: "remove", target: "removed-csl-skill", dryRun: true },
+    ]);
+    assert.equal(lstatSync(owned).isSymbolicLink(), true);
+    assert.equal(lstatSync(stale).isSymbolicLink(), true);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("Codex plugin cleanup does not traverse a symlinked legacy skills directory", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-codex-cleanup-"));
+  const home = path.join(directory, "home");
+  const agentsDir = path.join(home, ".agents");
+  const legacySkills = path.join(agentsDir, "skills");
+  const externalSkills = path.join(directory, "external-skills");
+  const child = path.join(externalSkills, "analyze-project");
+  mkdirSync(agentsDir, { recursive: true });
+  mkdirSync(externalSkills);
+  symlinkSync(path.join(root, "skills", "analyze-project"), child);
+  symlinkSync(externalSkills, legacySkills);
+
+  try {
+    const result = run(["install", "--target", "codex-plugin", "--dry-run", "--json"], { HOME: home });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).results[0].changes.some((change) => change.action === "remove"), false);
+    assert.equal(lstatSync(legacySkills).isSymbolicLink(), true);
+    assert.equal(lstatSync(child).isSymbolicLink(), true);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("Codex plugin cleanup removes only owned links and is idempotent", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-codex-cleanup-"));
+  const home = path.join(directory, "home");
+  const legacySkills = path.join(home, ".agents", "skills");
+  const owned = path.join(legacySkills, "analyze-project");
+  const resolvedOwned = path.join(legacySkills, "repo-map");
+  const stale = path.join(legacySkills, "removed-csl-skill");
+  const regular = path.join(legacySkills, "tips");
+  const external = path.join(legacySkills, "release");
+  const brokenExternal = path.join(legacySkills, "broken-external");
+  const externalSource = path.join(directory, "external-release");
+  const ownedAlias = path.join(directory, "repo-map-alias");
+  const bin = createFakeCodex(directory);
+  mkdirSync(legacySkills, { recursive: true });
+  mkdirSync(regular);
+  mkdirSync(externalSource);
+  symlinkSync(path.join(root, "skills", "analyze-project"), owned);
+  symlinkSync(path.join(root, "skills", "removed-csl-skill"), stale);
+  symlinkSync(path.join(root, "skills", "repo-map"), ownedAlias);
+  symlinkSync(ownedAlias, resolvedOwned);
+  symlinkSync(externalSource, external);
+  symlinkSync(path.join(directory, "missing-external"), brokenExternal);
+  const env = { HOME: home, PATH: `${bin}${path.delimiter}${process.env.PATH}` };
+
+  try {
+    const first = run(["install", "--target", "codex-plugin", "--json"], env);
+    assert.equal(first.status, 0, first.stderr);
+    const changes = JSON.parse(first.stdout).results[0].changes;
+    assert.equal(changes.slice(0, 8).every((change) => change.action === "command"), true);
+    assert.deepEqual(changes.filter((change) => change.action === "remove")
+      .map((change) => path.basename(change.target)), ["analyze-project", "removed-csl-skill", "repo-map"]);
+    assert.equal(existsSync(owned), false);
+    assert.equal(existsSync(resolvedOwned), false);
+    assert.equal(existsSync(stale), false);
+    assert.equal(lstatSync(regular).isDirectory(), true);
+    assert.equal(lstatSync(external).isSymbolicLink(), true);
+    assert.equal(lstatSync(brokenExternal).isSymbolicLink(), true);
+
+    const second = run(["install", "--target", "codex-plugin", "--json"], env);
+    assert.equal(second.status, 0, second.stderr);
+    assert.equal(JSON.parse(second.stdout).results[0].changes.some((change) => change.action === "remove"), false);
+    assert.equal(lstatSync(regular).isDirectory(), true);
+    assert.equal(lstatSync(external).isSymbolicLink(), true);
+    assert.equal(lstatSync(brokenExternal).isSymbolicLink(), true);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("Codex plugin add failure leaves owned legacy links untouched", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-codex-cleanup-"));
+  const home = path.join(directory, "home");
+  const stale = path.join(home, ".agents", "skills", "removed-csl-skill");
+  const bin = createFakeCodex(directory);
+  mkdirSync(path.dirname(stale), { recursive: true });
+  symlinkSync(path.join(root, "skills", "removed-csl-skill"), stale);
+
+  try {
+    const result = run(["install", "--target", "codex-plugin", "--json"], {
+      FAIL_PLUGIN_ADD: "1",
+      HOME: home,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+    });
+    assert.equal(result.status, 1);
+    const pluginResult = JSON.parse(result.stdout).results[0];
+    assert.equal(pluginResult.ok, false);
+    assert.match(pluginResult.error, /codex plugin add .* failed: plugin add failed/);
+    assert.equal(lstatSync(stale).isSymbolicLink(), true);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
   }
 });
 

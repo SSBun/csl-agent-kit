@@ -12,7 +12,7 @@
       "name": "csl-agent-kit",
       "source": {
         "source": "local",
-        "path": "./.codex-plugin"
+        "path": "./"
       },
       "description": "CSL Agent Kit: skills, commands, hooks, and workflow tools for Claude Code, Codex, Cursor, and Pi.",
       "author": {

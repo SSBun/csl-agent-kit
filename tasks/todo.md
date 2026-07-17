@@ -1,3 +1,25 @@
+# 将 Codex 收敛为单一 repository-root plugin
+
+状态：已完成（2026-07-17）
+
+## 目标
+
+- 仅通过 `csl-agent-kit@csl-agent-market` 安装共享 skills 与 lifecycle hooks，不再创建第二份全局 skill symlink。
+- 在 plugin 安装成功后，只清理目标仍属于本包 canonical `skills/` 树的旧 CSL symlink。
+
+## 计划
+
+- [x] 将 repository root 作为 Codex plugin，并由 manifest 导出 `./skills/`、默认发现 root hooks。
+- [x] 移除 `codex-skills` target，增加 dry-run、所有权安全、失败顺序与幂等迁移测试。
+- [x] 更新 README、hook lifecycle 测试与安装文档，运行聚焦、全量、打包及 plugin 检查。
+
+## 复核
+
+- `.agents/plugins/marketplace.json` 指向 repository root；`.codex-plugin/hooks/hooks.json` 已删除，root hook commands 优先从 `PLUGIN_ROOT`、再从 `CLAUDE_PLUGIN_ROOT` 或开发仓库解析 scripts。
+- 清理会排序扫描 `~/.agents/skills` 的全部顶层条目；只删除 lexical 或 resolved target 位于本包 canonical `skills/` 树内的 symlink，因此可处理已从当前 skill 清单消失的 broken link，同时保留普通条目和外部 symlink。真实清理只在 plugin add 成功后发生，dry-run 不写入。
+- Node 22 下 `env -u NO_COLOR npm run check` 的 52 项测试全部通过；`npx skills add . --list --full-depth` 列出 27 个共享 skills，`npm pack --dry-run --json` 包含 132 个条目并正确包含 root skills/hooks/manifests/marketplace，未包含项目本地 `.agents/skills` 或已删除的 duplicate hook。
+- Plugin validator 的 manifest/interface 检查已满足；其唯一剩余报错是非递归地要求来源分组 `skills/mattpocock/` 本身含 `SKILL.md`，与本项目已验证的递归 27-skill 布局冲突。Yao production package/install audit 因此判定包与安装契约通过、validator 该项为已知工具限制；本次未改 `SKILL.md` routing semantics，trigger eval 不适用。
+
 # 发布 CSL Agent Kit 3.1.0
 
 状态：已完成（2026-07-16）

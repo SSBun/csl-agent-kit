@@ -35,11 +35,19 @@
     "grill-me",
     "beautiful-mermaid"
   ],
+  "skills": "./skills/",
   "interface": {
     "displayName": "CSL Agent Kit",
     "shortDescription": "Multi-client agent toolkit",
     "longDescription": "Personal agent toolkit for reusable skills, commands, hooks, and workflow extensions across Claude Code, Codex, Cursor, and Pi.",
     "developerName": "CSL",
-    "category": "Productivity"
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Help me choose and use the right CSL Agent Kit skill."
+    ]
   }
 }

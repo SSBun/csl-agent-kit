@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-07-17 按 symlink 目标所有权清理旧的全局 skill 链接
+
+- **Trigger:** 将共享 skills 从逐项全局 symlink 迁移到单一 plugin，并且旧安装可能包含已从当前发行版删除的 skill。
+  - **Rule:** 迁移清理应扫描 legacy 目录的实际顶层条目，而不是只枚举当前 skill 清单；仅删除 lexical target 或 resolved target 位于当前包 canonical `skills/` 树内的 symlink。broken link 用 lexical target 判定，普通条目和外部 symlink 必须保留；真实清理只能在替代安装成功后执行，dry-run 只报告。
+  - **Why:** 当前清单无法发现已删除 skill 留下的 stale link；按目标所有权判断既能清干净旧副本，又不会把同名用户数据或第三方链接误删。
+
 ## 2026-07-16 将项目专用流程与全局可分发技能分开
 
 - **Trigger:** 用户纠正 `integrate-third-skills` 只应在 CSL Agent Kit 项目内被发现。
