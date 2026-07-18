@@ -69,10 +69,11 @@
 
 ---
 
-### 7. Verification Before Done
-- Never mark a task complete without proving it works
-- Diff behavior between main and your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
+### 7. Strict Review and Verification Before Done
+- Before marking any file-changing task complete, invoke `adversarial-code-review` on the final diff.
+- Keep completion and commit gates blocked until its independent Reviewer returns `APPROVED`; the Editor may answer or fix findings but cannot self-approve.
+- Any reviewed-file change after approval invalidates the verdict and requires another review.
+- If the adversarial review cannot run or does not pass, report the task as incomplete or blocked; never claim it is finished.
+- Diff behavior between main and your changes when relevant, and run tests, check logs, or otherwise demonstrate correctness.
 
 ---

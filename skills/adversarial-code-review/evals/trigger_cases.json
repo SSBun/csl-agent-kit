@@ -1,0 +1,27 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Run an adversarial code review with an independent reviewer and block commits until approval.",
+    "Use a two-agent review before marking this task complete; the reviewer must approve the editor's fixes.",
+    "Start a reviewer-editor loop for this diff and do not commit before the reviewer returns APPROVED.",
+    "Have an independent reviewer question the implementation, then let the editor fix it and request approval before committing.",
+    "执行双 Agent 对抗式代码审查，Reviewer 批准后才能提交。",
+    "任务完成前启动独立 Reviewer 与 Editor 的复审闭环，没有 APPROVED 就保持阻塞。"
+  ],
+  "should_not_trigger": [
+    "Review this pull request for bugs and security issues.",
+    "Fix the comments from the last code review.",
+    "Commit these changes with a concise message.",
+    "Run the test suite before marking the task complete.",
+    "Review this architecture proposal and suggest alternatives.",
+    "检查这个 PR 有没有明显问题。"
+  ],
+  "near_neighbor": [
+    "Use code-reviewer to inspect the current diff.",
+    "Review changes since main against the product spec.",
+    "Create a Git pre-commit hook that rejects unapproved changes.",
+    "Ask adversarial questions about my implementation plan.",
+    "Have two agents independently review the PR and aggregate their findings.",
+    "修复 Reviewer 已经提出的所有问题。"
+  ]
+}

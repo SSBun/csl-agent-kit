@@ -109,6 +109,16 @@ test("Codex plugin exports root skills and uses the root hook manifest", () => {
   assert.equal(existsSync(path.join(root, ".codex-plugin", "hooks", "hooks.json")), false);
 });
 
+test("Claude plugin exports every project-owned top-level skill", () => {
+  const manifest = JSON.parse(readFileSync(path.join(root, ".claude-plugin", "plugin.json"), "utf8"));
+  const expected = readdirSync(path.join(root, "skills"), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && existsSync(path.join(root, "skills", entry.name, "SKILL.md")))
+    .map((entry) => `./skills/${entry.name}`)
+    .sort();
+
+  assert.deepEqual([...manifest.skills].sort(), expected);
+});
+
 test("root hook commands execute bundled scripts from plugin root variables", () => {
   const directory = mkdtempSync(path.join(tmpdir(), "csl-hook-root-"));
   const pluginRoot = path.join(directory, "plugin");

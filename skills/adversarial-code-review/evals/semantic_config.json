@@ -1,0 +1,64 @@
+{
+  "fallback_positive_concepts": [
+    "independent_review_loop",
+    "approval_gate"
+  ],
+  "positive_concepts": {
+    "independent_review_loop": {
+      "weight": 0.6,
+      "phrases": [
+        "adversarial code review",
+        "two-agent review",
+        "independent reviewer",
+        "reviewer-editor loop",
+        "reviewer and editor",
+        "reviewer-author loop",
+        "reviewer and author",
+        "独立 reviewer",
+        "双 agent 对抗式代码审查",
+        "独立 reviewer 与 editor",
+        "独立 reviewer 与 author"
+      ]
+    },
+    "approval_gate": {
+      "weight": 0.4,
+      "phrases": [
+        "block commits until approval",
+        "before committing",
+        "before marking this task complete",
+        "do not commit before",
+        "reviewer must approve",
+        "request approval before committing",
+        "approved",
+        "批准后才能提交",
+        "没有 approved 就保持阻塞"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "one_pass_review": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "review this pull request",
+        "inspect the current diff",
+        "review changes since main",
+        "independently review the pr and aggregate",
+        "检查这个 pr"
+      ]
+    },
+    "non_review_workflow": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "fix the comments",
+        "commit these changes",
+        "run the test suite",
+        "architecture proposal",
+        "pre-commit hook",
+        "implementation plan",
+        "修复 reviewer"
+      ]
+    }
+  }
+}
