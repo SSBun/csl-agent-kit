@@ -1,0 +1,32 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Use an Editor and independent Reviewer to discuss this architecture decision until the answer covers every material perspective.",
+    "Run an uncapped adversarial discussion of whether we should migrate from a monolith to services.",
+    "Give me a comprehensive devil's-advocate synthesis, let the Reviewer find gaps, and have the Editor revise until sufficient.",
+    "Have Editor and Reviewer iteratively analyze the social and economic effects of remote work.",
+    "Use adversarial-discuss on this product idea and preserve unresolved disagreements in the final answer.",
+    "让 Editor 和 Reviewer 对这个技术选型反复讨论，补齐遗漏后再给我综合结论。",
+    "不限轮次地对抗讨论这个议题，Reviewer 认为覆盖充分后再结束。"
+  ],
+  "should_not_trigger": [
+    "Run an adversarial review and block completion until this PRD is APPROVED.",
+    "Review this pull request for correctness and security issues.",
+    "Explain what eventual consistency means.",
+    "Summarize the pros and cons of remote work in one paragraph.",
+    "Grill me about my startup idea by asking one question at a time.",
+    "Brainstorm three names for this feature.",
+    "Explore three implementation approaches and compare their trade-offs before we choose one.",
+    "修复 Reviewer 上次提出的代码问题。"
+  ],
+  "near_neighbor": [
+    "Have two agents independently research this topic and merge their reports.",
+    "Challenge this plan and list the most important risks.",
+    "Review this architecture proposal and suggest alternatives.",
+    "Debate both sides of this issue in a single response.",
+    "Use adversarial-review to approve this system design before release.",
+    "Ask me hard questions until my proposal is clear.",
+    "Help me brainstorm options and trade-offs for this product idea without an Editor–Reviewer loop.",
+    "全面分析这个问题，但不需要多 Agent 循环。"
+  ]
+}

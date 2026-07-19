@@ -3,9 +3,9 @@
   "should_trigger": [
     "Run an adversarial review with an independent Reviewer and block completion until approval.",
     "Use a two-agent review before marking this implementation complete; the Reviewer must approve the Editor's fixes.",
-    "Run a three-round adversarial review on this PRD and do not finalize it before APPROVED.",
+    "Run an uncapped adversarial review on this PRD and do not finalize it before APPROVED.",
     "Have an independent Reviewer challenge this RFC, then let the Editor revise it and request approval.",
-    "Run an open-ended deep adversarial review of this system design before completion.",
+    "Keep the Reviewer and Editor cycling through this system design until it is approved or needs my decision.",
     "执行双 Agent 对抗式审查这份 PRD，Reviewer 批准前保持阻塞。",
     "完成代码或设计文档前启动独立 Reviewer 与 Editor 的复审闭环。"
   ],

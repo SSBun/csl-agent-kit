@@ -1,0 +1,80 @@
+{
+  "fallback_positive_concepts": [
+    "editor_reviewer_loop",
+    "multi_perspective_synthesis"
+  ],
+  "positive_concepts": {
+    "editor_reviewer_loop": {
+      "weight": 0.6,
+      "phrases": [
+        "adversarial discussion",
+        "adversarial-discuss",
+        "editor and reviewer",
+        "editor and independent reviewer",
+        "editor-reviewer",
+        "reviewer find gaps",
+        "reviewer finds gaps",
+        "iteratively analyze",
+        "revise until sufficient",
+        "uncapped discussion",
+        "不限轮次地对抗讨论",
+        "editor 和 reviewer",
+        "editor 与 reviewer",
+        "反复讨论"
+      ]
+    },
+    "multi_perspective_synthesis": {
+      "weight": 0.4,
+      "phrases": [
+        "comprehensive perspective",
+        "comprehensive devil's-advocate synthesis",
+        "every material perspective",
+        "preserve unresolved disagreements",
+        "missing perspectives",
+        "综合结论",
+        "补齐遗漏",
+        "覆盖充分"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "artifact_approval_review": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "adversarial review",
+        "block completion",
+        "approved",
+        "approve this system design",
+        "review this pull request",
+        "review this architecture proposal",
+        "批准"
+      ]
+    },
+    "one_pass_or_simple": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "explain what",
+        "summarize the pros and cons",
+        "single response",
+        "list the most important risks",
+        "brainstorm three names",
+        "explore three implementation approaches",
+        "brainstorm options and trade-offs",
+        "without an editor-reviewer loop",
+        "不需要多 agent 循环"
+      ]
+    },
+    "user_interrogation": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "grill me",
+        "asking one question at a time",
+        "ask me hard questions",
+        "修复 reviewer"
+      ]
+    }
+  }
+}

@@ -14,11 +14,12 @@ Use this section:
 ## Review status
 
 - Gate: BLOCKED | APPROVED
+- State: CONTINUE | APPROVED | NEEDS_USER | BLOCKED | STALLED | USER_STOP
 - Reviewer: <agent identity>
-- Round: <used>/<3 | OPEN>
+- Round: <used>
 - Scope: <reviewed artifacts>
 - Resolved: <finding IDs or none>
-- Unresolved: <finding IDs with exact user questions, or none>
+- Unresolved: <finding IDs with user questions, objective resume conditions, or required acknowledgements as applicable; or none>
 ```
 
 Update it after every Reviewer verdict. While a completion-gate review is `BLOCKED`, keep the owning task non-complete. After `APPROVED`, close it only when its other acceptance criteria are satisfied.

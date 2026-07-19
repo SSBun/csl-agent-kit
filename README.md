@@ -25,7 +25,8 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | ubiquitous-language | `/csl:ubiquitous-language` | `/ubiquitous-language` | 提取 DDD 风格术语表；该技能在上游已废弃，但按用户选择保留。 |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
 | code-reviewer | `/csl:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
-| adversarial-review | `/csl:adversarial-review` | `/adversarial-review` | 审查代码、PRD、RFC、设计文档等交付物；默认三轮，可显式开启 OPEN。 |
+| adversarial-review | `/csl:adversarial-review` | `/adversarial-review` | 以不限轮次、状态驱动的 Reviewer–Editor 闭环审查代码、PRD、RFC、设计文档等交付物。 |
+| adversarial-discuss | `/csl:adversarial-discuss` | `/adversarial-discuss` | 由 Editor 与独立 Reviewer 不限轮次地补全并校验问题或主题的综合答案。 |
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
 | super-agent | `/csl:super-agent` | `/super-agent` | Symlink the bundled default AGENTS.md into another agent config. |

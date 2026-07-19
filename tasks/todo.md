@@ -1,3 +1,372 @@
+# 提交当前全部本地改动
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 将用户当前工作区中的 tracked 与 untracked 改动全部纳入一个 Git commit。
+- 在提交前验证准确的 staged snapshot，并取得独立 Reviewer 批准。
+
+## 计划
+
+- [x] 暂存全部本地改动并核对文件范围。
+- [x] 对 staged snapshot 运行仓库检查与独立 adversarial review。
+- [x] Reviewer 批准后创建 commit，并确认工作区状态。
+
+## Review status
+
+- Gate: APPROVED
+- State: APPROVED
+- Reviewer: /root/all_local_changes_review
+- Round: 3
+- Scope: 当前工作区相对 HEAD 的全部 tracked 与 untracked 改动
+- Resolved: R1, R2, R3
+- Unresolved: none
+
+## 复核
+
+- staged snapshot 包含 18 个路径、928 行新增与 52 行删除，覆盖 Develop PRD、`adversarial-discuss`、无上限 `adversarial-review`、插件/README 接线及共享任务记录。
+- `env -u NO_COLOR npm run check` 两次通过 53 项测试与 Codex 安装 dry-run；两项 Skill Creator/Yao 校验、21/21 与 23/23 trigger eval、JSON、SHA-256、秘密模式扫描及 `git diff --cached --check` 通过。
+- 独立 Reviewer 初审一次性报告 R1–R3；Editor 整批修复零 finding 初审、PRD 状态/SHA 和 unresolved 占位语义后，`RE-REVIEW (2)` 批准完整 staged snapshot。
+
+# 将 adversarial review 改为无上限状态循环
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 移除默认三轮、`OPEN` 模式和所有总轮次上限，保留单调递增的审查轮次编号。
+- Reviewer 每轮覆盖完整 scope 并逐项核对全部既有 finding；Editor 每轮一次性回答和处理全部 items。
+- 仅按 `APPROVED`、需要用户、客观阻塞、无进展停滞或用户停止等内容状态结束或暂停。
+
+## 计划
+
+- [x] 重写审查循环、任务状态、决策共识和最终报告契约。
+- [x] 更新公开说明、触发评测与工作区上下文。
+- [x] 运行 Skill Creator、Yao、行为验证、仓库测试和最终独立审查。
+
+## Review status
+
+- Gate: APPROVED
+- State: APPROVED
+- Reviewer: /root/uncapped_review_final
+- Round: 4
+- Scope: adversarial-review 无上限状态循环、全量 finding 闭环及相关文档与评测
+- Resolved: R1, R2
+- Unresolved: none
+
+## 复核
+
+- `adversarial-review` 已移除默认三轮、`OPEN` 和 denominator，只保留单调递增的 `INITIAL (1)`、`RE-REVIEW (n)` 与状态驱动退出。
+- Reviewer 的新 finding 必须先进入 `CONTINUE`，Editor 一次性回答全部 items 后，后续完整复审才能返回 `NEEDS_USER` 或客观 `BLOCKED`；Decision Consensus 采用同一顺序。
+- 三组独立前向试用验证第 4 轮继续、Reviewer 全量核对 R1–R5、Editor 单批处理 5/5 findings，以及用户决策、停滞、批准失效和用户停止路由。
+- Skill Creator quick validation、Yao lint/resource/governance/Skill IR、21/21 trigger eval、53 项仓库检查、安装 dry-run 与 `git diff --check` 通过；Yao governance 仅保留仓库既有的无 `manifest.json` 提示。
+- 独立审查前三轮一次性报告并解决 R1、R2；本关闭记录继续交由同一 Reviewer 复核。
+
+# 将 adversarial-discuss 部署到 Codex
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 使用当前工作区的本地安装器重新部署 `csl-agent-kit@csl-agent-market`。
+- 确认 Codex 插件保持启用，并能从安装源发现 `adversarial-discuss`。
+
+## 计划
+
+- [x] 运行本地 `codex-plugin` 安装目标。
+- [x] 核对插件来源、启用状态和 Skill 文件。
+
+## 复核
+
+- 本地安装器成功移除并重新添加 `csl-agent-kit@csl-agent-market`；不存在的旧 `CSL`/`csl` marketplace 清理项返回 1，不影响目标安装。
+- Codex 显示插件 `installed: true`、`enabled: true`，插件与 marketplace source 均为 `/Users/caishilin/Desktop/personal/skills`。
+- repository-root plugin manifest 与 Skill 文件均包含 `adversarial-discuss`，新 Codex 会话可从该本地源发现它。
+
+# 强制 adversarial review 每轮完整批处理
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- Reviewer 每轮一次性报告当前完整 scope 内所有可见 findings，不得故意延后或分轮释放。
+- Editor 每轮一次性处理全部 findings；待用户决定项进入 Decision Consensus Gate 或直接询问，不得用普通复审绕过。
+- 允许由新 artifact、diff 或证据产生的后续 finding，但必须说明此前为何不可行动。
+
+## 计划
+
+- [x] 收紧 Reviewer 与 Editor 的 round-completeness 契约。
+- [x] 验证完整报告、批量响应和合法新 finding 三条行为边界。
+- [x] 运行 Skill Creator、Yao、仓库检查和最终独立审查。
+
+## Review status
+
+- Gate: APPROVED
+- Reviewer: /root/round_completeness_final
+- Round: 3/3
+- Scope: adversarial-review round completeness and batching contract
+- Resolved: R1, R2, R3, R4
+- Unresolved: none
+
+## 复核
+
+- Reviewer fixture 包含 8 个 findings：独立 Reviewer 在初审一次性报告全部 8 项；复审同时列出全部遗留项，并将首次出现的 R9 明确归因于 v2 新增的永久删除附件行为。
+- 独立的 Editor fixture 包含 4 个 findings：Editor 在一个 ledger 中处理 4/4，分别接受并修复 R1、用证据拒绝 R2、确认并修复 R3、把 R4 统一送入 Decision Consensus Gate，没有逐项请求普通复审。
+- Skill Creator、Yao lint、资源边界与 governance 通过（968/1,000 initial tokens）；21/21 trigger eval、53 项仓库测试、Codex plugin 安装 dry-run 与 `git diff --check` 通过。
+
+# 修复用户级 super-agent 规则链接
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 将失效的 `/Users/caishilin/.agents/AGENTS.md` 软链接备份后，重新指向可分发规则源。
+- 验证新链接、目标文件和备份链接均存在且路径准确。
+
+## 计划
+
+- [x] 按已确认路径备份旧链接并创建新链接。
+- [x] 验证链接目标、源文件与备份路径。
+- [x] 完成独立 adversarial review。
+
+## Review status
+
+- Gate: APPROVED
+- Reviewer: /root/super_agent_link_final
+- Round: 1/3
+- Scope: `/Users/caishilin/.agents/AGENTS.md` symlink repair and backup
+- Resolved: none
+- Unresolved: none
+
+## 复核
+
+- 新链接解析到 `/Users/caishilin/Desktop/personal/skills/skills/super-agent/references/AGENTS.md`，目标文件可读取并包含 adversarial review 的任务状态规则。
+- 旧失效链接保存在 `/Users/caishilin/.agents/AGENTS.md.backup-20260719-163637`，其原始 target 未改变，可用于追溯或回滚。
+
+# 创建通用 adversarial discuss skill
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 明确 `discuss` 与现有 `adversarial-review` 的职责边界。
+- 设计 Editor、Reviewer、Coordinator 的迭代协议与停止条件。
+- 不设置 discussion 循环次数上限；只按内容状态停止或暂停。
+- 创建可分发 Skill、触发评测和必要清单接线。
+- 让任一角色生成的文件或外部资源通过 Coordinator 的资源清单可靠交接。
+
+## 计划
+
+- [x] 核对现有 adversarial review 的角色、轮次、Gate 与报告契约。
+- [x] 比较可行设计并推荐最小方案。
+- [x] 形成并确认 Skill 契约、停止条件与通信拓扑。
+- [x] 创建 Skill、资源交接契约、触发评测与分发清单接线。
+- [x] 运行 Skill Creator、Yao、仓库测试和前向试用。
+- [x] 完成独立 adversarial code review。
+
+## 已确认设计
+
+- Editor 与 Reviewer 不设循环次数上限。
+- 仅在 Reviewer 认为覆盖充分、需要用户或外部信息、用户主动停止或客观阻塞时结束或暂停。
+- Coordinator 是唯一信息中枢；Editor 与 Reviewer 不直接通信，并在每次交接时接收完整权威状态包。
+- 任一角色生成文件、链接、工具结果或外部状态时，必须提供可访问位置、用途、变化和限制；Coordinator 验证并登记后才能转交或作为证据。
+
+## Review status
+
+- Gate: APPROVED
+- Reviewer: /root/adversarial_discuss_review
+- Round: 5/OPEN
+- Scope: adversarial-discuss skill, resource handoff reference, trigger evals, README and Claude manifest registration, context sync
+- Resolved: R1, R2, R3
+- Unresolved: none
+
+## 复核
+
+- Skill Creator quick validation、Yao lint、资源边界与 Skill IR 通过；入口为 891/1,000 tokens。
+- 23/23 trigger eval、53 项仓库测试、Codex plugin 安装 dry-run、npm pack dry-run 与 `git diff --check` 通过。
+- 独立前向试用完成 `DRAFT_READY → RESOURCE_ACCESS_VERIFIED → CONTINUE → REVISION_READY → SUFFICIENT`；Reviewer 实际读取 Editor 生成的 `R1` 文件并核对一致 SHA-256，临时资源已清理。
+
+# 让 adversarial review 记录任务审查状态
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 审查对应现有任务时，在该任务内记录审查状态。
+- 审查不对应任何任务时，在共享任务列表顶部创建独立审查任务。
+- 防止任务状态记录本身造成批准失效和无休止复审。
+
+## 计划
+
+- [x] 定义任务匹配、新建审查任务和状态字段的最小契约。
+- [x] 将契约接入 `adversarial-review` 与 super-agent 默认规则。
+- [x] 运行 skill 校验、行为试用、Yao 审计和最终独立审查。
+
+## Review status
+
+- Gate: APPROVED
+- Reviewer: /root/task_tracking_final
+- Round: 1/3
+- Scope: adversarial-review task tracking contract and super-agent task rules
+- Resolved: none
+- Unresolved: none
+
+## 复核
+
+- 前向试用验证四条分支：唯一匹配写入原任务；零匹配创建 newest-first review task；多匹配保持 `BLOCKED` 并询问用户；纯管理字段变化保留批准，验收标准或证据声明变化使批准失效。
+- adversarial-review 与 super-agent 均通过 Skill Creator、Yao lint、资源边界和 governance 检查；入口预算分别为 974/1,000 与 874/1,000 tokens，governance 仅提示既有的无 `manifest.json` 约定。
+- 21/21 trigger eval、53 项仓库测试、Codex plugin 安装 dry-run 与 `git diff --check` 通过。
+- 可分发规则源已更新；`/Users/caishilin/.agents/AGENTS.md` 是指向已删除项目本地路径的既有失效软链接，本任务未绕过 super-agent 的确认要求修复它。
+
+# 将审查 skill 扩展为通用 adversarial review
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 将 skill、目录和公开命令统一为 `adversarial-review`，不保留旧别名。
+- 将审查对象从代码 diff 扩展为代码、PRD、RFC、设计文档及其他交付物。
+- 保留默认三轮、显式 OPEN、fail-closed 和最终报告协议。
+
+## 计划
+
+- [x] 迁移目录与所有运行时、规则和文档引用。
+- [x] 扩展 artifact 审查维度与路由评测，验证代码和非代码场景。
+- [x] 运行全量检查、Yao 审计和最终独立 adversarial review。
+
+## 复核
+
+- skill、目录、Claude/Codex 命令与默认规则统一为 `adversarial-review`，仓库内不再保留旧名称或兼容别名。
+- 通用 lens 覆盖代码、PRD、RFC/设计及其他文档；独立 PRD 前向试用准确识别问题、用户、目标/非目标、需求边界、成功指标、验收标准和上线回滚风险，没有要求代码 diff。
+- Skill Creator quick validation、Yao lint、资源边界与 governance 检查通过（993/1,000 initial tokens）；21/21 trigger eval 通过。`super-agent` 的规则变更也通过 Skill Creator 与 Yao 审计，governance 仅提示既有的无 `manifest.json` 约定。
+- `env -u NO_COLOR npm run check` 的 53 项测试与 Codex plugin 安装 dry-run 全部通过；`git diff --check` 通过。
+- 独立 Reviewer 初审发现 decision consensus 仍要求代码证据、OPEN 停滞只识别 diff 变化；两项均已改为 artifact 优先、diff 可选，并在 `RE-REVIEW (2/3)` 获得批准。本条关闭记录继续纳入同一 Reviewer 的 `FINAL (3/3)`，最终 verdict 见本次交付报告。
+
+# 收敛 analyze-project 的 Develop 模式 PRD
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 将 `develop` 收敛为一次分析一个项目或组件 scope、生成一份高密度 map。
+- 以 Scope Summary、功能 Module Map 与核心 Working Flows 为主，领域语言和开发锚点只服务于理解这些核心内容。
+- 完成本 PRD 的验证与独立 adversarial review；`learn` PRD 获批前不实现 skill。
+
+## 计划
+
+- [x] 确认项目级长期地图、project/component scope、单报告、功能模块粒度、核心流程、精简 glossary，以及图表组合。
+- [x] 按确认设计完整重写 Develop PRD，不实现 skill。
+- [x] 运行结构、证据、路径和 Markdown 检查，并用 Typora 打开 PRD。
+- [x] 在用户指定的无轮次上限下继续原审查 Gate，直到批准、需用户决定或停滞。
+
+## Review status
+
+- Gate: APPROVED
+- Reviewer: /root/prd_reviewer
+- Round: 7/OPEN
+- Scope: `docs/analysis/analyze-project-v2-prd.md` 与本任务需求/验收条目
+- Resolved: R1-R17
+- Unresolved: none
+
+## 复核
+
+- PRD 已改为一次调用一个 project/component scope，并只生成 `project-map.md` 或对应组件 map；不再生成独立开发指南。
+- `git diff --check`、14 个编号章节、旧输出残留扫描和固定 eval 证据符号检查通过。
+- PRD 已用 Typora 打开；Reviewer 已在 `RE-REVIEW (6/OPEN)` 批准 SHA-256 `36e6a248647bd4048495372a339450ccaac8548e68b69d2bb22672100b3295ab` 的最终 artifact。
+- `RE-REVIEW (4/OPEN)` 一次性报告 R9-R15；R10-R13 与 R15 已按证据修订，R9、R14 进入 decision consensus。
+- `RE-REVIEW (5/OPEN)` 中 Reviewer 与 Editor 一致建议 R9、R14 选项 1；用户已授权按建议完成，因此采用无碰撞 `dir/`/`file/` 命名空间、unborn 标识、最终回复脱敏安全警告和无 Mermaid 验证器时零写入。
+- 当前 PRD SHA-256 为 `1db152ffca6e5eb394cce2759fbc76019cc4b58bcce77537d615c3373f0e415b`；目录/文件 scope 路径在不同命名空间且保留完整文件名，路径安全与碰撞性质待实现 fixture 验证，不再声称已有运行时验证。
+
+# 为 adversarial review 实现默认三轮与 OPEN 模式
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 默认使用初审、复审、终审三轮；仅由用户显式开启 OPEN 深度审查。
+- 默认终审阻塞即报告；OPEN 持续到批准、用户决策或无进展停滞，并生成最终审查报告。
+- 所有模式保持 fail-closed，连续记录轮次并向用户逐项询问未解决问题。
+
+## 计划
+
+- [x] 更新预算模式、decision consensus 与最终报告契约。
+- [x] 验证默认三轮终止、显式 OPEN 继续和停滞升级行为。
+- [x] 运行 skill 校验、Yao 审计与最终独立 adversarial review。
+
+## 复核
+
+- 默认模式固定 `INITIAL (1/3)`、`RE-REVIEW (2/3)`、`FINAL (3/3)`；`OPEN` 仅由用户明确开启，三轮后切换也沿用现有计数。consensus、更换 Reviewer、差异失效和重启均不清零。
+- `OPEN` 在有新证据或差异变化时继续复审；同一阻塞项连续两轮无新证据/相关差异变化时，以 `open-review-stalled` 停止并向用户提问。
+- 三条独立前向轨迹分别验证默认 `3/3` 报告、OPEN 进入 `4/OPEN`、OPEN 在 `5/OPEN` 停滞报告；均保持 `BLOCKED` 且没有自动批准或自行开启 OPEN。
+- Skill Creator quick validation、Yao lint 与资源边界通过（960/1,000 initial tokens）；20/20 trigger eval 通过；治理检查仅提示项目既有的无 `manifest.json` 约定。
+- `env -u NO_COLOR npm run check` 的 53 项测试与安装 dry-run 全部通过；`git diff --check` 通过。
+- 独立 Reviewer 初审阻塞了过期的资源边界数值，`FINAL (3/3)` 又发现并发任务导致状态补丁命中错误条目；两项修正后在 `RE-REVIEW (4/OPEN)` 批准完整范围。关闭任务记录后由同一 Reviewer 在 `RE-REVIEW (5/OPEN)` 确认最终差异。
+
+# 为 adversarial review 设计有界退出协议
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 确认现有 Reviewer–Editor 循环无法停止的结构性原因。
+- 提出保留 fail-closed 质量门、同时限制资源消耗的最小方案。
+- 明确达到上限后的状态、输出与后续恢复方式。
+
+## 计划
+
+- [x] 读取完整 skill、决策分支与相关历史，建立当前状态机。
+- [x] 比较轮次、时间、预算三类限制，选择可复现的默认约束。
+- [x] 复核边界情况并记录建议；本轮不修改 skill。
+
+## 复核
+
+- 根因是主流程明确要求 `Never cap rounds`，decision consensus 也允许双方持续修订；自动 Reviewer–Editor 修订路径没有资源耗尽出口。
+- 建议整个 task/gate 生命周期默认最多 3 次 Reviewer pass，初审与 consensus 复核都计入同一预算；更换 Reviewer、差异失效或内部重启均不清零。达到上限仍有阻塞项时停止 agent 路由，Gate 保持 `BLOCKED`，输出 `used/limit`、未解决项、最新差异、验证证据与恢复选项。
+- 时间限制受队列和工具延迟影响，不作为 skill 的主契约；平台支持时可额外设置 watchdog。继续审查必须由用户显式追加预算，不能自动续期或降级发现。
+- 本轮仅评估并提出修订方案，未修改当时的 adversarial review skill。
+
+# 为 Paseo 增加 Codex 快捷子命令
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 在 `~/.aliases` 中支持 `paseo codex [prompt]`，固定使用 Codex GPT-5.6-Sol。
+- 未提供 prompt 时使用 `hello`，并保持其他 Paseo CLI 子命令行为不变。
+
+## 计划
+
+- [x] 按现有 zsh 风格添加最小 wrapper function。
+- [x] 验证默认 prompt、自定义 prompt、参数转发与 shell 语法。
+- [x] 完成独立差异复核并记录结果。
+
+## 复核
+
+- `paseo codex` 展开为 `paseo run --provider codex --model gpt-5.6-sol -- hello`；自定义多词 prompt 作为单个位置参数传递。
+- 非 `codex` 子命令通过 `command paseo "$@"` 原样转发，避免 wrapper 递归并保持现有 CLI 行为。
+- `zsh -n ~/.aliases` 通过；使用临时 `paseo` stub 验证默认 prompt、自定义 prompt 与普通子命令转发，未启动真实 Agent。
+
+# 审查本地工作区改动
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 审查用户请求时工作区相对 `05a6c689e2344dc925b7dc111f02aa03750114f6` 的 staged、unstaged 与 untracked 改动。
+- 分别核对仓库规范与可用规格，报告可定位、可操作的缺陷和测试缺口。
+
+## 计划
+
+- [x] 固定审查基线并读取目标文件、相关约定与必要上下文。
+- [x] 运行独立 Standards 审查；无规格时明确跳过 Spec 审查。
+- [x] 验证发现并记录审查结果。
+
+## 复核
+
+- 用户请求时唯一改动为未跟踪的 `paseo.json`，内容是空对象；Paseo 0.1.110 的项目配置 schema 接受该内容，且所有行为字段均为可选，因此它不会设置 worktree hook、script 或 metadata generation。
+- Standards 独立审查确认一项低严重度问题：空配置不改变行为，却新增工具专用仓库文件，违反 YAGNI/最小改动原则，建议删除。
+- Spec 来源不可用，按 code-review 流程跳过 Spec 轴；`jq` 解析与差异格式检查通过，未发现功能性或兼容性缺陷。
+
 # 将 Codex 收敛为单一 repository-root plugin
 
 状态：已完成（2026-07-17）

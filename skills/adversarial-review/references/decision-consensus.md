@@ -8,17 +8,18 @@ Use this gate when the Reviewer or Editor identifies two or more materially diff
    - relevant artifact, source evidence, constraints, assumptions, and non-goals
    - 2–4 mutually exclusive options
    - each option's behavior, benefit, risk, cost, and verification impact
-3. If the active budget allows another round, have the Reviewer challenge missing options, hidden risks, scope growth, and unsupported assumptions. Require the round label and `VERDICT: BLOCKED`; this consumes the next round.
-4. Do not loop between the agents. Have the Coordinator incorporate the single Reviewer challenge and record each position:
+3. In the next numbered Reviewer pass, challenge missing options, hidden risks, scope growth, and unsupported assumptions while still satisfying the full-scope and prior-ID requirements in the [Review Loop Contract](review-loop.md). If the challenge raises a finding not yet answered by the Editor, return `STATUS: CONTINUE` with every current item.
+4. On `CONTINUE`, have the Editor answer the complete batch and update the decision context. Run another full-scope Reviewer pass that accounts for every finding ID. Return `STATUS: NEEDS_USER` only when no item awaits an Editor answer and only the user-owned decision remains.
+5. Do not continue agent exchanges to manufacture agreement. Have the Coordinator incorporate the reviewed challenge and record each position:
 
 ```text
-EDITOR POSITION: Suggest option <N>
+EDITOR POSITION: Suggest option <N or no recommendation>
 REVIEWER POSITION: Suggest option <N or no recommendation>
 ```
 
-Do not fabricate agreement. If evidence is missing or no review round remains, identify it as unresolved instead of starting another agent exchange. Frame any disagreement neutrally and identify user-owned preferences.
+Do not fabricate agreement. If evidence is missing, identify it as unresolved instead of starting another agent exchange. Frame any disagreement neutrally and identify user-owned preferences.
 
-After the challenge, or immediately when no review round remains, have the Coordinator ask the user:
+After the challenge, have the Coordinator ask the user:
 
 ```text
 Question: <what must be chosen?>
@@ -31,4 +32,4 @@ Why: <evidence and material disagreement>
 Gate: BLOCKED pending your choice
 ```
 
-Wait for an explicit choice. Record it as an acceptance criterion and treat implementation as follow-up work. Never reset or change the budget automatically. If a bounded final round exposed the decision, include it among the final report's unresolved questions and stop.
+Wait for an explicit choice. Record it as an acceptance criterion and treat implementation as follow-up work. Preserve the round number and finding history when review resumes.
