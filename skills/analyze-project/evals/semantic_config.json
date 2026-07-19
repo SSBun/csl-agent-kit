@@ -1,0 +1,85 @@
+{
+  "fallback_positive_concepts": [
+    "durable_or_learning_analysis"
+  ],
+  "positive_concepts": {
+    "durable_or_learning_analysis": {
+      "weight": 0.8,
+      "phrases": [
+        "/analyze-project",
+        "develop mode",
+        "learn mode",
+        "develop 模式",
+        "learn 模式",
+        "durable project map",
+        "project map",
+        "component map",
+        "functional modules",
+        "core working flows",
+        "continue development",
+        "source-driven learning guide",
+        "source based checks",
+        "source-based checks",
+        "concept ladder",
+        "code walkthrough",
+        "recall, prediction, and transfer",
+        "verify my understanding",
+        "learn how this project behaves",
+        "source anchors",
+        "specifically works in this repository",
+        "quiz me using its source code",
+        "继续开发",
+        "功能模块",
+        "核心流程",
+        "项目做什么",
+        "源码驱动",
+        "学会这个组件",
+        "回忆、预测、迁移",
+        "检验理解"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "quick_orientation": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "quick repo map",
+        "orient me",
+        "one small change",
+        "which files to inspect",
+        "快速定位"
+      ]
+    },
+    "audit_or_change": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "audit",
+        "list security",
+        "recommend improvements",
+        "review this pull request",
+        "implementation plan",
+        "propose the code changes",
+        "risks",
+        "审计",
+        "改进建议"
+      ]
+    },
+    "general_course_or_inventory": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "multi-lesson course",
+        "from beginner to advanced",
+        "do not inspect repository-specific behavior",
+        "every dependency version",
+        "every public api",
+        "git history",
+        "high-churn files",
+        "通用课程",
+        "完整清单"
+      ]
+    }
+  }
+}

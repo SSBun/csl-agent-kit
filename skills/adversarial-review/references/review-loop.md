@@ -4,6 +4,23 @@ Set no total round or cycle limit. Use `INITIAL (1)`, then `RE-REVIEW (n)` for e
 
 Send the complete state on every handoff: request and criteria, pinned scope, current artifact and available diff, verification evidence, full finding ledger, round number, unresolved items, limitations, and user decisions.
 
+## Reviewer Pass
+
+Read [Review Lenses](review-lenses.md), inspect the full scope, and use stable finding IDs:
+
+```text
+ROUND: INITIAL (1)
+STATUS: CONTINUE | APPROVED | NEEDS_USER | BLOCKED
+R1 [BLOCKER|QUESTION|NOTE] <artifact>:<location> <omit when APPROVED>
+Evidence: ...
+Risk: ...
+Question: ...
+RESOLVED: none
+UNRESOLVED: R1 | none
+```
+
+With no pending item, omit findings and return `APPROVED`; otherwise return `CONTINUE`. `BLOCKER` and unanswered `QUESTION` items block; `NOTE` remains pending until Editor acknowledgement. On re-review, account for every prior ID. `INITIAL (1)` can only return `CONTINUE` or `APPROVED`; later passes may return `NEEDS_USER` or `BLOCKED` only under the state rules below.
+
 ## Review States
 
 - `CONTINUE`: actionable review work remains. Keep the Gate `BLOCKED` and route one complete batch to the Editor.
@@ -20,4 +37,5 @@ Reviewed-artifact changes after `APPROVED` invalidate approval. Resume as `RE-RE
 ## Round Completeness
 
 - The Reviewer must inspect the full pinned scope and report every currently visible `BLOCKER`, `QUESTION`, and `NOTE` in one response. On re-review, account for every prior finding ID as resolved or unresolved before adding new findings. Never sample, postpone, or drip-feed known findings. A finding first raised in a later round must identify the new artifact, diff, evidence, or other reason it was not previously actionable.
-- The Editor must answer every reported item in one batch: fix accepted items, provide evidence for rejections, acknowledge notes, and mark user-owned items `NEEDS_USER` with exact questions. Request ordinary re-review only after all actionable items are handled. Never use ordinary re-review to bypass a user decision. Send the complete ledger, combined changes, verification, and full updated artifact together.
+- The Editor must answer every reported item in one batch: give root cause, fix, correctness, and verification for accepted items; provide artifact or source evidence for rejections; acknowledge notes; and mark user-owned items `NEEDS_USER` with exact questions. Request ordinary re-review only after all actionable items are handled. Never use ordinary re-review to bypass a user decision. Send the complete ledger, combined changes, verification, and full updated artifact together.
+- After every Reviewer verdict and Editor batch, update the stable report and task summary before routing. Never create per-round report files.

@@ -1,3 +1,146 @@
+# 重写 analyze-project 双模式 skill
+
+状态：进行中（2026-07-19）
+
+## 目标
+
+- 按已批准的 Develop 与 Learn PRD，一次性将 `analyze-project` 重写为双模式 skill。
+- 只保留生成单份高密度报告所需的最小指令、reference 与 eval，删除旧多报告 prompts/templates/workflow。
+- 验证触发边界、输出契约、资源边界与安装发现，并通过最终独立审查。
+
+## 计划
+
+- [x] 核对当前 skill、仓库分发模式与近邻 eval 约定，冻结最小文件集合。
+- [x] 重写 `SKILL.md` 与必要模式 reference，删除旧多报告资源。
+- [x] 添加最小 trigger/output eval 与契约检查，运行 Skill Creator、Yao 和仓库测试。
+- [ ] 通过独立 `adversarial-review`，完成任务记录与交付。
+
+## 边界
+
+- 不修改两份已批准 PRD。
+- 不增加运行时框架、依赖、课程状态或报告模板系统。
+
+## Review status
+
+- Gate: BLOCKED
+- State: PENDING
+- Reviewer: `analyze_skill_reviewer`
+- Round: 1
+- Scope: `skills/analyze-project/**`、README 条目与 repo-map 相邻边界
+- Summary: 等待独立 Reviewer 审查双模式实现和验证证据。
+- Unresolved: none
+- Report: [Adversarial review report](../reports/adversarial-review/analyze-project-skill.md)
+
+# 提交当前改动并拆分任务记录
+
+状态：进行中（2026-07-19）
+
+## 目标
+
+- 先将当前工作区全部 tracked 与 untracked 改动作为一个经审查的 Git commit 保存。
+- 将共享 `tasks/todo.md` 改为轻量索引，每个任务使用 `tasks/todo/<task-slug>.md` 作为唯一权威记录。
+- 让 adversarial review 报告与对应任务文件一一链接，避免并行 Agent 覆盖其他任务状态。
+
+## 计划
+
+- [x] 暂存、验证并独立审查当前全部本地改动，批准后创建 baseline commit。
+- [ ] 迁移现有任务为独立文件，并把 `tasks/todo.md` 收缩为导航索引。
+- [ ] 更新默认规则、adversarial-review 契约、固定场景和工作区上下文。
+- [ ] 运行规则/skill 审计、仓库检查和最终独立复审。
+
+## Review status
+
+- Gate: APPROVED
+- State: APPROVED
+- Reviewer: `task_file_split_reviewer`
+- Round: 2
+- Scope: 拆分任务记录前的当前全部 staged snapshot
+- Summary: 当前全部 staged 改动已通过 RE-REVIEW (2)；CI 失效目录引用 R2-1 已修复并关闭。
+- Unresolved: none
+- Report: [Adversarial review report](../reports/adversarial-review/split-task-records.md)
+
+# 将 adversarial review 报告改为文件化记录
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 每个审查任务维护一个 `reports/adversarial-review/<task-slug>.md`，从首次审查开始持续更新。
+- `tasks/todo.md` 只保留紧凑审查摘要并链接完整报告。
+- 终止审查时不在用户对话中展示完整报告，只提供正常任务结果或必要的阻塞问题。
+
+## 计划
+
+- [x] 收紧报告生命周期、内容、路径、身份显示和批准边界契约。
+- [x] 更新任务摘要契约及覆盖文件化输出行为的验证。
+- [x] 运行 Skill Creator、Yao、仓库检查与独立 adversarial review。
+
+## Review status
+
+- Gate: APPROVED
+- State: APPROVED
+- Reviewer: `file_review_report_reviewer`
+- Round: 2
+- Scope: adversarial-review 文件化报告、任务摘要链接及非对话输出契约
+- Summary: 文件化报告契约、任务摘要链接与非对话交接已通过独立复审。
+- Unresolved: none
+- Report: [Adversarial review report](../reports/adversarial-review/file-based-review-report.md)
+
+## 复核
+
+- 每个 review task 现在从 `INITIAL (1)` 前创建并持续复用一份稳定报告；批准失效会立即回滚状态并刷新 fingerprint。
+- `tasks/todo.md` 只保留短 Reviewer 名、Gate、状态、轮次、scope、摘要、未解决项与相对链接；完整报告不再粘贴到用户对话。
+- 5 个固定生命周期场景与独立前向试用覆盖首次批准、批准失效、任务归属不明、需要用户及纯管理同步。
+- Skill Creator、Yao、21/21 trigger eval、JSON、53 项仓库测试、安装 dry-run、`git diff --check` 均通过；独立 Reviewer 在 `RE-REVIEW (2)` 关闭 R1–R5 并批准 fingerprint `da745a612fb1aa9ee526de8ed8ee5d156671387ae3cba05a864aff24d2ea943d`。
+
+# 设计 analyze-project 的 Learn 模式 PRD
+
+状态：已完成（2026-07-19）
+
+## 目标
+
+- 定义 Learn 模式帮助人或 Agent 学会一个项目/组件的核心结果，并与 Develop、`repo-map`、`teach` 明确分工。
+- 收敛最小且高信息密度的报告结构、输出路径、证据规则、学习检验与失败契约。
+- 通过无轮次上限的 `adversarial-discuss` 取得充分答案，再形成并审查 Learn PRD。
+
+## 计划
+
+- [x] 建立问题、约束、事实与待决项，生成完整候选设计。
+- [x] 由独立 Reviewer 反复挑战覆盖、边界与可执行性，直到 `SUFFICIENT` 或需要用户裁决。
+- [x] 写入 Learn PRD，并运行结构、密度与一致性验证。
+- [x] 通过最终独立 `adversarial-review`，打开生成的 Markdown 供用户检查。
+
+## 边界
+
+- 本任务只设计 Learn 模式；不实现 skill。
+- 不重复 Develop 的静态项目地图，也不复制 `teach` 的通用、多课次教学工作区。
+
+## Discussion status
+
+- Gate: SUFFICIENT
+- Reviewer: /root/prd_reviewer
+- Round: 3
+- Resolved: D1-D16
+- Unresolved: none
+
+## Review status
+
+- Gate: APPROVED
+- State: APPROVED
+- Reviewer: learn_prd_final_reviewer
+- Round: 5
+- Scope: `docs/analysis/analyze-project-v2-learn-prd.md`
+- Summary: `RE-REVIEW (5)` 已批准当前 PRD，R1–R10 全部解决。
+- Unresolved: none
+- Report: [Adversarial review report](../reports/adversarial-review/analyze-project-learn-prd.md)
+
+## 复核
+
+- `adversarial-discuss` 在第 3 轮以 `SUFFICIENT` 结束，D1–D16 全部解决；正式 PRD 随后通过 5 轮独立 `adversarial-review`，R1–R10 全部关闭。
+- 最终 PRD SHA-256 为 `b441bcf52ee75c23c910791fe3a326b4ca3b59f2a97c78f49344578fbee6ac51`；18 个连续编号章节，固定 eval 证据锚点存在。
+- `git diff --check` 与未跟踪 PRD 的 no-index whitespace 检查通过；占位符、旧增量更新/map 复用、泄漏 hidden 场景和主观 scope 阈值扫描无命中。
+- PRD 与审查报告已用 Typora 打开；本任务未实现 skill。
+
 # 提交当前全部本地改动
 
 状态：已完成（2026-07-19）

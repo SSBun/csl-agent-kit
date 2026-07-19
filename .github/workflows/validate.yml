@@ -127,18 +127,23 @@ jobs:
           done
           exit $fail
 
-      - name: Verify analyze-project prompt output paths
+      - name: Verify analyze-project output paths
         run: |
           fail=0
+          paths=$(grep -Eo 'docs/[^[:space:]|`]*' skills/analyze-project/SKILL.md | sort -u)
+          if [ -z "$paths" ]; then
+            echo "::error::analyze-project must declare its docs/analysis/ output paths"
+            exit 1
+          fi
           while IFS= read -r path; do
             case "$path" in
-              "{{PROJECT_PATH}}/docs/analysis/"*) ;;
+              docs/analysis/*) ;;
               *)
-                echo "::error::analyze-project prompts must use docs/analysis/, found $path"
+                echo "::error::analyze-project outputs must use docs/analysis/, found $path"
                 fail=1
                 ;;
             esac
-          done < <(grep -Rho '{{PROJECT_PATH}}/docs/[^[:space:])`]*' skills/analyze-project/prompts/ | sort -u)
+          done <<< "$paths"
           exit $fail
 
       - name: Validate SKILL.md frontmatter

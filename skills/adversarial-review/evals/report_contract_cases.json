@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "initial-approval",
+      "given": "One owning task and a clean INITIAL pass.",
+      "expect": {
+        "report_created_before_initial": true,
+        "report_path": "reports/adversarial-review/<task-slug>.md",
+        "todo_link": "../reports/adversarial-review/<task-slug>.md",
+        "chat": "Normal task outcome and report link; no pasted report."
+      }
+    },
+    {
+      "id": "approval-invalidated",
+      "given": "A reviewed artifact changes after APPROVED.",
+      "expect": {
+        "same_report_reused": true,
+        "gate": "BLOCKED",
+        "state": "PENDING",
+        "next_round": "RE-REVIEW (n+1)",
+        "revision_and_fingerprint_refreshed": true
+      }
+    },
+    {
+      "id": "ambiguous-task-ownership",
+      "given": "Multiple existing tasks plausibly own the review.",
+      "expect": {
+        "report_created": false,
+        "task_summary_created": false,
+        "chat": "Exact ownership question without a report link."
+      }
+    },
+    {
+      "id": "needs-user-after-editor-batch",
+      "given": "All findings were answered, but one user-owned decision remains.",
+      "expect": {
+        "same_report_reused": true,
+        "gate": "BLOCKED",
+        "state": "NEEDS_USER",
+        "chat": "Exact question, evidence, risk, resume condition, and report link only."
+      }
+    },
+    {
+      "id": "administrative-sync",
+      "given": "Only the report ledger projection and linked todo summary change.",
+      "expect": {
+        "approval_invalidated": false,
+        "new_report_created": false,
+        "reviewed_artifact_scope_changed": false
+      }
+    }
+  ]
+}

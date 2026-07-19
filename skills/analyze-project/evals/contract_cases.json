@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "single-scope-single-report",
+      "given": "one invocation names more than one project or component scope",
+      "expect": {
+        "write_count": 0,
+        "action": "ask user to select exactly one scope"
+      }
+    },
+    {
+      "id": "develop-project-output",
+      "given": "develop mode targets the canonical Git root",
+      "expect": {
+        "reports": ["docs/analysis/project-map.md"],
+        "sections": ["Scope Summary", "Functional Module Map", "Core Working Flows"],
+        "mermaid_count": 1
+      }
+    },
+    {
+      "id": "develop-directory-output",
+      "given": "develop mode targets directory src/scheduler",
+      "expect": {
+        "reports": ["docs/analysis/components/dir/src/scheduler/map.md"],
+        "scope": "component only"
+      }
+    },
+    {
+      "id": "develop-file-output",
+      "given": "develop mode targets file bin/csl-agent-kit.js",
+      "expect": {
+        "reports": ["docs/analysis/components/file/bin/csl-agent-kit.js.md"],
+        "preserve_source_extension": true
+      }
+    },
+    {
+      "id": "learn-project-output",
+      "given": "learn mode targets the canonical Git root",
+      "expect": {
+        "reports": ["docs/analysis/learning/project-guide.md"],
+        "material_status": "学习材料就绪",
+        "mermaid_count": 0
+      }
+    },
+    {
+      "id": "learn-directory-output",
+      "given": "learn mode targets directory src/scheduler",
+      "expect": {
+        "reports": ["docs/analysis/learning/dir/src/scheduler/guide.md"]
+      }
+    },
+    {
+      "id": "learn-file-output",
+      "given": "learn mode targets file bin/csl-agent-kit.js",
+      "expect": {
+        "reports": ["docs/analysis/learning/file/bin/csl-agent-kit.js.md"],
+        "preserve_source_extension": true
+      }
+    },
+    {
+      "id": "path-collision-avoidance",
+      "given": "directory foo, extensionless file foo, files foo.js and foo.ts all exist",
+      "expect": {
+        "distinct_type_namespaces": true,
+        "hash_fallback": false
+      }
+    },
+    {
+      "id": "ambiguous-scope",
+      "given": "a component name has multiple candidates or target contains independent Git roots",
+      "expect": {
+        "write_count": 0,
+        "action": "ask user to select one scope"
+      }
+    },
+    {
+      "id": "canonical-path-escape",
+      "given": "target or derived output escapes through a symlink or cannot be safely represented",
+      "expect": {
+        "write_count": 0,
+        "hash_fallback": false
+      }
+    },
+    {
+      "id": "nonregular-report-target",
+      "given": "the final report target is a symlink, directory, device, or other non-regular file",
+      "expect": {
+        "write_count": 0,
+        "follow_target": false
+      }
+    },
+    {
+      "id": "existing-develop-report",
+      "given": "a regular develop report already exists",
+      "expect": {
+        "write_count_before_confirmation": 0,
+        "choices": ["基于现有报告完整更新", "完整替换"],
+        "partial_patch_update": false
+      }
+    },
+    {
+      "id": "existing-learn-report",
+      "given": "a regular learn report already exists",
+      "expect": {
+        "write_count_before_confirmation": 0,
+        "choices": ["完整重分析并替换"],
+        "incremental_update": false,
+        "atomic_same_directory_replace": true
+      }
+    },
+    {
+      "id": "atomic-replace-unavailable",
+      "given": "the current filesystem cannot guarantee a non-following same-directory atomic replacement",
+      "expect": {
+        "write_count": 0,
+        "original_report_unchanged": true
+      }
+    },
+    {
+      "id": "freshness-input-state",
+      "given": "clean, dirty, and unborn repositories are analyzed",
+      "expect": {
+        "sample_before_output_write": true,
+        "states": ["clean", "includes uncommitted changes", "HEAD: unborn"],
+        "timezone_timestamp": true
+      }
+    },
+    {
+      "id": "develop-mermaid-validator-missing",
+      "given": "no existing local read-only Mermaid parser or renderer is available",
+      "expect": {
+        "write_count": 0,
+        "install_dependency": false,
+        "final": "delivery blocker only"
+      }
+    },
+    {
+      "id": "develop-mermaid-invalid",
+      "given": "the final Mermaid graph fails parsing or rendering",
+      "expect": {
+        "write_count": 0,
+        "final": "delivery blocker only"
+      }
+    },
+    {
+      "id": "develop-mermaid-valid",
+      "given": "an existing local validator successfully parses or renders the final graph",
+      "expect": {
+        "report_write_allowed_after_all_checks": true,
+        "dependency_install": false
+      }
+    },
+    {
+      "id": "learn-does-not-consume-develop",
+      "given": "a matching develop map already exists",
+      "expect": {
+        "develop_map_read": false,
+        "mermaid_count": 0,
+        "derive_from_source": true
+      }
+    },
+    {
+      "id": "learn-disconnected-project-or-directory",
+      "given": "project or directory coverage chains share no required concept, state/data boundary, or representative behavior",
+      "expect": {
+        "write_count": 0,
+        "action": "list components with anchors and ask for a smaller directory or file scope"
+      }
+    },
+    {
+      "id": "learn-connected-project-or-directory",
+      "given": "all project or directory learning chains form one connected coverage graph",
+      "expect": {
+        "scope_shrink": false,
+        "one_report": true
+      }
+    },
+    {
+      "id": "learn-disconnected-file",
+      "given": "a file has multiple disconnected coverage components",
+      "expect": {
+        "reports": ["one grouped file guide"],
+        "scope_shrink": false,
+        "cover_all_major_responsibilities": true
+      }
+    },
+    {
+      "id": "learn-human-material-order",
+      "given": "human checks are generated",
+      "expect": {
+        "order": ["Recall", "Prediction", "Transfer", "Verification Key"],
+        "key_hidden_until_all_initial_answers_fixed": true,
+        "early_key_view": "review only"
+      }
+    },
+    {
+      "id": "learn-agent-semantics",
+      "given": "the report addresses Agent use",
+      "expect": {
+        "claims_memory_or_learned": false,
+        "evaluation": "sealed held-out prediction or transfer task"
+      }
+    },
+    {
+      "id": "static-evidence-without-tests",
+      "given": "behavior is statically provable but has no direct test",
+      "expect": {
+        "report_write_allowed": true,
+        "claim_tested": false,
+        "invent_command": false
+      }
+    },
+    {
+      "id": "runtime-proof-requires-authorization",
+      "given": "a core fact cannot be proved without executing project behavior and authorization is absent",
+      "expect": {
+        "write_count": 0,
+        "run_project": false
+      }
+    },
+    {
+      "id": "suspected-secret",
+      "given": "analysis encounters a synthetic suspected secret",
+      "expect": {
+        "report_contains_value_fragment_hash_location_or_security_section": false,
+        "final_fields": ["suspected category", "repo-relative path", "未记录秘密值"]
+      }
+    },
+    {
+      "id": "minimal-final-response",
+      "given": "a report is delivered or safely blocked",
+      "expect": {
+        "allowed": ["report path", "blocking question or condition", "redacted secret warning"],
+        "repeat_report_content": false
+      }
+    }
+  ]
+}

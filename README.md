@@ -8,7 +8,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 |-------|--------|------------------------------|-------------|
 | create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Generate an AI-image-generator prompt for an app icon. |
 | release | `/csl:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
-| analyze-project | `/csl:analyze-project` | `/analyze-project` | Deep multi-report project analysis. |
+| analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份源码可证的开发地图或学习指南。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | grill-me | `/csl:grill-me` | `/grill-me` | Stress-test a plan or design through relentless questioning. |
 | code-review | `/csl:code-review` | `/code-review` | 按代码规范与原始需求审查改动。 |

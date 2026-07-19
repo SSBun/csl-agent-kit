@@ -22,8 +22,10 @@
 
 ## Decisions and Conventions
 
+- `analyze-project` v2 的 `learn` 模式一次只分析一个 project/目录/文件 scope，并输出一份 `docs/analysis/learning/` 下的掌握指南；核心结构为最小 Orientation、目标覆盖链、Concept Ladder、代表行为走读、严格串行的 Human Recall/Prediction/Transfer checks 与 Verification Key。Agent 不使用“学会/回忆”语义，只以 sealed held-out prediction/transfer trial 衡量报告效用。
+- `learn` v1 不读取 Develop map、不生成 Mermaid、不增量合并旧报告；现有普通报告只允许完整重分析后安全原子替换。project/dir 只在职责学习链覆盖图不连通时要求缩小 scope，file 图不连通时仍生成一份按分量组织的报告。
+- `adversarial-review` 为每个 review task 在 `reports/adversarial-review/<task-slug>.md` 维护一份稳定报告，从首次审查前创建并逐轮更新；`tasks/todo.md` 只保留 Gate、状态、短 Reviewer 名、轮次、scope、一句摘要、未解决项及相对链接。报告与任务摘要对 ledger 的精确同步属于管理记录，不使批准失效；完整报告不再粘贴到用户对话，批准时只返回正常任务结果和链接，阻塞时只显示所需问题、风险与恢复条件。
 - 每次 adversarial-review pass 都必须覆盖固定的完整 scope：Reviewer 一次性报告当前可见的全部 `BLOCKER`、`QUESTION` 与 `NOTE`，并在复审中逐项说明全部既有 finding ID 已解决或未解决，不得故意分轮释放；Editor 一次性回答和处理整轮全部条目后才能请求普通复审。后续新 finding 必须指出使其此前不可行动的新 artifact、diff、证据或其他原因；需要用户决定时保持 `BLOCKED`，多个方案进入 Decision Consensus Gate，否则直接询问用户，不得用普通复审绕过决定。
-- `adversarial-review` 将 Gate、Reviewer、轮次、scope、resolved 与 unresolved 状态写入共享任务列表：唯一相关任务内新增 `## Review status`，无相关任务时在列表顶部创建独立 review task，多任务归属不清时先询问。只反映已审事实的状态字段、任务状态行和既有计划勾选属于管理元数据，不使批准失效；范围、需求、验收标准、证据声明或交付物变化仍使批准失效。
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
 - `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
 - 任何文件修改或非简单任务都必须先在当前 workspace 的 `tasks/todo.md` 写可检查计划；`tasks/context.md` 的常规维护是唯一例外。
