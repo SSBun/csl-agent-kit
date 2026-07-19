@@ -27,6 +27,7 @@
 - For non-trivial or file-changing work, create or update a task record before execution; keep it current during work and complete its review before closing it.
 - Give each task an outcome-oriented title, a status with date, testable goals, and a review of results and verification.
 - Add plans or boundaries when they help execution.
+- For adversarial review, record `## Review status` in the task that owns the reviewed outcome; if no task matches, create a newest-first review task instead of attaching the review arbitrarily.
 - Keep completed tasks as history and avoid changing unrelated task entries.
 - Read recent tasks first and search older entries only when relevant.
 
@@ -70,9 +71,9 @@
 ---
 
 ### 7. Strict Review and Verification Before Done
-- Before marking any file-changing task complete, invoke `adversarial-code-review` on the final diff.
+- Before marking any deliverable-changing task complete, invoke `adversarial-review` on the final artifact and diff when available.
 - Keep completion and commit gates blocked until its independent Reviewer returns `APPROVED`; the Editor may answer or fix findings but cannot self-approve.
-- Any reviewed-file change after approval invalidates the verdict and requires another review.
+- Any reviewed-artifact change after approval invalidates the verdict and requires another review.
 - If the adversarial review cannot run or does not pass, report the task as incomplete or blocked; never claim it is finished.
 - Diff behavior between main and your changes when relevant, and run tests, check logs, or otherwise demonstrate correctness.
 

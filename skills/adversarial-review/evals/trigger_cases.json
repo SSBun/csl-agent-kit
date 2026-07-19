@@ -1,0 +1,30 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Run an adversarial review with an independent Reviewer and block completion until approval.",
+    "Use a two-agent review before marking this implementation complete; the Reviewer must approve the Editor's fixes.",
+    "Run a three-round adversarial review on this PRD and do not finalize it before APPROVED.",
+    "Have an independent Reviewer challenge this RFC, then let the Editor revise it and request approval.",
+    "Run an open-ended deep adversarial review of this system design before completion.",
+    "执行双 Agent 对抗式审查这份 PRD，Reviewer 批准前保持阻塞。",
+    "完成代码或设计文档前启动独立 Reviewer 与 Editor 的复审闭环。"
+  ],
+  "should_not_trigger": [
+    "Review this pull request for bugs and security issues.",
+    "Proofread this PRD and fix the wording.",
+    "Summarize this RFC for the team.",
+    "Fix the comments from the last code review.",
+    "Commit these changes with a concise message.",
+    "Run the test suite before marking the task complete.",
+    "检查这个 PR 有没有明显问题。"
+  ],
+  "near_neighbor": [
+    "Use code-reviewer to inspect the current diff.",
+    "Review changes since main against the product spec.",
+    "Review this architecture proposal and suggest alternatives.",
+    "Review this product requirements document and leave comments.",
+    "Ask adversarial questions about my implementation plan.",
+    "Have two agents independently review the PR and aggregate their findings.",
+    "修复 Reviewer 已经提出的所有问题。"
+  ]
+}

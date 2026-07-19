@@ -46,7 +46,7 @@
     "./skills/venom-cli",
     "./skills/beautiful-mermaid",
     "./skills/code-reviewer",
-    "./skills/adversarial-code-review",
+    "./skills/adversarial-review",
     "./skills/test-triage",
     "./skills/repo-map",
     "./skills/super-agent",
