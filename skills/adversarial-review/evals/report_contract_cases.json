@@ -41,12 +41,19 @@
         "one_canonical_debate_section_per_finding_id": true,
         "debate_fields": [
           "Reviewer position",
-          "Editor response",
+          "Violated criterion",
           "Evidence",
+          "Risk",
+          "Required outcome",
+          "Suggested remedy",
+          "Editor response",
+          "Editor audit: Current Adequacy; Minimal Resolution; Blast Radius; Proportionality",
           "Debate conclusion",
           "Final impact",
           "Status"
         ],
+        "finding_required_outcome_remedy_separated": true,
+        "suggested_remedy_is_advisory": true,
         "resolved_conclusion_preserved": true,
         "pending_condition_preserved": true,
         "disagreement_preserved": "The Reviewer challenge and Editor disagreement both remain visible without fabricating agreement.",
@@ -66,6 +73,60 @@
         "status": "RESOLVED",
         "artifact_change_claimed": false,
         "rejection_or_compromise_claimed": false
+      }
+    },
+    {
+      "id": "unsupported-blocker-downgrade",
+      "given": "A Reviewer labels a preferred abstraction as BLOCKER but cannot identify a violated criterion, observable evidence, material risk, and required outcome.",
+      "expect": {
+        "blocker_allowed": false,
+        "reclassified_before_editor_batch": true,
+        "invalid_reviewer_response_accepted_as_verdict": false,
+        "editor_batch_consumed": false,
+        "allowed_result": "Downgrade to QUESTION or NOTE, or omit it.",
+        "suggested_remedy_treated_as_evidence": false,
+        "artifact_change_required": false
+      }
+    },
+    {
+      "id": "narrow-resolution-closes-finding",
+      "given": "A valid finding suggests a new cross-component coordinator, while a local guard satisfies the same required outcome with a smaller blast radius and fewer assumptions.",
+      "expect": {
+        "editor_disposition": "NARROW",
+        "editor_audit_order": [
+          "Current Adequacy",
+          "Minimal Resolution",
+          "Blast Radius",
+          "Proportionality"
+        ],
+        "reviewer_closure_basis": "Required outcome satisfied.",
+        "suggested_remedy_adoption_required": false,
+        "unrelated_components_changed": false,
+        "debate_conclusion": "COMPROMISE",
+        "status": "RESOLVED"
+      }
+    },
+    {
+      "id": "adequate-solution-rejected-with-evidence",
+      "given": "The current solution already satisfies the required outcome and the Reviewer suggestion adds complexity without demonstrated risk reduction.",
+      "expect": {
+        "editor_disposition": "REJECT",
+        "current_solution_preserved": true,
+        "debate_conclusion": "REJECTED_WITH_EVIDENCE",
+        "reviewer_may_repeat_original_remedy_without_new_evidence": false,
+        "status": "RESOLVED"
+      }
+    },
+    {
+      "id": "valid-finding-without-suggested-remedy",
+      "given": "A valid finding identifies a violated criterion, observable evidence, material risk, and required outcome, but the Reviewer provides no suggested remedy.",
+      "expect": {
+        "finding_allowed": true,
+        "suggested_remedy_required": false,
+        "editor_disposition": "ACCEPT",
+        "editor_selects_minimal_sufficient_resolution": true,
+        "reviewer_implementation_command_required": false,
+        "reviewer_closure_basis": "Required outcome satisfied."
       }
     },
     {

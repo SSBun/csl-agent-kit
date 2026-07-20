@@ -26,7 +26,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
 | code-reviewer | `/csl:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
 | adversarial-review | `/csl:adversarial-review` | `/adversarial-review` | 以不限轮次、状态驱动的 Reviewer–Editor 闭环审查代码、PRD、RFC、设计文档等交付物。 |
-| adversarial-discuss | `/csl:adversarial-discuss` | `/adversarial-discuss` | 由 Editor 与独立 Reviewer 不限轮次地补全并校验问题或主题的综合答案。 |
+| adversarial-discuss | `/csl:adversarial-discuss` | `/adversarial-discuss` | 由 Synthesizer 与独立 Challenger 先内部批量讨论，仅在关键用户选择上暂停询问。 |
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
 | super-agent | `/csl:super-agent` | `/super-agent` | Symlink the bundled default AGENTS.md into another agent config. |

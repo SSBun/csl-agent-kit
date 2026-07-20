@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "name": "internal_first",
+      "given": "The topic has enough evidence for a provisional analysis, plus several researchable factual gaps.",
+      "must": [
+        "start the Synthesizer–Challenger discussion without interviewing the user",
+        "research discoverable facts internally",
+        "record safe reversible defaults as assumptions"
+      ],
+      "must_not": [
+        "relay every Challenger question to the user"
+      ]
+    },
+    {
+      "name": "user_decision_gate",
+      "given": "Several issues depend on the same user-owned priority and different choices materially change the answer.",
+      "must": [
+        "merge the dependent issues into one choosing question",
+        "offer 2–3 options with a recommendation and effects",
+        "resume both roles with the user's answer"
+      ],
+      "must_not": [
+        "guess the user-owned priority",
+        "ask unrelated low-level questions"
+      ]
+    },
+    {
+      "name": "complete_batch",
+      "given": "Five visible issues span three related topics and two issues have cross-topic effects.",
+      "must": [
+        "have the Challenger report all five visible issues in one pass",
+        "have the Synthesizer answer all five in one batch",
+        "recheck every prior issue ID and cross-topic consistency"
+      ],
+      "must_not": [
+        "sample or drip-feed known issues",
+        "run a separate loop for each topic"
+      ]
+    },
+    {
+      "name": "late_issue_accountability",
+      "given": "The Challenger raises a new issue after a revision.",
+      "must": [
+        "identify the new fact, revision, or dependency that made the issue newly actionable"
+      ],
+      "must_not": [
+        "present a previously visible issue as newly discovered without explanation"
+      ]
+    }
+  ]
+}

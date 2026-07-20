@@ -29,9 +29,14 @@ Maintain one durable Markdown report per review task at `reports/adversarial-rev
 
 ### R1 — <topic title>
 
-- Reviewer position: <question, objection, or risk and why it matters>
-- Editor response: <accepted fix, evidence-backed rejection, compromise, or pending answer>
+- Reviewer position: <evidence-backed finding, question, or note>
+- Violated criterion: <requirement or principle; required for BLOCKER, otherwise exact missing information or not applicable>
 - Evidence: <concise observable evidence; paths only when essential>
+- Risk: <material consequence; required for BLOCKER>
+- Required outcome: <observable closure condition; for QUESTION use the missing answer, for NOTE use acknowledgement>
+- Suggested remedy: <explicitly advisory proposal or none>
+- Editor response: <ACCEPT, NARROW, REJECT, ACKNOWLEDGE, or NEEDS_USER and the answer>
+- Editor audit: <Current Adequacy; Minimal Resolution; Blast Radius; Proportionality>
 - Debate conclusion: ACCEPTED_AND_FIXED | ACKNOWLEDGED_NO_CHANGE | REJECTED_WITH_EVIDENCE | COMPROMISE | NEEDS_USER | UNRESOLVED
 - Final impact: <what changed, retained risk, exact user decision, or no change>
 - Status: RESOLVED | UNRESOLVED
@@ -93,7 +98,7 @@ For an empty finding ledger, write a result-consistent statement: `READY` may sa
 
 Make the user-facing body outcome-first: overall conclusion, topics, canonical debate results, final conclusion, and verification. Put cycle count, reviewer identity, state-machine fields, scope, routine file paths, fingerprint, and round history only in the final technical appendix. Mention a path in a debate result only when it is essential evidence.
 
-Use one canonical debate-result section per stable finding ID; do not duplicate it as a separate summary and findings ledger. Preserve both positions when the Reviewer and Editor disagree, never fabricate agreement, and keep exact pending conditions. Keep the complete compact round history in the appendix. Do not include hidden reasoning, raw prompts, conversation transcripts, secrets, unrelated workspace changes, or full command logs.
+Use one canonical debate-result section per stable finding ID; do not duplicate it as a separate summary and findings ledger. Keep the finding, required outcome, and suggested remedy distinct. The remedy is advisory: record when the Editor accepts it, narrows it to a smaller sufficient resolution, rejects it with evidence, or acknowledges it without change. Preserve both positions when the Reviewer and Editor disagree, never fabricate agreement, and close the finding based on its required outcome rather than adoption of the suggested remedy. Keep exact pending conditions and the complete compact round history in the appendix. Do not include hidden reasoning, raw prompts, conversation transcripts, secrets, unrelated workspace changes, or full command logs.
 
 ## User-Facing Handoff
 

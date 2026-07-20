@@ -1,14 +1,19 @@
 {
   "fallback_positive_concepts": [
-    "editor_reviewer_loop",
+    "synthesizer_challenger_loop",
     "multi_perspective_synthesis"
   ],
   "positive_concepts": {
-    "editor_reviewer_loop": {
+    "synthesizer_challenger_loop": {
       "weight": 0.6,
       "phrases": [
         "adversarial discussion",
         "adversarial-discuss",
+        "synthesizer and challenger",
+        "synthesizer and independent challenger",
+        "synthesizer-challenger",
+        "challenger find gaps",
+        "challenger finds gaps",
         "editor and reviewer",
         "editor and independent reviewer",
         "editor-reviewer",
@@ -18,6 +23,9 @@
         "revise until sufficient",
         "uncapped discussion",
         "不限轮次地对抗讨论",
+        "批量对抗讨论",
+        "synthesizer 和 challenger",
+        "synthesizer 与 challenger",
         "editor 和 reviewer",
         "editor 与 reviewer",
         "反复讨论"
@@ -63,6 +71,7 @@
         "explore three implementation approaches",
         "brainstorm options and trade-offs",
         "without an editor-reviewer loop",
+        "without a synthesizer-challenger loop",
         "不需要多 agent 循环"
       ]
     },

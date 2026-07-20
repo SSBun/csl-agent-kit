@@ -11,15 +11,15 @@ description: Fail-closed, uncapped adversarial review for code, PRDs, RFCs, desi
 - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.
 - `APPROVED` is review evidence, not external-action authorization.
 - Set no total round or cycle limit. Continue by review state under [Review Loop Contract](references/review-loop.md).
-- Persist the review in one workspace report, link it to the owning task file, and keep that task discoverable from the index per [Task Review Status](references/task-review-status.md).
+- Persist one workspace report and link it through the owning task and index per [Task Review Status](references/task-review-status.md).
 - Reviewed artifact changes invalidate `APPROVED`; return to `BLOCKED` and resume the same numbered review history.
 - No independent Reviewer: fail closed.
 
 ## Roles
 
 - **Coordinator:** Pins scope, gate, routing, and verdict; may be Editor, never Reviewer.
-- **Reviewer:** Read-only; inspects the request, rules, artifact, evidence, and checks; questions, approves, or blocks.
-- **Editor:** Answers all items, makes scoped fixes, runs checks, and requests re-review; never self-approves.
+- **Reviewer:** Read-only; separates findings, required outcomes, and optional remedies under the shared principles.
+- **Editor:** Audits adequacy, minimal resolution, blast radius, and proportionality before accepting, narrowing, rejecting, acknowledging, or escalating; never self-approves.
 
 Reuse the Reviewer. A replacement receives the complete state, artifact, available diff, round number, and finding IDs.
 
@@ -29,7 +29,7 @@ For multiple viable decisions, fixes, or plans, remain `BLOCKED` and use [Decisi
 
 ### 1. Pin the review
 
-Before the first pass, resolve ownership under [Task Review Status](references/task-review-status.md), then initialize or reuse the full report under [Final Review Report Contract](references/final-review-report.md) and link its summary. They are administrative review records, not reviewed deliverables.
+Before the first pass, resolve ownership under [Task Review Status](references/task-review-status.md), then initialize or reuse the report under [Final Review Report Contract](references/final-review-report.md). These records are not reviewed deliverables.
 
 Give the Reviewer only task-local evidence:
 
@@ -43,7 +43,7 @@ Exclude the Editor's reasoning and proposed answers from the first Reviewer prom
 
 ### 2. Run the loop
 
-Apply [Review Lenses](references/review-lenses.md) and execute [Review Loop Contract](references/review-loop.md). Sync each verdict and Editor response to the stable report before routing the next action.
+Both roles apply [Shared Principles and Review Lenses](references/review-lenses.md), then execute [Review Loop Contract](references/review-loop.md). Enforce its Finding Validity Gate before accepting a Reviewer verdict or routing work to the Editor. Sync each accepted verdict and Editor response to the stable report before routing the next action.
 
 ### 3. Finalize the record
 

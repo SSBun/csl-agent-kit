@@ -1,13 +1,15 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
-    "Use an Editor and independent Reviewer to discuss this architecture decision until the answer covers every material perspective.",
+    "Use a Synthesizer and independent Challenger to discuss this architecture decision until the answer covers every material perspective.",
     "Run an uncapped adversarial discussion of whether we should migrate from a monolith to services.",
-    "Give me a comprehensive devil's-advocate synthesis, let the Reviewer find gaps, and have the Editor revise until sufficient.",
-    "Have Editor and Reviewer iteratively analyze the social and economic effects of remote work.",
+    "Have a Synthesizer and Challenger iteratively test this product idea from every material perspective until sufficient.",
+    "Give me a comprehensive synthesis, let the Challenger find every current gap in one batch, and revise until sufficient.",
+    "Have Synthesizer and Challenger iteratively analyze all related social and economic effects of remote work.",
     "Use adversarial-discuss on this product idea and preserve unresolved disagreements in the final answer.",
-    "让 Editor 和 Reviewer 对这个技术选型反复讨论，补齐遗漏后再给我综合结论。",
-    "不限轮次地对抗讨论这个议题，Reviewer 认为覆盖充分后再结束。"
+    "先让 Synthesizer 和 Challenger 内部反复讨论这个技术选型，只在关键取舍上问我。",
+    "不限轮次地批量对抗讨论这个议题，Challenger 认为覆盖充分后再结束。",
+    "Use an Editor and independent Reviewer to discuss this decision until sufficient, not to approve an artifact."
   ],
   "should_not_trigger": [
     "Run an adversarial review and block completion until this PRD is APPROVED.",
@@ -26,7 +28,9 @@
     "Debate both sides of this issue in a single response.",
     "Use adversarial-review to approve this system design before release.",
     "Ask me hard questions until my proposal is clear.",
-    "Help me brainstorm options and trade-offs for this product idea without an Editor–Reviewer loop.",
-    "全面分析这个问题，但不需要多 Agent 循环。"
+    "Help me brainstorm options and trade-offs for this product idea without a Synthesizer–Challenger loop.",
+    "全面分析这个问题，但不需要多 Agent 循环。",
+    "Brainstorm product options in one response; discuss internally first and handle related topics in a complete batch.",
+    "先内部讨论并完整批次处理这些产品点子，然后一次回答。"
   ]
 }

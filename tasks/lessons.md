@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-07-20 让多 Agent 角色名匹配工作阶段
+
+- **Trigger:** 为答案形成、方案讨论或最终交付物检查设计多 Agent 工作流。
+  - **Rule:** 答案形成阶段使用能表达综合与挑战职责的角色名，例如 Synthesizer / Challenger；Editor / Reviewer 只用于成稿后的修改与验收。不要因通信拓扑相似而复用阶段语义不符的角色名。
+  - **Why:** 角色名会向用户和 Agent 暗示流程目标；混用会让讨论误读为批准门禁，并模糊 `adversarial-discuss` 与 `adversarial-review` 的边界。
+
 ## 2026-07-20 区分文件化审查报告与普通任务交接
 
 - **Trigger:** 用户要求审查报告只写入文件、不在会话中展示。

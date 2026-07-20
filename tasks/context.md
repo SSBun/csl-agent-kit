@@ -2,7 +2,7 @@
 
 ## Components
 
-- `skills/adversarial-discuss/` 以 Coordinator 中转的 Editor–Reviewer 循环生成问题、主题、想法、决策或计划的综合答案；它不设轮次上限，只在覆盖充分、需要用户/外部输入、客观阻塞或用户停止时结束或暂停，并用稳定资源清单交接双方生成的文件与外部资源。普通 brainstorming 和需要 `APPROVED` 的交付物审查不进入该 skill。
+- `skills/adversarial-discuss/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；Agent 默认先内部批量处理全部相关主题与当前可见议题，只把会实质改变结果且无法内部解决的用户专属选择合并后询问用户。它不设轮次上限，并用稳定资源清单交接双方生成的文件与外部资源；普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。
 - `.agents/skills/integrate-third-skills/` 是受版本控制且仅在本仓库发现的第三方技能整合流程；它以 `metadata.internal: true` 排除 `npx skills` 的普通安装清单，并通过 npm `files` 白名单排除发布包；它也不进入全局 Codex symlink 或 Pi 命令分发。附带脚本仍以共享 `skills/` 为第三方源码根目录。
 - `skills/sop-manager/sops/code-style.md` 是跨语言的内置代码风格 SOP；它按语言读取 `skills/sop-manager/references/code-style/` 中的规则参考，Swift 参考为 `swift-style.md`，并已合并后删除用户级 `~/.csl-agent-kit/sops/swift-code-style.md`。
 - `skills/super-agent/references/AGENTS.md` 是可分发的默认 agent 规则；`~/.agents/AGENTS.md` 已按用户确认软链接到该文件，原失效链接保存在 `~/.agents/AGENTS.md.backup-20260719-163637`。

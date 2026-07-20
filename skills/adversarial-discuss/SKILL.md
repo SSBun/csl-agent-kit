@@ -1,20 +1,21 @@
 ---
 name: adversarial-discuss
-description: Runs an uncapped Coordinator-mediated Editor–Reviewer loop that corrects an answer until coverage is sufficient or new input is required. Use only when the user explicitly requests an iterative Editor–Reviewer or adversarial loop for multi-perspective analysis or devil's-advocate synthesis of a question, topic, idea, decision, or plan. Exclude approval-gated artifact review, one-pass feedback, simple factual answers, ordinary brainstorming without that loop, and user grilling.
+description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop that develops a comprehensive answer through full-batch internal discussion, asking users only for key choices. Use only when the user explicitly requests iterative adversarial or multi-perspective synthesis of a question, topic, idea, decision, or plan. Exclude approval-gated artifact review, one-pass feedback, factual answers, brainstorming without that loop, and user grilling.
 ---
 
 # Adversarial Discuss
 
 ## Contract
 
-- Use a Coordinator, an Editor, and an independent Reviewer. The Coordinator may be the Editor, never the Reviewer.
-- Route every exchange through the Coordinator, reuse both agents, and send the complete state on every handoff.
-- Set no round or cycle limit. Continue while the Reviewer returns `CONTINUE`.
-- Stop or pause only at `SUFFICIENT`, `NEEDS_USER`, an objective blocker, or an explicit user stop.
-- Without an independent Reviewer, disclose that the discussion cannot run; never simulate sufficiency.
-- Create files or use external resources only when already authorized.
+- Use a Coordinator, a Synthesizer, and an independent Challenger. The Coordinator may synthesize, never challenge.
+- Route exchanges through the Coordinator; reuse both roles and send complete state.
+- Discuss internally first. Ask only about material user-owned choices that research, reasoning, or a reversible default cannot settle.
+- Process every related topic and visible issue per pass; never drip-feed known issues.
+- Set no round limit. Continue on `CONTINUE`; otherwise stop or pause.
+- Without an independent Challenger, disclose that the discussion cannot run; never simulate sufficiency.
+- Create resources only when authorized.
 
-## Authoritative State
+## State
 
 Have the Coordinator maintain and transmit:
 
@@ -22,60 +23,60 @@ Have the Coordinator maintain and transmit:
 QUESTION AND GOAL:
 CONSTRAINTS / NON-GOALS:
 FACTS / SOURCES:
+TOPIC BUNDLE:
+ASSUMPTIONS / DEFAULTS:
 CURRENT ANSWER:
 ISSUES / RESOURCES:
 LIMITATIONS / USER DECISIONS:
 ```
 
-Use stable issue IDs. Never hide or downgrade unresolved items. Send the complete answer, not a diff.
+Use stable IDs. Send the complete answer, not a diff.
 
-## Resource Handoff
-
-When either role generates a resource needed by the other, follow [Resource Handoff](references/resource-handoff.md). Verify access before forwarding it. Changed resources invalidate dependent conclusions.
+Follow [Resource Handoff](references/resource-handoff.md). Verify access; changed resources invalidate dependent conclusions.
 
 ## Workflow
 
-### 1. Produce the initial answer
+### 1. Build a provisional brief
 
-Give the Editor the question, outcome, constraints, evidence, and resources. Require a complete answer with conclusions, support, assumptions, alternatives, uncertainties, and a resource handoff.
+Infer the goal, constraints, topics, and assumptions. Research discoverable facts. Ask one intent question first only when provisional analysis cannot begin.
 
-### 2. Challenge the answer
+### 2. Run a complete internal batch
 
-Give the Reviewer the complete state and registered resources. Check accuracy, completeness, evidence, omitted perspectives, counterexamples, risks, trade-offs, affected parties, and certainty.
+Have the Synthesizer cover the full topic bundle, including conclusions, alternatives, uncertainty, and cross-topic effects. Have the Challenger report every visible error, gap, counterpoint, risk, trade-off, and inconsistency:
 
 ```text
 STATUS: CONTINUE | SUFFICIENT | NEEDS_USER | BLOCKED
-D1 [ERROR|GAP|COUNTERPOINT|SUGGESTION]
+D1 [ERROR|GAP|COUNTERPOINT|SUGGESTION|USER_DECISION] [T1,T2]
 Evidence: ...
 Impact: ...
 Requested response: ...
-CONTEXT HANDOFF: <resource entries or none>
+CONTEXT HANDOFF: <entries or none>
 ```
 
-Use `SUFFICIENT` only when no material error or gap remains. Suggestions may remain optional, but the Editor must acknowledge them.
+Use `SUFFICIENT` only when no material error, gap, or intent ambiguity remains. A late issue must name what made it newly actionable.
 
-### 3. Answer and revise
+### 3. Resolve internally or ask one key choice
 
-Send the report and complete state to the Editor. Require one entry per finding plus a complete revised answer:
+Resolve facts and reasoning gaps internally. Record recommended defaults for minor reversible choices. Open `NEEDS_USER` only for unresolved user-owned choices that materially change the outcome and are risky to guess.
+
+Merge issues sharing one choice. Ask one question with `2–3` options, a recommendation, and effects; never relay low-level questions. Send the answer to both roles and resume.
+
+### 4. Revise and recheck
+
+Have the Synthesizer answer every issue together and return the complete revision:
 
 ```text
 D1: ACCEPTED | REJECTED | REFRAMED | NEEDS_USER
 Evidence: ...
 Change: ...
 REVISED ANSWER: <complete answer>
-CONTEXT HANDOFF: <resource entries or none>
+CONTEXT HANDOFF: <entries or none>
 ```
 
-Rejected findings require evidence. User-owned preferences, requirements, and risk choices remain unresolved.
+Rejections require evidence. Return the answer, ledger, and resources to the same Challenger. Recheck every prior ID and topic in one pass.
 
-### 4. Recheck without a cap
+### 5. Deliver
 
-Merge the answer, ledger, and verified resources, then send the complete state to the same Reviewer. Verify prior responses and allow new findings. Continue while status is `CONTINUE`.
-
-At `NEEDS_USER`, ask the exact question, send the answer to both roles, and resume. At an objective blocker or user stop, return the current answer with unresolved items and limitations.
-
-### 5. Deliver the checked answer
-
-At `SUFFICIENT`, return the checked Editor answer plus material limitations or resources. Coordinator edits require re-review.
+At `SUFFICIENT`, return the complete Synthesizer answer plus limitations or resources. Coordinator edits require recheck. At a blocker or user stop, return the current answer with unresolved items and limitations.
 
 After routing changes, rerun `evals/trigger_cases.json` with `evals/semantic_config.json`.
