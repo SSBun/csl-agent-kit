@@ -6,4 +6,5 @@
 
 ## Task Files
 
-- Add new entries to the top of `tasks/todo.md` and `tasks/lessons.md`, directly under the file title, so the newest task or lesson is easiest to read.
+- Store each task in `tasks/todo/<task-slug>.md` and add its title, current status, and relative link at the top of the newest-first `tasks/todo.md` index.
+- Update only the owning task file and its exact index entry; do not rewrite unrelated task records. Add new lessons at the top of `tasks/lessons.md`.

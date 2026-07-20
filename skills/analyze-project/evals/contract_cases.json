@@ -123,6 +123,7 @@
       "expect": {
         "sample_before_output_write": true,
         "states": ["clean", "includes uncommitted changes", "HEAD: unborn"],
+        "unborn_develop_statement": "map is based entirely on uncommitted working-tree content and does not represent any revision",
         "timezone_timestamp": true
       }
     },

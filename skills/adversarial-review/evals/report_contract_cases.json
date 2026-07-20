@@ -7,7 +7,10 @@
       "expect": {
         "report_created_before_initial": true,
         "report_path": "reports/adversarial-review/<task-slug>.md",
-        "todo_link": "../reports/adversarial-review/<task-slug>.md",
+        "task_path": "tasks/todo/<task-slug>.md",
+        "todo_index_entry": "Title, current status, and task-file link only.",
+        "task_report_link": "../../reports/adversarial-review/<task-slug>.md",
+        "report_task_link": "../../tasks/todo/<task-slug>.md",
         "chat": "Normal task outcome and report link; no pasted report."
       }
     },
@@ -43,11 +46,21 @@
     },
     {
       "id": "administrative-sync",
-      "given": "Only the report ledger projection and linked todo summary change.",
+      "given": "Only the report ledger projection, owning task summary, and exact todo index status change.",
       "expect": {
         "approval_invalidated": false,
         "new_report_created": false,
         "reviewed_artifact_scope_changed": false
+      }
+    },
+    {
+      "id": "parallel-task-isolation",
+      "given": "Two agents update different active tasks concurrently.",
+      "expect": {
+        "canonical_records": "Separate tasks/todo/<task-slug>.md files.",
+        "owning_task_only": true,
+        "unrelated_task_files_changed": false,
+        "todo_index_change": "Only the exact owning entry may change."
       }
     }
   ]

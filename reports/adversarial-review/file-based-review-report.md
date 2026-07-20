@@ -7,7 +7,7 @@
 - Stop reason: approved
 - Reviewer: `file_review_report_reviewer`
 - Current round: RE-REVIEW (2)
-- Task: [tasks/todo.md](../../tasks/todo.md) — 将 adversarial review 报告改为文件化记录
+- Task: [tasks/todo/file-based-review-report.md](../../tasks/todo/file-based-review-report.md) — 将 adversarial review 报告改为文件化记录
 - Updated: 2026-07-19 20:55:01 +08:00
 
 ## 审查范围

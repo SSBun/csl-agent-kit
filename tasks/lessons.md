@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-07-19 隔离并发任务记录
+
+- **Trigger:** 多个 Agent 或会话可能同时更新不同任务的进度、审查状态或完成标记。
+  - **Rule:** 每个任务使用独立的 `tasks/todo/<task-slug>.md` 作为唯一权威记录；`tasks/todo.md` 只维护标题、当前状态和链接。每次只修改所属任务文件及其精确索引项，写入前重新读取目标，禁止用整文件旧快照覆盖索引或其他任务。
+  - **Why:** 共享大文件中的并发整段写入会造成已批准状态回退、任务内容丢失和错误归属；按任务隔离把冲突面缩到单一索引行。
+
 ## 2026-07-19 区分取消流程与取消流程限制
 
 - **Trigger:** 用户要求取消某个流程的轮次、次数、预算或上限。
@@ -50,20 +56,20 @@
 
 ## 2026-07-13 Remove Handoff Skills When Existing State Files Cover Continuity
 
-- **Trigger:** handoff-save/restore 主要复制 `tasks/todo.md` 的进度和 `tasks/context.md` 的稳定事实，剩余会话状态没有明确独立价值时。
+- **Trigger:** handoff-save/restore 主要复制 `tasks/todo/` 中的任务进度和 `tasks/context.md` 的稳定事实，剩余会话状态没有明确独立价值时。
   - **Rule:** 先问这两个 skill 是否还需要存在；如果 todo/context 已能可靠恢复工作，优先删除 handoff skills，而不是继续压缩模板或引入线程、归档和生命周期机制。
   - **Why:** 为很少出现的“思考前沿”维护额外命令、文件格式、存储目录和恢复协议，会制造重复 source of truth 与不必要的认知负担。
 
 ## 2026-07-13 Keep Handoff State Distinct From Todo Progress
 
 - **Trigger:** 设计跨会话 handoff，并且 handoff 模板包含 Done、In Progress、Task Scope 或 acceptance criteria 时。
-  - **Rule:** 不要在 handoff 中复制 `tasks/todo.md` 的计划和完成状态；handoff 只引用 todo 路径，并保存 todo 无法表达的会话边界信息，例如当前思考前沿、下一步切入点、临时假设和恢复所需导航。
+  - **Rule:** 不要在 handoff 中复制所属 `tasks/todo/<task-slug>.md` 的计划和完成状态；handoff 只引用任务文件，并保存它无法表达的会话边界信息，例如当前思考前沿、下一步切入点、临时假设和恢复所需导航。
   - **Why:** 同一进度维护两个副本会立即产生漂移，让新会话无法判断哪一个才是 source of truth。
 
 ## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents
 
 - **Trigger:** 精简默认 agent 原则但仍要求任务计划时。
-  - **Rule:** 保留在 `tasks/todo.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；后两者由 agent 按实际需要自行决定。
+  - **Rule:** 保留在所属 `tasks/todo/<task-slug>.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；后两者由 agent 按实际需要自行决定。
   - **Why:** todo 是持久化任务控制和验证记录，plan mode 与 subagent 是可选执行能力，三者不应绑定。
 
 ## 2026-07-13 Distinguish Agent-Specific And Parent AGENTS Files
@@ -243,7 +249,7 @@
 ## 2026-07-07 Todo Lessons Compliance
 
 - **Trigger:** 优化 agent rule、AGENTS、CLAUDE 或项目执行规则时。
-  - **Rule:** 不要把 `tasks/todo.md` 和 `tasks/lessons.md` 规则弱化为可选建议；它们是用户确认有价值且必须遵守的执行机制。
+  - **Rule:** 不要把 `tasks/todo.md`、`tasks/todo/<task-slug>.md` 和 `tasks/lessons.md` 规则弱化为可选建议；它们是用户确认有价值且必须遵守的执行机制。
   - **Why:** todo 负责把多步骤工作变成可验证进度，lessons 负责把用户纠正沉淀成可复用规则；弱化它们会让同类错误重复出现。
 
 ## 2026-07-08 AGENTS Template No Local Include

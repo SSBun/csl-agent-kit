@@ -11,7 +11,7 @@ description: Fail-closed, uncapped adversarial review for code, PRDs, RFCs, desi
 - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.
 - `APPROVED` is review evidence, not external-action authorization.
 - Set no total round or cycle limit. Continue by review state under [Review Loop Contract](references/review-loop.md).
-- Persist the review in one workspace report and link its summary from the task list per [Task Review Status](references/task-review-status.md).
+- Persist the review in one workspace report, link it to the owning task file, and keep that task discoverable from the index per [Task Review Status](references/task-review-status.md).
 - Reviewed artifact changes invalidate `APPROVED`; return to `BLOCKED` and resume the same numbered review history.
 - No independent Reviewer: fail closed.
 

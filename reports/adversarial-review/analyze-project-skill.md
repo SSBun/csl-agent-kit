@@ -3,12 +3,12 @@
 ## Summary
 
 - Gate: BLOCKED
-- Review state: PENDING
+- Review state: CONTINUE
 - Stop reason: in-progress
 - Reviewer: `analyze_skill_reviewer`
 - Current round: INITIAL (1)
-- Task: `tasks/todo.md` — 重写 analyze-project 双模式 skill
-- Updated: 2026-07-19T21:45:31+08:00
+- Task: [tasks/todo/analyze-project-skill.md](../../tasks/todo/analyze-project-skill.md) — 重写 analyze-project 双模式 skill
+- Updated: 2026-07-19T21:57:14+08:00
 
 ## Reviewed scope
 
@@ -19,17 +19,45 @@
 
 ## Outcome
 
-等待独立 Reviewer 对完整实现、旧资源删除、验证证据及 Develop/Learn 前向试用进行首次审查。
+首次审查发现三个阻塞项：契约场景尚未执行、两模式 output eval 尚未完成、Develop unborn 语义不完整。Gate 保持关闭，等待 Editor 整批处理。
 
 ## Findings
 
-None.
+### R1 — BLOCKER: 契约场景未执行
+
+- Location: `skills/analyze-project/evals/contract_cases.json`
+- Evidence: 28/28 只核对 JSON 结构与 ID 唯一性，未执行路径、symlink/lstat、原子替换、秘密过滤、Mermaid 与覆盖图行为。
+- Risk: 关键安全与失败契约可能与实际执行不符，而现有验证仍通过。
+- Editor response: Pending.
+- Resolution: Pending.
+- Verification: Pending.
+- Status: UNRESOLVED
+
+### R2 — BLOCKER: Output eval 尚未完成
+
+- Location: `skills/analyze-project/evals/`、当前验证证据
+- Evidence: Develop 只有无 validator 零写入试用；Learn 只有 with-skill 报告。没有批准 PRD 规定的 baseline、匿名评分、Develop 5/5 或 Learn sealed held-out transfer 与重放 artifacts。
+- Risk: 无法证明 skill 改善最终输出，也未满足任务的最小 output eval 目标。
+- Editor response: Pending.
+- Resolution: Pending.
+- Verification: Pending.
+- Status: UNRESOLVED
+
+### R3 — BLOCKER: Develop unborn 语义不完整
+
+- Location: `skills/analyze-project/SKILL.md`、`skills/analyze-project/references/develop-mode.md`
+- Evidence: 当前只要求记录 `HEAD: unborn` 与通用工作树状态，未要求明确说明地图完全基于尚未提交的工作树内容且不伪造 revision。
+- Risk: 首次提交前报告可能误导 freshness 与证据基线。
+- Editor response: Pending.
+- Resolution: Pending.
+- Verification: Pending.
+- Status: UNRESOLVED
 
 ## Round history
 
 | Round | State | New findings | Resolved | Unresolved |
 |---|---|---|---|---|
-| INITIAL (1) | PENDING | none | none | none |
+| INITIAL (1) | CONTINUE | R1, R2, R3 | none | R1, R2, R3 |
 
 ## Verification
 
@@ -45,7 +73,9 @@ None.
 
 ## Unresolved items
 
-None.
+- R1：执行 28 个行为契约 fixture，而非只验证 JSON。
+- R2：完成两模式 PRD 规定的最小 output eval 与可重放证据。
+- R3：补齐 Develop `HEAD: unborn` 的完整未提交工作树声明。
 
 ## Approval boundary
 

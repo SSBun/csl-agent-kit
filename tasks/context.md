@@ -22,13 +22,14 @@
 
 ## Decisions and Conventions
 
+- `tasks/todo.md` 是 newest-first 导航索引，只保存任务标题、当前状态和 `tasks/todo/<task-slug>.md` 相对链接；每个独立任务文件才是目标、计划、审查状态与复核历史的唯一权威记录。Agent 只能修改所属任务文件及其精确索引项，不能重写其他任务状态。
 - `analyze-project` v2 的 `learn` 模式一次只分析一个 project/目录/文件 scope，并输出一份 `docs/analysis/learning/` 下的掌握指南；核心结构为最小 Orientation、目标覆盖链、Concept Ladder、代表行为走读、严格串行的 Human Recall/Prediction/Transfer checks 与 Verification Key。Agent 不使用“学会/回忆”语义，只以 sealed held-out prediction/transfer trial 衡量报告效用。
 - `learn` v1 不读取 Develop map、不生成 Mermaid、不增量合并旧报告；现有普通报告只允许完整重分析后安全原子替换。project/dir 只在职责学习链覆盖图不连通时要求缩小 scope，file 图不连通时仍生成一份按分量组织的报告。
-- `adversarial-review` 为每个 review task 在 `reports/adversarial-review/<task-slug>.md` 维护一份稳定报告，从首次审查前创建并逐轮更新；`tasks/todo.md` 只保留 Gate、状态、短 Reviewer 名、轮次、scope、一句摘要、未解决项及相对链接。报告与任务摘要对 ledger 的精确同步属于管理记录，不使批准失效；完整报告不再粘贴到用户对话，批准时只返回正常任务结果和链接，阻塞时只显示所需问题、风险与恢复条件。
+- `adversarial-review` 为每个 review task 在 `reports/adversarial-review/<task-slug>.md` 维护一份稳定报告，并与 `tasks/todo/<task-slug>.md` 双向链接；完整 Gate、Reviewer、轮次、scope、摘要与未解决项保存在任务文件，`tasks/todo.md` 只保留导航摘要。报告、所属任务与精确索引状态对 ledger 的同步属于管理记录，不使批准失效；完整报告不粘贴到用户对话。
 - 每次 adversarial-review pass 都必须覆盖固定的完整 scope：Reviewer 一次性报告当前可见的全部 `BLOCKER`、`QUESTION` 与 `NOTE`，并在复审中逐项说明全部既有 finding ID 已解决或未解决，不得故意分轮释放；Editor 一次性回答和处理整轮全部条目后才能请求普通复审。后续新 finding 必须指出使其此前不可行动的新 artifact、diff、证据或其他原因；需要用户决定时保持 `BLOCKED`，多个方案进入 Decision Consensus Gate，否则直接询问用户，不得用普通复审绕过决定。
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
 - `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
-- 任何文件修改或非简单任务都必须先在当前 workspace 的 `tasks/todo.md` 写可检查计划；`tasks/context.md` 的常规维护是唯一例外。
+- 任何文件修改或非简单任务都必须先在当前 workspace 的 `tasks/todo/<task-slug>.md` 写可检查计划，并在 `tasks/todo.md` 建立索引项；`tasks/context.md` 的常规维护是唯一例外。
 - 默认 agent 规则不规定 plan mode 或 subagent 策略；agent 可以按任务需要自行使用这些能力。d
 - npm 发布白名单显式排除 `skills/super-agent/references/AGENTS.md.backup-*`，因此该本地备份即使被 Git 跟踪也不会进入 npm tarball。
 - README 当前列出 29 个可分发技能；第三方源码导入不等同于安装到 `~/.agents/skills`，除非用户明确要求执行安装器。`integrate-third-skills` 是本仓库本地流程，不计入这个数量。

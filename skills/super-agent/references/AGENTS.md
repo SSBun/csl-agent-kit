@@ -23,12 +23,13 @@
 
 ### 3. Goal-Driven Task Management
 
-- Use one shared, newest-first `tasks/todo.md`; multiple tasks may be active at once.
-- For non-trivial or file-changing work, create or update a task record before execution; keep it current during work and complete its review before closing it.
+- Use `tasks/todo.md` as a newest-first index and keep each canonical task record in `tasks/todo/<task-slug>.md`; multiple tasks may be active at once.
+- For non-trivial or file-changing work, create or update the owning task file before execution and add or update only its exact index entry; keep both current during work and complete the task's review before closing it.
+- Keep each index entry limited to the task title, current status, and relative task-file link. The task file is authoritative when the index and record disagree.
 - Give each task an outcome-oriented title, a status with date, testable goals, and a review of results and verification.
 - Add plans or boundaries when they help execution.
-- For adversarial review, record `## Review status` in the task that owns the reviewed outcome; if no task matches, create a newest-first review task instead of attaching the review arbitrarily.
-- Keep completed tasks as history and avoid changing unrelated task entries.
+- For adversarial review, record `## Review status` in the task file that owns the reviewed outcome; if no task matches, create a task file and its newest-first index entry instead of attaching the review arbitrarily.
+- Keep completed task files as history and avoid changing unrelated task files or index entries.
 - Read recent tasks first and search older entries only when relevant.
 
 ---
@@ -39,7 +40,7 @@
 - After each user correction, review `tasks/lessons.md`; add, refine, merge, replace, or remove a lesson only as needed to preserve a reusable prevention rule.
 - Keep new or revised lessons at the top of their list.
 - Express each lesson as an observable trigger and the required better behavior.
-- Keep project facts in `tasks/context.md` and task history in `tasks/todo.md`; put only reusable prevention rules in lessons.
+- Keep project facts in `tasks/context.md` and task history in `tasks/todo/`; put only reusable prevention rules in lessons.
 - Before work, review only the lessons relevant to the current workspace and task.
 
 ---

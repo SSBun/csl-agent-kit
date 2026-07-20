@@ -9,9 +9,11 @@
 先记录：
 
 - `Scope`：仓库相对路径；project 写 `.`。
-- `HEAD`：commit SHA 或 `unborn`。
+- `HEAD`：commit SHA 或 `unborn`；为 `unborn` 时紧接着声明“本地图完全基于尚未提交的工作树内容，不代表任何 revision”。
 - `Working tree`：`clean` 或“包含本次分析读取的未提交改动”。
 - `Generated at`：带时区时间。
+
+`HEAD: unborn` 时，必须紧接说明本地图完全基于尚未提交的工作树内容，且没有伪造任何 revision。
 
 随后用最短完整描述回答：服务哪个用户/调用方；承担什么职责；接收什么输入；交付什么结果；明确不负责哪些相邻职责。组件只说明其对项目的贡献。
 

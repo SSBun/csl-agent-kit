@@ -22,7 +22,7 @@ Maintain one durable Markdown report per review task at `reports/adversarial-rev
 - Stop reason: in-progress | approved | user-decision-required | objective-blocker | review-stalled | user-stopped
 - Reviewer: `<short stable name without hierarchy prefix>`
 - Current round: INITIAL (1) | RE-REVIEW (n)
-- Task: `<task-list path>` — <task title>
+- Task: [tasks/todo/<task-slug>.md](../../tasks/todo/<task-slug>.md) — <task title>
 - Updated: <timestamp with timezone>
 
 ## Reviewed scope
