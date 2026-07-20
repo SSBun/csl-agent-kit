@@ -44,6 +44,9 @@
 - Yao lint 与 resource boundary — 两项 skill 均通过，入口分别为 886/1,000 与 897/1,000 tokens。
 - `adversarial-discuss` trigger eval — 27/27，precision 与 recall 均为 1.0。
 - 相关 JSON、npm pack dry-run、敏感信息模式扫描与 `git diff --check` — 通过。
+- 功能提交 `40fe63b Refine adversarial workflows` — 19 个路径已提交。
+- `./scripts/install.sh --target codex-plugin --yes --verbose` — Codex plugin 刷新成功，1/1 integration ready。
+- 源码/缓存 hash — `adversarial-discuss` 与 `adversarial-review` 均逐文件一致。
 - Limitations：无。
 
 ## 技术附录
@@ -55,7 +58,7 @@
 - Stop reason: approved
 - Reviewer: `current_skills_commit_reviewer`
 - Current round: RE-REVIEW (2)
-- Updated: 2026-07-21 07:40:31 +08:00
+- Updated: 2026-07-21 07:42:06 +08:00
 
 ### 审查范围
 

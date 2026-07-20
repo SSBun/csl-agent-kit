@@ -1,6 +1,6 @@
 # 任务索引
 
-- [提交并刷新当前 skills](todo/commit-and-refresh-current-skills.md) — 进行中（2026-07-21）
+- [提交并刷新当前 skills](todo/commit-and-refresh-current-skills.md) — 已完成（2026-07-21）
 - [重构 adversarial-discuss 的角色与批量讨论流程](todo/redesign-adversarial-discuss-workflow.md) — 已完成（2026-07-21）
 - [让 adversarial review 基于共同原则独立审议](todo/principled-adversarial-review.md) — 已完成（2026-07-20）
 - [提交当前全部本地改动（2026-07-20）](todo/commit-current-worktree.md) — 已完成（2026-07-20）
