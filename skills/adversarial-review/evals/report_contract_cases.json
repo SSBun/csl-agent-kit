@@ -11,7 +11,82 @@
         "todo_index_entry": "Title, current status, and task-file link only.",
         "task_report_link": "../../reports/adversarial-review/<task-slug>.md",
         "report_task_link": "../../tasks/todo/<task-slug>.md",
-        "chat": "Normal task outcome and report link; no pasted report."
+        "user_facing_body": [
+          "Overall conclusion",
+          "Topics reviewed",
+          "Debate results",
+          "Final conclusion",
+          "Verification"
+        ],
+        "technical_appendix_last": true,
+        "review_metadata_in_user_facing_body": false,
+        "result_mapping": "APPROVED->READY; PENDING/CONTINUE->IN_PROGRESS; NEEDS_USER->NEEDS_USER; BLOCKED/STALLED/USER_STOP->PAUSED.",
+        "no_finding_result": "READY may state accepted without substantive debate.",
+        "chat": "Normal task outcome, user-relevant changes, verification, and report link only; no review-report heading or report metadata."
+      }
+    },
+    {
+      "id": "pre-initial-empty-ledger",
+      "given": "The report is created before INITIAL (1), with PENDING state and no finding yet.",
+      "expect": {
+        "user_result": "IN_PROGRESS",
+        "empty_ledger_statement": "No issue has been raised yet and review is still underway.",
+        "acceptance_claim_allowed": false
+      }
+    },
+    {
+      "id": "user-first-debate-results",
+      "given": "A review has a blocker, an Editor response, and a later resolution; another user-owned question remains unresolved; on a third finding, the Reviewer maintains a material risk while the Editor disagrees with that risk assessment.",
+      "expect": {
+        "one_canonical_debate_section_per_finding_id": true,
+        "debate_fields": [
+          "Reviewer position",
+          "Editor response",
+          "Evidence",
+          "Debate conclusion",
+          "Final impact",
+          "Status"
+        ],
+        "resolved_conclusion_preserved": true,
+        "pending_condition_preserved": true,
+        "disagreement_preserved": "The Reviewer challenge and Editor disagreement both remain visible without fabricating agreement.",
+        "duplicate_summary_and_findings_sections": false,
+        "cycle_scope_paths_in_user_facing_body": false,
+        "audit_metadata_retained_in_technical_appendix": true,
+        "hidden_reasoning_included": false,
+        "raw_prompts_or_transcripts_included": false,
+        "full_finding_ledger_retained_as_debate_results": true
+      }
+    },
+    {
+      "id": "acknowledged-note-no-change",
+      "given": "A Reviewer NOTE is acknowledged by the Editor and requires no artifact change.",
+      "expect": {
+        "debate_conclusion": "ACKNOWLEDGED_NO_CHANGE",
+        "status": "RESOLVED",
+        "artifact_change_claimed": false,
+        "rejection_or_compromise_claimed": false
+      }
+    },
+    {
+      "id": "approval-chat-no-report-metadata",
+      "given": "An approved report contains Gate, review state, stop reason, Reviewer, round, findings, verification, and external-action authorization, and the user did not ask for review details.",
+      "expect": {
+        "chat_allowed": [
+          "Normal task outcome",
+          "User-relevant changes",
+          "Verification",
+          "Report link"
+        ],
+        "chat_forbidden": [
+          "Final Review Report or equivalent heading",
+          "Approval verdict",
+          "Gate, review state, or stop reason",
+          "Reviewer or round",
+          "Findings or resolved/unresolved counts",
+          "Review history or process narration",
+          "External-action authorization"
+        ]
       }
     },
     {

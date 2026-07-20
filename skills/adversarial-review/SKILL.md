@@ -47,7 +47,7 @@ Apply [Review Lenses](references/review-lenses.md) and execute [Review Loop Cont
 
 ### 3. Finalize the record
 
-Follow [Final Review Report Contract](references/final-review-report.md). Confirm the artifact and available diff before recording `APPROVED`. Never paste the report into chat: return the normal outcome and link, or only the blocking questions, risks, resume condition, and link.
+Follow [Final Review Report Contract](references/final-review-report.md). Confirm the artifact and available diff before recording `APPROVED`. On approval, return only the normal task outcome, user-relevant changes, verification, and report link. Do not present, condense, or paraphrase review-record content in the handoff, use a review-report heading, announce the approval verdict, or proactively echo Gate, state, stop reason, Reviewer, round, findings, review history, or external-action authorization unless the user explicitly asks for review details. On a blocked or paused review, return only the required questions, risks, resume condition, and link.
 
 ## Maintenance
 

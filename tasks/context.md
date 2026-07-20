@@ -22,10 +22,16 @@
 
 ## Decisions and Conventions
 
+- `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。
+- `adversarial-review` 的 `BLOCKER` 必须同时说明被违反的要求或原则、可观察证据、不处理的实际风险与 `Required Outcome`；缺少任一项时不得作为阻塞性 Finding，应降级为 `QUESTION`、`NOTE` 或省略。`Suggested Remedy` 不能代替这四项成立条件。
+- `adversarial-review` 的 Editor 对每个 Finding 必须依次审计 `Current Adequacy`、`Minimal Resolution`、`Blast Radius` 与 `Proportionality`，再选择接受、缩小、拒绝、确认无需修改或需要用户决定。当前方案已满足 `Required Outcome` 时默认保留，除非正确性、安全、数据完整性或明确需求提供了必须变更的证据。
+- `adversarial-review` 只以 `Required Outcome` 是否已满足作为 Finding 的复审和关闭标准，不以 `Suggested Remedy` 是否被采用为标准。Editor 的更小修复或基于证据的拒绝已消除风险时，Reviewer 必须关闭 Finding；若继续阻塞，必须指出新证据或仍未满足的 `Required Outcome`，不得只重复原建议。
+- `adversarial-review` 的 Finding 类型语义固定：`BLOCKER` 是满足四项成立条件的明确违规或实质风险，可通过满足 `Required Outcome` 或证明 Finding 不成立而关闭；`QUESTION` 只请求判断所需的缺失信息，不得隐含修改命令；`NOTE` 是非阻塞观察或可选改进，Editor 确认后即关闭，不得要求修改 artifact。纯偏好、顺手重构与推测性未来需求应省略。
+- `adversarial-review` 的 Reviewer 与 Editor 共同遵守以下优先级：用户意图，然后是正确性、安全、数据完整性与明确兼容要求，再是 `Required Outcome`、证据、最小改动、最小影响范围和最低的已证成本。当多个方案都满足 `Required Outcome` 时，必须选择影响范围更小、维护成本更低且新假设更少的方案；最终以测试或可观察证据判定，不以双方口头同意判定。
 - `tasks/todo.md` 是 newest-first 导航索引，只保存任务标题、当前状态和 `tasks/todo/<task-slug>.md` 相对链接；每个独立任务文件才是目标、计划、审查状态与复核历史的唯一权威记录。Agent 只能修改所属任务文件及其精确索引项，不能重写其他任务状态。
 - `analyze-project` v2 的 `learn` 模式一次只分析一个 project/目录/文件 scope，并输出一份 `docs/analysis/learning/` 下的掌握指南；核心结构为最小 Orientation、目标覆盖链、Concept Ladder、代表行为走读、严格串行的 Human Recall/Prediction/Transfer checks 与 Verification Key。Agent 不使用“学会/回忆”语义，只以 sealed held-out prediction/transfer trial 衡量报告效用。
 - `learn` v1 不读取 Develop map、不生成 Mermaid、不增量合并旧报告；现有普通报告只允许完整重分析后安全原子替换。project/dir 只在职责学习链覆盖图不连通时要求缩小 scope，file 图不连通时仍生成一份按分量组织的报告。
-- `adversarial-review` 为每个 review task 在 `reports/adversarial-review/<task-slug>.md` 维护一份稳定报告，并与 `tasks/todo/<task-slug>.md` 双向链接；完整 Gate、Reviewer、轮次、scope、摘要与未解决项保存在任务文件，`tasks/todo.md` 只保留导航摘要。报告、所属任务与精确索引状态对 ledger 的同步属于管理记录，不使批准失效；完整报告不粘贴到用户对话。
+- `adversarial-review` 为每个 review task 在 `reports/adversarial-review/<task-slug>.md` 维护一份稳定报告，并与 `tasks/todo/<task-slug>.md` 双向链接；报告正文先给总体结论、审查主题和逐议题辩论结果，每个 stable finding ID 只保留一个包含 Reviewer 观点、Editor 回答、证据、辩论结论与最终影响的权威章节。Gate、Reviewer、轮次、scope、常规路径、fingerprint 与 round history 只放在末尾技术附录，`tasks/todo.md` 只保留导航摘要。报告、所属任务与精确索引状态对 ledger 的同步属于管理记录，不使批准失效；批准后的对话只给普通任务结果、用户相关变更、验证和报告链接，不使用审查报告标题，也不主动复述批准结论、Gate、Reviewer、轮次等报告元数据。
 - 每次 adversarial-review pass 都必须覆盖固定的完整 scope：Reviewer 一次性报告当前可见的全部 `BLOCKER`、`QUESTION` 与 `NOTE`，并在复审中逐项说明全部既有 finding ID 已解决或未解决，不得故意分轮释放；Editor 一次性回答和处理整轮全部条目后才能请求普通复审。后续新 finding 必须指出使其此前不可行动的新 artifact、diff、证据或其他原因；需要用户决定时保持 `BLOCKED`，多个方案进入 Decision Consensus Gate，否则直接询问用户，不得用普通复审绕过决定。
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
 - `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。

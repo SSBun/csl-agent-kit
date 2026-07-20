@@ -3,7 +3,7 @@
 - [提交当前全部本地改动（2026-07-20）](todo/commit-current-worktree.md) — 已完成（2026-07-20）
 - [重写 analyze-project 双模式 skill](todo/analyze-project-skill.md) — 进行中（2026-07-19）
 - [提交当前改动并拆分任务记录](todo/split-task-records.md) — 已完成（2026-07-19）
-- [将 adversarial review 报告改为文件化记录](todo/file-based-review-report.md) — 已完成（2026-07-19）
+- [将 adversarial review 报告改为文件化记录](todo/file-based-review-report.md) — 已完成（2026-07-20）
 - [设计 analyze-project 的 Learn 模式 PRD](todo/analyze-project-learn-prd.md) — 已完成（2026-07-19）
 - [提交当前全部本地改动](todo/legacy-20260719-005.md) — 已完成（2026-07-19）
 - [将 adversarial review 改为无上限状态循环](todo/legacy-20260719-006.md) — 已完成（2026-07-19）
