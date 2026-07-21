@@ -41,4 +41,3 @@ Status: Completed (2026-07-21)
 - 验证：状态词定向契约测试通过。
 - 验证：`yao-meta-skill` 规则审计和 `git diff --check` 通过。
 - 边界：既有任务文件及索引中的历史中文状态未迁移。
-- 审查：APPROVED — [Adversarial review report](../../reports/adversarial-review/standardize-task-status-english.md)

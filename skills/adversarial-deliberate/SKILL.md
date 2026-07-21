@@ -1,9 +1,9 @@
 ---
-name: adversarial-discuss
+name: adversarial-deliberate
 description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop that develops a comprehensive answer through full-batch internal discussion, asking users only for key choices. Use only when the user explicitly requests iterative adversarial or multi-perspective synthesis of a question, topic, idea, decision, or plan. Exclude approval-gated artifact review, one-pass feedback, factual answers, brainstorming without that loop, and user grilling.
 ---
 
-# Adversarial Discuss
+# Adversarial Deliberate
 
 ## Contract
 

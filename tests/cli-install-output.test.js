@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const { spawnSync } = require("node:child_process");
-const { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } = require("node:fs");
+const { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, symlinkSync, writeFileSync } = require("node:fs");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
@@ -234,7 +234,7 @@ test("JSON output remains valid and color-free when --color is passed", () => {
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
   assert.equal(payload.ok, true);
-  assert.deepEqual(payload.results.map((item) => item.target), ["codex-plugin"]);
+  assert.deepEqual(payload.results.map((item) => item.target), ["codex-plugin", "super-agent"]);
   assert.doesNotMatch(result.stdout, /\u001b\[/);
 });
 
@@ -267,7 +267,7 @@ test("invalid saved selection falls back to the Codex default checklist", () => 
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
         .map((choice) => choice.value),
-      ["codex-plugin"],
+      ["codex-plugin", "super-agent"],
     );
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
@@ -305,7 +305,7 @@ test("an obsolete repo-local saved selection falls back to the Codex defaults", 
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
         .map((choice) => choice.value),
-      ["codex-plugin"],
+      ["codex-plugin", "super-agent"],
     );
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
@@ -473,5 +473,62 @@ test("explicit target installs do not overwrite the saved interactive selection"
     });
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("super-agent links, preserves existing files, relinks legacy paths, and honors --force", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-super-agent-"));
+  const home = path.join(directory, "home");
+  const source = path.join(root, "references", "agents.md");
+  const codex = path.join(home, ".codex", "AGENTS.md");
+  const claude = path.join(home, ".claude", "CLAUDE.md");
+  const pi = path.join(home, ".pi", "agent", "AGENTS.md");
+  const agents = path.join(home, ".agents", "AGENTS.md");
+  const legacyTarget = path.join(directory, "skills", "super-agent", "references", "AGENTS.md");
+  mkdirSync(path.dirname(codex), { recursive: true });
+  mkdirSync(path.dirname(claude), { recursive: true });
+  mkdirSync(path.dirname(legacyTarget), { recursive: true });
+  writeFileSync(legacyTarget, "legacy");
+  symlinkSync(legacyTarget, codex);
+
+  try {
+    const first = run(["install", "--target", "super-agent", "--json"], { HOME: home });
+    assert.equal(first.status, 0, first.stderr);
+    const byTarget = Object.fromEntries(
+      JSON.parse(first.stdout).results[0].changes.map((change) => [change.target, change])
+    );
+
+    assert.equal(byTarget[codex].action, "symlink");
+    assert.equal(byTarget[codex].relinked, true);
+    assert.equal(lstatSync(codex).isSymbolicLink(), true);
+    assert.equal(readlinkSync(codex), source);
+
+    assert.equal(byTarget[claude].action, "symlink");
+    assert.equal(lstatSync(claude).isSymbolicLink(), true);
+
+    assert.equal(byTarget[pi].action, "symlink");
+
+    assert.equal(byTarget[agents].action, "symlink");
+
+    rmSync(claude);
+    writeFileSync(claude, "overwrite me");
+    const withoutForce = run(["install", "--target", "super-agent", "--json"], { HOME: home });
+    const claudeResult = JSON.parse(withoutForce.stdout).results[0].changes.find((change) => change.target === claude);
+    assert.equal(claudeResult.action, "skip");
+    assert.match(claudeResult.reason, /use --force/i);
+    assert.equal(readFileSync(claude, "utf8"), "overwrite me");
+
+    const withForce = run(["install", "--target", "super-agent", "--force", "--json"], { HOME: home });
+    const forced = JSON.parse(withForce.stdout).results[0].changes.find((change) => change.target === claude);
+    assert.equal(forced.action, "symlink");
+    assert.match(forced.backup, /\.backup-/);
+    assert.equal(lstatSync(claude).isSymbolicLink(), true);
+    assert.equal(readFileSync(forced.backup, "utf8"), "overwrite me");
+
+    const idempotent = run(["install", "--target", "super-agent", "--json"], { HOME: home });
+    const codexAgain = JSON.parse(idempotent.stdout).results[0].changes.find((change) => change.target === codex);
+    assert.equal(codexAgain.action, "unchanged");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
   }
 });

@@ -26,4 +26,3 @@
 ## Review
 
 - Decision: APPROVED
-- Report: [Adversarial review report](../../reports/adversarial-review/simplify-adversarial-review-report.md)

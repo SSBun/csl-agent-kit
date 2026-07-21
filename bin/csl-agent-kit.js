@@ -6,6 +6,15 @@ const { spawnSync } = require("child_process");
 
 const repoRoot = path.resolve(__dirname, "..");
 
+const AGENTS_INSTRUCTIONS_SOURCE = path.join(repoRoot, "references", "agents.md");
+const LEGACY_AGENTS_SUFFIX = path.join("skills", "super-agent", "references", "AGENTS.md");
+const AGENTS_INSTRUCTION_TARGETS = [
+  path.join(home(), ".codex", "AGENTS.md"),
+  path.join(home(), ".claude", "CLAUDE.md"),
+  path.join(home(), ".pi", "agent", "AGENTS.md"),
+  path.join(home(), ".agents", "AGENTS.md"),
+];
+
 const targets = {
   cursor: {
     title: "Cursor local plugin",
@@ -27,6 +36,13 @@ const targets = {
     default: false,
     external: true,
     run: installPi,
+  },
+  "super-agent": {
+    title: "Default agent instructions",
+    description: "Symlink references/agents.md into each agent client's global config.",
+    default: true,
+    external: false,
+    run: installSuperAgent,
   },
 };
 
@@ -53,7 +69,9 @@ function parseInstallArgs(args) {
     all: false,
     colorMode: "auto",
     dryRun: false,
+    force: false,
     json: false,
+    noSuperAgent: false,
     verbose: false,
     yes: false,
     targets: [],
@@ -75,6 +93,10 @@ function parseInstallArgs(args) {
       options.verbose = true;
     } else if (arg === "--yes" || arg === "-y") {
       options.yes = true;
+    } else if (arg === "--no-super-agent") {
+      options.noSuperAgent = true;
+    } else if (arg === "--force") {
+      options.force = true;
     } else if (arg === "--target" || arg === "--targets") {
       i += 1;
       if (!args[i]) die("--target requires a comma-separated target list.");
@@ -105,7 +127,9 @@ async function resolveInstallTargets(options) {
     return [...new Set(options.targets)];
   }
   if (options.yes) {
-    return Object.entries(targets).filter(([, spec]) => spec.default).map(([name]) => name);
+    return Object.entries(targets)
+      .filter(([name, spec]) => spec.default && !(options.noSuperAgent && name === "super-agent"))
+      .map(([name]) => name);
   }
   if (!process.stdin.isTTY || process.env.CI) {
     die("Interactive install requires a TTY. Use --target <list>, --all, or --yes.");
@@ -246,6 +270,83 @@ function installPi(options) {
     return [{ action: "skip", reason: "Pi CLI not found", command: "pi" }];
   }
   return runCommands([["pi", ["install", repoRoot], false]], options);
+}
+
+function installSuperAgent(options) {
+  return AGENTS_INSTRUCTION_TARGETS.map((target) =>
+    linkAgentInstruction(target, AGENTS_INSTRUCTIONS_SOURCE, options)
+  );
+}
+
+function linkAgentInstruction(target, source, options) {
+  const sourceReal = fs.realpathSync(source);
+  const parent = path.dirname(target);
+  const change = { action: "symlink", target, source: sourceReal };
+
+  if (options.dryRun) {
+    if (isSymlink(target) && isLegacyAgentLink(target, parent)) {
+      return { ...change, dryRun: true, relinked: true };
+    }
+    if (isSymlink(target)) {
+      const linked = fs.readlinkSync(target);
+      const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
+      const linkedReal = fs.existsSync(linkedPath) ? fs.realpathSync(linkedPath) : linkedPath;
+      if (linkedReal === sourceReal) return { action: "unchanged", target, source: sourceReal, dryRun: true };
+      return { action: "skip", reason: "Existing symlink points elsewhere (use --force to override)", target, dryRun: true };
+    }
+    if (fs.existsSync(target)) {
+      if (options.force) return { ...change, dryRun: true, backup: `${target}.backup-<ts>` };
+      return { action: "skip", reason: "Existing file (use --force to back up and replace)", target, dryRun: true };
+    }
+    return { ...change, dryRun: true };
+  }
+
+  fs.mkdirSync(parent, { recursive: true });
+
+  if (isSymlink(target)) {
+    const linked = fs.readlinkSync(target);
+    const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
+    const linkedReal = fs.existsSync(linkedPath) ? fs.realpathSync(linkedPath) : linkedPath;
+    if (linkedReal === sourceReal) return { action: "unchanged", target, source: sourceReal };
+    if (isLegacyAgentSource(linkedPath) || isLegacyAgentSource(linkedReal)) {
+      fs.unlinkSync(target);
+      fs.symlinkSync(sourceReal, target);
+      return { ...change, relinked: true };
+    }
+    return { action: "skip", reason: "Existing symlink points elsewhere (use --force to override)", target };
+  }
+
+  if (fs.existsSync(target)) {
+    if (!options.force) {
+      return { action: "skip", reason: "Existing file (use --force to back up and replace)", target };
+    }
+    const backup = `${target}.backup-${timestamp()}`;
+    fs.renameSync(target, backup);
+    fs.symlinkSync(sourceReal, target);
+    return { ...change, backup };
+  }
+
+  fs.symlinkSync(sourceReal, target);
+  return change;
+}
+
+function isLegacyAgentSource(candidate) {
+  if (!candidate) return false;
+  const normalized = path.normalize(candidate);
+  if (!normalized.endsWith(".md")) return false;
+  return normalized.endsWith(LEGACY_AGENTS_SUFFIX);
+}
+
+function isLegacyAgentLink(target, parent) {
+  const linked = fs.readlinkSync(target);
+  const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
+  return isLegacyAgentSource(linkedPath);
+}
+
+function timestamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 }
 
 function removeLegacyCodexSkillLinks(options) {
@@ -394,7 +495,14 @@ function summarizeChanges(changes, dryRun) {
   }, {});
   const parts = [];
 
-  if (counts.symlink) parts.push(`${counts.symlink} ${plural(counts.symlink, "link")} ${dryRun ? "planned" : "updated"}`);
+  if (counts.symlink) {
+    const relinked = changes.filter((c) => c.action === "symlink" && c.relinked).length;
+    const backed = changes.filter((c) => c.action === "symlink" && c.backup).length;
+    const notes = [];
+    if (relinked) notes.push(`${relinked} ${plural(relinked, "legacy link")} ${dryRun ? "" : "re"}linked`);
+    if (backed) notes.push(`${backed} ${plural(backed, "file")} backed up`);
+    parts.push(`${counts.symlink} ${plural(counts.symlink, "link")} ${dryRun ? "planned" : "updated"}${notes.length ? ` (${notes.join(", ")})` : ""}`);
+  }
   if (counts.unchanged) parts.push(`${counts.unchanged} up to date`);
   if (counts.command) parts.push(`${counts.command} ${plural(counts.command, "command")} ${dryRun ? "planned" : "completed"}`);
   if (counts.remove) parts.push(`${counts.remove} legacy ${plural(counts.remove, "link")} ${dryRun ? "planned for removal" : "removed"}`);
@@ -405,7 +513,7 @@ function summarizeChanges(changes, dryRun) {
 
 function printChangeDetails(changes, colors) {
   for (const change of changes) {
-    if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}`));
+    if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}${change.relinked ? " (relinked from legacy path)" : ""}${change.backup ? ` (backed up to ${change.backup})` : ""}`));
     if (change.action === "unchanged") console.log(colors.dim(`    ↳ ${change.target} (up to date)`));
     if (change.action === "command") console.log(colors.dim(`    ↳ ${change.command}${change.dryRun ? " (dry run)" : ""}`));
     if (change.action === "remove") console.log(colors.dim(`    ↳ remove ${change.target} → ${change.source}${change.dryRun ? " (dry run)" : ""}`));
@@ -439,7 +547,7 @@ function printHelp() {
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>  Comma-separated target list.\n  --all            Select every target.\n  --yes, -y        Select default targets without prompting.\n  --dry-run        Print planned actions without changing files.\n  --verbose, -v    Show underlying paths and commands.\n  --color          Force ANSI colors.\n  --no-color       Disable ANSI colors.\n  --json           Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Exclude the super-agent target from default selection.\n  --force             Back up and replace existing instruction files.\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show underlying paths and commands.\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
 }
 
 function die(message) {

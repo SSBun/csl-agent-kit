@@ -105,7 +105,7 @@ function validateTaskGraph(index, tasks, reports) {
       ?? body.match(/^Status:\s*(.+)$/m)?.[1]
       ?? "未标注";
     assert.equal(entry.status, status.trim(), entry.file);
-    const reportLink = body.match(/^- Report: \[[^\]]+]\(\.\.\/\.\.\/reports\/adversarial-review\/([a-z0-9-]+\.md)\)$/m);
+    const reportLink = body.match(/^- .*\[[^\]]+]\(\.\.\/\.\.\/reports\/adversarial-review\/([a-z0-9-]+\.md)\)$/m);
     if (reportLink) {
       assert.equal(reportLink[1], entry.file, `task/report slug mismatch: ${entry.file}`);
       assert.ok(reports.has(reportLink[1]), `missing report: ${reportLink[1]}`);
@@ -115,10 +115,11 @@ function validateTaskGraph(index, tasks, reports) {
 
   assert.deepEqual([...linkedReports].sort(), [...reports.keys()].sort());
   for (const [reportFile, report] of reports) {
-    const taskLink = report.match(/^- Task: \[[^\]]+]\(\.\.\/\.\.\/tasks\/todo\/([a-z0-9-]+\.md)\)/m);
-    assert.ok(taskLink, `missing task link: ${reportFile}`);
-    assert.equal(taskLink[1], reportFile, `report/task slug mismatch: ${reportFile}`);
-    assert.ok(tasks.has(taskLink[1]), `missing task: ${taskLink[1]}`);
+    const taskFile = report.match(/^task:\s*([a-z0-9-]+)$/m)?.[1]?.concat(".md")
+      ?? report.match(/^- Task: \[[^\]]+]\(\.\.\/\.\.\/tasks\/todo\/([a-z0-9-]+\.md)\)/m)?.[1];
+    assert.ok(taskFile, `missing task link: ${reportFile}`);
+    assert.equal(taskFile, reportFile, `report/task slug mismatch: ${reportFile}`);
+    assert.ok(tasks.has(taskFile), `missing task: ${taskFile}`);
   }
 }
 
@@ -143,8 +144,8 @@ test("cross-linked task and report slugs fail validation", () => {
   assert.throws(() => validateTaskGraph(index, tasks, reports), /task\/report slug mismatch: task-a\.md/);
 });
 
-test("super-agent routes workspace records to isolated workflow skills", () => {
-  const rules = readFileSync(path.join(root, "skills", "super-agent", "references", "AGENTS.md"), "utf8");
+test("default agent instructions route workspace records to isolated workflow skills", () => {
+  const rules = readFileSync(path.join(root, "references", "agents.md"), "utf8");
   const expected = {
     "workspace-maintain-context": "tasks/context.md",
     "workspace-manage-task": "tasks/todo.md",
@@ -159,7 +160,7 @@ test("super-agent routes workspace records to isolated workflow skills", () => {
     assert.match(skill, new RegExp(`^name: ${name}$`, "m"));
     assert.ok(skill.includes(ownedPath), `${name} missing owned path`);
     assert.equal(skill.includes("TODO"), false, `${name} contains scaffold text`);
-    assert.ok(rules.includes(`$${name}`), `super-agent missing route: ${name}`);
+    assert.ok(rules.includes(`$${name}`), `default instructions missing route: ${name}`);
   }
 
   assert.equal(rules.includes("tasks/context.md"), false);

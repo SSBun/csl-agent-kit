@@ -51,4 +51,3 @@
 - 验证：安装 dry-run、README 32 项计数、全局 AGENTS symlink 和 `git diff --check` 通过。
 - 限制：完整任务图检查被既有 `simplify-adversarial-review-report.md` 报告缺少反向 Task 链接阻塞；本任务未修改该其他任务。
 - 限制：`yao.py validate` 额外要求 `agents/interface.yaml`，与已确认的官方 `agents/openai.yaml` 最小结构不一致；已改用 skill-creator 校验、Yao trigger eval 与 adapt-scan 审计。
-- 审查：APPROVED — [Adversarial review report](../../reports/adversarial-review/refactor-super-agent-workspace-workflow.md)
