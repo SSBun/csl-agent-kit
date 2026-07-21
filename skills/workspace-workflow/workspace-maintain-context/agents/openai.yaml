@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workspace Context"
+  short_description: "Maintain confirmed workspace context"
+  default_prompt: "Use $workspace-maintain-context to refresh this workspace context."

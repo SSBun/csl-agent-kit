@@ -64,6 +64,31 @@
         "leave comments",
         "修复 reviewer"
       ]
+    },
+    "routine_file_operation": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "copy this file to my wiki",
+        "save this file to my wiki",
+        "verify that the hash matches",
+        "原样写入我的 wiki",
+        "检查 hash"
+      ]
+    },
+    "self_review": {
+      "weight": 1.0,
+      "exclusive": true,
+      "phrases": [
+        "review of your own diff yourself",
+        "review your own diff yourself",
+        "review of your own changes yourself",
+        "review your own changes yourself",
+        "do not use an independent reviewer",
+        "do not use another agent",
+        "由你自己审查且不使用独立 reviewer",
+        "不要使用其他 agent"
+      ]
     }
   }
 }

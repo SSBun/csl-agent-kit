@@ -1,5 +1,13 @@
 # 任务索引
 
+- [以简洁对话呈现审查思考过程](todo/present-review-dialogue-clearly.md) — Completed (2026-07-21)
+- [将 Lessons 收敛为当前有效防错规则](todo/optimize-workspace-capture-lessons.md) — Completed (2026-07-21)
+- [统一任务状态为英文](todo/standardize-task-status-english.md) — Completed (2026-07-21)
+- [将 Super Agent 工作区记录规则拆分为三个 Skills](todo/refactor-super-agent-workspace-workflow.md) — 已完成（2026-07-21）
+- [轻量化 adversarial review 最终报告](todo/simplify-adversarial-review-report.md) — 已完成（2026-07-21）
+- [收窄 adversarial review 与任务记录边界](todo/scope-review-and-task-records.md) — 已完成（2026-07-21）
+- [将 code-review-graph 项目地图保存到 Wiki](todo/save-code-review-graph-map-to-wiki.md) — 已完成（2026-07-21）
+- [分析 code-review-graph 的 Tree-sitter 实现](todo/analyze-code-review-graph.md) — 已完成（2026-07-21）
 - [提交并刷新当前 skills](todo/commit-and-refresh-current-skills.md) — 已完成（2026-07-21）
 - [重构 adversarial-discuss 的角色与批量讨论流程](todo/redesign-adversarial-discuss-workflow.md) — 已完成（2026-07-21）
 - [让 adversarial review 基于共同原则独立审议](todo/principled-adversarial-review.md) — 已完成（2026-07-20）

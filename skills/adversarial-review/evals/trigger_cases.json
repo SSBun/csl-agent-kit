@@ -7,7 +7,10 @@
     "Have an independent Reviewer challenge this RFC, then let the Editor revise it and request approval.",
     "Keep the Reviewer and Editor cycling through this system design until it is approved or needs my decision.",
     "执行双 Agent 对抗式审查这份 PRD，Reviewer 批准前保持阻塞。",
-    "完成代码或设计文档前启动独立 Reviewer 与 Editor 的复审闭环。"
+    "完成代码或设计文档前启动独立 Reviewer 与 Editor 的复审闭环。",
+    "Have an independent Reviewer review your own diff and block completion until approval.",
+    "Do not self-review. Have an independent Reviewer and Editor run an adversarial review and block completion until approval.",
+    "Use an independent Reviewer and Editor for an adversarial review and block completion until approval; use no other agent."
   ],
   "should_not_trigger": [
     "Review this pull request for bugs and security issues.",
@@ -16,7 +19,11 @@
     "Fix the comments from the last code review.",
     "Commit these changes with a concise message.",
     "Run the test suite before marking the task complete.",
-    "检查这个 PR 有没有明显问题。"
+    "检查这个 PR 有没有明显问题。",
+    "Copy this approved Markdown file to my wiki and verify that the hash matches.",
+    "把这个已确认文件原样写入我的 Wiki，并检查 hash。",
+    "Perform an adversarial review of your own diff yourself before marking this task complete; do not use an independent Reviewer or another agent.",
+    "Run an adversarial review of your own changes yourself before marking this task complete; use no other agent."
   ],
   "near_neighbor": [
     "Use code-reviewer to inspect the current diff.",

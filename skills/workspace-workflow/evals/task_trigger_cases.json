@@ -1,0 +1,21 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Create the task record in tasks/todo.md before implementing this feature.",
+    "This non-trivial work changes a deliverable, so track its scope and status.",
+    "Update the owning task record with the new target and checklist.",
+    "Record the result and hand the completed artifact to adversarial review."
+  ],
+  "should_not_trigger": [
+    "Give me a read-only answer and do not change files.",
+    "Perform this trivial mechanical operation.",
+    "Explain the trade-offs without editing anything.",
+    "I prefer concise answers."
+  ],
+  "near_neighbor": [
+    "At session start, read tasks/context.md.",
+    "Capture this reusable correction in tasks/lessons.md.",
+    "Save this tip for future Markdown requests.",
+    "Update the durable workspace facts after compaction."
+  ]
+}

@@ -12,40 +12,15 @@
 
 ---
 
-### 2. Workspace Context
+### 2. Workspace Workflow
 
-- Use the session-start directory as the workspace root and keep `tasks/context.md` there as a compact, current map. Save only confirmed, durable facts a later agent would otherwise need to rediscover: workspace structure, component roles and relationships, domain terms, and workspace-level decisions or conventions.
-- At the start of a session or after resuming, read it first for orientation, then verify task-relevant details in the workspace itself; context guides exploration, but the workspace is the source of truth.
-- Before ending a turn, add newly confirmed facts at the top of their list; update or remove superseded facts. Do not save task progress or history, lessons, speculation, secrets, or global preferences.
-- If a material fact is missing or conflicts with evidence, investigate first, then ask focused questions if unresolved. Routine context maintenance needs no task record.
-
----
-
-### 3. Goal-Driven Task Management
-
-- Use `tasks/todo.md` as a newest-first index and keep each canonical task record in `tasks/todo/<task-slug>.md`; multiple tasks may be active at once.
-- For non-trivial or file-changing work, create or update the owning task file before execution and add or update only its exact index entry; keep both current during work and complete the task's review before closing it.
-- Keep each index entry limited to the task title, current status, and relative task-file link. The task file is authoritative when the index and record disagree.
-- Give each task an outcome-oriented title, a status with date, testable goals, and a review of results and verification.
-- Add plans or boundaries when they help execution.
-- For adversarial review, record `## Review status` in the task file that owns the reviewed outcome; if no task matches, create a task file and its newest-first index entry instead of attaching the review arbitrarily.
-- Keep completed task files as history and avoid changing unrelated task files or index entries.
-- Read recent tasks first and search older entries only when relevant.
+- At session start, after resume or compaction, and before ending when durable facts changed, use `$workspace-maintain-context`.
+- Before non-trivial work and after a user correction, use `$workspace-capture-lessons`.
+- For non-trivial work that changes a deliverable, use `$workspace-manage-task`.
 
 ---
 
-### 4. Self-Improvement Loop
-
-- Treat `tasks/lessons.md` as a compact, current set of durable rules that prevent repeated agent mistakes—not a task diary or project knowledge base.
-- After each user correction, review `tasks/lessons.md`; add, refine, merge, replace, or remove a lesson only as needed to preserve a reusable prevention rule.
-- Keep new or revised lessons at the top of their list.
-- Express each lesson as an observable trigger and the required better behavior.
-- Keep project facts in `tasks/context.md` and task history in `tasks/todo/`; put only reusable prevention rules in lessons.
-- Before work, review only the lessons relevant to the current workspace and task.
-
----
-
-### 5. Simplicity First
+### 3. Simplicity First
 **Minimum code that solves the problem. Nothing speculative.**
 - Find root causes. No temporary fixes.
 - No features beyond what was asked. No abstractions for single-use code.
@@ -59,7 +34,7 @@
 
 ---
 
-### 6. Surgical Changes
+### 4. Surgical Changes
 **Touch only what you must. Clean up only your own mess.**
 
 - Don't "improve" adjacent code, comments, or formatting.
@@ -71,11 +46,8 @@
 
 ---
 
-### 7. Strict Review and Verification Before Done
-- Before marking any deliverable-changing task complete, invoke `adversarial-review` on the final artifact and diff when available.
-- Keep completion and commit gates blocked until its independent Reviewer returns `APPROVED`; the Editor may answer or fix findings but cannot self-approve.
-- Any reviewed-artifact change after approval invalidates the verdict and requires another review.
-- If the adversarial review cannot run or does not pass, report the task as incomplete or blocked; never claim it is finished.
-- Diff behavior between main and your changes when relevant, and run tests, check logs, or otherwise demonstrate correctness.
+### 5. Verification Before Done
+- Verify outcomes in proportion to risk with deterministic checks, tests, logs, or behavioral comparison as appropriate.
+- Use an independent review workflow only when the user requests it or an applicable task requirement makes it a completion gate.
 
 ---

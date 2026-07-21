@@ -1,0 +1,57 @@
+{
+  "fallback_positive_concepts": [],
+  "positive_concepts": {
+    "workspace_context": {
+      "weight": 1.0,
+      "phrases": [
+        "tasks/context.md",
+        "session start",
+        "after resume",
+        "after compaction",
+        "durable workspace facts"
+      ]
+    },
+    "workspace_task": {
+      "weight": 1.0,
+      "phrases": [
+        "tasks/todo.md",
+        "task record",
+        "non-trivial work",
+        "changes a deliverable",
+        "adversarial review"
+      ]
+    },
+    "workspace_lessons": {
+      "weight": 1.0,
+      "phrases": [
+        "tasks/lessons.md",
+        "before work",
+        "relevant lessons",
+        "user correction",
+        "reusable correction",
+        "reusable rule",
+        "correction lesson"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "read_only_or_trivial": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": [
+        "read-only answer",
+        "trivial mechanical operation",
+        "do not change files"
+      ]
+    },
+    "ordinary_preference": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": [
+        "ordinary preference",
+        "i prefer concise answers",
+        "save this tip"
+      ]
+    }
+  }
+}

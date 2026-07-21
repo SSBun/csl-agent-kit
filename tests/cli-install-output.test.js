@@ -13,6 +13,18 @@ const {
   saveInstallSelection,
 } = require(cli);
 
+function discoverProjectOwnedSkills(directory, relative = "skills") {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    if (!entry.isDirectory()) return [];
+    const child = path.join(directory, entry.name);
+    const childRelative = path.join(relative, entry.name);
+    if (existsSync(path.join(child, "SKILL.md"))) {
+      return existsSync(path.join(child, ".repository.json")) ? [] : [`./${childRelative}`];
+    }
+    return discoverProjectOwnedSkills(child, childRelative);
+  });
+}
+
 function run(args, env = {}) {
   return spawnSync(process.execPath, [cli, ...args], {
     cwd: root,
@@ -109,12 +121,9 @@ test("Codex plugin exports root skills and uses the root hook manifest", () => {
   assert.equal(existsSync(path.join(root, ".codex-plugin", "hooks", "hooks.json")), false);
 });
 
-test("Claude plugin exports every project-owned top-level skill", () => {
+test("Claude plugin exports every project-owned leaf skill", () => {
   const manifest = JSON.parse(readFileSync(path.join(root, ".claude-plugin", "plugin.json"), "utf8"));
-  const expected = readdirSync(path.join(root, "skills"), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && existsSync(path.join(root, "skills", entry.name, "SKILL.md")))
-    .map((entry) => `./skills/${entry.name}`)
-    .sort();
+  const expected = discoverProjectOwnedSkills(path.join(root, "skills")).sort();
 
   assert.deepEqual([...manifest.skills].sort(), expected);
 });

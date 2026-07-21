@@ -30,6 +30,9 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
 | super-agent | `/csl:super-agent` | `/super-agent` | Symlink the bundled default AGENTS.md into another agent config. |
+| workspace-maintain-context | `/csl:workspace-maintain-context` | `/workspace-maintain-context` | Maintain confirmed durable workspace context. |
+| workspace-manage-task | `/csl:workspace-manage-task` | `/workspace-manage-task` | Manage scoped task contracts, lifecycle, and review handoff. |
+| workspace-capture-lessons | `/csl:workspace-capture-lessons` | `/workspace-capture-lessons` | Apply relevant lessons and capture reusable corrections. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
 | tips | `/csl:tips` | `/tips` | Save and inject short user commands and preferences. |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
@@ -251,6 +254,7 @@ csl-agent-kit install --all
 
 ```
 skills/                  # Shared skill source (all platforms)
+skills/workspace-workflow/ # Context, task, and lessons workflow skills
 skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest

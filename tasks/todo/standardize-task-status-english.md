@@ -1,0 +1,44 @@
+# 统一任务状态为英文
+
+Status: Completed (2026-07-21)
+
+## Scope
+
+- 对象：`workspace-manage-task` 的任务生命周期状态协议。
+- 包含：状态词、生命周期转换说明和对应契约测试。
+- 包含：记录本次用户纠正形成的可复用规则。
+- 排除：批量迁移既有任务文件和索引中的历史状态。
+- 排除：修改任务文件的四个执行章节及其内容边界。
+
+## Target
+
+- 新任务只使用 `Pending`、`In Progress`、`In Review`、`Completed`、`Blocked`。
+- 每个任务状态继续包含当前日期。
+- 生命周期转换使用相同的英文状态词。
+- 契约测试同时验证英文状态存在且中文状态不再被声明。
+- 既有任务记录和无关工作区改动保持不变。
+
+## Plan
+
+1. 更新任务状态协议和生命周期转换。
+2. 添加状态词契约检查和纠正规则。
+3. 运行定向验证与规则审计。
+4. 将最终差异提交 adversarial review。
+
+## Checklist
+
+- [x] 五个英文状态均在任务生命周期协议中声明。
+- [x] 生命周期转换不再使用中文状态词。
+- [x] 当前日期要求保持不变。
+- [x] 状态词契约测试通过。
+- [x] Skill 校验和规则审计通过。
+
+## Result
+
+- 交付：任务生命周期状态统一为 `Pending`、`In Progress`、`In Review`、`Completed`、`Blocked`。
+- 交付：生命周期转换和用户纠正规则使用相同的英文状态词。
+- 验证：`workspace-manage-task` Skill 结构校验通过。
+- 验证：状态词定向契约测试通过。
+- 验证：`yao-meta-skill` 规则审计和 `git diff --check` 通过。
+- 边界：既有任务文件及索引中的历史中文状态未迁移。
+- 审查：APPROVED — [Adversarial review report](../../reports/adversarial-review/standardize-task-status-english.md)

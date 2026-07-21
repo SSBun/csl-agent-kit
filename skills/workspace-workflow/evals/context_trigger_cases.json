@@ -1,0 +1,21 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "At session start, read tasks/context.md before exploring the workspace.",
+    "After resume, verify the durable workspace facts before continuing.",
+    "After compaction, refresh the confirmed component relationships.",
+    "Update tasks/context.md with the newly confirmed repository convention."
+  ],
+  "should_not_trigger": [
+    "Give me a read-only answer and do not change files.",
+    "Perform this trivial mechanical operation.",
+    "Explain what this function does.",
+    "I prefer concise answers."
+  ],
+  "near_neighbor": [
+    "Create the task record in tasks/todo.md before implementation.",
+    "Capture this user correction in tasks/lessons.md.",
+    "Run adversarial review on the completed change.",
+    "Save this tip for future Markdown requests."
+  ]
+}

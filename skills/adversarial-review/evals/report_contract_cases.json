@@ -1,153 +1,128 @@
 {
-  "version": 1,
+  "version": 3,
   "cases": [
     {
-      "id": "initial-approval",
-      "given": "One owning task and a clean INITIAL pass.",
+      "id": "no-intermediate-report-writes",
+      "given": "The Reviewer–Editor loop is active and has not ended or paused.",
       "expect": {
-        "report_created_before_initial": true,
-        "report_path": "reports/adversarial-review/<task-slug>.md",
-        "task_path": "tasks/todo/<task-slug>.md",
-        "todo_index_entry": "Title, current status, and task-file link only.",
-        "task_report_link": "../../reports/adversarial-review/<task-slug>.md",
-        "report_task_link": "../../tasks/todo/<task-slug>.md",
-        "user_facing_body": [
-          "Overall conclusion",
-          "Topics reviewed",
-          "Debate results",
-          "Final conclusion",
-          "Verification"
-        ],
-        "technical_appendix_last": true,
-        "review_metadata_in_user_facing_body": false,
-        "result_mapping": "APPROVED->READY; PENDING/CONTINUE->IN_PROGRESS; NEEDS_USER->NEEDS_USER; BLOCKED/STALLED/USER_STOP->PAUSED.",
-        "no_finding_result": "READY may state accepted without substantive debate.",
-        "chat": "Normal task outcome, user-relevant changes, verification, and report link only; no review-report heading or report metadata."
+        "report_created_or_updated": false,
+        "task_summary_updated": false,
+        "ledger_location": "Agent handoffs"
       }
     },
     {
-      "id": "pre-initial-empty-ledger",
-      "given": "The report is created before INITIAL (1), with PENDING state and no finding yet.",
+      "id": "terminal-report-shape",
+      "given": "The review reaches APPROVED after one or more rounds.",
       "expect": {
-        "user_result": "IN_PROGRESS",
-        "empty_ledger_statement": "No issue has been raised yet and review is still underway.",
-        "acceptance_claim_allowed": false
+        "report_written_once_at_terminal_state": true,
+        "frontmatter": [
+          "created",
+          "review_cycles"
+        ],
+        "required_body_labels": [
+          "Topic",
+          "E1",
+          "R1",
+          "Conclusion",
+          "Final decision",
+          "Outcome",
+          "Remaining"
+        ],
+        "decision_in_frontmatter": false,
+        "final_decision": "APPROVED"
       }
     },
     {
-      "id": "user-first-debate-results",
-      "given": "A review has a blocker, an Editor response, and a later resolution; another user-owned question remains unresolved; on a third finding, the Reviewer maintains a material risk while the Editor disagrees with that risk assessment.",
+      "id": "material-discussion-only",
+      "given": "A blocker is fixed, a narrower remedy is used, and a Reviewer–Editor disagreement is resolved by evidence.",
       "expect": {
-        "one_canonical_debate_section_per_finding_id": true,
-        "debate_fields": [
-          "Reviewer position",
-          "Violated criterion",
-          "Evidence",
-          "Risk",
-          "Required outcome",
-          "Suggested remedy",
-          "Editor response",
-          "Editor audit: Current Adequacy; Minimal Resolution; Blast Radius; Proportionality",
-          "Debate conclusion",
-          "Final impact",
-          "Status"
+        "one_block_per_material_topic": true,
+        "dialogue_order": [
+          "E1",
+          "R1",
+          "E2",
+          "R2",
+          "Conclusion"
         ],
-        "finding_required_outcome_remedy_separated": true,
-        "suggested_remedy_is_advisory": true,
-        "resolved_conclusion_preserved": true,
-        "pending_condition_preserved": true,
-        "disagreement_preserved": "The Reviewer challenge and Editor disagreement both remain visible without fabricating agreement.",
-        "duplicate_summary_and_findings_sections": false,
-        "cycle_scope_paths_in_user_facing_body": false,
-        "audit_metadata_retained_in_technical_appendix": true,
-        "hidden_reasoning_included": false,
+        "single_viewpoint_same_line": true,
+        "multiple_viewpoints_use_list": true,
+        "dialogue_uses_one_quote_block": true,
+        "material_disagreement_preserved": true,
         "raw_prompts_or_transcripts_included": false,
-        "full_finding_ledger_retained_as_debate_results": true
+        "finding_ids_included": false
       }
     },
     {
-      "id": "acknowledged-note-no-change",
-      "given": "A Reviewer NOTE is acknowledged by the Editor and requires no artifact change.",
+      "id": "report-metadata",
+      "given": "A three-pass review has an owning task and writes its first terminal report on 2026-07-21.",
       "expect": {
-        "debate_conclusion": "ACKNOWLEDGED_NO_CHANGE",
-        "status": "RESOLVED",
-        "artifact_change_claimed": false,
-        "rejection_or_compromise_claimed": false
+        "created": "2026-07-21",
+        "task": "Owning task slug",
+        "review_cycles": 3,
+        "final_decision_location": "Body"
       }
     },
     {
       "id": "unsupported-blocker-downgrade",
-      "given": "A Reviewer labels a preferred abstraction as BLOCKER but cannot identify a violated criterion, observable evidence, material risk, and required outcome.",
+      "given": "A Reviewer labels a preferred abstraction as BLOCKER without a violated criterion, observable evidence, material risk, and required outcome.",
       "expect": {
         "blocker_allowed": false,
         "reclassified_before_editor_batch": true,
-        "invalid_reviewer_response_accepted_as_verdict": false,
-        "editor_batch_consumed": false,
-        "allowed_result": "Downgrade to QUESTION or NOTE, or omit it.",
-        "suggested_remedy_treated_as_evidence": false,
-        "artifact_change_required": false
+        "allowed_result": "Downgrade to QUESTION or NOTE, or omit it."
       }
     },
     {
       "id": "narrow-resolution-closes-finding",
-      "given": "A valid finding suggests a new cross-component coordinator, while a local guard satisfies the same required outcome with a smaller blast radius and fewer assumptions.",
+      "given": "A local guard satisfies the required outcome with less impact than the Reviewer's proposed coordinator.",
       "expect": {
         "editor_disposition": "NARROW",
-        "editor_audit_order": [
-          "Current Adequacy",
-          "Minimal Resolution",
-          "Blast Radius",
-          "Proportionality"
-        ],
         "reviewer_closure_basis": "Required outcome satisfied.",
-        "suggested_remedy_adoption_required": false,
-        "unrelated_components_changed": false,
-        "debate_conclusion": "COMPROMISE",
-        "status": "RESOLVED"
+        "suggested_remedy_adoption_required": false
       }
     },
     {
-      "id": "adequate-solution-rejected-with-evidence",
-      "given": "The current solution already satisfies the required outcome and the Reviewer suggestion adds complexity without demonstrated risk reduction.",
+      "id": "adequate-solution-preserved",
+      "given": "The current solution satisfies the required outcome and the Reviewer suggestion adds complexity without demonstrated risk reduction.",
       "expect": {
         "editor_disposition": "REJECT",
         "current_solution_preserved": true,
-        "debate_conclusion": "REJECTED_WITH_EVIDENCE",
-        "reviewer_may_repeat_original_remedy_without_new_evidence": false,
-        "status": "RESOLVED"
+        "reviewer_may_repeat_original_remedy_without_new_evidence": false
       }
     },
     {
-      "id": "valid-finding-without-suggested-remedy",
-      "given": "A valid finding identifies a violated criterion, observable evidence, material risk, and required outcome, but the Reviewer provides no suggested remedy.",
+      "id": "valid-finding-without-remedy",
+      "given": "A valid finding establishes the risk and required outcome but proposes no remedy.",
       "expect": {
         "finding_allowed": true,
         "suggested_remedy_required": false,
-        "editor_disposition": "ACCEPT",
-        "editor_selects_minimal_sufficient_resolution": true,
-        "reviewer_implementation_command_required": false,
-        "reviewer_closure_basis": "Required outcome satisfied."
+        "editor_selects_minimal_sufficient_resolution": true
       }
     },
     {
-      "id": "approval-chat-no-report-metadata",
-      "given": "An approved report contains Gate, review state, stop reason, Reviewer, round, findings, verification, and external-action authorization, and the user did not ask for review details.",
+      "id": "clean-approval",
+      "given": "The initial Reviewer pass finds no issue.",
       "expect": {
-        "chat_allowed": [
-          "Normal task outcome",
-          "User-relevant changes",
-          "Verification",
-          "Report link"
-        ],
-        "chat_forbidden": [
-          "Final Review Report or equivalent heading",
-          "Approval verdict",
-          "Gate, review state, or stop reason",
-          "Reviewer or round",
-          "Findings or resolved/unresolved counts",
-          "Review history or process narration",
-          "External-action authorization"
-        ]
+        "discussion": "One sentence stating that no material discussion occurred.",
+        "review_cycles": 1,
+        "final_decision": "APPROVED",
+        "invented_discussion": false
+      }
+    },
+    {
+      "id": "needs-user",
+      "given": "All agent-actionable findings are handled and one user-owned decision remains.",
+      "expect": {
+        "final_decision": "NEEDS_USER",
+        "remaining": "Exact user question",
+        "chat": "Exact question or resume condition and report link only."
+      }
+    },
+    {
+      "id": "objective-pause",
+      "given": "An external condition blocks further review.",
+      "expect": {
+        "final_decision": "BLOCKED",
+        "remaining": "Objective resume condition"
       }
     },
     {
@@ -155,48 +130,30 @@
       "given": "A reviewed artifact changes after APPROVED.",
       "expect": {
         "same_report_reused": true,
-        "gate": "BLOCKED",
-        "state": "PENDING",
-        "next_round": "RE-REVIEW (n+1)",
-        "revision_and_fingerprint_refreshed": true
+        "created_preserved": true,
+        "review_cycles_updated_cumulatively": true,
+        "old_decision_marked": "SUPERSEDED",
+        "stale_report_presented_as_current": false,
+        "next_report_write": "Next pause or terminal state"
       }
     },
     {
-      "id": "ambiguous-task-ownership",
-      "given": "Multiple existing tasks plausibly own the review.",
+      "id": "existing-task-link-only",
+      "given": "Applicable workspace rules already provide an owning task.",
       "expect": {
-        "report_created": false,
-        "task_summary_created": false,
-        "chat": "Exact ownership question without a report link."
+        "task_created_for_report": false,
+        "frontmatter_task": "Owning task slug",
+        "task_update": "Final decision and report link only",
+        "intermediate_task_updates": false
       }
     },
     {
-      "id": "needs-user-after-editor-batch",
-      "given": "All findings were answered, but one user-owned decision remains.",
+      "id": "no-owning-task",
+      "given": "No applicable workspace rule requires a task record.",
       "expect": {
-        "same_report_reused": true,
-        "gate": "BLOCKED",
-        "state": "NEEDS_USER",
-        "chat": "Exact question, evidence, risk, resume condition, and report link only."
-      }
-    },
-    {
-      "id": "administrative-sync",
-      "given": "Only the report ledger projection, owning task summary, and exact todo index status change.",
-      "expect": {
-        "approval_invalidated": false,
-        "new_report_created": false,
-        "reviewed_artifact_scope_changed": false
-      }
-    },
-    {
-      "id": "parallel-task-isolation",
-      "given": "Two agents update different active tasks concurrently.",
-      "expect": {
-        "canonical_records": "Separate tasks/todo/<task-slug>.md files.",
-        "owning_task_only": true,
-        "unrelated_task_files_changed": false,
-        "todo_index_change": "Only the exact owning entry may change."
+        "task_created": false,
+        "frontmatter_task_omitted": true,
+        "report_created_at_pause_or_end": true
       }
     }
   ]

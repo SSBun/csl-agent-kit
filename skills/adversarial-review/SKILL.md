@@ -1,6 +1,6 @@
 ---
 name: adversarial-review
-description: Fail-closed, uncapped adversarial review for code, PRDs, RFCs, design documents, and other deliverables. Use before finalizing or completing an artifact when an independent Reviewer and separate Editor must iterate until APPROVED or pause with every unresolved finding and user question. Exclude one-pass feedback without remediation.
+description: Run a fail-closed, uncapped Reviewer–Editor loop for code, PRDs, RFCs, design documents, and other deliverables. Use only when the user explicitly requests adversarial or two-agent review, or an applicable requirement mandates independent Reviewer approval before completion. Exclude ordinary one-pass review, self-review, routine file operations, and feedback-only requests without remediation.
 ---
 
 # Adversarial Review
@@ -11,7 +11,7 @@ description: Fail-closed, uncapped adversarial review for code, PRDs, RFCs, desi
 - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.
 - `APPROVED` is review evidence, not external-action authorization.
 - Set no total round or cycle limit. Continue by review state under [Review Loop Contract](references/review-loop.md).
-- Persist one workspace report and link it through the owning task and index per [Task Review Status](references/task-review-status.md).
+- Keep the active finding ledger in Reviewer–Editor handoffs; do not write report files during intermediate rounds.
 - Reviewed artifact changes invalidate `APPROVED`; return to `BLOCKED` and resume the same numbered review history.
 - No independent Reviewer: fail closed.
 
@@ -29,7 +29,7 @@ For multiple viable decisions, fixes, or plans, remain `BLOCKED` and use [Decisi
 
 ### 1. Pin the review
 
-Before the first pass, resolve ownership under [Task Review Status](references/task-review-status.md), then initialize or reuse the report under [Final Review Report Contract](references/final-review-report.md). These records are not reviewed deliverables.
+Resolve the request, criteria, scope, review base, and non-goals before the first pass. Do not create a report or task record merely to start the review.
 
 Give the Reviewer only task-local evidence:
 
@@ -43,11 +43,11 @@ Exclude the Editor's reasoning and proposed answers from the first Reviewer prom
 
 ### 2. Run the loop
 
-Both roles apply [Shared Principles and Review Lenses](references/review-lenses.md), then execute [Review Loop Contract](references/review-loop.md). Enforce its Finding Validity Gate before accepting a Reviewer verdict or routing work to the Editor. Sync each accepted verdict and Editor response to the stable report before routing the next action.
+Both roles apply [Shared Principles and Review Lenses](references/review-lenses.md), then execute [Review Loop Contract](references/review-loop.md). Enforce its Finding Validity Gate before accepting a Reviewer verdict or routing work to the Editor.
 
 ### 3. Finalize the record
 
-Follow [Final Review Report Contract](references/final-review-report.md). Confirm the artifact and available diff before recording `APPROVED`. On approval, return only the normal task outcome, user-relevant changes, verification, and report link. Do not present, condense, or paraphrase review-record content in the handoff, use a review-report heading, announce the approval verdict, or proactively echo Gate, state, stop reason, Reviewer, round, findings, review history, or external-action authorization unless the user explicitly asks for review details. On a blocked or paused review, return only the required questions, risks, resume condition, and link.
+When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Confirm the artifact and available diff before recording `APPROVED`. If applicable workspace rules already provide an owning task, add only the final decision and report link there; never create a task solely to host the report. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
 
 ## Maintenance
 

@@ -1,0 +1,22 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Before work, read the relevant lessons for this task.",
+    "After this user correction, add the reusable rule to tasks/lessons.md.",
+    "Capture this reusable correction so the agent does not repeat the mistake.",
+    "Merge this correction lesson with the existing rule.",
+    "Remove the obsolete rule from tasks/lessons.md."
+  ],
+  "should_not_trigger": [
+    "I prefer concise answers.",
+    "Save this tip for future Markdown requests.",
+    "Give me a read-only answer and do not change files.",
+    "Explain why the test failed."
+  ],
+  "near_neighbor": [
+    "At session start, read tasks/context.md.",
+    "Create the task record in tasks/todo.md before implementation.",
+    "Run adversarial review on the completed change.",
+    "Update the confirmed component relationship in the workspace context."
+  ]
+}
