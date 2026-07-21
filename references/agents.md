@@ -51,3 +51,7 @@
 - Use an independent review workflow only when the user requests it or an applicable task requirement makes it a completion gate.
 
 ---
+
+### 6. User Conventions
+
+Obey every entry in `~/.csl-agent-kit/conventions.md` across all sessions. These are user-confirmed, always-on directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, or edit an entry, use the `conventions` skill only when the user explicitly asks to save a persistent convention.

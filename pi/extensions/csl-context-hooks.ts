@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -13,20 +14,9 @@ interface SopSummary {
 	score?: number;
 }
 
-interface Tip {
-	text: string;
-	keywords: string[];
-}
-
 interface SopCandidateModule {
 	findCandidates(prompt: string, sops?: SopSummary[]): SopSummary[];
 	loadSops(): SopSummary[];
-}
-
-interface TipsStoreModule {
-	findCandidates(prompt: string, tips: Tip[]): Tip[];
-	loadTips(tipsFile?: string): Tip[];
-	resolveTipsFile(dataDir?: string): string;
 }
 
 const require = createRequire(import.meta.url);
@@ -35,9 +25,6 @@ const packageRoot = join(baseDir, "..", "..");
 const candidateModule = require(
 	join(packageRoot, "skills", "sop-manager", "scripts", "sop-candidates.js"),
 ) as SopCandidateModule;
-const tipsStore = require(
-	join(packageRoot, "skills", "tips", "scripts", "tips-store.js"),
-) as TipsStoreModule;
 
 const MUTATING_TOOLS = new Set(["bash", "edit", "write", "apply_patch"]);
 const DESIGN_FETCH_TOOL = /mcp__.*figma.*(get_design_context|get_metadata|get_screenshot|get_figjam|get_variable_defs|get_libraries|search_design_system)|mcp__mastergo_magic_mcp.*(getDesignSections|getDsl|getD2c|getMeta|getDesignTexts|getDesignSvgs|extractSvg)/i;
@@ -48,16 +35,16 @@ const DESIGN_REMINDER = [
 ].join("\n");
 
 export default function cslContextHooks(pi: ExtensionAPI) {
-	let tips: Tip[] = [];
 	let sops: SopSummary[] = [];
 	let activeCandidates: SopSummary[] = [];
 	let toolReminderShown = false;
+	let conventions = "";
 
 	const refresh = () => {
 		try {
-			tips = loadTips();
+			conventions = loadConventions();
 		} catch {
-			tips = [];
+			conventions = "";
 		}
 		try {
 			sops = candidateModule.loadSops();
@@ -76,7 +63,6 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 
 	pi.on("before_agent_start", async (event) => {
 		refresh();
-		const matchingTips = tipsStore.findCandidates(event.prompt, tips);
 		try {
 			activeCandidates = candidateModule.findCandidates(event.prompt, sops);
 		} catch {
@@ -84,7 +70,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		}
 		toolReminderShown = false;
 
-		const context = formatSystemContext(matchingTips, sops, activeCandidates);
+		const context = formatSystemContext(conventions, sops, activeCandidates);
 		if (!context) return undefined;
 
 		return {
@@ -117,22 +103,26 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	});
 }
 
-export function loadTips(dataDir = getDataDir()): Tip[] {
-	return tipsStore.loadTips(tipsStore.resolveTipsFile(dataDir));
+export function loadConventions(dataDir = getDataDir()): string {
+	try {
+		return readFileSync(join(dataDir, "conventions.md"), "utf8").trim();
+	} catch {
+		return "";
+	}
 }
 
 export function formatSystemContext(
-	tips: Tip[],
+	conventions: string,
 	sops: SopSummary[],
 	candidates: SopSummary[],
 ): string {
-	if (tips.length === 0 && sops.length === 0) return "";
+	if (!conventions && sops.length === 0) return "";
 
 	const sections = ["## CSL Agent Kit User Context"];
-	if (tips.length > 0) {
+	if (conventions) {
 		sections.push(
-			"### Confirmed user instructions (follow unless higher-priority instructions conflict)",
-			...tips.map((tip) => `- ${tip.text}`),
+			"### Confirmed user conventions (always-on, obey across all sessions)",
+			conventions,
 		);
 	}
 

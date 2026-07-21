@@ -33,14 +33,14 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | workspace-manage-task | `/csl:workspace-manage-task` | `/workspace-manage-task` | Manage scoped task contracts, lifecycle, and review handoff. |
 | workspace-capture-lessons | `/csl:workspace-capture-lessons` | `/workspace-capture-lessons` | Apply relevant lessons and capture reusable corrections. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
-| tips | `/csl:tips` | `/tips` | Save and inject short user commands and preferences. |
+| conventions | `/csl:conventions` | `/conventions` | Manage always-on user conventions stored in `~/.csl-agent-kit/conventions.md`. |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | same-page | `/csl:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-用户创建的 SOP 存放在 `~/.csl-agent-kit/sops/`；用户 tips 以带关键词的 JSON 形式存放在 `~/.csl-agent-kit/tips/tips.json`。
+用户创建的 SOP 存放在 `~/.csl-agent-kit/sops/`；用户始终在场的约定以纯 Markdown 形式存放在 `~/.csl-agent-kit/conventions.md`，经 `references/agents.md` 引用与 `SessionStart` hook 一次性注入，不再做按上下文的关键词匹配。
 
 ## Canonical source and duplicates
 
@@ -198,7 +198,7 @@ The Pi package manifest in `package.json` exposes:
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-reviewer`、`/brainstorming` 等 Cursor/Codex 风格别名。
-- `pi/extensions/csl-context-hooks.ts`：向 Pi 注入与当前 prompt 匹配的持续 tips 和 SOP 摘要，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
+- `pi/extensions/csl-context-hooks.ts`：在 session 开始时一次性注入用户始终在场的约定与 SOP 摘要，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
 Fast Mode usage:
@@ -218,7 +218,7 @@ Inside Pi:
 
 The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
 
-context hooks 从 `~/.csl-agent-kit/tips/tips.json` 和 `~/.csl-agent-kit/sops/*.md` 读取用户数据；每次 agent 运行前刷新，并且只注入确认关键词匹配当前 prompt 的 tips。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
+context hooks 从 `~/.csl-agent-kit/conventions.md` 和 `~/.csl-agent-kit/sops/*.md` 读取用户数据；约定在 session 开始时一次性全量注入，不再按 prompt 关键词匹配。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
 
 The CSL Agent Kit CLI also supports:
 
@@ -241,7 +241,7 @@ csl-agent-kit install --target codex-plugin
 
 `csl-agent-kit@csl-agent-market` 是 Codex 的唯一默认安装目标；repository-root plugin 同时包含共享 `skills/` 与 `hooks/hooks.json`，不再创建 `~/.agents/skills` 链接。安装成功后，安装器会删除仍指向本包 `skills/` 树的旧 CSL symlink（包括已经失效的旧 skill 链接），但保留普通文件、目录与外部 symlink。dry-run 只报告这些迁移，不修改文件。
 
-`integrate-third-skills` 仅位于本仓库的 `.agents/skills/`，不会进入 Codex plugin。`UserPromptSubmit` hook 只注入关键词匹配的 tips 和 SOP candidates；hook scripts 从安装后的 plugin root 解析。重新运行安装器仍会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
+`integrate-third-skills` 仅位于本仓库的 `.agents/skills/`，不会进入 Codex plugin。`UserPromptSubmit` hook 只注入 SOP candidates；用户约定通过 `SessionStart` hook 与 `references/agents.md` 引用始终在场，不参与按 prompt 匹配。hook scripts 从安装后的 plugin root 解析。重新运行安装器仍会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
 
 ### All platforms
 

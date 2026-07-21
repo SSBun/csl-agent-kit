@@ -6,6 +6,12 @@
         "hooks": [
           {
             "type": "command",
+            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/conventions.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User conventions (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
+            "timeout": 5,
+            "statusMessage": "Loading CSL user conventions"
+          },
+          {
+            "type": "command",
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Loading CSL SOP routing"
@@ -19,6 +25,12 @@
         "hooks": [
           {
             "type": "command",
+            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/conventions.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User conventions (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
+            "timeout": 5,
+            "statusMessage": "Reloading CSL user conventions"
+          },
+          {
+            "type": "command",
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Reloading CSL SOP routing"
@@ -29,12 +41,6 @@
     "UserPromptSubmit": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/tips/scripts/tips-candidates.js\" ]; then \"$root/skills/tips/scripts/tips-candidates.js\"; fi'",
-            "timeout": 5,
-            "statusMessage": "Checking matching tips"
-          },
           {
             "type": "command",
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-candidates.js\" ]; then \"$root/skills/sop-manager/scripts/sop-candidates.js\"; fi'",

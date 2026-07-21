@@ -1,0 +1,28 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Save this preference to conventions: always show absolute file paths.",
+    "Add a convention that generated Markdown opens in Typora.",
+    "记住这个约定，写入 conventions：修 bug 前先说根因。",
+    "Remember as a convention that edge cases must be considered when implementing.",
+    "Record this to my conventions file."
+  ],
+  "should_not_trigger": [
+    "Show absolute paths for this doc.",
+    "Open this report in Typora.",
+    "Think through edge cases here.",
+    "Show me the root cause first for this bug.",
+    "I prefer concise answers.",
+    "Explain what eventual consistency means.",
+    "Write this task plan to tasks/todo.md.",
+    "Fix the bug now."
+  ],
+  "near_neighbor": [
+    "Brainstorm three names for this feature.",
+    "Add a lesson to lessons.md about this mistake.",
+    "Create an SOP for releasing this project.",
+    "Save this engineering rule to AGENTS.md.",
+    "Just do X for this task, not always.",
+    "记一下这次踩的坑。"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "fallback_positive_concepts": [
+    "persistent_convention",
+    "cross_session_directive"
+  ],
+  "positive_concepts": {
+    "persistent_convention": {
+      "weight": 0.65,
+      "phrases": [
+        "save this preference",
+        "add a convention",
+        "save to conventions",
+        "record to conventions",
+        "remember as a convention",
+        "persistent preference",
+        "always-on directive",
+        "保存到 conventions",
+        "写入 conventions",
+        "记住这个约定",
+        "跨会话约定"
+      ]
+    },
+    "cross_session_directive": {
+      "weight": 0.35,
+      "phrases": [
+        "every session",
+        "every time",
+        "from now on",
+        "always conform",
+        "always apply",
+        "across all sessions",
+        "以后都",
+        "每次都",
+        "始终"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "current_turn_only": {
+      "weight": 0.6,
+      "exclusive": true,
+      "phrases": [
+        "for this task",
+        "this doc",
+        "this report",
+        "this bug",
+        "just do",
+        "this time",
+        "i prefer",
+        "这次",
+        "当前任务"
+      ]
+    },
+    "other_carrier": {
+      "weight": 0.6,
+      "exclusive": true,
+      "phrases": [
+        "add a lesson",
+        "lessons.md",
+        "create an sop",
+        "save to agents.md",
+        "agents.md",
+        "task plan",
+        "tasks/todo.md",
+        "brainstorm",
+        "踩坑"
+      ]
+    }
+  }
+}
