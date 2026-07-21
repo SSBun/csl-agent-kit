@@ -5,7 +5,7 @@
     "Add a standing order that generated Markdown opens in Typora.",
     "记住这条长期规则，写入 standing-orders：修 bug 前先说根因。",
     "Remember as a standing order that edge cases must be considered when implementing.",
-    "Make this permanent in my conventions file.",
+    "Make this permanent in my standing-orders file.",
     "Add this to my standing orders so it applies every session."
   ],
   "should_not_trigger": [

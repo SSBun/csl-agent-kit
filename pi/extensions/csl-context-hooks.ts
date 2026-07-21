@@ -105,7 +105,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 
 export function loadConventions(dataDir = getDataDir()): string {
 	try {
-		return readFileSync(join(dataDir, "conventions.md"), "utf8").trim();
+		return readFileSync(join(dataDir, "standing-orders.md"), "utf8").trim();
 	} catch {
 		return "";
 	}

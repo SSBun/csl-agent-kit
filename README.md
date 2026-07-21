@@ -33,14 +33,14 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | workspace-manage-task | `/csl:workspace-manage-task` | `/workspace-manage-task` | Manage scoped task contracts, lifecycle, and review handoff. |
 | workspace-capture-lessons | `/csl:workspace-capture-lessons` | `/workspace-capture-lessons` | Apply relevant lessons and capture reusable corrections. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
-| standing-orders | `/csl:standing-orders` | `/standing-orders` | Manage always-on user directives stored in `~/.csl-agent-kit/conventions.md`. |
+| standing-orders | `/csl:standing-orders` | `/standing-orders` | Manage always-on user directives stored in `~/.csl-agent-kit/standing-orders.md`. |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | same-page | `/csl:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-用户创建的 SOP 存放在 `~/.csl-agent-kit/sops/`；用户始终在场的约定以纯 Markdown 形式存放在 `~/.csl-agent-kit/conventions.md`，经 `references/agents.md` 引用与 `SessionStart` hook 一次性注入，不再做按上下文的关键词匹配。
+用户创建的 SOP 存放在 `~/.csl-agent-kit/sops/`；用户始终在场的指令以纯 Markdown 形式存放在 `~/.csl-agent-kit/standing-orders.md`，经 `references/agents.md` 引用与 `SessionStart` hook 一次性注入，不再做按上下文的关键词匹配。
 
 ## Canonical source and duplicates
 
@@ -218,7 +218,7 @@ Inside Pi:
 
 The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
 
-context hooks 从 `~/.csl-agent-kit/conventions.md` 和 `~/.csl-agent-kit/sops/*.md` 读取用户数据；约定在 session 开始时一次性全量注入，不再按 prompt 关键词匹配。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
+context hooks 从 `~/.csl-agent-kit/standing-orders.md` 和 `~/.csl-agent-kit/sops/*.md` 读取用户数据；指令在 session 开始时一次性全量注入，不再按 prompt 关键词匹配。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
 
 The CSL Agent Kit CLI also supports:
 
