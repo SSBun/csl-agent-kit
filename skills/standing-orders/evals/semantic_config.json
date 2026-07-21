@@ -1,34 +1,32 @@
 {
   "fallback_positive_concepts": [
-    "persistent_convention",
-    "cross_session_directive"
+    "standing_order",
+    "persistent_directive"
   ],
   "positive_concepts": {
-    "persistent_convention": {
+    "standing_order": {
       "weight": 0.65,
       "phrases": [
-        "save this preference",
-        "add a convention",
-        "save to conventions",
-        "record to conventions",
-        "remember as a convention",
-        "persistent preference",
-        "always-on directive",
-        "保存到 conventions",
-        "写入 conventions",
-        "记住这个约定",
-        "跨会话约定"
+        "save as a standing order",
+        "add a standing order",
+        "standing orders",
+        "make this permanent",
+        "every session",
+        "always apply",
+        "保存为长期规则",
+        "写入 standing-orders",
+        "记住这条规则",
+        "跨会话规则"
       ]
     },
-    "cross_session_directive": {
+    "persistent_directive": {
       "weight": 0.35,
       "phrases": [
-        "every session",
-        "every time",
         "from now on",
         "always conform",
-        "always apply",
+        "always obey",
         "across all sessions",
+        "persistent rule",
         "以后都",
         "每次都",
         "始终"

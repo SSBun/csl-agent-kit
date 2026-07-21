@@ -52,6 +52,6 @@
 
 ---
 
-### 6. User Conventions
+### 6. Standing Orders
 
-Obey every entry in `~/.csl-agent-kit/conventions.md` across all sessions. These are user-confirmed, always-on directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, or edit an entry, use the `conventions` skill only when the user explicitly asks to save a persistent convention.
+Obey every entry in `~/.csl-agent-kit/conventions.md` across all sessions. These are user-confirmed, always-on directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, or edit an entry, use the `standing-orders` skill only when the user explicitly asks to make a directive persistent.

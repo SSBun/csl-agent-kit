@@ -1,11 +1,12 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
-    "Save this preference to conventions: always show absolute file paths.",
-    "Add a convention that generated Markdown opens in Typora.",
-    "记住这个约定，写入 conventions：修 bug 前先说根因。",
-    "Remember as a convention that edge cases must be considered when implementing.",
-    "Record this to my conventions file."
+    "Save this as a standing order: always show absolute file paths.",
+    "Add a standing order that generated Markdown opens in Typora.",
+    "记住这条长期规则，写入 standing-orders：修 bug 前先说根因。",
+    "Remember as a standing order that edge cases must be considered when implementing.",
+    "Make this permanent in my conventions file.",
+    "Add this to my standing orders so it applies every session."
   ],
   "should_not_trigger": [
     "Show absolute paths for this doc.",

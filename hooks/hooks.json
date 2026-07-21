@@ -6,9 +6,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/conventions.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User conventions (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
+            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/conventions.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
             "timeout": 5,
-            "statusMessage": "Loading CSL user conventions"
+            "statusMessage": "Loading CSL standing orders"
           },
           {
             "type": "command",
@@ -25,9 +25,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/conventions.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User conventions (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
+            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/conventions.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
             "timeout": 5,
-            "statusMessage": "Reloading CSL user conventions"
+            "statusMessage": "Reloading CSL standing orders"
           },
           {
             "type": "command",

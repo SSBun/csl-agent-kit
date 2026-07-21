@@ -121,7 +121,7 @@ export function formatSystemContext(
 	const sections = ["## CSL Agent Kit User Context"];
 	if (conventions) {
 		sections.push(
-			"### Confirmed user conventions (always-on, obey across all sessions)",
+			"### Confirmed user standing orders (always-on, obey across all sessions)",
 			conventions,
 		);
 	}

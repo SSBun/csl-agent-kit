@@ -12,10 +12,10 @@
 
 ## Relationships
 
-- 用户始终在场的约定位于 `~/.csl-agent-kit/conventions.md`（纯 Markdown，按主题分组）；它经 `references/agents.md` 的 `### User Conventions` 段引用，并由 `SessionStart`/`PostCompact` hook 与 Pi `session_start`/`session_compact` 一次性全量注入。`conventions` skill 只负责增删改，不参与运行时注入。
+- 用户始终在场的指令位于 `~/.csl-agent-kit/conventions.md`（纯 Markdown，按主题分组，上限 15 条 / 1500 字符，每条单行命令式）；它经 `references/agents.md` 的 `### Standing Orders` 段引用，并由 `SessionStart`/`PostCompact` hook 与 Pi `session_start`/`session_compact` 一次性全量注入。`standing-orders` skill 只负责增删改并经 CLASSIFY→DISTILL→CHECK→CONFIRM 引导，不参与运行时注入。文件名沿用 `conventions.md` 以避免迁移既有用户数据。
 - `csl-agent-kit install` 在没有已确认选择时默认预选 `codex-skills` 和 `codex-plugin`；交互式已确认目标保存在 `/Users/caishilin/.csl-agent-kit/install-selection.json`，下次 checklist 会以其为预选项。
 - hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；用户约定通过 `SessionStart`/`PostCompact` hook 一次性注入，不按 prompt 关键词匹配。Pi 在 `session_start` 与 `before_agent_start` 重建当前会话的约定与 SOP context。
-- 用户约定保持纯 Markdown，每条单一、可执行、跨会话有效；不设条目数量或字符上限，也不做关键词匹配；个人化内容（绝对路径、本机工具）只进 `~/.csl-agent-kit/conventions.md`，不进可分发的 `references/agents.md`。
+- 用户 standing orders 保持纯 Markdown，每条单一、可执行、跨会话有效；上限 15 条 / 1500 字符，每条 ≤ 120 字符；不做关键词匹配；个人化内容（绝对路径、本机工具）只进 `~/.csl-agent-kit/conventions.md`，不进可分发的 `references/agents.md`。
 - `bin/csl-agent-kit.js` 与 `pi/extensions/csl-skill-commands.ts` 会递归发现共享 `skills/` 下的叶子 `SKILL.md`，因此 `skills/mattpocock/<skill>/` 会以原始技能名暴露给全局 Codex symlink 安装与 Pi slash alias；项目本地 `.agents/skills/integrate-third-skills/` 不在此枚举中。安装器不提供 repo-local `.agents/skills` 链接目标。
 - 第三方技能元数据固定为 `.repository.json`，字段为 `repository`、`sourcePath`、`ref`、`commit`、`license` 和 `upstreamStatus`；它描述可复现的上游基线，不应在更新时绕过本地差异比较。
 - `third-party-skills.js status` 对每个来源/ref 在临时目录检出一次上游，并以 `git diff --quiet <导入commit> <当前commit> -- <sourcePath>` 区分“上游变化”和“技能未变”；`diff` 默认显示统计，`--patch` 才显示完整补丁，且排除本地 `.repository.json` 管理文件。
