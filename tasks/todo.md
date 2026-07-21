@@ -1,6 +1,6 @@
 # 任务索引
 
-- [Rename conventions to standing-orders and harden the skill](todo/rename-conventions-to-standing-orders.md) — In Review (2026-07-21)
+- [Rename conventions to standing-orders and harden the skill](todo/rename-conventions-to-standing-orders.md) — Completed (2026-07-21)
 - [用 conventions skill 取代 tips](todo/retire-tips-and-add-conventions-skill.md) — Completed (2026-07-21)
 - [Install Super Agent via CLI & Retire Skill](todo/install-super-agent-via-cli-and-retire-skill.md) — Completed (2026-07-21)
 - [以简洁对话呈现审查思考过程](todo/present-review-dialogue-clearly.md) — Completed (2026-07-21)

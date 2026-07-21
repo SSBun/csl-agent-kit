@@ -1,6 +1,6 @@
 # Rename conventions to standing-orders and harden the skill
 
-- Status: In Progress
+- Status: Completed
 - Date: 2026-07-21
 
 ## Goal
@@ -44,4 +44,8 @@ The skill name and the data filename are separate concerns. `conventions.md` is 
 
 ## Review
 
-(filled after adversarial-review)
+Adversarial review completed (2 cycles, APPROVED). Report: [reports/adversarial-review/rename-conventions-to-standing-orders.md](../../reports/adversarial-review/rename-conventions-to-standing-orders.md).
+
+Key finding (R4 BLOCKER, resolved): the initial commit kept the data file as `conventions.md` while the skill was `standing-orders`, creating a naming split with a weak justification. Fixed by renaming the data file to `standing-orders.md` and updating all 8 active references.
+
+Other findings: R1 spec/data intro inconsistency (fixed), R3 unjustified 1500-char cap (justified in spec), R2 strict-trigger gap (acknowledged, by design per user decision Q6).
