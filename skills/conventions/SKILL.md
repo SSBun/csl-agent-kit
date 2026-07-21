@@ -1,48 +1,48 @@
 ---
 name: conventions
-description: 仅在用户明确要求把一条跨会话持续有效的约定/偏好保存、记录、添加到 conventions 时使用；不要因普通偏好陈述、纠正、长期回答风格、SOP、handoff、任务记录或 lessons 请求而触发。
+description: Manage always-on user conventions stored in ~/.csl-agent-kit/conventions.md. Use only when the user explicitly asks to save, record, or add a cross-session persistent convention or preference. Exclude ordinary preference statements, corrections, long-term answer style, SOPs, handoffs, task records, or lessons requests.
 ---
 
 # Conventions
 
-管理用户本地始终在场的约定 `~/.csl-agent-kit/conventions.md`。每条约定都是用户明确确认的、跨会话持续有效的指令；该文件经 `references/agents.md` 引用并在 `SessionStart` hook 一次性注入，因此**始终在场**，不需要任何按上下文触发的注入机制。
+Manage the user's always-on conventions at `~/.csl-agent-kit/conventions.md`. Each entry is a user-confirmed, cross-session persistent directive. The file is referenced from `references/agents.md` and injected once by the `SessionStart` hook, so it is **always present** without any context-triggered injection mechanism.
 
-本 skill 只负责增、删、改条目；运行时注入由 agents.md 引用与 SessionStart hook 承担，不在本 skill 职责内。
+This skill only adds, removes, and edits entries. Runtime injection is handled by the agents.md reference and the SessionStart hook, not by this skill.
 
-## 触发边界
+## Trigger boundary
 
-只有用户明确要求"保存到 conventions / 记住这个约定 / add to conventions / save this preference"时才处理写入。用户只是表达偏好、纠正你、说明以后怎么回答、或给出当前任务要求时，不要写入，也不要主动提议写入。
+Only write when the user explicitly asks to "save to conventions / remember this convention / add to conventions / save this preference". Do not write, and do not proactively suggest writing, when the user merely states a preference, corrects you, describes how to answer going forward, or gives a current-task requirement.
 
-触发边界由 `evals/trigger_cases.json` 与 `evals/semantic_config.json` 覆盖。
+The trigger boundary is covered by `evals/trigger_cases.json` and `evals/semantic_config.json`.
 
-## 什么内容适合保存
+## What belongs here
 
-一条约定必须同时满足：
+An entry must satisfy all of:
 
-- 未来多个会话仍然有效；
-- 不局限于当前任务或当前仓库；
-- 是用户希望始终在场、每次都要遵守的指令；
-- 单一、明确且可执行；
-- agent 能判断是否适用，用户能判断是否被遵守；
-- 不包含密码、token、密钥或其他敏感信息。
+- Remains valid across future sessions.
+- Not scoped to the current task or repository.
+- A directive the user wants always present and obeyed every time.
+- Single, clear, and actionable.
+- The agent can tell when it applies; the user can tell whether it was obeyed.
+- Contains no passwords, tokens, keys, or other secrets.
 
-以下内容不要写入 conventions，改走对应载体：
+Do not write the following to conventions; use the right carrier instead:
 
-- 多步骤或可复用流程：使用 `sop-manager`；
-- 当前仓库工程规范或跨任务稳定的通用工程原则：写入 `AGENTS.md`（`references/agents.md`）；
-- 当前任务进度：写入 `tasks/todo.md`；
-- 对某次错误的经验总结：写入 `tasks/lessons.md`；
-- 会话恢复信息：按内容更新 `tasks/todo.md` 或 `tasks/context.md`；
-- 临时要求：只作为当前用户指令执行；
-- 原因、背景、长篇说明或敏感信息：不要写入。
+- Multi-step or reusable processes: use `sop-manager`.
+- Repository engineering norms or cross-task stable engineering principles: write to `AGENTS.md` (`references/agents.md`).
+- Current task progress: write to `tasks/todo.md`.
+- Lessons from a specific mistake: write to `tasks/lessons.md`.
+- Session-resume information: update `tasks/todo.md` or `tasks/context.md` as appropriate.
+- One-off requests: execute as the current user instruction only.
+- Rationale, background, long-form explanation, or sensitive data: do not write.
 
-## 存储位置
+## Storage location
 
 ```text
 ~/.csl-agent-kit/conventions.md
 ```
 
-文件是纯 Markdown，按主题分组，每条约定独立成行，便于 agent 用 `edit` 工具定位增删：
+The file is plain Markdown, grouped by topic, with each entry on its own line so the agent can locate it with `edit`:
 
 ```markdown
 # User Conventions
@@ -55,31 +55,31 @@ Always-on conventions the agent must conform to across all sessions.
 - <another directive>.
 ```
 
-不要把约定写进 skill 目录或可分发的 `references/agents.md`；个人化内容（绝对路径、本机工具等）只属于 `~/.csl-agent-kit/conventions.md`。
+Never write conventions into the skill directory or the distributable `references/agents.md`. Personal content (absolute paths, local tools, etc.) belongs only in `~/.csl-agent-kit/conventions.md`.
 
-## 添加约定
+## Add an entry
 
-1. 判断内容是否符合上列边界（持续、跨会话、始终在场）。
-2. 读取现有 `~/.csl-agent-kit/conventions.md`，避免重复或互相冲突的条目。
-3. 用户原文已经明确时尽量保留；含糊或包含多个要求时，整理为单一可执行句。
-4. 归入合适主题分组；没有合适分组就新建一个简短主题标题。
-5. 向用户展示将保存的最终文本与所属分组，等待明确确认。
-6. 确认后用 `edit` 工具把条目追加到对应分组；不要重写整个文件，不要自动改写其他条目。
+1. Check the content against the boundary above (persistent, cross-session, always-on).
+2. Read the existing `~/.csl-agent-kit/conventions.md` to avoid duplicates or conflicting entries.
+3. Preserve the user's wording when it is already clear; tighten into a single actionable sentence when vague or multi-clause.
+4. Place it under the right topic group; create a short topic heading if none fits.
+5. Show the user the final text and its group, and wait for explicit confirmation.
+6. Once confirmed, append the entry to the chosen group with the `edit` tool. Do not rewrite the whole file or silently alter other entries.
 
-## 删除或修改约定
+## Remove or modify an entry
 
-- 删除：确认用户要删的具体条目后，用 `edit` 精确移除该行；不要连带删除同分组其他条目。
-- 修改：先展示现有文本与拟改文本，获用户确认，再用 `edit` 替换该行。
-- 不要批量重写、自动截断或覆盖其他条目。
+- Remove: after confirming the exact entry with the user, delete that line precisely with `edit`; do not remove other entries in the same group.
+- Modify: show the existing and proposed text, get confirmation, then replace that one line with `edit`.
+- Never bulk-rewrite, auto-truncate, or overwrite unrelated entries.
 
-## 不做的事
+## Non-goals
 
-- 不实现任何关键词匹配、候选注入或 hook 脚本；始终在场由 agents.md 引用与 SessionStart hook 负责。
-- 不设条目数量或字符上限（无需为按需注入省 token）；但约定应保持简短、可执行，长篇说明应进对应载体而非 conventions。
-- 不创建 JSON / YAML / 数据库；纯 Markdown 便于 agent 直接阅读与编辑。
-- 不在 session start、resume、compact 或每轮 prompt 上运行任何注入逻辑。
+- No keyword matching, candidate injection, or hook scripts; always-on is the job of the agents.md reference and the SessionStart hook.
+- No entry-count or character limits (no per-prompt injection cost to optimize), but entries should stay short and actionable; long-form explanation belongs in the matching carrier, not conventions.
+- No JSON / YAML / database; plain Markdown is easier for the agent to read and edit directly.
+- No injection logic on session start, resume, compact, or each prompt turn.
 
-## 查看
+## View
 
 ```bash
 cat ~/.csl-agent-kit/conventions.md
