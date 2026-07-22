@@ -14,9 +14,11 @@
 
 ### 2. Workspace Workflow
 
-- At session start, after resume or compaction, and before ending when durable facts changed, use `$workspace-maintain-context`.
-- Before non-trivial work and after a user correction, use `$workspace-capture-lessons`.
-- For non-trivial work that changes a deliverable, use `$workspace-manage-task`.
+Three skills keep workspace state coherent. Use them as mandatory lifecycle gates, not optional tools.
+
+- `$workspace-maintain-context`: Read `tasks/context.md` at session start, resume, or compaction. Update before ending if durable workspace facts changed.
+- `$workspace-capture-lessons`: Read relevant rules before non-trivial work. Update after a user correction reveals a reusable mistake.
+- `$workspace-manage-task`: Create or update a task record before non-trivial work that changes a deliverable. Skip for read-only answers and trivial operations.
 
 ---
 
