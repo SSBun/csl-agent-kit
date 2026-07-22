@@ -1,6 +1,8 @@
 # 任务索引
 
-- [Rename conventions to standing-orders and harden the skill](todo/rename-conventions-to-standing-orders.md) — Completed (2026-07-22)
+- [研究 Agent 任务记录格式最佳实践](todo/research-task-record-format.md) — Completed (2026-07-22 11:51)
+- [为任务状态增加分钟级时间戳](todo/add-task-status-minute-timestamps.md) — In Progress (2026-07-22 12:52)
+- [Rename conventions to standing-orders and harden the skill](todo/rename-conventions-to-standing-orders.md) — Completed (2026-07-22 11:04)
 - [用 conventions skill 取代 tips](todo/retire-tips-and-add-conventions-skill.md) — Completed (2026-07-21)
 - [Install Super Agent via CLI & Retire Skill](todo/install-super-agent-via-cli-and-retire-skill.md) — Completed (2026-07-21)
 - [以简洁对话呈现审查思考过程](todo/present-review-dialogue-clearly.md) — Completed (2026-07-21)

@@ -182,6 +182,10 @@ test("workspace task contract keeps implementation and review out of acceptance"
   for (const status of ["Pending", "In Progress", "In Review", "Completed", "Blocked"]) {
     assert.ok(skill.includes(`\`${status}\``), `missing task status: ${status}`);
   }
+  assert.match(skill, /Status \(YYYY-MM-DD HH:MM\)/);
+  assert.match(skill, /current local date and 24-hour time/);
+  assert.match(skill, /complete status text, including the minute-level timestamp, identical/);
+  assert.match(skill, /do not bulk-rewrite untouched historical entries/);
   for (const status of ["待执行", "进行中", "待审查", "已完成", "阻塞"]) {
     assert.equal(skill.includes(`\`${status}\``), false, `translated task status remains: ${status}`);
   }

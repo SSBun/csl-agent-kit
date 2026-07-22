@@ -51,7 +51,7 @@ Key finding (R4 BLOCKER, resolved): the initial commit kept the data file as `co
 Other findings: R1 spec/data intro inconsistency (fixed), R3 unjustified 1500-char cap (justified in spec), R2 strict-trigger gap (acknowledged, by design per user decision Q6).
 ## Adversarial remediation (2026-07-22)
 
-**Status:** Completed (2026-07-22)
+**Status:** Completed (2026-07-22 11:04)
 
 ### Goals
 

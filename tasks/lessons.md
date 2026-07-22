@@ -9,7 +9,7 @@
 ## 2026-07-21 任务状态使用英文词汇
 
 - **Trigger:** 创建或更新任务文件与任务索引中的当前状态。
-  - **Rule:** 只使用 `Pending`、`In Progress`、`In Review`、`Completed`、`Blocked`，并附当前日期；不要翻译状态词，也不要为应用新规则而批量改写历史任务。
+  - **Rule:** 只使用 `Pending`、`In Progress`、`In Review`、`Completed`、`Blocked`，并附本地时间 `YYYY-MM-DD HH:MM`；索引与 canonical task 状态文本必须完全一致，不要翻译状态词，也不要为应用新规则而批量改写历史任务。
   - **Why:** 固定英文词汇可消除状态表达差异，并保持既有任务历史稳定。
 
 ## 2026-07-21 先确认规则与工作流设计再落盘
