@@ -39,6 +39,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	let activeCandidates: SopSummary[] = [];
 	let toolReminderShown = false;
 	let conventions = "";
+	let legacyTipsDetected = false;
 
 	const refresh = () => {
 		try {
@@ -46,6 +47,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		} catch {
 			conventions = "";
 		}
+		legacyTipsDetected = hasLegacyTips();
 		try {
 			sops = candidateModule.loadSops();
 		} catch {
@@ -70,7 +72,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		}
 		toolReminderShown = false;
 
-		const context = formatSystemContext(conventions, sops, activeCandidates);
+		const context = formatSystemContext(conventions, sops, activeCandidates, legacyTipsDetected);
 		if (!context) return undefined;
 
 		return {
@@ -111,18 +113,35 @@ export function loadConventions(dataDir = getDataDir()): string {
 	}
 }
 
+export function hasLegacyTips(dataDir = getDataDir()): boolean {
+	for (const file of [join(dataDir, "tips", "tips.json"), join(dataDir, "tips", "tips.md")]) {
+		try {
+			readFileSync(file, "utf8");
+			return true;
+		} catch {}
+	}
+	return false;
+}
+
 export function formatSystemContext(
 	conventions: string,
 	sops: SopSummary[],
 	candidates: SopSummary[],
+	legacyTipsDetected = false,
 ): string {
-	if (!conventions && sops.length === 0) return "";
+	if (!conventions && sops.length === 0 && candidates.length === 0 && !legacyTipsDetected) return "";
 
 	const sections = ["## CSL Agent Kit User Context"];
 	if (conventions) {
 		sections.push(
-			"### Confirmed user standing orders (always-on, obey across all sessions)",
+			"### Confirmed user standing orders (unless higher-priority instructions or the user's more specific current request conflict)",
 			conventions,
+		);
+	}
+	if (legacyTipsDetected) {
+		sections.push(
+			"### Legacy tips detected",
+			"Legacy tips were preserved and not promoted to always-on standing orders. Use the standing-orders skill to review and migrate them explicitly.",
 		);
 	}
 

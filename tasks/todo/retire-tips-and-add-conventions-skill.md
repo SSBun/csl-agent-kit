@@ -1,6 +1,6 @@
 # 用 conventions skill 取代 tips
 
-- Status: In Review
+- **Status:** Completed (2026-07-21)
 - Date: 2026-07-21
 
 ## Goal

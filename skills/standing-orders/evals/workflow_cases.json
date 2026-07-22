@@ -1,0 +1,11 @@
+{
+  "cases": [
+    { "name": "first-write", "requires": ["explicit confirmation", "create parent directory", "complete initial file"] },
+    { "name": "duplicate", "requires": ["detect duplicate", "do not write"] },
+    { "name": "conflict", "requires": ["show conflict", "resolve before confirmation"] },
+    { "name": "capacity", "requires": ["15 entries", "1500 characters", "reject overflow"] },
+    { "name": "modify-remove", "requires": ["exact change preview", "preserve unrelated content"] },
+    { "name": "legacy-migration", "requires": ["preserve legacy data", "no automatic promotion", "explicit per-entry confirmation", "idempotent duplicate check"] },
+    { "name": "priority-conflict", "requires": ["reject instruction hierarchy override", "do not write"] }
+  ]
+}

@@ -44,8 +44,24 @@ The skill name and the data filename are separate concerns. `conventions.md` is 
 
 ## Review
 
-Adversarial review completed (2 cycles, APPROVED). Report: [reports/adversarial-review/rename-conventions-to-standing-orders.md](../../reports/adversarial-review/rename-conventions-to-standing-orders.md).
+- Prior adversarial review completed (2 cycles, APPROVED): [report](../../reports/adversarial-review/rename-conventions-to-standing-orders.md)
 
 Key finding (R4 BLOCKER, resolved): the initial commit kept the data file as `conventions.md` while the skill was `standing-orders`, creating a naming split with a weak justification. Fixed by renaming the data file to `standing-orders.md` and updating all 8 active references.
 
 Other findings: R1 spec/data intro inconsistency (fixed), R3 unjustified 1500-char cap (justified in spec), R2 strict-trigger gap (acknowledged, by design per user decision Q6).
+## Adversarial remediation (2026-07-22)
+
+**Status:** Completed (2026-07-22)
+
+### Goals
+
+- Replace obsolete tips tests with standing-orders and updated Pi regression coverage.
+- Support first-write initialization and explicit persistent preference requests.
+- Preserve higher-priority instruction boundaries and warn about legacy tips without auto-promoting them.
+- Keep data-directory resolution and platform injection documentation consistent.
+- Complete an independent Reviewer–Editor loop and record its final report.
+
+### Result
+
+- 修复 R1–R8，独立 Reviewer 最终判定 `APPROVED`。
+- `npm run check` 通过，包括 CLI、standing-orders、task graph、Pi 与安装 dry-run。

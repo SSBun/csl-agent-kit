@@ -12,7 +12,7 @@
 
 ## Relationships
 
-- 用户始终在场的指令位于 `~/.csl-agent-kit/standing-orders.md`（纯 Markdown，按主题分组，上限 15 条 / 1500 字符，每条单行命令式）；它经 `references/agents.md` 的 `### Standing Orders` 段引用，并由 `SessionStart`/`PostCompact` hook 与 Pi `session_start`/`session_compact` 一次性全量注入。`standing-orders` skill 只负责增删改并经 CLASSIFY→DISTILL→CHECK→CONFIRM 引导，不参与运行时注入。
+- 用户始终在场的指令位于 `<data-root>/standing-orders.md`，其中 data root 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`；Claude/Cursor 在 `SessionStart`/`PostCompact` 注入，Pi 在每次 `before_agent_start` 重建 system context。旧 tips 只提示逐条确认迁移，不自动提升为 always-on 指令。
 - `csl-agent-kit install` 在没有已确认选择时默认预选 `codex-skills` 和 `codex-plugin`；交互式已确认目标保存在 `/Users/caishilin/.csl-agent-kit/install-selection.json`，下次 checklist 会以其为预选项。
 - hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；用户约定通过 `SessionStart`/`PostCompact` hook 一次性注入，不按 prompt 关键词匹配。Pi 在 `session_start` 与 `before_agent_start` 重建当前会话的约定与 SOP context。
 - 用户 standing orders 保持纯 Markdown，每条单一、可执行、跨会话有效；上限 15 条 / 1500 字符，每条 ≤ 120 字符；不做关键词匹配；个人化内容（绝对路径、本机工具）只进 `~/.csl-agent-kit/standing-orders.md`，不进可分发的 `references/agents.md`。

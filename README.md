@@ -40,7 +40,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-用户创建的 SOP 存放在 `~/.csl-agent-kit/sops/`；用户始终在场的指令以纯 Markdown 形式存放在 `~/.csl-agent-kit/standing-orders.md`，经 `references/agents.md` 引用与 `SessionStart` hook 一次性注入，不再做按上下文的关键词匹配。
+用户创建的 SOP 存放在 `<data-root>/sops/`；用户始终在场的指令以纯 Markdown 形式存放在 `<data-root>/standing-orders.md`。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Claude/Cursor 在 `SessionStart` 与 `PostCompact` 注入，Pi 在每次 agent turn 重建 system context；两者都不再按关键词匹配。
 
 ## Canonical source and duplicates
 
@@ -198,7 +198,7 @@ The Pi package manifest in `package.json` exposes:
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-reviewer`、`/brainstorming` 等 Cursor/Codex 风格别名。
-- `pi/extensions/csl-context-hooks.ts`：在 session 开始时一次性注入用户始终在场的约定与 SOP 摘要，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
+- `pi/extensions/csl-context-hooks.ts`：在每次 agent turn 前从当前数据目录重建用户 standing orders 与匹配的 SOP context，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
 Fast Mode usage:
@@ -218,7 +218,7 @@ Inside Pi:
 
 The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
 
-context hooks 从 `~/.csl-agent-kit/standing-orders.md` 和 `~/.csl-agent-kit/sops/*.md` 读取用户数据；指令在 session 开始时一次性全量注入，不再按 prompt 关键词匹配。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
+context hooks 从 `<data-root>/standing-orders.md` 和 `<data-root>/sops/*.md` 读取用户数据；Pi 在每次 agent turn 前重建 context，不再按 prompt 关键词匹配。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
 
 The CSL Agent Kit CLI also supports:
 

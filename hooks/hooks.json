@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/standing-orders.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
+            "command": "sh -c 'd=\"${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}\"; f=\"$d/standing-orders.md\"; j=\"$d/tips/tips.json\"; m=\"$d/tips/tips.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (unless higher-priority instructions or a more specific current request from the user conflict):\"; cat \"$f\"; fi; if [ -r \"$j\" ] || [ -r \"$m\" ]; then printf \"Legacy tips detected in %s. They were preserved and not promoted to always-on standing orders. Use the standing-orders skill to review and migrate them explicitly.\\n\" \"$d/tips\"; fi'",
             "timeout": 5,
             "statusMessage": "Loading CSL standing orders"
           },
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'f=\"$HOME/.csl-agent-kit/standing-orders.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (always-on, obey across all sessions):\"; cat \"$f\"; fi'",
+            "command": "sh -c 'd=\"${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}\"; f=\"$d/standing-orders.md\"; j=\"$d/tips/tips.json\"; m=\"$d/tips/tips.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (unless higher-priority instructions or a more specific current request from the user conflict):\"; cat \"$f\"; fi; if [ -r \"$j\" ] || [ -r \"$m\" ]; then printf \"Legacy tips detected in %s. They were preserved and not promoted to always-on standing orders. Use the standing-orders skill to review and migrate them explicitly.\\n\" \"$d/tips\"; fi'",
             "timeout": 5,
             "statusMessage": "Reloading CSL standing orders"
           },

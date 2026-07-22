@@ -54,4 +54,4 @@
 
 ### 6. Standing Orders
 
-Obey every entry in `~/.csl-agent-kit/standing-orders.md` across all sessions. These are user-confirmed, always-on directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, or edit an entry, use the `standing-orders` skill only when the user explicitly asks to make a directive persistent.
+Resolve the CSL Agent Kit data root from `CSL_AGENT_KIT_HOME` when set, otherwise use `~/.csl-agent-kit`. Follow every entry in `<data-root>/standing-orders.md` across all sessions unless it conflicts with higher-priority instructions or the user's more specific current request. These are user-confirmed directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, edit, or migrate an entry, use the `standing-orders` skill only when the user explicitly requests persistence.

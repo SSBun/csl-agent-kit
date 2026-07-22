@@ -133,7 +133,8 @@ test("root hook commands execute bundled scripts from plugin root variables", ()
   const pluginRoot = path.join(directory, "plugin");
   const claudePluginRoot = path.join(directory, "claude-plugin");
   const hook = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8"))
-    .hooks.SessionStart[0].hooks[0].command;
+    .hooks.SessionStart.flatMap((entry) => entry.hooks)
+    .find(({ command }) => command.includes("sop-summaries.sh")).command;
   try {
     for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
       const script = path.join(fakeRoot, "skills", "sop-manager", "scripts", "sop-summaries.sh");
