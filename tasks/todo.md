@@ -1,4 +1,5 @@
 # 任务索引
+- [Restore proactive workspace workflow guidance](todo/restore-workspace-workflow-guidance.md) — Completed (2026-07-23 11:28)
 
 - [研究 Agent 任务记录格式最佳实践](todo/research-task-record-format.md) — Completed (2026-07-22 11:51)
 - [为任务状态增加分钟级时间戳](todo/add-task-status-minute-timestamps.md) — In Progress (2026-07-22 12:52)

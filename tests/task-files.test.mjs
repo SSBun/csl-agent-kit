@@ -144,7 +144,7 @@ test("cross-linked task and report slugs fail validation", () => {
   assert.throws(() => validateTaskGraph(index, tasks, reports), /task\/report slug mismatch: task-a\.md/);
 });
 
-test("default agent instructions route workspace records to isolated workflow skills", () => {
+test("default agent instructions explain workspace records and route work to workflow skills", () => {
   const rules = readFileSync(path.join(root, "references", "agents.md"), "utf8");
   const expected = {
     "workspace-maintain-context": "tasks/context.md",
@@ -161,12 +161,13 @@ test("default agent instructions route workspace records to isolated workflow sk
     assert.ok(skill.includes(ownedPath), `${name} missing owned path`);
     assert.equal(skill.includes("TODO"), false, `${name} contains scaffold text`);
     assert.ok(rules.includes(`$${name}`), `default instructions missing route: ${name}`);
+    assert.ok(rules.includes(ownedPath), `default instructions missing mechanism path: ${ownedPath}`);
   }
 
-  assert.equal(rules.includes("tasks/context.md"), false);
-  assert.equal(rules.includes("tasks/todo.md"), false);
-  assert.equal(rules.includes("tasks/lessons.md"), false);
-  assert.match(rules, /Before non-trivial work and after a user correction, use `\$workspace-capture-lessons`/);
+  assert.match(rules, /load `\$workspace-maintain-context` and follow its `SKILL\.md` before acting/);
+  assert.match(rules, /load `\$workspace-manage-task` and follow its `SKILL\.md` before execution/);
+  assert.match(rules, /load `\$workspace-capture-lessons` and follow its `SKILL\.md` before continuing/);
+  assert.match(rules, /Do not wait for the user to request/);
 });
 
 test("workspace task contract keeps implementation and review out of acceptance", () => {

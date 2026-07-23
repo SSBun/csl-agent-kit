@@ -12,17 +12,38 @@
 
 ---
 
-### 2. Workspace Workflow
+### 2. Workspace Context
 
-Three skills keep workspace state coherent. Use them as mandatory lifecycle gates, not optional tools.
-
-- `$workspace-maintain-context`: Read `tasks/context.md` at session start, resume, or compaction. Update before ending if durable workspace facts changed.
-- `$workspace-capture-lessons`: Read relevant rules before non-trivial work. Update after a user correction reveals a reusable mistake.
-- `$workspace-manage-task`: Create or update a task record before non-trivial work that changes a deliverable. Skip for read-only answers and trivial operations.
+- Use the session-start directory as the workspace root and keep `tasks/context.md` there as a compact, current map. Save only confirmed, durable facts a later agent would otherwise need to rediscover: workspace structure, component roles and relationships, domain terms, and workspace-level decisions or conventions.
+- At session start, after resume or compaction, and before ending when durable facts changed, load `$workspace-maintain-context` and follow its `SKILL.md` before acting. Do not wait for the user to request context maintenance.
+- Read `tasks/context.md` first for orientation, then verify task-relevant details in the workspace itself; context guides exploration, but the workspace is the source of truth.
+- Add newly confirmed facts at the top of their list; update or remove superseded facts. Do not save task progress or history, lessons, speculation, secrets, or global preferences.
+- If a material fact is missing or conflicts with evidence, investigate first, then ask focused questions if unresolved. Routine context maintenance needs no task record.
 
 ---
 
-### 3. Simplicity First
+### 3. Goal-Driven Task Management
+
+- Use `tasks/todo.md` as a newest-first index and keep each canonical task record in `tasks/todo/<task-slug>.md`; multiple tasks may be active at once.
+- Before non-trivial work that changes a deliverable, load `$workspace-manage-task` and follow its `SKILL.md` before execution. Do not wait until implementation is underway or finished, and do not wait for the user to request a task record.
+- Create or update the owning task file and only its exact index entry; keep both current as scope, status, or results change. The skill defines the current task contract and lifecycle.
+- Keep each index entry limited to the task title, current status, and relative task-file link. The task file is authoritative when the index and record disagree.
+- Keep completed task files as history and avoid changing unrelated task files or index entries. Read recent tasks first and search older entries only when relevant.
+- Skip task records for read-only answers, trivial mechanical operations, and routine context or lesson maintenance.
+
+---
+
+### 4. Self-Improvement Loop
+
+- Treat `tasks/lessons.md` as a compact, current set of durable rules that prevent repeated agent mistakes, not a task diary or project knowledge base.
+- Before non-trivial work and after a user correction, load `$workspace-capture-lessons` and follow its `SKILL.md` before continuing. Do not wait for the user to request lesson review.
+- Before work, review only the lessons relevant to the current workspace and task, then apply every matching Rule and Check.
+- After a correction, inspect related lessons and use the skill's update and permission rules to add, refine, merge, replace, remove, or leave them unchanged.
+- Keep project facts in `tasks/context.md` and task history in `tasks/todo/`; put only reusable prevention rules in lessons.
+
+---
+
+### 5. Simplicity First
 **Minimum code that solves the problem. Nothing speculative.**
 - Find root causes. No temporary fixes.
 - No features beyond what was asked. No abstractions for single-use code.
@@ -36,7 +57,7 @@ Three skills keep workspace state coherent. Use them as mandatory lifecycle gate
 
 ---
 
-### 4. Surgical Changes
+### 6. Surgical Changes
 **Touch only what you must. Clean up only your own mess.**
 
 - Don't "improve" adjacent code, comments, or formatting.
@@ -48,12 +69,12 @@ Three skills keep workspace state coherent. Use them as mandatory lifecycle gate
 
 ---
 
-### 5. Verification Before Done
+### 7. Verification Before Done
 - Verify outcomes in proportion to risk with deterministic checks, tests, logs, or behavioral comparison as appropriate.
 - Use an independent review workflow only when the user requests it or an applicable task requirement makes it a completion gate.
 
 ---
 
-### 6. Standing Orders
+### 8. Standing Orders
 
 Resolve the CSL Agent Kit data root from `CSL_AGENT_KIT_HOME` when set, otherwise use `~/.csl-agent-kit`. Follow every entry in `<data-root>/standing-orders.md` across all sessions unless it conflicts with higher-priority instructions or the user's more specific current request. These are user-confirmed directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, edit, or migrate an entry, use the `standing-orders` skill only when the user explicitly requests persistence.

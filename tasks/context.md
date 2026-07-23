@@ -24,8 +24,8 @@
 
 - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
 - 新建或更新任务状态时，`tasks/todo.md` 与 canonical task 文件使用完全一致的 `Status (YYYY-MM-DD HH:MM)` 本地时间文本；不批量改写未触及的历史任务。
-- `skills/workspace-workflow/` 以三个独立 leaf skills 承载默认 Agent 的工作区记录流程：`workspace-maintain-context` 维护稳定工作区事实，`workspace-manage-task` 维护任务契约、状态与 adversarial-review 交接，`workspace-capture-lessons` 在工作前应用相关经验并在纠正后维护可复用规则；`references/agents.md` 只保留三条强制路由。Codex 与 Cursor 从 skills 根递归发现，Pi 动态递归注册别名，Claude manifest 显式列出三个 leaf 路径。
-- 可分发默认 `AGENTS.md` 只保留稳定的通用原则：非简单工作才进入 task 记录，所有结果都按风险验证，独立审查只在用户明确要求或任务约束将其设为完成门禁时使用。具体触发、循环和报告契约属于对应 skill，不写入项目 `AGENTS.md`，避免规则频繁改动破坏 prompt cache。
+- `skills/workspace-workflow/` 以三个独立 leaf skills 承载默认 Agent 的工作区记录流程：`workspace-maintain-context` 维护稳定工作区事实，`workspace-manage-task` 维护任务契约、状态与 adversarial-review 交接，`workspace-capture-lessons` 在工作前应用相关经验并在纠正后维护可复用规则；`references/agents.md` 保留三种机制的稳定触发、文件职责与跳过边界，并引导 Agent 加载对应 skill 执行实际契约。Codex 与 Cursor 从 skills 根递归发现，Pi 动态递归注册别名，Claude manifest 显式列出三个 leaf 路径。
+- 可分发默认 `AGENTS.md` 保留稳定的通用原则与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证，独立审查只在用户明确要求或任务约束将其设为完成门禁时使用。
 - `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。
 - `adversarial-review` 的 `BLOCKER` 必须同时说明被违反的要求或原则、可观察证据、不处理的实际风险与 `Required Outcome`；缺少任一项时不得作为阻塞性 Finding，应降级为 `QUESTION`、`NOTE` 或省略。`Suggested Remedy` 不能代替这四项成立条件。
 - `adversarial-review` 的 Editor 对每个 Finding 必须依次审计 `Current Adequacy`、`Minimal Resolution`、`Blast Radius` 与 `Proportionality`，再选择接受、缩小、拒绝、确认无需修改或需要用户决定。当前方案已满足 `Required Outcome` 时默认保留，除非正确性、安全、数据完整性或明确需求提供了必须变更的证据。
