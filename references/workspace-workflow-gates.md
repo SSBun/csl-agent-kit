@@ -1,19 +1,24 @@
-WORKSPACE WORKFLOW — mandatory lifecycle gates. Load and follow the matching skill SKILL.md before acting.
+WORKSPACE WORKFLOW — proactive lifecycle dispatcher.
+
+When a gate matches, load and follow the matching skill SKILL.md before the next action. Do not wait for the user to name the skill. This file selects the workflow; each skill owns its current execution contract.
+
+ORDER:
+1. Session start, resume, or compaction → $workspace-maintain-context.
+2. Before non-trivial work → $workspace-capture-lessons.
+3. Before non-trivial work changes a deliverable → $workspace-manage-task.
+4. After a user correction → $workspace-capture-lessons before continuing.
+5. Before ending → $workspace-maintain-context if durable facts changed.
 
 $workspace-maintain-context:
-  WHEN: session start, resume, compaction, before ending work.
-  READ: tasks/context.md now if it exists; verify entries before relying on them.
-  WRITE: before ending, only when durable workspace facts changed.
-  SKIP: never skip the initial read; skip the write if nothing durable changed.
+  ACTION: Read tasks/context.md and verify relevant entries against the workspace.
+  SKIP: Never skip initial orientation; skip the final write when no durable fact changed.
 
 $workspace-capture-lessons:
-  WHEN: before non-trivial work, and after a user correction.
-  READ: relevant rules from tasks/lessons.md before starting work; apply each Rule and Check.
-  WRITE: after a user correction reveals a reusable mistake; ask permission before modifying existing entries.
-  SKIP: if no reusable prevention rule applies.
+  ACTION: Read relevant rules and apply every matching Rule and Check.
+  AFTER CORRECTION: Follow the skill's update and permission rules.
+  SKIP: Leave the file unchanged when no reusable prevention rule applies.
 
 $workspace-manage-task:
-  WHEN: before non-trivial work that changes a deliverable, and while scope or status changes.
-  READ: the owning task file first if one exists.
-  WRITE: create or update tasks/todo/<slug>.md and the tasks/todo.md index.
+  ACTION: Read the owning task first; create or update its task file and exact index entry before implementation.
+  KEEP CURRENT: Update it as scope, status, or results change.
   SKIP: read-only answers, trivial mechanical operations, context/lesson maintenance.

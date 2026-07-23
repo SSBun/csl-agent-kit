@@ -1,4 +1,6 @@
 # 任务索引
+- [Optimize the workspace workflow lifecycle gates](todo/optimize-workspace-workflow-gates.md) — Completed (2026-07-23 11:40)
+
 - [Restore proactive workspace workflow guidance](todo/restore-workspace-workflow-guidance.md) — Completed (2026-07-23 11:28)
 
 - [研究 Agent 任务记录格式最佳实践](todo/research-task-record-format.md) — Completed (2026-07-22 11:51)

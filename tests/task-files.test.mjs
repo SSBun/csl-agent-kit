@@ -170,6 +170,28 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(rules, /Do not wait for the user to request/);
 });
 
+test("injected workspace workflow gates define proactive execution order", () => {
+  const gates = readFileSync(path.join(root, "references", "workspace-workflow-gates.md"), "utf8");
+  const order = [
+    "$workspace-maintain-context.",
+    "$workspace-capture-lessons.",
+    "$workspace-manage-task.",
+    "$workspace-capture-lessons before continuing.",
+    "$workspace-maintain-context if durable facts changed.",
+  ];
+
+  let previous = -1;
+  for (const step of order) {
+    const current = gates.indexOf(step, previous + 1);
+    assert.ok(current > previous, `missing or out-of-order lifecycle step: ${step}`);
+    previous = current;
+  }
+
+  assert.match(gates, /load and follow the matching skill SKILL\.md before the next action/);
+  assert.match(gates, /This file selects the workflow; each skill owns its current execution contract/);
+  assert.equal(gates.includes("ask permission before modifying existing entries"), false);
+});
+
 test("workspace task contract keeps implementation and review out of acceptance", () => {
   const skill = readFileSync(path.join(workflowDir, "workspace-manage-task", "SKILL.md"), "utf8");
 
