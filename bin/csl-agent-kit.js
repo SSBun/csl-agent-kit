@@ -7,8 +7,11 @@ const triggerify = require("../skills/triggerify/scripts/triggerify.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
-const AGENTS_INSTRUCTIONS_SOURCE = path.join(repoRoot, "references", "agents.md");
-const LEGACY_AGENTS_SUFFIX = path.join("skills", "super-agent", "references", "AGENTS.md");
+const AGENTS_INSTRUCTIONS_SOURCE = path.join(repoRoot, "super-agent", "AGENTS.md");
+const LEGACY_AGENTS_SOURCES = [
+  path.join(repoRoot, "references", "agents.md"),
+  path.join(repoRoot, "skills", "super-agent", "references", "AGENTS.md"),
+];
 const AGENTS_INSTRUCTION_TARGETS = [
   path.join(home(), ".codex", "AGENTS.md"),
   path.join(home(), ".claude", "CLAUDE.md"),
@@ -40,7 +43,7 @@ const targets = {
   },
   "super-agent": {
     title: "Default agent instructions",
-    description: "Symlink references/agents.md into each agent client's global config.",
+    description: "Symlink super-agent/AGENTS.md into each agent client's global config.",
     default: true,
     external: false,
     run: installSuperAgent,
@@ -270,7 +273,7 @@ function installPi(options) {
 
 function installSuperAgent(options) {
   return AGENTS_INSTRUCTION_TARGETS.map((target) =>
-    linkAgentInstruction(target, AGENTS_INSTRUCTIONS_SOURCE, options)
+    linkAgentInstruction(target, AGENTS_INSTRUCTIONS_SOURCE, { ...options, force: true })
   );
 }
 
@@ -288,6 +291,7 @@ function linkAgentInstruction(target, source, options) {
       const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
       const linkedReal = fs.existsSync(linkedPath) ? fs.realpathSync(linkedPath) : linkedPath;
       if (linkedReal === sourceReal) return { action: "unchanged", target, source: sourceReal, dryRun: true };
+      if (options.force) return { ...change, dryRun: true, relinked: true, forced: true };
       return { action: "skip", reason: "Existing symlink points elsewhere (use --force to override)", target, dryRun: true };
     }
     if (fs.existsSync(target)) {
@@ -304,10 +308,11 @@ function linkAgentInstruction(target, source, options) {
     const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
     const linkedReal = fs.existsSync(linkedPath) ? fs.realpathSync(linkedPath) : linkedPath;
     if (linkedReal === sourceReal) return { action: "unchanged", target, source: sourceReal };
-    if (isLegacyAgentSource(linkedPath) || isLegacyAgentSource(linkedReal)) {
+    const legacy = isLegacyAgentSource(linkedPath) || isLegacyAgentSource(linkedReal);
+    if (legacy || options.force) {
       fs.unlinkSync(target);
       fs.symlinkSync(sourceReal, target);
-      return { ...change, relinked: true };
+      return { ...change, relinked: true, ...(!legacy && options.force ? { forced: true } : {}) };
     }
     return { action: "skip", reason: "Existing symlink points elsewhere (use --force to override)", target };
   }
@@ -328,9 +333,7 @@ function linkAgentInstruction(target, source, options) {
 
 function isLegacyAgentSource(candidate) {
   if (!candidate) return false;
-  const normalized = path.normalize(candidate);
-  if (!normalized.endsWith(".md")) return false;
-  return normalized.endsWith(LEGACY_AGENTS_SUFFIX);
+  return LEGACY_AGENTS_SOURCES.includes(path.resolve(candidate));
 }
 
 function isLegacyAgentLink(target, parent) {
@@ -495,7 +498,7 @@ function summarizeChanges(changes, dryRun) {
     const relinked = changes.filter((c) => c.action === "symlink" && c.relinked).length;
     const backed = changes.filter((c) => c.action === "symlink" && c.backup).length;
     const notes = [];
-    if (relinked) notes.push(`${relinked} ${plural(relinked, "legacy link")} ${dryRun ? "" : "re"}linked`);
+    if (relinked) notes.push(`${relinked} ${plural(relinked, "link")} ${dryRun ? "would be " : ""}relinked`);
     if (backed) notes.push(`${backed} ${plural(backed, "file")} backed up`);
     parts.push(`${counts.symlink} ${plural(counts.symlink, "link")} ${dryRun ? "planned" : "updated"}${notes.length ? ` (${notes.join(", ")})` : ""}`);
   }
@@ -509,7 +512,7 @@ function summarizeChanges(changes, dryRun) {
 
 function printChangeDetails(changes, colors) {
   for (const change of changes) {
-    if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}${change.relinked ? " (relinked from legacy path)" : ""}${change.backup ? ` (backed up to ${change.backup})` : ""}`));
+    if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}${change.forced ? " (force-relinked)" : change.relinked ? " (relinked from legacy path)" : ""}${change.backup ? ` (backed up to ${change.backup})` : ""}`));
     if (change.action === "unchanged") console.log(colors.dim(`    ↳ ${change.target} (up to date)`));
     if (change.action === "command") console.log(colors.dim(`    ↳ ${change.command}${change.dryRun ? " (dry run)" : ""}`));
     if (change.action === "remove") console.log(colors.dim(`    ↳ remove ${change.target} → ${change.source}${change.dryRun ? " (dry run)" : ""}`));
@@ -543,7 +546,7 @@ function printHelp() {
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Exclude the super-agent target from default selection.\n  --force             Back up and replace existing instruction files.\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show underlying paths and commands.\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Exclude the super-agent target from default selection.\n  --force             Force instruction relinking (already default for super-agent).\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show underlying paths and commands.\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
 }
 
 function die(message) {

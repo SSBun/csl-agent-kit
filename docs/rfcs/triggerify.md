@@ -31,7 +31,7 @@ Triggerify 将宿主原生事件转换为统一事件 payload，以结构化条�
 
 ## 2. 背景与动机
 
-`AGENTS.md`、`standing-orders` 等规则文件可以提前向 Agent 提供长期指令，但最终仍依赖模型遵守。原生 Hook 可以确定性地执行脚本或注入上下文，但各宿主的事件名称、payload 和结果协议不同，用户还需要手写复杂配置。
+静态规则文件可以提前向 Agent 提供长期指令，但无法按生命周期事件执行条件化动作。原生 Hook 可以确定性地执行脚本或注入上下文，但各宿主的事件名称、payload 和结果协议不同，用户还需要手写复杂配置。
 
 Triggerify 解决以下问题：
 
@@ -45,8 +45,7 @@ Triggerify 与其他机制的职责边界：
 
 | 机制 | 职责 |
 |---|---|
-| `standing-orders` | 提前注入长期行为规则 |
-| Triggerify | 在 Agent 生命周期事件中执行自动化动作 |
+| Triggerify | 注入跨会话持久指令，或在 Agent 生命周期事件中执行自动化动作 |
 | Git hooks / CI | 提供仓库级最终约束 |
 | 宿主权限和 sandbox | 决定工具或命令是否获准执行 |
 
@@ -226,6 +225,7 @@ Triggerify 不建立独立的隐式 trust 数据库。适配器无法复用或�
 | `schema` | 是 | 固定为 `triggerify/v1` |
 | `event` | 是 | 十个标准事件之一 |
 | `action` | 是 | `inject-prompt` 或 `run-script` |
+| `description` | 否 | 单行、非空、最多 160 字符；用于 `list` 和 `show` 展示 |
 | `enabled` | 否 | 缺省为 `true`；管理器创建时必须显式写出 |
 | `when` | 否 | 缺失表示无条件匹配 |
 | `script` | 条件必需 | `run-script` 必须提供 |
@@ -241,10 +241,11 @@ Triggerify 不建立独立的隐式 trust 数据库。适配器无法复用或�
 schema: triggerify/v1
 event: session-start
 action: inject-prompt
+description: 在会话开始时注入持久指令。
 enabled: true
 ---
 
-开始工作前，读取当前任务记录和 standing orders。
+始终先说明问题根因，除非用户明确要求直接修复。
 ```
 
 ### 9.3 脚本动作
@@ -756,7 +757,7 @@ action: inject-prompt
 enabled: true
 ---
 
-开始工作前，读取当前任务记录和 standing orders。
+始终先说明问题根因，除非用户明确要求直接修复。
 ```
 
 ## 23. 实施阶段

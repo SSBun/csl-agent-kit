@@ -1,0 +1,24 @@
+{
+  "checked_on": "2026-07-23",
+  "supported_hosts": {
+    "claude-code": {
+      "source": "https://code.claude.com/docs/en/hooks",
+      "native_event": "SessionStart",
+      "triggerify_event": "session-start",
+      "capability": { "inject": true, "script": true, "block": false }
+    },
+    "pi": {
+      "source": "https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md",
+      "native_event": "before_agent_start",
+      "triggerify_event": "session-start",
+      "capability": { "inject": true, "script": false, "block": false }
+    }
+  },
+  "unsupported_hosts": {
+    "cursor": {
+      "source": "https://forum.cursor.com/t/cursor-app-hooks-bugs-of-additional-context/163990",
+      "native_event": "sessionStart",
+      "reason": "Cursor 3.7 still drops additional_context before it reaches the model."
+    }
+  }
+}

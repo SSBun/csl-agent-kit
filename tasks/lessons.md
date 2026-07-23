@@ -1,5 +1,16 @@
 # Lessons
 
+## 2026-07-23 Workflow skill 完整性优先于 Yao token 预算
+
+- **Trigger:**
+  - 创建、优化或审计负责复杂任务指导的 workflow skill。
+- **Rule:**
+  - workflow skill 的准确性和完整性优先于 Yao 的 1000-token 初始加载预算。
+  - 不得为了通过该预算而删除、压缩失真或拆散执行所必需的核心契约。
+- **Check:**
+  - 核心判断、步骤、状态迁移、异常处理和完成条件可从主 `SKILL.md` 完整获得。
+  - Yao 超限只作为已知审计结果记录，不作为 workflow skill 的完成阻塞项。
+
 ## 2026-07-23 先建任务记录再动手做非平凡改动
 
 - **Trigger:** 用户测试 triggerify skill 时要求加一个 hook，我直接实现了 hook 却没按 AGENTS.md 的 workspace workflow 先创建任务记录。
@@ -19,11 +30,17 @@
   - **Why:** A distributed skill must remain usable without repository-only documents, and design history must not override implemented behavior.
 
 
-## 2026-07-21 用户约定应始终在场，不要用按需注入承载
+## 2026-07-23 持久指令使用无条件生命周期触发
 
-- **Trigger:** 设计或维护跨会话持续有效的用户偏好/约定机制。
-- **Rule:** 跨会话约定放入始终在场的载体（`~/.csl-agent-kit/standing-orders.md`）并经 `AGENTS.md` 引用 + `SessionStart` hook 一次性注入；不要用关键词按 prompt 匹配注入。按需注入只适用于“特定上下文才触发”的内容，用它承载“应始终在场”的内容会因关键词未命中而失效。
-- **Why:** tips 失效的根因是机制与目的错配：5 条真实约定全都是“应始终在场”，但机制要求 prompt 命中关键词才注入，结果关键词没命中就不生效。机制越复杂（关键词、容量限制、多重脚本）越易失效。
+- **Trigger:**
+  - 设计或维护跨会话持续有效的用户指令。
+- **Rule:**
+  - 每条指令保存为全局 Triggerify `session-start` / `inject-prompt` 规则。
+  - 不得按用户 prompt 关键词匹配持久指令。
+  - 规则正文必须保留高优先级指令和当前请求优先的边界。
+- **Check:**
+  - `triggerify show` 显示规则有效。
+  - Codex、Claude Code、Pi 的会话入口均能注入内容；Cursor 保持 unsupported/inactive，直到宿主能把注入内容传给模型。
 
 ## 2026-07-21 任务状态使用英文词汇
 

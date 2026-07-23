@@ -6,19 +6,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'd=\"${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}\"; f=\"$d/standing-orders.md\"; j=\"$d/tips/tips.json\"; m=\"$d/tips/tips.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (unless higher-priority instructions or a more specific current request from the user conflict):\"; cat \"$f\"; fi; if [ -r \"$j\" ] || [ -r \"$m\" ]; then printf \"Legacy tips detected in %s. They were preserved and not promoted to always-on standing orders. Use the standing-orders skill to review and migrate them explicitly.\\n\" \"$d/tips\"; fi'",
-            "timeout": 5,
-            "statusMessage": "Loading CSL standing orders"
-          },
-          {
-            "type": "command",
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Loading CSL SOP routing"
           },
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/references/workspace-workflow-gates.md\" ]; then cat \"$root/references/workspace-workflow-gates.md\"; fi'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/super-agent/workspace-workflow-gates.md\" ]; then cat \"$root/super-agent/workspace-workflow-gates.md\"; fi'",
             "timeout": 5,
             "statusMessage": "Loading workspace workflow gates"
           },
@@ -37,19 +31,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'd=\"${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}\"; f=\"$d/standing-orders.md\"; j=\"$d/tips/tips.json\"; m=\"$d/tips/tips.md\"; if [ -r \"$f\" ]; then printf \"%s\\n\" \"User standing orders (unless higher-priority instructions or a more specific current request from the user conflict):\"; cat \"$f\"; fi; if [ -r \"$j\" ] || [ -r \"$m\" ]; then printf \"Legacy tips detected in %s. They were preserved and not promoted to always-on standing orders. Use the standing-orders skill to review and migrate them explicitly.\\n\" \"$d/tips\"; fi'",
-            "timeout": 5,
-            "statusMessage": "Reloading CSL standing orders"
-          },
-          {
-            "type": "command",
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Reloading CSL SOP routing"
           },
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/references/workspace-workflow-gates.md\" ]; then cat \"$root/references/workspace-workflow-gates.md\"; fi'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/super-agent/workspace-workflow-gates.md\" ]; then cat \"$root/super-agent/workspace-workflow-gates.md\"; fi'",
             "timeout": 5,
             "statusMessage": "Reloading workspace workflow gates"
           },

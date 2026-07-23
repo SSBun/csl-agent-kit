@@ -1,4 +1,15 @@
 # 任务索引
+
+- [Optimize workspace context for durable decision value](todo/optimize-workspace-maintain-context.md) — Completed (2026-07-23 20:38)
+
+- [Gate adversarial review by task risk and verification](todo/optimize-adversarial-review-gate.md) — Completed (2026-07-23 19:42)
+
+- [Add descriptions to Triggerify rules](todo/add-triggerify-description.md) — Completed (2026-07-23 16:45)
+
+- [Retire the standing-orders skill in favor of Triggerify](todo/retire-standing-orders-skill.md) — Completed (2026-07-23 16:01)
+
+- [Move agent rules into the super-agent directory](todo/move-agent-rules-to-super-agent.md) — Completed (2026-07-23 14:36)
+
 - [Optimize the workspace workflow lifecycle gates](todo/optimize-workspace-workflow-gates.md) — Completed (2026-07-23 11:40)
 
 - [Restore proactive workspace workflow guidance](todo/restore-workspace-workflow-guidance.md) — Completed (2026-07-23 11:28)

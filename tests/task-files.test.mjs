@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -145,7 +145,7 @@ test("cross-linked task and report slugs fail validation", () => {
 });
 
 test("default agent instructions explain workspace records and route work to workflow skills", () => {
-  const rules = readFileSync(path.join(root, "references", "agents.md"), "utf8");
+  const rules = readFileSync(path.join(root, "super-agent", "AGENTS.md"), "utf8");
   const expected = {
     "workspace-maintain-context": "tasks/context.md",
     "workspace-manage-task": "tasks/todo.md",
@@ -154,8 +154,9 @@ test("default agent instructions explain workspace records and route work to wor
 
   for (const [name, ownedPath] of Object.entries(expected)) {
     const skillDir = path.join(workflowDir, name);
-    assert.deepEqual(readdirSync(skillDir).sort(), ["SKILL.md", "agents"]);
-    assert.deepEqual(readdirSync(path.join(skillDir, "agents")), ["openai.yaml"]);
+    const evaluatedSkill = ["workspace-maintain-context", "workspace-manage-task"].includes(name);
+    assert.deepEqual(readdirSync(skillDir).sort(), evaluatedSkill ? ["SKILL.md", "agents", "evals"] : ["SKILL.md", "agents"]);
+    assert.deepEqual(readdirSync(path.join(skillDir, "agents")).sort(), evaluatedSkill ? ["interface.yaml", "openai.yaml"] : ["openai.yaml"]);
     const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
     assert.match(skill, new RegExp(`^name: ${name}$`, "m"));
     assert.ok(skill.includes(ownedPath), `${name} missing owned path`);
@@ -171,7 +172,7 @@ test("default agent instructions explain workspace records and route work to wor
 });
 
 test("injected workspace workflow gates define proactive execution order", () => {
-  const gates = readFileSync(path.join(root, "references", "workspace-workflow-gates.md"), "utf8");
+  const gates = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
   const order = [
     "$workspace-maintain-context.",
     "$workspace-capture-lessons.",
@@ -192,26 +193,142 @@ test("injected workspace workflow gates define proactive execution order", () =>
   assert.equal(gates.includes("ask permission before modifying existing entries"), false);
 });
 
-test("workspace task contract keeps implementation and review out of acceptance", () => {
-  const skill = readFileSync(path.join(workflowDir, "workspace-manage-task", "SKILL.md"), "utf8");
+test("workspace context contract keeps only durable decision value", () => {
+  const skill = readFileSync(path.join(workflowDir, "workspace-maintain-context", "SKILL.md"), "utf8");
 
-  for (const section of ["Scope", "Target", "Plan", "Checklist"]) {
+  for (const section of ["Purpose", "Workflow", "Admission Gate", "Store", "Route Elsewhere", "Entry Contract", "Mutable Information", "Temporary Unrouted Facts", "Maintenance", "Maintainer Validation"]) {
+    assert.ok(skill.includes(`## ${section}`), `missing context section: ${section}`);
+  }
+
+  assert.match(skill, /Confirmed.*Project-specific.*Stable boundary.*Decision-changing.*Summary-efficient.*Correctly routed.*Verifiable/s);
+  assert.match(skill, /Treat discoverability only as a cost signal/);
+  assert.match(skill, /Fact — decision effect — authoritative source \/ concrete review trigger/);
+  assert.match(skill, /Verification and observability boundaries/);
+  assert.match(skill, /sourced non-goals, and negative knowledge/);
+  assert.match(skill, /Never cache a mutable current value/);
+  assert.match(skill, /A stable lookup does not qualify by itself/);
+  assert.match(skill, /Exclude an obvious version or configuration pointer/);
+  assert.match(skill, /the current task ends/);
+  assert.match(skill, /the related module next changes materially/);
+  assert.match(skill, /evidence, source, assumption, or authority becomes invalid/);
+  assert.match(skill, /At that event, choose exactly one outcome:[\s\S]*promote it to a normal context entry[\s\S]*move the required rationale, procedure, rule, or contract to its authoritative carrier[\s\S]*delete it when it is false, unverifiable, redundant, or no longer decision-changing/);
+  assert.match(skill, /Before ending, update, migrate, or remove affected entries in the same work/);
+  assert.match(skill, /Update or delete an entry in the same work that changes its conclusion/);
+  assert.match(skill, /The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget`/);
+  assert.equal(skill.includes("Workspace-level decisions and conventions"), false);
+});
+
+test("workspace context value cases enforce admission and temporary exits", () => {
+  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-maintain-context", "evals", "context_value_cases.json"), "utf8"));
+  const requiredExits = new Set(["task-end", "next-module-change", "evidence-invalid"]);
+  const outcomes = new Set();
+
+  for (const item of fixture.cases) {
+    const durable = item.stable || item.mutable_current_value
+      && item.stable_decision_boundary
+      && item.high_consequence
+      && item.review_trigger
+      && !item.stores_live_value;
+    const verified = item.authoritative_source || item.temporary && item.temporary_evidence;
+    const temporaryLifecycle = !item.temporary || item.responsible_role_or_module
+      && [...requiredExits].every((event) => item.exit_events.includes(event));
+    const store = item.confirmed
+      && item.project_specific
+      && durable
+      && item.decision_changing
+      && item.summary_efficient
+      && item.correctly_routed
+      && verified
+      && temporaryLifecycle;
+    const actual = store ? "Store" : "Exclude";
+    assert.equal(actual, item.expected, item.id);
+    outcomes.add(actual);
+  }
+
+  assert.deepEqual([...outcomes].sort(), ["Exclude", "Store"]);
+  const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+  assert.equal(byId["live-feature-flag"].expected, "Exclude");
+  assert.equal(byId["mutable-environment-boundary"].expected, "Store");
+  assert.equal(byId["normal-without-authoritative-source"].expected, "Exclude");
+  assert.equal(byId["temporary-without-exit"].expected, "Exclude");
+  assert.equal(byId["temporary-with-event-exits"].authoritative_source, false);
+  assert.equal(byId["temporary-with-event-exits"].temporary_evidence, true);
+  assert.equal(byId["temporary-with-event-exits"].responsible_role_or_module, true);
+  assert.equal(byId["temporary-with-event-exits"].expected, "Store");
+});
+
+test("workspace task contract keeps implementation and review out of acceptance", () => {
+  const skillDir = path.join(workflowDir, "workspace-manage-task");
+  const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
+
+  for (const section of ["Scope", "Target", "Plan", "Result"]) {
     assert.ok(skill.includes(`### ${section}`), `missing task section: ${section}`);
   }
+  for (const section of ["Activation Boundary", "Record Ownership", "Task Contract", "Subtasks", "Review Gate", "Lifecycle", "Adoption", "Maintainer Validation"]) {
+    assert.ok(skill.includes(`## ${section}`), `missing inline workflow section: ${section}`);
+  }
+  assert.equal(existsSync(path.join(skillDir, "references")), false, "task contract must remain inline");
+  assert.equal(skill.includes("### Checklist"), false);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
-  assert.match(skill, /Do not include review status/);
-  assert.match(skill, /Invoke `\$adversarial-review`/);
+  assert.match(skill, /Do not include implementation steps, commands, shared workflow gates, or review status/);
+  assert.match(skill, /Required = Explicit OR Critical OR \(Complex AND Verification Gap\)/);
+  assert.match(skill, /Review gate: Required/);
+  assert.match(skill, /Review gate: Skipped/);
+  assert.match(skill, /For `Required`.*invoke `\$adversarial-review`/);
+  assert.match(skill, /For `Skipped`, do not enter `In Review`/);
+  assert.match(skill, /Re-evaluate whenever scope, risk, or verification evidence changes/);
+  assert.match(skill, /Multiple items within one category still count as one category/);
+  assert.match(skill, /Never require review outside the formula/);
+  assert.equal(/Escalate if/.test(skill), false);
+
+  assert.match(skill, /Skip task records for read-only answers and simple operations with direct deterministic verification/);
+  assert.match(skill, /Modify only the owning task file and its exact index entry/);
+  assert.match(skill, /Check a Target only when its current evidence is recorded under the same ID in `Result`/);
+  assert.match(skill, /Add `Block` only while the task status is `Blocked`/);
+  assert.match(skill, /Remove the section when work resumes/);
+  assert.match(skill, /Create a separate canonical task only for work with an independent deliverable, blocking condition, or review boundary/);
+  assert.match(skill, /treat the canonical task as authoritative and repair the index/);
+  assert.match(skill, /Apply this contract to new tasks and reopened scope/);
+  assert.match(skill, /Do not retrofit untouched completed history/);
+  assert.match(skill, /only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget` against its 1000-token initial-load budget/);
+  assert.match(skill, /Syntax\/frontmatter, lint, governance, every other resource-boundary check, applicable routing evaluation, OpenAI validation, and tests remain blocking/);
+  assert.match(skill, /Never delete, distort, or split core operational guidance merely to satisfy the initial-load budget/);
 
   for (const status of ["Pending", "In Progress", "In Review", "Completed", "Blocked"]) {
     assert.ok(skill.includes(`\`${status}\``), `missing task status: ${status}`);
   }
   assert.match(skill, /Status \(YYYY-MM-DD HH:MM\)/);
   assert.match(skill, /current local date and 24-hour time/);
-  assert.match(skill, /complete status text, including the minute-level timestamp, identical/);
-  assert.match(skill, /do not bulk-rewrite untouched historical entries/);
   for (const status of ["待执行", "进行中", "待审查", "已完成", "阻塞"]) {
     assert.equal(skill.includes(`\`${status}\``), false, `translated task status remains: ${status}`);
   }
+});
+
+test("workspace review-gate cases follow the binary formula", () => {
+  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-manage-task", "evals", "review_gate_cases.json"), "utf8"));
+  const outcomes = new Set();
+  const expectedCategories = new Set(["integration-surface", "state-change", "competing-constraints", "non-local-effects", "correctness-ambiguity"]);
+
+  for (const item of fixture.cases) {
+    assert.equal(new Set(item.complexity_categories).size, item.complexity_categories.length, `${item.id}: duplicate category`);
+    assert.ok(item.complexity_categories.every((category) => expectedCategories.has(category)), `${item.id}: unknown category`);
+    const complex = new Set(item.complexity_categories).size >= 2;
+    const required = item.explicit || item.critical || complex && item.verification_gap;
+    const actual = required ? "Required" : "Skipped";
+    assert.equal(actual, item.expected, item.id);
+    outcomes.add(actual);
+  }
+
+  assert.deepEqual([...outcomes].sort(), ["Required", "Skipped"]);
+  const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+  assert.equal(byId["gap-only"].expected, "Skipped");
+  assert.equal(byId["one-category-gap"].expected, "Skipped");
+  assert.equal(byId["multi-category-gap"].complexity_categories.length, 2);
+  assert.equal(byId["multi-category-gap"].verification_gap, true);
+  assert.equal(byId["multi-category-gap"].expected, "Required");
+  assert.ok(byId["multi-category-no-gap"].complexity_categories.length >= 2);
+  assert.equal(byId["multi-category-no-gap"].verification_gap, false);
+  assert.equal(byId["multi-category-no-gap"].expected, "Skipped");
 });
 
 test("workspace lesson contract keeps one confirmed current rule set", () => {

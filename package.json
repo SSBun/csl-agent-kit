@@ -25,7 +25,7 @@
     "pi/",
     "scripts/install.sh",
     "skills/",
-    "references/",
+    "super-agent/",
     ".agents/plugins/",
     ".claude-plugin/",
     ".codex-plugin/",
@@ -38,10 +38,9 @@
     "csl-agent-kit": "bin/csl-agent-kit.js"
   },
   "scripts": {
-    "test": "npm run test:cli && npm run test:standing-orders && npm run test:triggerify && npm run test:tasks",
+    "test": "npm run test:cli && npm run test:triggerify && npm run test:tasks",
     "test:all": "npm test && npm run test:pi",
     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
-    "test:standing-orders": "node --test tests/standing-orders.test.mjs",
     "test:triggerify": "node --test tests/triggerify.test.js",
     "test:tasks": "node --test tests/task-files.test.mjs",
     "test:pi": "node tests/run-pi-tests.js",

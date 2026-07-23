@@ -1,6 +1,6 @@
 ---
 name: workspace-manage-task
-description: Manage `tasks/todo.md` and canonical `tasks/todo/*.md` records for non-trivial work that changes a deliverable. Use before implementation, while scope or status changes, when recording evidence, and when handing the completed artifact to adversarial review. Do not use for read-only answers, trivial mechanical operations, routine context maintenance, or correction lessons.
+description: Manage workspace task records for non-trivial deliverable changes, including scope, evidence, status, and gated adversarial review. Excludes read-only answers, trivial mechanical work, context maintenance, and correction lessons.
 ---
 
 # Manage Workspace Tasks
@@ -55,7 +55,8 @@ description: Manage `tasks/todo.md` and canonical `tasks/todo/*.md` records for 
 - Map every Target ID to current evidence that states the checked object, method, and observed result.
 - A shared check may support multiple Targets, but name each covered ID explicitly.
 - Record the delivered artifact and only material scope, approach, or verification deviations.
-- After review, append the actual decision and report link; never prewrite approval.
+- Before completion, record `Review gate: Required — <evidence>` or `Review gate: Skipped — <evidence>`.
+- After an actual review, append the decision and report link; never prewrite approval.
 
 ### Block
 
@@ -69,19 +70,40 @@ description: Manage `tasks/todo.md` and canonical `tasks/todo/*.md` records for 
 - Link the subtask from the parent Plan without copying its Target, Plan, status, or Result.
 - A completed subtask does not prove the parent Target; verify the parent independently.
 
+## Review Gate
+
+Use task meaning and evidence, never size or scores:
+
+`Required = Explicit OR Critical OR (Complex AND Verification Gap)`
+
+- `Explicit`: the user or an applicable workflow requires independent review.
+- `Critical`: security, permissions, privacy, secrets, data loss, irreversible or production effects, publish/deploy, breaking compatibility, high stakes, or global Agent safety/lifecycle risk.
+- `Complex`: at least two distinct categories apply: integration surface (multiple components, hosts, or protocols); state/change (state, concurrency, migration, or rollback); competing constraints; non-local effects; correctness ambiguity. Multiple items within one category still count as one category.
+- `Verification Gap`: a core outcome lacks deterministic checks, an available environment, regression/rollback coverage, or a direct pass/fail criterion, or relies mainly on judgment.
+
+Set `Required` exactly when the formula is true; otherwise set `Skipped`. Re-evaluate whenever scope, risk, or verification evidence changes. A self-check finding may change `Critical`, a complexity category, or `Verification Gap`; then re-evaluate the same formula. Never require review outside the formula.
+
+Keep `evals/review_gate_cases.json` aligned with this gate.
+
 ## Lifecycle
 
 - Use `Pending`, `In Progress`, `In Review`, `Completed`, or `Blocked`, followed by the current local date and 24-hour time in `YYYY-MM-DD HH:MM` format.
 - Before `In Progress`, require at least one valid Target.
-- Before `In Review`, require every Target to be checked and mapped to current Result evidence.
-- Invoke `$adversarial-review` on the final artifact and available diff.
+- Before completion, require every Target to be checked and mapped to current Result evidence, proportionate verification to pass, and the Review gate to be recorded.
+- For `Required`, set `In Review`, invoke `$adversarial-review`, and complete only after recorded `APPROVED`.
+- For `Skipped`, do not enter `In Review`; set `Completed` after the shared completion requirements pass.
 - If review changes the artifact, return to `In Progress`, uncheck affected Targets, replace invalid evidence, and review again.
-- After `APPROVED`, append the decision and report link to Result, then set `Completed`.
 - Keep the complete status text identical in the canonical task and index, updating both in the same change.
 - When they disagree, treat the canonical task as authoritative and repair the index before considering the transition complete.
 
 ## Adoption
 
-- Apply this contract to the next new task and later tasks.
-- Do not retrofit the current task or untouched completed history.
-- Apply the current contract when a completed task is reopened for changed scope.
+- Apply this contract to new tasks and reopened scope.
+- Do not retrofit untouched completed history.
+
+## Maintainer Validation
+
+- Run focused contract tests, routing evaluation when the description changes, OpenAI validation, and Yao audit after edits.
+- The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget` against its 1000-token initial-load budget.
+- Syntax/frontmatter, lint, governance, every other resource-boundary check, applicable routing evaluation, OpenAI validation, and tests remain blocking.
+- Never delete, distort, or split core operational guidance merely to satisfy the initial-load budget.

@@ -6,12 +6,12 @@
 
 ## Components
 
-- `skills/triggerify/` 是 Triggerify V1 的共享管理与运行核心；`csl-agent-kit triggerify` 提供 create/list/show/update/enable/disable/delete 恢复控制面，`hooks/hooks.json` 将 Codex 十个生命周期事件映射到同一 dispatcher。Codex hook payload 不提供 workspace trust verdict，因此运行时只加载 global rules，项目 `list` 保持 metadata-only；Claude Code 与 Pi runtime capability 在独立 fixture 验证前保持 unsupported。
+- `skills/triggerify/` 是 Triggerify V1 的共享管理与运行核心；规则可选 `description` 为单行、非空、无控制字符且最多 160 字符，qualified ID 仍由文件名决定，`list`/`show` 负责展示。`csl-agent-kit triggerify` 提供 create/list/show/update/enable/disable/delete 恢复控制面，`hooks/hooks.json` 将 Codex/Claude 生命周期事件映射到同一 dispatcher，Pi extension 在每次 `before_agent_start` 加载全局 `session-start` Prompt 规则。Codex hook payload 不提供 workspace trust verdict，因此运行时只加载 global rules，项目 `list` 保持 metadata-only；Claude Code 和 Pi 目前只验证了 `session-start` Prompt 注入，Cursor V1 因宿主仍丢弃 `additional_context` 而保持 unsupported。
 
 - `skills/adversarial-deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；Agent 默认先内部批量处理全部相关主题与当前可见议题，只把会实质改变结果且无法内部解决的用户专属选择合并后询问用户。它不设轮次上限，并用稳定资源清单交接双方生成的文件与外部资源；普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。
 - `.agents/skills/integrate-third-skills/` 是受版本控制且仅在本仓库发现的第三方技能整合流程；它以 `metadata.internal: true` 排除 `npx skills` 的普通安装清单，并通过 npm `files` 白名单排除发布包；它也不进入全局 Codex symlink 或 Pi 命令分发。附带脚本仍以共享 `skills/` 为第三方源码根目录。
 - `skills/sop-manager/sops/code-style.md` 是跨语言的内置代码风格 SOP；它按语言读取 `skills/sop-manager/references/code-style/` 中的规则参考，Swift 参考为 `swift-style.md`，并已合并后删除用户级 `~/.csl-agent-kit/sops/swift-code-style.md`。
-- `references/agents.md` 是可分发的默认 agent 规则（语言协议 + 工程原则 + workspace 路由）；`csl-agent-kit install` 默认把它软链接到 `~/.codex/AGENTS.md`、`~/.claude/CLAUDE.md`、`~/.pi/agent/AGENTS.md`、`~/.agents/AGENTS.md`。旧的 `skills/super-agent` skill 已退役，指向 `skills/super-agent/references/AGENTS.md` 的遗留软链会被 install 自动重指到 `references/agents.md`。
+- `super-agent/AGENTS.md` 是可分发的默认 agent 规则（语言协议 + 工程原则 + workspace 路由）；`csl-agent-kit install` 默认将它软链接到 `~/.codex/AGENTS.md`、`~/.claude/CLAUDE.md`、`~/.pi/agent/AGENTS.md`、`~/.agents/AGENTS.md`，并将 super-agent 目标视为 authoritative：现有软链接默认重置，普通文件先备份再替换，dry-run 不写入。
 - `~/.agents/skills` 是 Codex 官方的 USER 级技能发现目录，也可作为多个 agent 共用的技能安装目录；按用户要求当前为空，`~/.agents/.skill-lock.json` 的技能映射也为空。未来从 `mattpocock/skills` 选择的技能应整合到 CSL Agent Kit，而非重新安装到该全局目录。
 - `skills/mattpocock/` 是选定 `mattpocock/skills` 的专用来源目录，包含 13 项用户指定技能及上游 MIT 许可证；每个叶子技能都有 `.repository.json`，记录上游 URL、原始路径、ref、导入 commit、许可证和上游状态；`skills/grill-me` 的旧顶层版本已由此目录中的同名上游版本替代。
 - `~/Desktop/test/skills` 是 `mattpocock/skills` 的本地参考仓库；技能按 `engineering`、`productivity`、`misc`、`personal`、`in-progress`、`deprecated` 分桶。
@@ -19,10 +19,10 @@
 ## Relationships
 
 - Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Triggerify `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。当前全局规则 `global:open-todo-in-typora` 只解析真实 `apply_patch` 目标，并仅用 Typora 打开规范化后仍位于 workspace `tasks/todo/` 内的现有 Markdown 文件。
-- 用户始终在场的指令位于 `<data-root>/standing-orders.md`，其中 data root 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`；Claude/Cursor 在 `SessionStart`/`PostCompact` 注入，Pi 在每次 `before_agent_start` 重建 system context。旧 tips 只提示逐条确认迁移，不自动提升为 always-on 指令。
+- 用户跨会话持久指令以单条全局 Triggerify `session-start` / `inject-prompt` 规则存放在 `<data-root>/triggerify/hooks/`；Codex 与 Claude Code 通过 `SessionStart` dispatcher 注入，Pi 在每次 `before_agent_start` 重新加载。规则不按用户 prompt 关键词匹配。
 - `csl-agent-kit install` 在没有已确认选择时默认预选 `codex-skills` 和 `codex-plugin`；交互式已确认目标保存在 `/Users/caishilin/.csl-agent-kit/install-selection.json`，下次 checklist 会以其为预选项。
-- hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；用户约定通过 `SessionStart`/`PostCompact` hook 一次性注入，不按 prompt 关键词匹配。Pi 在 `session_start` 与 `before_agent_start` 重建当前会话的约定与 SOP context。
-- 用户 standing orders 保持纯 Markdown，每条单一、可执行、跨会话有效；上限 15 条 / 1500 字符，每条 ≤ 120 字符；不做关键词匹配；个人化内容（绝对路径、本机工具）只进 `~/.csl-agent-kit/standing-orders.md`，不进可分发的 `references/agents.md`。
+- hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；持久指令通过 Triggerify `SessionStart` 规则注入。Pi 在 `before_agent_start` 重建 Triggerify session prompts 与 SOP context。
+- 持久指令只在用户明确要求跨会话保存时创建，每条使用独立的 `global:directive-<subject>` 规则并保留高优先级指令和当前请求优先的边界；个人化内容不进入可分发的 `super-agent/AGENTS.md`。
 - `bin/csl-agent-kit.js` 与 `pi/extensions/csl-skill-commands.ts` 会递归发现共享 `skills/` 下的叶子 `SKILL.md`，因此 `skills/mattpocock/<skill>/` 会以原始技能名暴露给全局 Codex symlink 安装与 Pi slash alias；项目本地 `.agents/skills/integrate-third-skills/` 不在此枚举中。安装器不提供 repo-local `.agents/skills` 链接目标。
 - 第三方技能元数据固定为 `.repository.json`，字段为 `repository`、`sourcePath`、`ref`、`commit`、`license` 和 `upstreamStatus`；它描述可复现的上游基线，不应在更新时绕过本地差异比较。
 - `third-party-skills.js status` 对每个来源/ref 在临时目录检出一次上游，并以 `git diff --quiet <导入commit> <当前commit> -- <sourcePath>` 区分“上游变化”和“技能未变”；`diff` 默认显示统计，`--patch` 才显示完整补丁，且排除本地 `.repository.json` 管理文件。
@@ -31,8 +31,8 @@
 
 - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
 - 新建或更新任务状态时，`tasks/todo.md` 与 canonical task 文件使用完全一致的 `Status (YYYY-MM-DD HH:MM)` 本地时间文本；不批量改写未触及的历史任务。
-- `skills/workspace-workflow/` 以三个独立 leaf skills 承载默认 Agent 的工作区记录流程：`workspace-maintain-context` 维护稳定工作区事实，`workspace-manage-task` 维护任务契约、状态与 adversarial-review 交接，`workspace-capture-lessons` 在工作前应用相关经验并在纠正后维护可复用规则；`references/agents.md` 保留三种机制的稳定触发、文件职责与跳过边界，`references/workspace-workflow-gates.md` 作为 SessionStart/PostCompact 注入的精简调度器固定五步执行顺序，三个 skills 拥有易变执行契约。Codex 与 Cursor 从 skills 根递归发现，Pi 动态递归注册别名，Claude manifest 显式列出三个 leaf 路径。
-- 可分发默认 `AGENTS.md` 保留稳定的通用原则与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证，独立审查只在用户明确要求或任务约束将其设为完成门禁时使用。
+- `skills/workspace-workflow/` 以三个独立 leaf skills 承载默认 Agent 的工作区记录流程：`workspace-maintain-context` 只保留已确认、项目特有、会改变未来判断且可复核的事实，并要求易变边界有权威入口、复核触发，临时事实有事件型退出；`workspace-manage-task` 维护任务契约、状态与 adversarial-review 交接，`workspace-capture-lessons` 在工作前应用相关经验并在纠正后维护可复用规则。`super-agent/AGENTS.md` 保留稳定触发、文件职责与跳过边界，`super-agent/workspace-workflow-gates.md` 固定 SessionStart/PostCompact 的五步调度顺序，三个 skills 拥有易变执行契约。Workflow skill 的核心操作契约完整保留在主 `SKILL.md`，准确性和完整性优先于 Yao 的 1000-token 初始加载预算。Codex 与 Cursor 从 skills 根递归发现，Pi 动态递归注册别名，Claude manifest 显式列出三个 leaf 路径。
+- 可分发默认 `AGENTS.md` 保留稳定的通用原则与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证；独立审查门禁固定为 `Explicit OR Critical OR (Complex AND Verification Gap)`，否则记录 `Skipped` 并在常规验证通过后直接完成。
 - `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。
 - `adversarial-review` 的 `BLOCKER` 必须同时说明被违反的要求或原则、可观察证据、不处理的实际风险与 `Required Outcome`；缺少任一项时不得作为阻塞性 Finding，应降级为 `QUESTION`、`NOTE` 或省略。`Suggested Remedy` 不能代替这四项成立条件。
 - `adversarial-review` 的 Editor 对每个 Finding 必须依次审计 `Current Adequacy`、`Minimal Resolution`、`Blast Radius` 与 `Proportionality`，再选择接受、缩小、拒绝、确认无需修改或需要用户决定。当前方案已满足 `Required Outcome` 时默认保留，除非正确性、安全、数据完整性或明确需求提供了必须变更的证据。
@@ -47,5 +47,5 @@
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
 - `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
 - 默认 agent 规则不规定 plan mode 或 subagent 策略；agent 可以按任务需要自行使用这些能力。d
-- `references/` 现纳入 npm 发布白名单，包含默认 `agents.md`；`super-agent` skill 目录已删除，不再随包发布。
-- README 当前列出 33 个可分发技能；第三方源码导入不等同于安装到 `~/.agents/skills`，除非用户明确要求执行安装器。`integrate-third-skills` 是本仓库本地流程，不计入这个数量。
+- `super-agent/` 纳入 npm 发布白名单，包含默认 `AGENTS.md` 与 workspace lifecycle dispatcher；它是运行时规则资产目录，不是 skill。
+- README 当前列出 31 个可分发技能；第三方源码导入不等同于安装到 `~/.agents/skills`，除非用户明确要求执行安装器。`integrate-third-skills` 是本仓库本地流程，不计入这个数量。

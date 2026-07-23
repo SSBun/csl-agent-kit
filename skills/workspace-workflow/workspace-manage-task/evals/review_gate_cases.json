@@ -1,0 +1,85 @@
+{
+  "cases": [
+    {
+      "id": "simple-deterministic",
+      "task": "Rename one verified local file.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": [],
+      "verification_gap": false,
+      "expected": "Skipped"
+    },
+    {
+      "id": "multi-category-gap",
+      "task": "Migrate persistent directives across three hosts when one host cannot be tested.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": ["integration-surface", "state-change"],
+      "verification_gap": true,
+      "expected": "Required"
+    },
+    {
+      "id": "one-category-verified",
+      "task": "Add an optional backward-compatible schema field with complete regression coverage.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": ["state-change"],
+      "verification_gap": false,
+      "expected": "Skipped"
+    },
+    {
+      "id": "critical",
+      "task": "Change production authentication and permission behavior.",
+      "explicit": false,
+      "critical": true,
+      "complexity_categories": [],
+      "verification_gap": false,
+      "expected": "Required"
+    },
+    {
+      "id": "explicit",
+      "task": "Review a local deterministic change because the user explicitly requested independent review.",
+      "explicit": true,
+      "critical": false,
+      "complexity_categories": [],
+      "verification_gap": false,
+      "expected": "Required"
+    },
+    {
+      "id": "one-category-no-gap",
+      "task": "Update two host adapters with complete deterministic protocol fixtures.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": ["integration-surface"],
+      "verification_gap": false,
+      "expected": "Skipped"
+    },
+    {
+      "id": "gap-only",
+      "task": "Change one local formatter when its runtime environment is unavailable.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": [],
+      "verification_gap": true,
+      "expected": "Skipped"
+    },
+    {
+      "id": "one-category-gap",
+      "task": "Update multiple hosts and protocols when one fixture is unavailable.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": ["integration-surface"],
+      "verification_gap": true,
+      "expected": "Skipped"
+    },
+    {
+      "id": "multi-category-no-gap",
+      "task": "Migrate a schema across two adapters with complete deterministic regression and rollback checks.",
+      "explicit": false,
+      "critical": false,
+      "complexity_categories": ["integration-surface", "state-change"],
+      "verification_gap": false,
+      "expected": "Skipped"
+    }
+  ]
+}

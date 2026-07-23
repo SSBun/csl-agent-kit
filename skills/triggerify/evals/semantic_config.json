@@ -1,0 +1,56 @@
+{
+  "fallback_positive_concepts": [
+    "trigger_rule",
+    "persistent_directive"
+  ],
+  "positive_concepts": {
+    "trigger_rule": {
+      "weight": 0.6,
+      "phrases": [
+        "triggerify",
+        "trigger",
+        "project:",
+        "event hook",
+        "session-start",
+        "before-tool",
+        "after-tool",
+        "changed files",
+        "生命周期",
+        "触发器"
+      ]
+    },
+    "persistent_directive": {
+      "weight": 0.6,
+      "phrases": [
+        "future session",
+        "every session",
+        "cross-session",
+        "make this permanent",
+        "from now on",
+        "以后每次会话",
+        "跨会话",
+        "始终遵守"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "one_time_or_native": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "native git",
+        "run once",
+        "explain the event loop",
+        "this task only",
+        "只运行一次"
+      ]
+    },
+    "bare_preference": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "i prefer"
+      ]
+    }
+  }
+}

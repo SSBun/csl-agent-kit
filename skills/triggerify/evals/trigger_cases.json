@@ -1,15 +1,18 @@
 {
+  "recommended_threshold": 0.45,
   "should_trigger": [
     "Create a trigger that formats changed Swift files.",
     "List all Triggerify hooks and show which ones are active.",
     "Disable project:check-before-commit.",
     "删除这个 trigger，但保留它引用的脚本。",
-    "在 session-start 时注入这段 prompt。"
+    "在 session-start 时注入这段 prompt。",
+    "Make this directive apply in every future session.",
+    "以后每次会话都遵守：修复问题前先说明根因。"
   ],
   "should_not_trigger": [
     "Add a native Git pre-commit hook.",
     "Run SwiftLint once on this repository.",
     "Explain the event loop in Node.js.",
-    "Save this preference as a standing order."
+    "I prefer concise answers."
   ]
 }

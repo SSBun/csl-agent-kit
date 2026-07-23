@@ -21,7 +21,7 @@ const EVENTS = new Set([
   "stop",
 ]);
 const ACTIONS = new Set(["inject-prompt", "run-script"]);
-const FIELDS = new Set(["schema", "event", "action", "enabled", "when", "script", "timeout"]);
+const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout"]);
 const NATIVE_EVENTS = {
   SessionStart: "session-start",
   UserPromptSubmit: "prompt-submit",
@@ -46,8 +46,18 @@ const CODEX_CAPABILITIES = {
   "subagent-stop": { inject: false, script: true, block: true },
   stop: { inject: false, script: true, block: true },
 };
+const HOST_CAPABILITIES = {
+  codex: CODEX_CAPABILITIES,
+  "claude-code": {
+    "session-start": { inject: true, script: true, block: false },
+  },
+  pi: {
+    "session-start": { inject: true, script: false, block: false },
+  },
+};
 const DEFAULT_TIMEOUT = 10;
 const MAX_TIMEOUT = 60;
+const MAX_DESCRIPTION = 160;
 const MAX_OUTPUT = 64 * 1024;
 const MAX_CONDITION_DEPTH = 32;
 const MAX_CONDITION_NODES = 256;
@@ -136,6 +146,14 @@ function validateRule(rule, body, scope, file) {
   if (rule.schema !== "triggerify/v1") errors.push(issue("schema-unsupported", `${file}: schema must be triggerify/v1`));
   if (!EVENTS.has(rule.event)) errors.push(issue("event-invalid", `${file}: unsupported event '${rule.event}'`));
   if (!ACTIONS.has(rule.action)) errors.push(issue("action-invalid", `${file}: unsupported action '${rule.action}'`));
+  if (rule.description !== undefined) {
+    if (typeof rule.description !== "string") errors.push(issue("description-type", `${file}: description must be a string`));
+    else if (!rule.description || rule.description !== rule.description.trim() || /[\p{Cc}\p{Zl}\p{Zp}]/u.test(rule.description)) {
+      errors.push(issue("description-format", `${file}: description must be one trimmed, non-empty line without control characters`));
+    } else if (rule.description.length > MAX_DESCRIPTION) {
+      errors.push(issue("description-length", `${file}: description exceeds ${MAX_DESCRIPTION} characters`));
+    }
+  }
   if (rule.enabled !== undefined && typeof rule.enabled !== "boolean") {
     errors.push(issue("enabled-type", `${file}: enabled must be a boolean`));
   }
@@ -416,7 +434,7 @@ function inspectScript(entry, rule, workspace) {
 
 function status(entry, host = "codex") {
   const rule = entry.rule;
-  const capability = host === "codex" && rule ? CODEX_CAPABILITIES[rule.event] : null;
+  const capability = rule ? HOST_CAPABILITIES[host]?.[rule.event] : null;
   const supported = capability && (rule.action === "inject-prompt" ? capability.inject : capability.script);
   const trust = entry.scope === "global" ? "not-applicable" : "unavailable";
   const validation = entry.valid === null ? "unavailable" : entry.valid ? "valid" : "invalid";
@@ -428,6 +446,7 @@ function status(entry, host = "codex") {
   if (support === "unsupported") reasons.push("capability-unsupported");
   return {
     id: entry.id,
+    description: rule?.description ?? null,
     scope: entry.scope,
     lifecycle: entry.local ? "local" : "shared",
     event: rule?.event ?? null,
@@ -446,7 +465,7 @@ function status(entry, host = "codex") {
 function serialize(rule) {
   const body = rule.body || "";
   const frontmatter = {};
-  for (const field of ["schema", "event", "action", "enabled", "script", "timeout", "when"]) {
+  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "when"]) {
     if (rule[field] !== undefined) frontmatter[field] = rule[field];
   }
   const suffix = body ? `\n${body.replace(/^\n+/, "")}` : "";
@@ -488,7 +507,7 @@ function ensureLocalIgnore(workspace) {
 
 function parseOptions(args) {
   const options = { positional: [] };
-  const boolean = new Set(["json", "shared", "clear-when", "clear-timeout", "clear-script", "help"]);
+  const boolean = new Set(["json", "shared", "clear-description", "clear-when", "clear-timeout", "clear-script", "help"]);
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     if (!argument.startsWith("--")) {
@@ -532,7 +551,10 @@ function listCommand(options, io) {
   const items = scopes.flatMap((name) => discover(name, workspace, name === "global")).map((entry) => status(entry, options.host || "codex"));
   if (options.json) io.log(JSON.stringify(items, null, 2));
   else if (items.length === 0) io.log("No triggers configured.");
-  else items.forEach((item) => io.log(`${item.id}\t${item.configured}\t${item.validation}\t${item.trust}\t${item.support}\t${item.effective}\t${item.event || "-"}\t${item.action || "-"}`));
+  else {
+    io.log("ID\tDESCRIPTION\tCONFIGURED\tVALIDATION\tTRUST\tSUPPORT\tEFFECTIVE\tEVENT\tACTION");
+    items.forEach((item) => io.log(`${item.id}\t${item.description || "-"}\t${item.configured}\t${item.validation}\t${item.trust}\t${item.support}\t${item.effective}\t${item.event || "-"}\t${item.action || "-"}`));
+  }
   return 0;
 }
 
@@ -581,10 +603,11 @@ function updateCommand(options, io) {
   }
   if (!entry.valid) throw new Error(entry.errors.map((error) => error.message).join("; "));
   const rule = { ...entry.rule };
-  for (const field of ["event", "action", "script"]) if (options[field] !== undefined) rule[field] = options[field];
+  for (const field of ["event", "action", "description", "script"]) if (options[field] !== undefined) rule[field] = options[field];
   if (options.timeout !== undefined) rule.timeout = Number(options.timeout);
   if (options["when-json"] !== undefined) rule.when = JSON.parse(options["when-json"]);
   if (options.body !== undefined || options["body-file"] !== undefined) rule.body = readBody(options);
+  if (options["clear-description"]) delete rule.description;
   if (options["clear-when"]) delete rule.when;
   if (options["clear-timeout"]) delete rule.timeout;
   if (options["clear-script"]) delete rule.script;
@@ -662,6 +685,7 @@ function buildRule(options) {
     enabled: true,
     body: readBody(options),
   };
+  if (options.description !== undefined) rule.description = options.description;
   if (options.script !== undefined) rule.script = options.script;
   if (options.timeout !== undefined) rule.timeout = Number(options.timeout);
   if (options["when-json"] !== undefined) rule.when = JSON.parse(options["when-json"]);
@@ -677,6 +701,7 @@ function readBody(options) {
 function formatStatus(item) {
   return [
     `ID: ${item.id}`,
+    `Description: ${item.description || "-"}`,
     `Configured: ${item.configured}`,
     `Validation: ${item.validation}`,
     `Trust: ${item.trust}`,
@@ -687,7 +712,7 @@ function formatStatus(item) {
 }
 
 function printTriggerifyHelp(io) {
-  io.log(`Usage:\n  csl-agent-kit triggerify list [--scope all|global|project] [--json]\n  csl-agent-kit triggerify show <qualified-id> [--json]\n  csl-agent-kit triggerify create <name> --event <event> --action <action> [options]\n  csl-agent-kit triggerify update <qualified-id> [options]\n  csl-agent-kit triggerify update <qualified-id> --from <file>\n  csl-agent-kit triggerify enable|disable|delete <qualified-id>\n\nCommon options:\n  --workspace <path>  Project workspace (default: cwd)\n  --host <name>       Capability view (default: codex)\n  --scope <scope>     all, global, or project\n  --shared            Create a shared project rule\n  --body <text>       Prompt body\n  --body-file <path>  Read prompt body from a file\n  --script <path>     Script relative to the scope scripts root\n  --timeout <seconds> Script timeout, 1-${MAX_TIMEOUT}\n  --when-json <json>  V1 condition AST as JSON\n  --from <file>       Replace an invalid rule with a validated definition\n`);
+  io.log(`Usage:\n  csl-agent-kit triggerify list [--scope all|global|project] [--json]\n  csl-agent-kit triggerify show <qualified-id> [--json]\n  csl-agent-kit triggerify create <name> --event <event> --action <action> [options]\n  csl-agent-kit triggerify update <qualified-id> [options]\n  csl-agent-kit triggerify update <qualified-id> --from <file>\n  csl-agent-kit triggerify enable|disable|delete <qualified-id>\n\nCommon options:\n  --workspace <path>    Project workspace (default: cwd)\n  --host <name>         Capability view (default: codex)\n  --scope <scope>       all, global, or project\n  --shared              Create a shared project rule\n  --description <text> One-line description, up to ${MAX_DESCRIPTION} characters\n  --clear-description  Remove an existing description during update\n  --body <text>         Prompt body\n  --body-file <path>    Read prompt body from a file\n  --script <path>       Script relative to the scope scripts root\n  --timeout <seconds>   Script timeout, 1-${MAX_TIMEOUT}\n  --when-json <json>    V1 condition AST as JSON\n  --from <file>         Replace an invalid rule with a validated definition\n`);
   return 0;
 }
 
@@ -731,7 +756,7 @@ function toolCategory(name) {
 
 function runEvent(payload, options = {}) {
   const host = options.host || payload.host.name;
-  const capability = host === "codex" ? CODEX_CAPABILITIES[payload.event] : null;
+  const capability = HOST_CAPABILITIES[host]?.[payload.event];
   if (!capability) return { prompts: [], diagnostics: ["capability-unsupported"], blocked: false };
   const workspace = options.workspace || payload.workspace.root;
   const prompts = [];
@@ -931,6 +956,7 @@ if (require.main === module) {
 
 module.exports = {
   CODEX_CAPABILITIES,
+  HOST_CAPABILITIES,
   dispatch,
   evaluateCondition,
   globRegex,

@@ -128,18 +128,22 @@ test("Claude plugin exports every project-owned leaf skill", () => {
   assert.deepEqual([...manifest.skills].sort(), expected);
 });
 
-test("root hook commands execute bundled scripts from plugin root variables", () => {
+test("root hook commands execute bundled resources from plugin root variables", () => {
   const directory = mkdtempSync(path.join(tmpdir(), "csl-hook-root-"));
   const pluginRoot = path.join(directory, "plugin");
   const claudePluginRoot = path.join(directory, "claude-plugin");
-  const hook = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8"))
-    .hooks.SessionStart.flatMap((entry) => entry.hooks)
-    .find(({ command }) => command.includes("sop-summaries.sh")).command;
+  const hooks = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8"))
+    .hooks.SessionStart.flatMap((entry) => entry.hooks);
+  const hook = hooks.find(({ command }) => command.includes("sop-summaries.sh")).command;
+  const gatesHook = hooks.find(({ command }) => command.includes("workspace-workflow-gates.md")).command;
   try {
     for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
       const script = path.join(fakeRoot, "skills", "sop-manager", "scripts", "sop-summaries.sh");
+      const gates = path.join(fakeRoot, "super-agent", "workspace-workflow-gates.md");
       mkdirSync(path.dirname(script), { recursive: true });
+      mkdirSync(path.dirname(gates), { recursive: true });
       writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' '${output}'\n`);
+      writeFileSync(gates, `${output}-gates\n`);
       chmodSync(script, 0o755);
     }
 
@@ -149,6 +153,12 @@ test("root hook commands execute bundled scripts from plugin root variables", ()
     });
     assert.equal(pluginResult.status, 0, pluginResult.stderr);
     assert.equal(pluginResult.stdout.trim(), "plugin-root");
+    const pluginGates = spawnSync("/bin/sh", ["-c", gatesHook], {
+      encoding: "utf8",
+      env: { ...process.env, HOME: path.join(directory, "home"), PLUGIN_ROOT: pluginRoot, CLAUDE_PLUGIN_ROOT: claudePluginRoot },
+    });
+    assert.equal(pluginGates.status, 0, pluginGates.stderr);
+    assert.equal(pluginGates.stdout.trim(), "plugin-root-gates");
 
     const claudeResult = spawnSync("/bin/sh", ["-c", hook], {
       encoding: "utf8",
@@ -156,6 +166,12 @@ test("root hook commands execute bundled scripts from plugin root variables", ()
     });
     assert.equal(claudeResult.status, 0, claudeResult.stderr);
     assert.equal(claudeResult.stdout.trim(), "claude-plugin-root");
+    const claudeGates = spawnSync("/bin/sh", ["-c", gatesHook], {
+      encoding: "utf8",
+      env: { ...process.env, HOME: path.join(directory, "home"), PLUGIN_ROOT: "", CLAUDE_PLUGIN_ROOT: claudePluginRoot },
+    });
+    assert.equal(claudeGates.status, 0, claudeGates.stderr);
+    assert.equal(claudeGates.stdout.trim(), "claude-plugin-root-gates");
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -477,20 +493,22 @@ test("explicit target installs do not overwrite the saved interactive selection"
   }
 });
 
-test("super-agent links, preserves existing files, relinks legacy paths, and honors --force", () => {
+test("super-agent always relinks instructions, backs up files, and keeps dry-run non-mutating", () => {
   const directory = mkdtempSync(path.join(tmpdir(), "csl-super-agent-"));
   const home = path.join(directory, "home");
-  const source = path.join(root, "references", "agents.md");
+  const source = path.join(root, "super-agent", "AGENTS.md");
   const codex = path.join(home, ".codex", "AGENTS.md");
   const claude = path.join(home, ".claude", "CLAUDE.md");
   const pi = path.join(home, ".pi", "agent", "AGENTS.md");
   const agents = path.join(home, ".agents", "AGENTS.md");
-  const legacyTarget = path.join(directory, "skills", "super-agent", "references", "AGENTS.md");
+  const currentLegacyTarget = path.join(root, "references", "agents.md");
+  const legacyTarget = path.join(root, "skills", "super-agent", "references", "AGENTS.md");
+  const externalTarget = path.join(directory, "other", "references", "agents.md");
   mkdirSync(path.dirname(codex), { recursive: true });
   mkdirSync(path.dirname(claude), { recursive: true });
-  mkdirSync(path.dirname(legacyTarget), { recursive: true });
-  writeFileSync(legacyTarget, "legacy");
-  symlinkSync(legacyTarget, codex);
+  mkdirSync(path.dirname(pi), { recursive: true });
+  symlinkSync(currentLegacyTarget, codex);
+  symlinkSync(legacyTarget, pi);
 
   try {
     const first = run(["install", "--target", "super-agent", "--json"], { HOME: home });
@@ -508,23 +526,39 @@ test("super-agent links, preserves existing files, relinks legacy paths, and hon
     assert.equal(lstatSync(claude).isSymbolicLink(), true);
 
     assert.equal(byTarget[pi].action, "symlink");
+    assert.equal(byTarget[pi].relinked, true);
 
     assert.equal(byTarget[agents].action, "symlink");
 
     rmSync(claude);
     writeFileSync(claude, "overwrite me");
-    const withoutForce = run(["install", "--target", "super-agent", "--json"], { HOME: home });
-    const claudeResult = JSON.parse(withoutForce.stdout).results[0].changes.find((change) => change.target === claude);
-    assert.equal(claudeResult.action, "skip");
-    assert.match(claudeResult.reason, /use --force/i);
+    rmSync(agents);
+    mkdirSync(path.dirname(externalTarget), { recursive: true });
+    writeFileSync(externalTarget, "external");
+    symlinkSync(externalTarget, agents);
+    const dryRun = run(["install", "--target", "super-agent", "--dry-run", "--json"], { HOME: home });
+    const dryRunChanges = JSON.parse(dryRun.stdout).results[0].changes;
+    const dryRunClaude = dryRunChanges.find((change) => change.target === claude);
+    const dryRunAgent = dryRunChanges.find((change) => change.target === agents);
+    assert.equal(dryRunClaude.action, "symlink");
+    assert.match(dryRunClaude.backup, /\.backup-<ts>$/);
+    assert.equal(dryRunAgent.action, "symlink");
+    assert.equal(dryRunAgent.forced, true);
+    assert.equal(dryRunAgent.dryRun, true);
     assert.equal(readFileSync(claude, "utf8"), "overwrite me");
+    assert.equal(readlinkSync(agents), externalTarget);
 
-    const withForce = run(["install", "--target", "super-agent", "--force", "--json"], { HOME: home });
-    const forced = JSON.parse(withForce.stdout).results[0].changes.find((change) => change.target === claude);
+    const defaultInstall = run(["install", "--target", "super-agent", "--json"], { HOME: home });
+    const defaultChanges = JSON.parse(defaultInstall.stdout).results[0].changes;
+    const forced = defaultChanges.find((change) => change.target === claude);
+    const forcedAgent = defaultChanges.find((change) => change.target === agents);
     assert.equal(forced.action, "symlink");
     assert.match(forced.backup, /\.backup-/);
     assert.equal(lstatSync(claude).isSymbolicLink(), true);
     assert.equal(readFileSync(forced.backup, "utf8"), "overwrite me");
+    assert.equal(forcedAgent.action, "symlink");
+    assert.equal(forcedAgent.forced, true);
+    assert.equal(readlinkSync(agents), source);
 
     const idempotent = run(["install", "--target", "super-agent", "--json"], { HOME: home });
     const codexAgain = JSON.parse(idempotent.stdout).results[0].changes.find((change) => change.target === codex);

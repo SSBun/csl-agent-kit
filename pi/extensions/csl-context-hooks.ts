@@ -1,7 +1,5 @@
-import { homedir } from "node:os";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -19,12 +17,25 @@ interface SopCandidateModule {
 	loadSops(): SopSummary[];
 }
 
+interface TriggerPrompt {
+	id: string;
+	content: string;
+}
+
+interface TriggerifyModule {
+	normalizePayload(native: object, host: string, event: string, workspace: string): object;
+	runEvent(payload: object, options: { host: string; workspace: string }): { prompts: TriggerPrompt[] };
+}
+
 const require = createRequire(import.meta.url);
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(baseDir, "..", "..");
 const candidateModule = require(
 	join(packageRoot, "skills", "sop-manager", "scripts", "sop-candidates.js"),
 ) as SopCandidateModule;
+const triggerify = require(
+	join(packageRoot, "skills", "triggerify", "scripts", "triggerify.js"),
+) as TriggerifyModule;
 
 const MUTATING_TOOLS = new Set(["bash", "edit", "write", "apply_patch"]);
 const DESIGN_FETCH_TOOL = /mcp__.*figma.*(get_design_context|get_metadata|get_screenshot|get_figjam|get_variable_defs|get_libraries|search_design_system)|mcp__mastergo_magic_mcp.*(getDesignSections|getDsl|getD2c|getMeta|getDesignTexts|getDesignSvgs|extractSvg)/i;
@@ -38,16 +49,8 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	let sops: SopSummary[] = [];
 	let activeCandidates: SopSummary[] = [];
 	let toolReminderShown = false;
-	let conventions = "";
-	let legacyTipsDetected = false;
 
 	const refresh = () => {
-		try {
-			conventions = loadConventions();
-		} catch {
-			conventions = "";
-		}
-		legacyTipsDetected = hasLegacyTips();
 		try {
 			sops = candidateModule.loadSops();
 		} catch {
@@ -72,7 +75,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		}
 		toolReminderShown = false;
 
-		const context = formatSystemContext(conventions, sops, activeCandidates, legacyTipsDetected);
+		const context = formatSystemContext(loadTriggerifyPrompts(), sops, activeCandidates);
 		if (!context) return undefined;
 
 		return {
@@ -105,43 +108,32 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	});
 }
 
-export function loadConventions(dataDir = getDataDir()): string {
+export function loadTriggerifyPrompts(workspace = process.cwd()): TriggerPrompt[] {
 	try {
-		return readFileSync(join(dataDir, "standing-orders.md"), "utf8").trim();
+		const payload = triggerify.normalizePayload(
+			{ hook_event_name: "session_start", cwd: workspace },
+			"pi",
+			"session-start",
+			workspace,
+		);
+		return triggerify.runEvent(payload, { host: "pi", workspace }).prompts;
 	} catch {
-		return "";
+		return [];
 	}
-}
-
-export function hasLegacyTips(dataDir = getDataDir()): boolean {
-	for (const file of [join(dataDir, "tips", "tips.json"), join(dataDir, "tips", "tips.md")]) {
-		try {
-			readFileSync(file, "utf8");
-			return true;
-		} catch {}
-	}
-	return false;
 }
 
 export function formatSystemContext(
-	conventions: string,
+	triggerPrompts: TriggerPrompt[],
 	sops: SopSummary[],
 	candidates: SopSummary[],
-	legacyTipsDetected = false,
 ): string {
-	if (!conventions && sops.length === 0 && candidates.length === 0 && !legacyTipsDetected) return "";
+	if (triggerPrompts.length === 0 && sops.length === 0 && candidates.length === 0) return "";
 
 	const sections = ["## CSL Agent Kit User Context"];
-	if (conventions) {
+	if (triggerPrompts.length > 0) {
 		sections.push(
-			"### Confirmed user standing orders (unless higher-priority instructions or the user's more specific current request conflict)",
-			conventions,
-		);
-	}
-	if (legacyTipsDetected) {
-		sections.push(
-			"### Legacy tips detected",
-			"Legacy tips were preserved and not promoted to always-on standing orders. Use the standing-orders skill to review and migrate them explicitly.",
+			"### Triggerify session prompts",
+			...triggerPrompts.map((prompt) => `[Triggerify ${prompt.id}]\n${prompt.content}`),
 		);
 	}
 
@@ -173,8 +165,4 @@ export function isDesignFetchTool(toolName: string): boolean {
 function formatSopLine(sop: SopSummary): string {
 	const globs = sop.globs?.length ? ` [globs: ${sop.globs.join(", ")}]` : "";
 	return `- ${sop.name}: ${sop.when_to_use || "Missing when_to_use frontmatter."}${globs} (${sop.source}: ${sop.file})`;
-}
-
-function getDataDir(): string {
-	return process.env.CSL_AGENT_KIT_HOME || join(homedir(), ".csl-agent-kit");
 }

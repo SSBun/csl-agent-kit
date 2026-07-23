@@ -1,4 +1,4 @@
 interface:
   display_name: "Triggerify"
-  short_description: "管理事件驱动的 Prompt 与脚本触发器"
-  default_prompt: "使用 Triggerify 创建、检查、更新、启用、禁用或删除事件触发器。"
+  short_description: "管理跨会话持久指令及事件驱动的 Prompt 与脚本触发规则"
+  default_prompt: "Use $triggerify to manage a persistent directive or an event-driven prompt or script rule."

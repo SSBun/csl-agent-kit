@@ -33,15 +33,14 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | workspace-manage-task | `/csl:workspace-manage-task` | `/workspace-manage-task` | Manage scoped task contracts, lifecycle, and review handoff. |
 | workspace-capture-lessons | `/csl:workspace-capture-lessons` | `/workspace-capture-lessons` | Apply relevant lessons and capture reusable corrections. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
-| standing-orders | `/csl:standing-orders` | `/standing-orders` | Manage always-on user directives stored in `~/.csl-agent-kit/standing-orders.md`. |
-| triggerify | `/csl:triggerify` | `/triggerify` | 管理按生命周期事件注入 Prompt 或执行脚本的 trigger。 |
+| triggerify | `/csl:triggerify` | `/triggerify` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 trigger。 |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | same-page | `/csl:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-用户创建的 SOP 存放在 `<data-root>/sops/`；用户始终在场的指令以纯 Markdown 形式存放在 `<data-root>/standing-orders.md`。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Claude/Cursor 在 `SessionStart` 与 `PostCompact` 注入，Pi 在每次 agent turn 重建 system context；两者都不再按关键词匹配。
+用户创建的 SOP 存放在 `<data-root>/sops/`；跨会话持久指令保存为 `<data-root>/triggerify/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
 
 ## Canonical source and duplicates
 
@@ -108,12 +107,13 @@ Non-interactive examples:
 ```bash
 csl-agent-kit install --yes
 csl-agent-kit install --target cursor,codex-plugin
+csl-agent-kit install --target super-agent
 csl-agent-kit install --all --dry-run
 csl-agent-kit install --all --verbose
 csl-agent-kit install --all --json
 ```
 
-The default output is a concise, colored integration summary. Add `--verbose` (`-v`) to show every symlink path and external command. Use `--no-color` or `NO_COLOR=1` to disable colors; `--color` explicitly enables them. JSON output always stays color-free. The legacy `./scripts/install.sh` entry is a thin wrapper around this npm CLI.
+The default output is a concise, colored integration summary. Add `--verbose` (`-v`) to show every symlink path and external command. Use `--no-color` or `NO_COLOR=1` to disable colors; `--color` explicitly enables them. JSON output always stays color-free. `super-agent` 默认重置现有 Agent instruction symlink；普通文件会先备份再替换，无需额外传入 `--force`。 The legacy `./scripts/install.sh` entry is a thin wrapper around this npm CLI and forwards the same options.
 
 ### npx skills (Cursor, Codex, and other agents)
 
@@ -199,7 +199,7 @@ The Pi package manifest in `package.json` exposes:
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-reviewer`、`/brainstorming` 等 Cursor/Codex 风格别名。
-- `pi/extensions/csl-context-hooks.ts`：在每次 agent turn 前从当前数据目录重建用户 standing orders 与匹配的 SOP context，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
+- `pi/extensions/csl-context-hooks.ts`：在每次 agent turn 前加载 Triggerify `session-start` Prompt 规则与匹配的 SOP context，在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 
 Fast Mode usage:
@@ -219,7 +219,7 @@ Inside Pi:
 
 The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
 
-context hooks 从 `<data-root>/standing-orders.md` 和 `<data-root>/sops/*.md` 读取用户数据；Pi 在每次 agent turn 前重建 context，不再按 prompt 关键词匹配。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
+context hooks 从 `<data-root>/triggerify/hooks/*.md` 和 `<data-root>/sops/*.md` 读取用户数据；Pi 在每次 agent turn 前重建 context。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
 
 The CSL Agent Kit CLI also supports:
 
@@ -244,7 +244,7 @@ csl-agent-kit install --target codex-plugin
 
 `csl-agent-kit@csl-agent-market` 是 Codex 的唯一默认安装目标；repository-root plugin 同时包含共享 `skills/` 与 `hooks/hooks.json`，不再创建 `~/.agents/skills` 链接。安装成功后，安装器会删除仍指向本包 `skills/` 树的旧 CSL symlink（包括已经失效的旧 skill 链接），但保留普通文件、目录与外部 symlink。dry-run 只报告这些迁移，不修改文件。
 
-`integrate-third-skills` 仅位于本仓库的 `.agents/skills/`，不会进入 Codex plugin。`UserPromptSubmit` hook 只注入 SOP candidates；用户约定通过 `SessionStart` hook 与 `references/agents.md` 引用始终在场，不参与按 prompt 匹配。hook scripts 从安装后的 plugin root 解析。重新运行安装器仍会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
+`integrate-third-skills` 仅位于本仓库的 `.agents/skills/`，不会进入 Codex plugin。`UserPromptSubmit` hook 只注入 SOP candidates；跨会话指令通过全局 Triggerify `session-start` 规则注入，不参与按 prompt 匹配。hook scripts 从安装后的 plugin root 解析。重新运行安装器仍会清理旧的 `csl@CSL` 与 `csl@csl` 注册。
 
 ### All platforms
 

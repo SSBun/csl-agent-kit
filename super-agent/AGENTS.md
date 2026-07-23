@@ -72,9 +72,3 @@
 ### 7. Verification Before Done
 - Verify outcomes in proportion to risk with deterministic checks, tests, logs, or behavioral comparison as appropriate.
 - Use an independent review workflow only when the user requests it or an applicable task requirement makes it a completion gate.
-
----
-
-### 8. Standing Orders
-
-Resolve the CSL Agent Kit data root from `CSL_AGENT_KIT_HOME` when set, otherwise use `~/.csl-agent-kit`. Follow every entry in `<data-root>/standing-orders.md` across all sessions unless it conflicts with higher-priority instructions or the user's more specific current request. These are user-confirmed directives, not optional suggestions. If the file is missing or unreadable, skip silently. To add, remove, edit, or migrate an entry, use the `standing-orders` skill only when the user explicitly requests persistence.

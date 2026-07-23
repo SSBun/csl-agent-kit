@@ -7,13 +7,13 @@ import test from "node:test";
 import cslContextHooks, {
   formatSystemContext,
   isDesignFetchTool,
-  loadConventions,
+  loadTriggerifyPrompts,
 } from "../pi/extensions/csl-context-hooks.ts";
 
 function createFixture() {
   const root = mkdtempSync(join(tmpdir(), "csl-pi-context-"));
   mkdirSync(join(root, "sops"), { recursive: true });
-  writeFileSync(join(root, "standing-orders.md"), "# Standing Orders\n\n## Output\n\n- Prefer concise reports.\n");
+  writeSessionPrompt(root, "directive-output", "Prefer concise reports.");
   writeFileSync(join(root, "sops", "deploy-production.md"), `---
 name: deploy-production
 description: Deploy the frobnicator production service.
@@ -25,25 +25,34 @@ when_to_use: Use when deploying frobnicator production services.
   return root;
 }
 
+function writeSessionPrompt(root, name, body) {
+  const hooks = join(root, "triggerify", "hooks");
+  mkdirSync(hooks, { recursive: true });
+  writeFileSync(join(hooks, `${name}.md`), `---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\nenabled: true\n---\n${body}\n`);
+}
+
 function fakePi() {
   const handlers = new Map();
   return { handlers, api: { on: (name, handler) => handlers.set(name, handler) } };
 }
 
-test("loads standing orders and formats their priority boundary", () => {
+test("loads Triggerify session prompts into Pi context", () => {
   const root = createFixture();
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = root;
   try {
-    const conventions = loadConventions(root);
-    assert.match(conventions, /Prefer concise reports/);
-    const context = formatSystemContext(conventions, [], []);
-    assert.match(context, /higher-priority instructions or the user's more specific current request/);
+    const prompts = loadTriggerifyPrompts(root);
+    const context = formatSystemContext(prompts, [], []);
+    assert.match(context, /Triggerify global:directive-output/);
     assert.match(context, /Prefer concise reports/);
   } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
     rmSync(root, { recursive: true, force: true });
   }
 });
 
-test("rebuilds Pi context from CSL_AGENT_KIT_HOME before every agent turn", async () => {
+test("rebuilds Pi Triggerify context before every agent turn", async () => {
   const root = createFixture();
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
@@ -59,35 +68,10 @@ test("rebuilds Pi context from CSL_AGENT_KIT_HOME before every agent turn", asyn
     assert.match(first.systemPrompt, /Prefer concise reports/);
     assert.match(first.systemPrompt, /deploy-production/);
 
-    writeFileSync(join(root, "standing-orders.md"), "# Standing Orders\n\n## Paths\n\n- Show absolute paths.\n");
+    writeSessionPrompt(root, "directive-output", "Show absolute paths.");
     const second = await handlers.get("before_agent_start")({ prompt: "show a path", systemPrompt: "base prompt" }, {});
     assert.match(second.systemPrompt, /Show absolute paths/);
     assert.doesNotMatch(second.systemPrompt, /Prefer concise reports/);
-  } finally {
-    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
-    else process.env.CSL_AGENT_KIT_HOME = previous;
-    rmSync(root, { recursive: true, force: true });
-  }
-});
-
-test("Pi reports preserved legacy tips without treating them as standing orders", async () => {
-  const root = mkdtempSync(join(tmpdir(), "csl-pi-legacy-"));
-  const previous = process.env.CSL_AGENT_KIT_HOME;
-  process.env.CSL_AGENT_KIT_HOME = root;
-  mkdirSync(join(root, "tips"), { recursive: true });
-  writeFileSync(join(root, "tips", "tips.json"), '{"version":1,"tips":[]}\n');
-  const { api, handlers } = fakePi();
-  try {
-    cslContextHooks(api);
-    const result = await handlers.get("before_agent_start")({ prompt: "hello", systemPrompt: "base" }, {});
-    assert.match(result.systemPrompt, /Legacy tips detected/);
-    assert.match(result.systemPrompt, /preserved and not promoted/);
-    assert.doesNotMatch(result.systemPrompt, /Confirmed user standing orders/);
-
-    writeFileSync(join(root, "standing-orders.md"), "# Standing Orders\n\n## Output\n\n- Keep answers concise.\n");
-    const partialMigration = await handlers.get("before_agent_start")({ prompt: "hello", systemPrompt: "base" }, {});
-    assert.match(partialMigration.systemPrompt, /Keep answers concise/);
-    assert.match(partialMigration.systemPrompt, /Legacy tips detected/);
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;

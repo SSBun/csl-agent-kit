@@ -8,6 +8,7 @@ const test = require("node:test");
 
 const triggerify = require("../skills/triggerify/scripts/triggerify.js");
 const codexProtocol = require("../skills/triggerify/references/codex-protocol.json");
+const sessionStartProtocols = require("../skills/triggerify/references/session-start-protocols.json");
 
 test("implements V1 three-valued collection and glob semantics", () => {
   const condition = {
@@ -44,6 +45,54 @@ prompt
 
   assert.equal(parsed.valid, false);
   assert.deepEqual(parsed.errors.map((error) => error.code), ["unknown-field", "glob-invalid"]);
+});
+
+test("validates optional single-line descriptions", () => {
+  const valid = triggerify.parseMarkdown("---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\ndescription: Load user context.\n---\nprompt\n");
+  const multiline = triggerify.parseMarkdown("---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\ndescription: |\n  first\n  second\n---\nprompt\n");
+  const tooLong = triggerify.parseMarkdown(`---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\ndescription: ${"x".repeat(161)}\n---\nprompt\n`);
+  const unsafe = ["tab\tcell", "escape\u001b[31m", "next\u0085line", "next\u2028line", "next\u2029line"]
+    .map((description) => triggerify.parseMarkdown(`---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\ndescription: ${JSON.stringify(description)}\n---\nprompt\n`));
+
+  assert.equal(valid.valid, true);
+  assert.equal(valid.rule.description, "Load user context.");
+  assert.deepEqual(multiline.errors.map((error) => error.code), ["description-format"]);
+  assert.deepEqual(tooLong.errors.map((error) => error.code), ["description-length"]);
+  assert.ok(unsafe.every((parsed) => parsed.errors.some((error) => error.code === "description-format")));
+});
+
+test("CLI create, update, show, and list preserve descriptions", { concurrency: false }, () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-description-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  const output = [];
+  const io = { log: (line) => output.push(line), error: (line) => output.push(line) };
+
+  try {
+    assert.equal(triggerify.runCli(["create", "context", "--scope", "global", "--event", "session-start", "--action", "inject-prompt", "--description", "Load user context.", "--body", "prompt"], io), 0);
+    output.length = 0;
+    assert.equal(triggerify.runCli(["list", "--scope", "global"], io), 0);
+    assert.match(output[0], /^ID\tDESCRIPTION\t/);
+    assert.match(output[1], /global:context\tLoad user context\./);
+
+    output.length = 0;
+    assert.equal(triggerify.runCli(["show", "global:context", "--json"], io), 0);
+    assert.equal(JSON.parse(output.pop()).description, "Load user context.");
+
+    assert.equal(triggerify.runCli(["update", "global:context", "--description", "Load current user context."], io), 0);
+    output.length = 0;
+    assert.equal(triggerify.runCli(["show", "global:context", "--json"], io), 0);
+    assert.equal(JSON.parse(output.pop()).description, "Load current user context.");
+
+    assert.equal(triggerify.runCli(["update", "global:context", "--clear-description"], io), 0);
+    output.length = 0;
+    assert.equal(triggerify.runCli(["show", "global:context", "--json"], io), 0);
+    assert.equal(JSON.parse(output.pop()).description, null);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
 });
 
 test("CLI creates local project rules and delete preserves scripts", () => {
@@ -86,6 +135,13 @@ test("normalizes all ten Codex events into complete golden payloads", () => {
     assert.deepEqual(triggerify.CODEX_CAPABILITIES[fixture.event], fixture.capability);
     for (const [field, expected] of Object.entries(fixture.expected)) assert.deepEqual(payload[field], expected);
   }
+});
+
+test("supports verified session-start prompt injection on Claude Code and Pi", () => {
+  for (const [host, fixture] of Object.entries(sessionStartProtocols.supported_hosts)) {
+    assert.deepEqual(triggerify.HOST_CAPABILITIES[host][fixture.triggerify_event], fixture.capability);
+  }
+  assert.equal(triggerify.HOST_CAPABILITIES.cursor, undefined);
 });
 
 test("project list does not parse untrusted rule content and invalid rules remain recoverable", () => {
@@ -289,6 +345,31 @@ test("dispatch injects prompt context once and suppresses duplicate diagnostics 
     const second = makeIo();
     assert.equal(triggerify.dispatch(native, { PLUGIN_ROOT: "/plugin" }, second.io), 0);
     assert.equal(second.output.stderr, "");
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("dispatch injects global session prompts for Claude Code", { concurrency: false }, () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-claude-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  const hooks = path.join(data, "triggerify", "hooks");
+  fs.mkdirSync(hooks, { recursive: true });
+  fs.writeFileSync(path.join(hooks, "directive.md"), "---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\nenabled: true\n---\nPersistent directive.\n");
+  const output = { stdout: "", stderr: "" };
+  const io = {
+    stdout: { write: (value) => { output.stdout += value; } },
+    stderr: { write: (value) => { output.stderr += value; } },
+  };
+
+  try {
+    const native = JSON.stringify({ hook_event_name: "SessionStart", session_id: "claude", cwd: data });
+    assert.equal(triggerify.dispatch(native, { CLAUDE_PLUGIN_ROOT: "/plugin" }, io), 0);
+    assert.match(output.stdout, /Persistent directive/);
+    assert.equal(output.stderr, "");
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;
