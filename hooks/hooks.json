@@ -21,6 +21,12 @@
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/references/workspace-workflow-gates.md\" ]; then cat \"$root/references/workspace-workflow-gates.md\"; fi'",
             "timeout": 5,
             "statusMessage": "Loading workspace workflow gates"
+          },
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify session triggers"
           }
         ]
       }
@@ -46,6 +52,12 @@
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/references/workspace-workflow-gates.md\" ]; then cat \"$root/references/workspace-workflow-gates.md\"; fi'",
             "timeout": 5,
             "statusMessage": "Reloading workspace workflow gates"
+          },
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify post-compact triggers"
           }
         ]
       }
@@ -58,6 +70,12 @@
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-candidates.js\" ]; then \"$root/skills/sop-manager/scripts/sop-candidates.js\"; fi'",
             "timeout": 5,
             "statusMessage": "Checking SOP candidates"
+          },
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify prompt triggers"
           }
         ]
       }
@@ -73,6 +91,16 @@
             "statusMessage": "Checking SOP reminder"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify before-tool triggers"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -84,6 +112,77 @@
             "command": "printf '%s\\n' 'Figma/MasterGo design data was fetched via MCP.' 'Before implementing or summarizing the UI, use the `figma-describe` skill to produce detailed, framework-agnostic UI information.' 'The description should include layer hierarchy, layout, spacing, typography, colors, repeated components, and notable visual states from the fetched design data.' 'Do not skip this step unless the user explicitly asks to bypass `figma-describe` for this turn.'",
             "timeout": 10,
             "statusMessage": "Checking Figma design description requirement"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify after-tool triggers"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify permission triggers"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify pre-compact triggers"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify subagent-start triggers"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify subagent-stop triggers"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
+            "timeout": 65,
+            "statusMessage": "Running Triggerify stop triggers"
           }
         ]
       }

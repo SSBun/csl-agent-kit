@@ -38,10 +38,11 @@
     "csl-agent-kit": "bin/csl-agent-kit.js"
   },
   "scripts": {
-    "test": "npm run test:cli && npm run test:standing-orders && npm run test:tasks",
+    "test": "npm run test:cli && npm run test:standing-orders && npm run test:triggerify && npm run test:tasks",
     "test:all": "npm test && npm run test:pi",
     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
     "test:standing-orders": "node --test tests/standing-orders.test.mjs",
+    "test:triggerify": "node --test tests/triggerify.test.js",
     "test:tasks": "node --test tests/task-files.test.mjs",
     "test:pi": "node tests/run-pi-tests.js",
     "check": "node --check bin/csl-agent-kit.js && npm run test:all && node bin/csl-agent-kit.js install --yes --dry-run --json",
@@ -74,7 +75,8 @@
     ]
   },
   "dependencies": {
-    "prompts": "^2.4.2"
+    "prompts": "^2.4.2",
+    "yaml": "^2.0.0"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*"

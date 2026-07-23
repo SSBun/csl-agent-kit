@@ -1,6 +1,12 @@
 # Workspace Context
+- `csl-agent-kit install` treats the integration multiselect as sufficient authorization and does not ask a second external-CLI confirmation.
+
+- Triggerify's distributed `SKILL.md` is written in English, treats its bundled CLI as the accepted-behavior authority, and does not use the project RFC as runtime guidance.
+
 
 ## Components
+
+- `skills/triggerify/` 是 Triggerify V1 的共享管理与运行核心；`csl-agent-kit triggerify` 提供 create/list/show/update/enable/disable/delete 恢复控制面，`hooks/hooks.json` 将 Codex 十个生命周期事件映射到同一 dispatcher。Codex hook payload 不提供 workspace trust verdict，因此运行时只加载 global rules，项目 `list` 保持 metadata-only；Claude Code 与 Pi runtime capability 在独立 fixture 验证前保持 unsupported。
 
 - `skills/adversarial-deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；Agent 默认先内部批量处理全部相关主题与当前可见议题，只把会实质改变结果且无法内部解决的用户专属选择合并后询问用户。它不设轮次上限，并用稳定资源清单交接双方生成的文件与外部资源；普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。
 - `.agents/skills/integrate-third-skills/` 是受版本控制且仅在本仓库发现的第三方技能整合流程；它以 `metadata.internal: true` 排除 `npx skills` 的普通安装清单，并通过 npm `files` 白名单排除发布包；它也不进入全局 Codex symlink 或 Pi 命令分发。附带脚本仍以共享 `skills/` 为第三方源码根目录。
@@ -12,6 +18,7 @@
 
 ## Relationships
 
+- Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Triggerify `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。当前全局规则 `global:open-todo-in-typora` 只解析真实 `apply_patch` 目标，并仅用 Typora 打开规范化后仍位于 workspace `tasks/todo/` 内的现有 Markdown 文件。
 - 用户始终在场的指令位于 `<data-root>/standing-orders.md`，其中 data root 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`；Claude/Cursor 在 `SessionStart`/`PostCompact` 注入，Pi 在每次 `before_agent_start` 重建 system context。旧 tips 只提示逐条确认迁移，不自动提升为 always-on 指令。
 - `csl-agent-kit install` 在没有已确认选择时默认预选 `codex-skills` 和 `codex-plugin`；交互式已确认目标保存在 `/Users/caishilin/.csl-agent-kit/install-selection.json`，下次 checklist 会以其为预选项。
 - hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；用户约定通过 `SessionStart`/`PostCompact` hook 一次性注入，不按 prompt 关键词匹配。Pi 在 `session_start` 与 `before_agent_start` 重建当前会话的约定与 SOP context。
@@ -41,4 +48,4 @@
 - `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
 - 默认 agent 规则不规定 plan mode 或 subagent 策略；agent 可以按任务需要自行使用这些能力。d
 - `references/` 现纳入 npm 发布白名单，包含默认 `agents.md`；`super-agent` skill 目录已删除，不再随包发布。
-- README 当前列出 32 个可分发技能；第三方源码导入不等同于安装到 `~/.agents/skills`，除非用户明确要求执行安装器。`integrate-third-skills` 是本仓库本地流程，不计入这个数量。
+- README 当前列出 33 个可分发技能；第三方源码导入不等同于安装到 `~/.agents/skills`，除非用户明确要求执行安装器。`integrate-third-skills` 是本仓库本地流程，不计入这个数量。

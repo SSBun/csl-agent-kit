@@ -1,0 +1,66 @@
+{
+  "source": "https://developers.openai.com/codex/hooks",
+  "checked_on": "2026-07-22",
+  "events": {
+    "SessionStart": {
+      "event": "session-start",
+      "capability": { "inject": true, "script": true, "block": false },
+      "native": { "source": "startup" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": null, "stop": null }
+    },
+    "UserPromptSubmit": {
+      "event": "prompt-submit",
+      "capability": { "inject": true, "script": true, "block": true },
+      "native": { "prompt": "hello" },
+      "expected": { "prompt": "hello", "tool": null, "permission": null, "compact": null, "subagent": null, "stop": null }
+    },
+    "PreToolUse": {
+      "event": "before-tool",
+      "capability": { "inject": true, "script": true, "block": true },
+      "native": { "tool_name": "Bash", "tool_input": { "command": "git commit" } },
+      "expected": { "prompt": null, "tool": { "name": "Bash", "category": "shell", "command": "git commit", "success": null }, "permission": null, "compact": null, "subagent": null, "stop": null }
+    },
+    "PermissionRequest": {
+      "event": "permission-request",
+      "capability": { "inject": false, "script": true, "block": true },
+      "native": { "tool_name": "Bash", "tool_input": { "command": "git commit", "description": "needs approval" } },
+      "expected": { "prompt": null, "tool": null, "permission": { "tool": "Bash", "description": "needs approval" }, "compact": null, "subagent": null, "stop": null }
+    },
+    "PostToolUse": {
+      "event": "after-tool",
+      "capability": { "inject": true, "script": true, "block": false },
+      "native": { "tool_name": "apply_patch", "tool_input": { "command": "patch" } },
+      "expected": { "prompt": null, "tool": { "name": "apply_patch", "category": "file", "command": "patch", "success": null }, "permission": null, "compact": null, "subagent": null, "stop": null }
+    },
+    "PreCompact": {
+      "event": "before-compact",
+      "capability": { "inject": false, "script": true, "block": true },
+      "native": { "trigger": "auto" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": { "trigger": "auto" }, "subagent": null, "stop": null }
+    },
+    "PostCompact": {
+      "event": "after-compact",
+      "capability": { "inject": false, "script": true, "block": false },
+      "native": { "trigger": "manual" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": { "trigger": "manual" }, "subagent": null, "stop": null }
+    },
+    "SubagentStart": {
+      "event": "subagent-start",
+      "capability": { "inject": true, "script": true, "block": false },
+      "native": { "agent_id": "a1", "agent_type": "reviewer" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": { "id": "a1", "type": "reviewer" }, "stop": null }
+    },
+    "SubagentStop": {
+      "event": "subagent-stop",
+      "capability": { "inject": false, "script": true, "block": true },
+      "native": { "agent_id": "a1", "agent_type": "reviewer", "stop_hook_active": false, "last_assistant_message": "done" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": { "id": "a1", "type": "reviewer" }, "stop": { "hook_active": false, "last_message": "done" } }
+    },
+    "Stop": {
+      "event": "stop",
+      "capability": { "inject": false, "script": true, "block": true },
+      "native": { "stop_hook_active": false, "last_assistant_message": "done" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": null, "stop": { "hook_active": false, "last_message": "done" } }
+    }
+  }
+}

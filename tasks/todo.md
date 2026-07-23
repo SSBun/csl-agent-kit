@@ -3,6 +3,17 @@
 
 - [Restore proactive workspace workflow guidance](todo/restore-workspace-workflow-guidance.md) — Completed (2026-07-23 11:28)
 
+- [Add Triggerify hook to open todo files in Typora](todo/add-triggerify-typora-todo-hook.md) — Completed (2026-07-23 11:53)
+
+- [Remove redundant install confirmation](todo/remove-redundant-install-confirmation.md) — Completed (2026-07-23 10:53)
+
+- [Rewrite Triggerify skill guidance](todo/rewrite-triggerify-skill-guidance.md) — Completed (2026-07-23 10:46)
+
+
+- [Implement the Triggerify skill](todo/implement-triggerify-skill.md) — Completed (2026-07-22 18:11)
+
+- [Design the Triggerify event automation RFC](todo/design-triggerify-rfc.md) — Completed (2026-07-22 17:07)
+
 - [研究 Agent 任务记录格式最佳实践](todo/research-task-record-format.md) — Completed (2026-07-22 11:51)
 - [为任务状态增加分钟级时间戳](todo/add-task-status-minute-timestamps.md) — In Progress (2026-07-22 12:52)
 - [Rename conventions to standing-orders and harden the skill](todo/rename-conventions-to-standing-orders.md) — Completed (2026-07-22 11:04)

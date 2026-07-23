@@ -34,6 +34,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | workspace-capture-lessons | `/csl:workspace-capture-lessons` | `/workspace-capture-lessons` | Apply relevant lessons and capture reusable corrections. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
 | standing-orders | `/csl:standing-orders` | `/standing-orders` | Manage always-on user directives stored in `~/.csl-agent-kit/standing-orders.md`. |
+| triggerify | `/csl:triggerify` | `/triggerify` | 管理按生命周期事件注入 Prompt 或执行脚本的 trigger。 |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | same-page | `/csl:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |
@@ -224,6 +225,8 @@ The CSL Agent Kit CLI also supports:
 
 ```bash
 csl-agent-kit install --target pi
+csl-agent-kit triggerify list
+csl-agent-kit triggerify disable project:broken-rule
 ```
 
 ### Codex

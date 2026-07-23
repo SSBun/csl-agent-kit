@@ -1,5 +1,24 @@
 # Lessons
 
+## 2026-07-23 先建任务记录再动手做非平凡改动
+
+- **Trigger:** 用户测试 triggerify skill 时要求加一个 hook，我直接实现了 hook 却没按 AGENTS.md 的 workspace workflow 先创建任务记录。
+- **Rule:** 凡是改变交付物的非平凡工作（创建 skill、hook、脚本、规则、配置等持久产物），在动手实现前必须先用 `$workspace-manage-task` 建立 `tasks/todo/<task-slug>.md` 并更新 `tasks/todo.md` 索引；不要等工作做完才补。只读回答和琐碎机械操作可跳过。
+- **Why:** 任务记录是强制生命周期关卡，不是事后归档；跳过它会让进度不可追溯，也无法在改动前明确 Target 和验收边界。
+
+## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection
+
+- **Trigger:** A user explicitly selects installation targets, then the workflow asks a generic second confirmation for the same selected actions.
+  - **Rule:** Treat the explicit selection-and-submit step as authorization unless the later action introduces a materially different risk or irreversible consequence. When removing a prompt, remove every reader and guard for its response value in the same change.
+  - **Why:** Reconfirming the same scope adds friction, while leaving a downstream response guard makes the accepted path fail after the prompt disappears.
+
+## 2026-07-22 Keep Distributed Skills Self-Contained
+
+- **Trigger:** A project RFC or guide informed a distributable skill, but the user clarified that the project document is not part of the skill source.
+  - **Rule:** Put operational guidance inside the skill package, keep Agent-facing prose in the requested distribution language, and treat project RFCs as rationale only unless they are explicitly part of the runtime contract.
+  - **Why:** A distributed skill must remain usable without repository-only documents, and design history must not override implemented behavior.
+
+
 ## 2026-07-21 用户约定应始终在场，不要用按需注入承载
 
 - **Trigger:** 设计或维护跨会话持续有效的用户偏好/约定机制。

@@ -3,6 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
+const triggerify = require("../skills/triggerify/scripts/triggerify.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -48,6 +49,10 @@ const targets = {
 
 async function main() {
   const [command = "help", ...args] = process.argv.slice(2);
+
+  if (command === "triggerify") {
+    process.exit(triggerify.runCli(args));
+  }
 
   if (command === "install") {
     const options = parseInstallArgs(args);
@@ -154,12 +159,6 @@ async function resolveInstallTargets(options) {
       choices: buildInstallChoices(savedSelection),
       min: 1,
     },
-    {
-      type: (previous) => previous?.some((name) => targets[name].external) ? "confirm" : null,
-      name: "confirmExternal",
-      message: "Selected integrations include external CLI commands. Continue?",
-      initial: false,
-    },
   ], {
     onCancel: () => {
       die("Install cancelled.");
@@ -167,9 +166,6 @@ async function resolveInstallTargets(options) {
   });
 
   const selected = response.selected || [];
-  if (selected.some((name) => targets[name].external) && !response.confirmExternal) {
-    die("External integrations were not confirmed.");
-  }
   try {
     saveInstallSelection(selected);
   } catch (error) {
@@ -543,7 +539,7 @@ function flatten(value) {
 }
 
 function printHelp() {
-  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n\nRun \"csl-agent-kit install --help\" for install options.`);
+  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit triggerify <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit triggerify help\" for details.`);
 }
 
 function printInstallHelp() {
