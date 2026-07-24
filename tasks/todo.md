@@ -1,5 +1,7 @@
 # 任务索引
 
+- [重构 Triggerify 并增加规则校验脚本](todo/refactor-triggerify-architecture.md) — Completed (2026-07-24 16:55)
+
 - [Optimize workspace context for durable decision value](todo/optimize-workspace-maintain-context.md) — Completed (2026-07-23 20:38)
 
 - [Gate adversarial review by task risk and verification](todo/optimize-adversarial-review-gate.md) — Completed (2026-07-23 19:42)

@@ -7,6 +7,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const triggerify = require("../skills/triggerify/scripts/triggerify.js");
+const ruleValidator = require("../skills/triggerify/scripts/validate-rules.js");
 const codexProtocol = require("../skills/triggerify/references/codex-protocol.json");
 const sessionStartProtocols = require("../skills/triggerify/references/session-start-protocols.json");
 
@@ -59,6 +60,27 @@ test("validates optional single-line descriptions", () => {
   assert.deepEqual(multiline.errors.map((error) => error.code), ["description-format"]);
   assert.deepEqual(tooLong.errors.map((error) => error.code), ["description-length"]);
   assert.ok(unsafe.every((parsed) => parsed.errors.some((error) => error.code === "description-format")));
+});
+
+test("validates one or more trigger Markdown files with shared V1 parsing", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-validator-"));
+  const valid = path.join(directory, "valid.md");
+  const invalid = path.join(directory, "invalid.md");
+  fs.writeFileSync(valid, "---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\n---\nprompt\n");
+  fs.writeFileSync(invalid, "---\nschema: triggerify/v1\nevent: session-start\nevent: after-tool\naction: inject-prompt\n---\nprompt\n");
+  const output = [];
+  const errors = [];
+  const io = { log: (line) => output.push(line), error: (line) => errors.push(line) };
+
+  try {
+    assert.equal(ruleValidator.run([valid], io), 0);
+    assert.match(output.pop(), /valid\.md: valid$/);
+    assert.equal(ruleValidator.run([valid, invalid], io), 1);
+    assert.match(errors.pop(), /\[yaml-invalid\]/);
+    assert.equal(ruleValidator.run([], io), 2);
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("CLI create, update, show, and list preserve descriptions", { concurrency: false }, () => {
@@ -125,6 +147,22 @@ test("normalizes unknown changed files instead of guessing from tool input", () 
 
   assert.equal(payload.changed_files, null);
   assert.equal(payload.tool.category, "file");
+});
+
+test("creates host-neutral standard events for external adapters", () => {
+  const payload = triggerify.createEvent({
+    event: "after-tool",
+    host: "pi",
+    workspace: "/workspace",
+    sessionId: "session",
+    tool: { name: "write", category: "file", command: null, success: true },
+    changedFiles: [{ path: "tasks/todo.md", operation: "modified" }],
+    nativeEvent: "tool_execution_end",
+  });
+
+  assert.equal(payload.host.name, "pi");
+  assert.deepEqual(payload.changed_files, [{ path: "tasks/todo.md", operation: "modified" }]);
+  assert.equal(payload.native.event, "tool_execution_end");
 });
 
 test("normalizes all ten Codex events into complete golden payloads", () => {

@@ -6,6 +6,8 @@
 
 ## Components
 
+- `skills/triggerify/scripts/triggerify.js` 是稳定 facade；V1 规则语义、文件存储、宿主无关运行时、CLI 与 Codex/Claude native hook 适配分别由 `scripts/lib/{rule,store,runtime,cli,native-hook}.js` 负责，外部宿主适配应通过 facade 的 `createEvent()` 和 `runEvent()` 接入。权威边界是这些模块导出与 `tests/triggerify.test.js`；修改跨层行为时复核两者。
+- `skills/triggerify/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 trigger Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `triggerify show` 为准。权威入口是该脚本与 `skills/triggerify/SKILL.md`。
 - `skills/triggerify/` 是 Triggerify V1 的共享管理与运行核心；规则可选 `description` 为单行、非空、无控制字符且最多 160 字符，qualified ID 仍由文件名决定，`list`/`show` 负责展示。`csl-agent-kit triggerify` 提供 create/list/show/update/enable/disable/delete 恢复控制面，`hooks/hooks.json` 将 Codex/Claude 生命周期事件映射到同一 dispatcher，Pi extension 在每次 `before_agent_start` 加载全局 `session-start` Prompt 规则。Codex hook payload 不提供 workspace trust verdict，因此运行时只加载 global rules，项目 `list` 保持 metadata-only；Claude Code 和 Pi 目前只验证了 `session-start` Prompt 注入，Cursor V1 因宿主仍丢弃 `additional_context` 而保持 unsupported。
 
 - `skills/adversarial-deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；Agent 默认先内部批量处理全部相关主题与当前可见议题，只把会实质改变结果且无法内部解决的用户专属选择合并后询问用户。它不设轮次上限，并用稳定资源清单交接双方生成的文件与外部资源；普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。

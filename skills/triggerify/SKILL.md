@@ -9,6 +9,8 @@ Use the bundled CLI as the validation and status authority.
 
 Run `node scripts/triggerify.js <command> --help` before unfamiliar operations. Never hand-edit managed rules or use project RFCs as runtime guidance.
 
+Validate proposed rule files with `node scripts/validate-rules.js [--scope global|project] <file.md>...` before passing them to `update --from`. Treat this as frontmatter and V1 rule validation; use `show` for stored script readiness and effective host status.
+
 ## Boundaries
 
 - Use global rules for runtime execution; project rules remain metadata-only.
