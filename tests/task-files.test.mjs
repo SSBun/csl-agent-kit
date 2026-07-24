@@ -287,6 +287,7 @@ test("workspace task contract keeps implementation and review out of acceptance"
   assert.match(skill, /Add `Block` only while the task status is `Blocked`/);
   assert.match(skill, /Remove the section when work resumes/);
   assert.match(skill, /Create a separate canonical task only for work with an independent deliverable, blocking condition, or review boundary/);
+  assert.match(skill, /small follow-up that extends a completed task's existing outcome.*reopen its canonical task instead of creating a new file.*append the next Target ID.*re-evaluate the Review Gate/);
   assert.match(skill, /treat the canonical task as authoritative and repair the index/);
   assert.match(skill, /Apply this contract to new tasks and reopened scope/);
   assert.match(skill, /Do not retrofit untouched completed history/);

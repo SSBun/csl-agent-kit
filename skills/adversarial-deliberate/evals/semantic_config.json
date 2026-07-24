@@ -1,44 +1,28 @@
 {
   "fallback_positive_concepts": [
-    "synthesizer_challenger_loop",
-    "multi_perspective_synthesis"
+    "iterative_multi_perspective_deliberation"
   ],
   "positive_concepts": {
-    "synthesizer_challenger_loop": {
-      "weight": 0.6,
+    "iterative_multi_perspective_deliberation": {
+      "weight": 1.0,
       "phrases": [
-        "adversarial discussion",
         "adversarial-deliberate",
-        "synthesizer and challenger",
-        "synthesizer and independent challenger",
-        "synthesizer-challenger",
-        "challenger find gaps",
-        "challenger finds gaps",
-        "editor and reviewer",
-        "editor and independent reviewer",
-        "editor-reviewer",
-        "reviewer find gaps",
-        "reviewer finds gaps",
+        "adversarial discussion",
+        "iterative adversarial",
+        "iteratively test",
         "iteratively analyze",
+        "iteratively discuss",
         "revise until sufficient",
+        "until sufficient",
         "uncapped discussion",
-        "不限轮次地对抗讨论",
-        "批量对抗讨论",
-        "synthesizer 和 challenger",
-        "synthesizer 与 challenger",
-        "editor 和 reviewer",
-        "editor 与 reviewer",
-        "反复讨论"
-      ]
-    },
-    "multi_perspective_synthesis": {
-      "weight": 0.4,
-      "phrases": [
-        "comprehensive perspective",
-        "comprehensive devil's-advocate synthesis",
         "every material perspective",
+        "comprehensive synthesis",
+        "comprehensive devil's-advocate synthesis",
         "preserve unresolved disagreements",
         "missing perspectives",
+        "不限轮次地对抗讨论",
+        "批量对抗讨论",
+        "反复讨论",
         "综合结论",
         "补齐遗漏",
         "覆盖充分"
@@ -50,12 +34,12 @@
       "weight": 0.65,
       "exclusive": true,
       "phrases": [
-        "adversarial review",
         "block completion",
         "approved",
         "approve this system design",
         "review this pull request",
-        "review this architecture proposal",
+        "approval-gated artifact",
+        "until approved",
         "批准"
       ]
     },

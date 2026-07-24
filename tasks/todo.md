@@ -2,9 +2,11 @@
 
 - [重构 Triggerify 并增加规则校验脚本](todo/refactor-triggerify-architecture.md) — Completed (2026-07-24 16:55)
 
-- [Optimize workspace context for durable decision value](todo/optimize-workspace-maintain-context.md) — Completed (2026-07-23 20:38)
+- [闭合 adversarial-deliberate 的高优先级协议缺口](todo/close-adversarial-deliberate-gaps.md) — Completed (2026-07-24 14:05)
 
-- [Gate adversarial review by task risk and verification](todo/optimize-adversarial-review-gate.md) — Completed (2026-07-23 19:42)
+- [Gate adversarial review by task risk and verification](todo/optimize-adversarial-review-gate.md) — Completed (2026-07-24 13:44)
+
+- [Optimize workspace context for durable decision value](todo/optimize-workspace-maintain-context.md) — Completed (2026-07-23 20:38)
 
 - [Add descriptions to Triggerify rules](todo/add-triggerify-description.md) — Completed (2026-07-23 16:45)
 

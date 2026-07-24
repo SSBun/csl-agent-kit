@@ -1,6 +1,6 @@
 # Gate adversarial review by task risk and verification
 
-**Status:** Completed (2026-07-23 19:42)
+**Status:** Completed (2026-07-24 13:44)
 
 ## Scope
 
@@ -8,6 +8,7 @@
 - Keep the decision prompt-based; add only contract/eval checks, not hooks, scoring, file-count, or line-count heuristics.
 - Apply the current task contract without rewriting historical task records.
 - Keep the workflow skill's complete operational contract inline even when Yao reports more than 1000 initial-load tokens.
+- Cover small follow-ups that extend the same completed task outcome by reopening the owning task; keep independent Subtasks boundaries in separate task records.
 
 ## Target
 
@@ -16,12 +17,13 @@
 - [x] T3: Every non-trivial task records a concise evidence-based `Review gate: Required|Skipped` decision and reassesses it when scope, risk, or verification changes.
 - [x] T4: Representative judgment cases and task-contract tests enforce the new gate without adding unrelated workflow machinery.
 - [x] T5: The workflow skill keeps its complete task guidance in `SKILL.md`; Yao's 1000-token budget is advisory and cannot reduce accuracy or comprehensiveness.
+- [x] T6: A small follow-up to a completed task reopens and extends the owning task record instead of creating a new task file.
 
 ## Plan
 
-1. Merge the complete task-record contract back into `SKILL.md` and remove the split reference.
-2. Update regression checks and durable workspace guidance for the workflow-skill budget exception.
-3. Run focused validation, record the expected Yao budget result, and repeat the risk-gated review.
+1. Define the minimal completed-task follow-up lifecycle in the owning workflow skill.
+2. Add a focused contract assertion and run the required validation.
+3. Re-evaluate and complete the required review gate for the reopened scope.
 
 ## Result
 
@@ -31,4 +33,5 @@
 - T4: Nine representative cases in `evals/review_gate_cases.json` and three focused Node tests pass. Pre-reopen OpenAI validation and Yao rule audit passed; trigger routing scored 12/12 with no false positives or negatives.
 - Review gate: Required — this changes the global Agent task lifecycle and independent-review boundary.
 - T5: Merged activation, ownership, task fields, blocking, subtasks, gate, lifecycle, adoption, and maintainer validation into the main `SKILL.md`; removed the split reference. Focused tests pass 3/3 and OpenAI validation passes. Current Yao validation reports only the accepted `Estimated initial-load tokens exceed budget` failure after syntax/frontmatter, lint, governance, and all other resource checks pass.
-- Review: `APPROVED` after five cumulative Reviewer passes across the initial and reopened scopes; report: [optimize-adversarial-review-gate](../../reports/adversarial-review/optimize-adversarial-review-gate.md)
+- T6: The lifecycle now reopens the owning completed task for a small same-outcome follow-up, appends the next Target ID, revises the Plan, synchronizes the index, and re-evaluates the Review Gate; the focused contract test passes 11/11, OpenAI and Yao skill validation pass, and `git diff --check` passes.
+- Review: `APPROVED` after seven cumulative Reviewer passes across the initial and reopened scopes; report: [optimize-adversarial-review-gate](../../reports/adversarial-review/optimize-adversarial-review-gate.md)

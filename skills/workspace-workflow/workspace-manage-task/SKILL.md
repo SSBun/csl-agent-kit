@@ -88,6 +88,7 @@ Keep `evals/review_gate_cases.json` aligned with this gate.
 ## Lifecycle
 
 - Use `Pending`, `In Progress`, `In Review`, `Completed`, or `Blocked`, followed by the current local date and 24-hour time in `YYYY-MM-DD HH:MM` format.
+- For a small follow-up that extends a completed task's existing outcome, reopen its canonical task instead of creating a new file: append the next Target ID, revise the Plan, set `In Progress`, update its exact index entry, and re-evaluate the Review Gate. Use a separate task only when the Subtasks boundary applies.
 - Before `In Progress`, require at least one valid Target.
 - Before completion, require every Target to be checked and mapped to current Result evidence, proportionate verification to pass, and the Review gate to be recorded.
 - For `Required`, set `In Review`, invoke `$adversarial-review`, and complete only after recorded `APPROVED`.

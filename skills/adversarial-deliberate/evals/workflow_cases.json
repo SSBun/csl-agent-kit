@@ -47,6 +47,31 @@
       "must_not": [
         "present a previously visible issue as newly discovered without explanation"
       ]
+    },
+    {
+      "name": "material_continue",
+      "given": "The Challenger repeats a non-material suggestion without new evidence, a state change, or an actionable revision.",
+      "must": [
+        "refuse to continue on the repeated suggestion alone",
+        "require the Challenger to return SUFFICIENT or identify an actual BLOCKED condition"
+      ],
+      "must_not": [
+        "keep the loop alive without a material open D-ID and a concrete next-pass change"
+      ]
+    },
+    {
+      "name": "ledger_closure",
+      "given": "The ledger contains resolved and open D-IDs across several fixed T-IDs.",
+      "must": [
+        "preserve every T-ID and monotonically allocated D-ID",
+        "report the status of every existing D-ID",
+        "return SUFFICIENT only after every material D-ID is resolved and every T-ID is rechecked"
+      ],
+      "must_not": [
+        "reuse or renumber an ID",
+        "omit an existing D-ID from recheck",
+        "return SUFFICIENT while a material D-ID remains open"
+      ]
     }
   ]
 }

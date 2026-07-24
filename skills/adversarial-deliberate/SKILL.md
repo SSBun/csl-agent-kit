@@ -11,7 +11,7 @@ description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop
 - Route exchanges through the Coordinator; reuse both roles and send complete state.
 - Discuss internally first. Ask only about material user-owned choices that research, reasoning, or a reversible default cannot settle.
 - Process every related topic and visible issue per pass; never drip-feed known issues.
-- Set no round limit. Continue on `CONTINUE`; otherwise stop or pause.
+- Set no round limit. Use `CONTINUE` only for a material open issue with a concrete next-pass change; otherwise stop or pause.
 - Without an independent Challenger, disclose that the discussion cannot run; never simulate sufficiency.
 - Create resources only when authorized.
 
@@ -30,7 +30,7 @@ ISSUES / RESOURCES:
 LIMITATIONS / USER DECISIONS:
 ```
 
-Use stable IDs. Send the complete answer, not a diff.
+Give each topic a fixed T-ID. Allocate D-IDs monotonically; never reuse or renumber them, and reopen an issue under its original ID. Send the complete answer, not a diff.
 
 Follow [Resource Handoff](references/resource-handoff.md). Verify access; changed resources invalidate dependent conclusions.
 
@@ -53,6 +53,8 @@ Requested response: ...
 CONTEXT HANDOFF: <entries or none>
 ```
 
+Use `CONTINUE` only when at least one material D-ID remains open, and name the new evidence, state change, or actionable answer change expected next pass. Non-material suggestions never block `SUFFICIENT`. If an issue repeats without any of those changes, have the Coordinator require the Challenger to choose `SUFFICIENT` or state an actual `BLOCKED` condition.
+
 Use `SUFFICIENT` only when no material error, gap, or intent ambiguity remains. A late issue must name what made it newly actionable.
 
 ### 3. Resolve internally or ask one key choice
@@ -74,6 +76,15 @@ CONTEXT HANDOFF: <entries or none>
 ```
 
 Rejections require evidence. Return the answer, ledger, and resources to the same Challenger. Recheck every prior ID and topic in one pass.
+
+```text
+STATUS: CONTINUE | SUFFICIENT | NEEDS_USER | BLOCKED
+D1: RESOLVED | OPEN | NEEDS_USER | BLOCKED
+Evidence: ...
+Next change: <required when OPEN>
+```
+
+The Challenger must report every existing D-ID. Use `SUFFICIENT` only after every material D-ID is `RESOLVED` and every T-ID has been rechecked.
 
 ### 5. Deliver
 

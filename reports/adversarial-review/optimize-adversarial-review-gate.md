@@ -1,7 +1,7 @@
 ---
 created: 2026-07-23
 task: optimize-adversarial-review-gate
-review_cycles: 5
+review_cycles: 7
 ---
 
 # 按风险与可验证性控制对抗审查
@@ -48,10 +48,22 @@ Topic: Workflow skill 的完整性与预算例外
 
 **Conclusion:** Workflow skill 保持完整自包含；只有 Yao 1000-token initial-load 超限可被接受，其他验证仍然阻塞。
 
+Topic: 已完成任务的小幅续作
+
+> **E6:** 为同一 outcome 的小幅 follow-up 增加复用 canonical task 的生命周期规则，并以本任务的新增 `T6` 实际重开既有记录。
+>
+> **R6:** 行为与测试满足用户要求，但 owning task 的 Scope 未纳入新增生命周期边界，任务历史仍不完整。
+>
+> **E7:** 仅补充对应 Scope：同一 outcome 的小幅续作复用 owning task，独立 Subtasks 边界仍使用独立任务记录。
+>
+> **R7:** Scope、Target、实现、测试与索引状态现已一致，无未解决项。
+
+**Conclusion:** 同一已完成任务的小幅续作会追加新 Target 并重开原任务；独立交付边界仍新建任务。
+
 ---
 
 **Final decision:** `APPROVED`
 
-**Outcome:** 非关键的普通任务可跳过对抗审查；完整任务契约保留在主 workflow skill 中，不再为满足 Yao 1000-token 预算而拆分或压缩失真。
+**Outcome:** 非关键的普通任务可跳过对抗审查；完整任务契约保留在主 workflow skill 中；同一 outcome 的小幅续作复用并重开原任务记录。
 
 **Remaining:** none
