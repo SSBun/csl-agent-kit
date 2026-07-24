@@ -1,5 +1,5 @@
 {
-  "checked_on": "2026-07-23",
+  "checked_on": "2026-07-24",
   "supported_hosts": {
     "claude-code": {
       "source": "https://code.claude.com/docs/en/hooks",
@@ -11,7 +11,8 @@
       "source": "https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md",
       "native_event": "before_agent_start",
       "triggerify_event": "session-start",
-      "capability": { "inject": true, "script": false, "block": false }
+      "capability": { "inject": true, "script": true, "block": false },
+      "note": "Inject via before_agent_start systemPrompt rewrite; script via runEvent side effects in csl-context-hooks extension. Block is not physically possible on Pi."
     }
   },
   "unsupported_hosts": {

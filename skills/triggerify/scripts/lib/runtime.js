@@ -27,14 +27,30 @@ const CODEX_CAPABILITIES = {
   "subagent-stop": { inject: false, script: true, block: true },
   stop: { inject: false, script: true, block: true },
 };
+// Claude Code shares Codex's stdin/stdout hook protocol (hookSpecificOutput,
+// exit 2 block, PermissionRequest deny, PreCompact continue:false), so every
+// Codex event/action is also physically realizable on Claude Code.
+const CLAUDE_CODE_CAPABILITIES = CODEX_CAPABILITIES;
+
+// Pi has no native hook protocol; triggers run inside the csl-context-hooks
+// extension via pi.on(event, handler). Inject only works where the handler can
+// rewrite model-facing content (systemPrompt / tool_result). Block is not
+// physically possible (Pi handlers cannot stop tool or agent execution).
+// Permission/subagent events have no Pi equivalent.
+const PI_CAPABILITIES = {
+  "session-start": { inject: true, script: true, block: false },
+  "prompt-submit": { inject: true, script: true, block: false },
+  "before-tool": { inject: false, script: true, block: false },
+  "after-tool": { inject: true, script: true, block: false },
+  "before-compact": { inject: false, script: true, block: false },
+  "after-compact": { inject: false, script: true, block: false },
+  stop: { inject: false, script: true, block: false },
+};
+
 const HOST_CAPABILITIES = {
   codex: CODEX_CAPABILITIES,
-  "claude-code": {
-    "session-start": { inject: true, script: true, block: false },
-  },
-  pi: {
-    "session-start": { inject: true, script: false, block: false },
-  },
+  "claude-code": CLAUDE_CODE_CAPABILITIES,
+  pi: PI_CAPABILITIES,
 };
 const DEFAULT_TIMEOUT = 10;
 const MAX_OUTPUT = 64 * 1024;
@@ -216,6 +232,8 @@ function bounded(value = "") {
 
 module.exports = {
   CODEX_CAPABILITIES,
+  CLAUDE_CODE_CAPABILITIES,
+  PI_CAPABILITIES,
   HOST_CAPABILITIES,
   bounded,
   createEvent,

@@ -14,7 +14,8 @@ Validate proposed rule files with `node scripts/validate-rules.js [--scope globa
 ## Boundaries
 
 - Use global rules for runtime execution; project rules remain metadata-only.
-- Support is host/event/action-specific. Session-start Prompt injection is verified for Codex, Claude Code, and Pi; Cursor V1 is unsupported.
+- Codex is the reference host: all events support inject/script (and block where the protocol allows). Claude Code shares Codex's hook protocol and is now supported at parity.
+- Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result); script runs as a best-effort side effect on all supported events. Block and permission/subagent events are not physically realizable on Pi and remain unsupported.
 - Use Triggerify for persistent automation, direct commands for one-time work, and native Git hooks for Git enforcement.
 
 ## Workflow
