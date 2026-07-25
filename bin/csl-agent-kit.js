@@ -4,6 +4,7 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const triggerify = require("../skills/triggerify/scripts/triggerify.js");
+const benchmark = require("../scripts/benchmark-cli.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -55,6 +56,11 @@ async function main() {
 
   if (command === "triggerify") {
     process.exit(triggerify.runCli(args));
+  }
+
+  if (command === "benchmark") {
+    await benchmark.run();
+    return;
   }
 
   if (command === "install") {
@@ -264,11 +270,30 @@ function installCodexPlugin(options) {
   return [...changes, ...removeLegacyCodexSkillLinks(options)];
 }
 
+const PI_AGENTS_SOURCE_DIR = path.join(repoRoot, "references", "agents");
+const PI_AGENTS_TARGET_DIR = path.join(home(), ".pi", "agent", "agents");
+
 function installPi(options) {
   if (!options.dryRun && !hasCommand("pi")) {
     return [{ action: "skip", reason: "Pi CLI not found", command: "pi" }];
   }
-  return runCommands([["pi", ["install", repoRoot], false]], options);
+  const changes = runCommands([["pi", ["install", repoRoot], false]], options);
+
+  // Symlink carrier agents (references/agents/*.md) into Pi's user agent dir so
+  // the `subagent` tool can spawn them by name. Role definitions are passed
+  // inline via the task prompt, so only minimal carrier agents are needed.
+  let agentFiles = [];
+  try {
+    agentFiles = fs.readdirSync(PI_AGENTS_SOURCE_DIR).filter((f) => f.endsWith(".md"));
+  } catch {
+    // no references/agents directory — nothing to link
+  }
+  for (const file of agentFiles) {
+    const source = path.join(PI_AGENTS_SOURCE_DIR, file);
+    const target = path.join(PI_AGENTS_TARGET_DIR, file);
+    changes.push(linkAgentInstruction(target, source, options));
+  }
+  return changes;
 }
 
 function installSuperAgent(options) {
@@ -542,7 +567,7 @@ function flatten(value) {
 }
 
 function printHelp() {
-  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit triggerify <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit triggerify help\" for details.`);
+  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit triggerify <command> [options]\n  csl-agent-kit benchmark --skill <name> [options]\n\nRun \"csl-agent-kit install --help\", \"csl-agent-kit triggerify help\", or \"csl-agent-kit benchmark --help\" for details.`);
 }
 
 function printInstallHelp() {

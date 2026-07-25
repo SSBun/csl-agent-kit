@@ -6,18 +6,18 @@ Real isolation strengthens adversarial roles. Dispatch the Reviewer/Editor (or S
 
 Before the first role pass, detect whether the host can dispatch an isolated subagent. Check in this order and stop at the first hit:
 
-1. A `subagent` tool is available (Pi with the subagent extension, or an equivalent delegation tool exposing `single`, `parallel`, or `chain` modes).
-2. The host is Codex with `multi_agent` enabled and pre-defined agent files loadable from an `agents/` directory.
+1. A `subagent` tool is available (Pi with the subagent extension) and a carrier agent is registered for it to spawn by name.
+2. The host is Codex and can spawn an agent process by passing a prompt (no pre-registered role file needed).
 3. A `tmux` session is available and a non-interactive `pi`/`codex` invocation can run in a separate pane.
 4. None of the above — inline fallback.
 
-Detecting the capability is not enough — you must also confirm the role agents are actually registered and spawnable on this host before choosing `SUBAGENT`. A host that advertises `multi_agent` but has no loaded role agent will accept the dispatch call and then idle: the parent session prints `Waiting for agents` / `No agents completed yet` in a loop with no role pass ever running. To prevent that, verify readiness, do not merely assume it:
+Both Pi and Codex dispatch roles by inlining the role contract into the prompt — neither requires per-role files registered on the host. The difference is only what the host needs to accept the spawn call:
 
-- Pi: the role agent file exists under `~/.pi/agent/agents/` (user scope) or `.pi/agents/` (project scope) and the `subagent` tool lists it as available.
-- Codex: the role is loadable from the plugin `agents/` directory and `multi_agent` is actually enabled in the active config — not just advertised by the host. If you cannot confirm the agent is registered, treat dispatch as unavailable and fall back.
+- Pi: the `subagent` tool requires a registered agent **name** to spawn. The carrier `pi-agent` (installed by `csl-agent-kit install --target pi` into `~/.pi/agent/agents/`) satisfies this; the role contract is inlined into the task. Confirm `pi-agent` is discoverable before choosing `SUBAGENT`.
+- Codex: spawning takes a prompt directly, so there is no per-role file to register. Confirm the host can actually start an agent process; a host that accepts the call but runs no agent will idle on `Waiting for agents` / `No agents completed yet`. Do not poll — if no agent is running, stop and re-resolve dispatch.
 - tmux: a `tmux` session exists and a non-interactive `pi`/`codex` invocation starts without error in a test pane.
 
-If any role agent cannot be confirmed ready, downgrade the whole run to `INLINE-FALLBACK` for that host. Do not enter the loop in `SUBAGENT` mode on an unverified dispatch path.
+If the host's spawn path cannot be confirmed ready (e.g. `pi-agent` not registered on Pi, or Codex cannot start an agent), downgrade the whole run to `INLINE-FALLBACK`. Do not enter the loop in `SUBAGENT` mode on an unverified dispatch path.
 
 Record the chosen mode and per-role readiness once per run (this is what the disclosure table in the next section prints):
 
@@ -25,16 +25,16 @@ Never claim `isolated` under inline fallback. Under `INLINE-FALLBACK`, set `ISOL
 
 ## Role → Subagent Mapping
 
-Each adversarial role maps to one subagent. Reuse the same subagent identity across passes within a run; do not spawn a fresh process per round unless the role contract requires a replacement.
+Each adversarial role is defined by a **role contract file** under the skill's `examples/agents/`. These are not registered as host agents — the Coordinator reads the file and inlines its full text into the task/prompt when spawning a carrier subagent each pass. Because Pi subagents are disposable processes (and Codex spawns roles via prompt the same way), role identity is carried by the contract in the prompt, not by a long-lived agent process.
 
-Example agent definitions live under each skill's `examples/agents/` and are ready to copy into the host's agent directory (Pi: `~/.pi/agent/agents/`; Codex: plugin `agents/`). They are inner-role templates — they restate the role contract from the skill's references so the subagent is self-contained. The example files intentionally omit a `model` field: model names are provider-specific (`sonnet` is meaningless on Codex; `gpt-*` is meaningless on Pi), so each host resolves the model from its own default or an override you set after copying the file in.
+Role contract files intentionally omit a `model` field: the carrier inherits the current harness model (`PI_MODEL` on Pi; session default on Codex). They also omit `tools`: read-only constraints are enforced by the role contract text, not the tool layer.
 
-| Skill | Role | Subagent identity | Example file | Constraint carried into its system prompt |
-|-------|------|-------------------|--------------|-------------------------------------------|
-| adversarial-review | Reviewer | `adversarial-reviewer` | `adversarial-review/examples/agents/adversarial-reviewer.md` | Read-only; never edits the artifact; never self-approves |
-| adversarial-review | Editor | `adversarial-editor` | `adversarial-review/examples/agents/adversarial-editor.md` | Never Reviewer; never self-approves; answers every finding in one batch |
-| adversarial-deliberate | Synthesizer | `adversarial-synthesizer` | `adversarial-deliberate/examples/agents/adversarial-synthesizer.md` | Produces the complete answer; never challenges |
-| adversarial-deliberate | Challenger | `adversarial-challenger` | `adversarial-deliberate/examples/agents/adversarial-challenger.md` | Independent of Synthesizer; reports every visible issue in one batch |
+| Skill | Role | Carrier (Pi) | Role contract file (inlined into task/prompt) | Constraint carried into the role contract |
+|-------|------|--------------|----------------------------------------------|-------------------------------------------|
+| adversarial-review | Reviewer | `pi-agent` | `adversarial-review/examples/agents/adversarial-reviewer.md` | Read-only; never edits the artifact; never self-approves |
+| adversarial-review | Editor | `pi-agent` | `adversarial-review/examples/agents/adversarial-editor.md` | Never Reviewer; never self-approves; answers every finding in one batch |
+| adversarial-deliberate | Synthesizer | `pi-agent` | `adversarial-deliberate/examples/agents/adversarial-synthesizer.md` | Produces the complete answer; never challenges |
+| adversarial-deliberate | Challenger | `pi-agent` | `adversarial-deliberate/examples/agents/adversarial-challenger.md` | Independent of Synthesizer; reports every visible issue in one batch |
 
 The Coordinator runs in the parent context in both modes: it pins scope, routes exchanges, validates findings, and maintains the ledger. It never becomes the Reviewer/Challenger.
 
@@ -42,26 +42,31 @@ The Coordinator runs in the parent context in both modes: it pins scope, routes 
 
 ### Pi (subagent tool)
 
-Spawn each role as a `single` subagent task. Chain a full round as a `chain` so the prior pass output flows to the next role via `{previous}`:
+Pi subagents are **disposable processes**: each `subagent` call spawns a fresh `pi` child process that dies when the pass ends — there is no persistent conversation or cross-call memory. Role identity and accumulated state are therefore carried by the Coordinator via the task prompt, not by process reuse.
+
+The `subagent` tool requires a registered agent name to spawn, but that agent is only a **carrier** — its system prompt is just a neutral shell. The real role definition lives in the skill's `examples/agents/<role>.md` and is inlined into the task prompt by the Coordinator each pass. One carrier agent (`pi-agent`, installed by `csl-agent-kit install --target pi`) serves all roles; you never register per-role agents.
+
+Each pass: read the role's `examples/agents/<role>.md`, concatenate it with the full state packet, and pass it as the `task` to a `pi-agent` subagent. Chain a full round so the prior pass output flows to the next role via `{previous}`:
 
 ```text
 subagent tool, chain:
-  1. agent: adversarial-reviewer, task: "<Reviewer pass prompt with full state>"
-  2. agent: adversarial-editor,   task: "Answer every finding from the previous pass. {previous}"
-  3. agent: adversarial-reviewer, task: "Re-review accounting for every prior ID. {previous}"
+  1. agent: pi-agent, task: "<reviewer.md role contract>\n\nSTATE PACKET:\n<full state>\n\nYOUR TASK THIS PASS:\n<initial review instruction>"
+  2. agent: pi-agent, task: "<editor.md role contract>\n\nAnswer every finding from the previous pass.\n\n{previous}"
+  3. agent: pi-agent, task: "<reviewer.md role contract>\n\nRe-review accounting for every prior ID.\n\n{previous}"
 ```
 
-- Define each role once as an agent file under `~/.pi/agent/agents/` (user scope) or `.pi/agents/` (project scope, requires `agentScope: "both"` and trust).
-- Send the complete state packet in each task; `{previous}` is the only cross-process channel, so every handoff must be self-contained.
+- The carrier agent (`pi-agent`) omits a `model` field, so the spawned process inherits the current harness model (`PI_MODEL`). Tools are unrestricted; enforce read-only roles (Reviewer/Synthesizer/Challenger) via the role contract in the task, not at the tool layer.
+- Send the complete state packet + role contract in each task; `{previous}` is the only cross-process channel, so every handoff must be self-contained. Because processes are disposable, the state packet must include the full prior-round ledger (every D-ID/R-ID) — the new process has no memory of earlier passes.
 - `Ctrl+C` aborts propagate to the subagent process; a killed subagent is treated as a stall under the loop contract, not an approval.
 
-### Codex (multi_agent + plugin agents)
+### Codex (subagent via prompt)
 
-Pre-define each role as a plugin agent file under `<plugin>/agents/<role>.md` with YAML frontmatter (`name`, `description`, `tools`). Dispatch via the host's subagent spawn; the parent thread acts as Coordinator.
+Codex spawns subagents by passing a role definition as the prompt to a fresh agent process — same inline-role model as Pi, no pre-registered role files. The parent thread acts as Coordinator, feeding the complete role contract + state packet as the prompt each pass. There is no fixed `agents/` folder requirement; roles are defined in the prompt, not in files the host must discover.
 
-- Reviewer/Synthesizer/Challenger: `tools` read-only (`Read, Grep, Glob, Bash`); you may set a cheaper model tier for scout-style passes.
-- Editor: `tools` include write access scoped to the artifact.
-- `subagent_start` / `subagent_stop` hooks fire on each dispatch and may load matching SOP context.
+- Scout-style passes (reviewer/challenger) may use a cheaper model tier; solver passes (editor/synthesizer) use the default.
+- The Editor role may need write access scoped to the artifact; pass that scope in the prompt.
+- Do not poll for completion — use the host's notification mechanism. A parent that polls `Waiting for agents` in a loop is a bug, not progress; if no agent is actually running, stop and re-resolve dispatch.
+- Roles and accumulated state are carried by the prompt each pass, mirroring Pi's disposable-process model.
 
 ### tmux (external isolation)
 
@@ -101,19 +106,19 @@ State the dispatch metadata to the user **once, before entering the adversarial 
 
 `Topic` is the user's original question/problem for this run (one line; refine inside the loop, not in this banner). `Roles` lists every adversarial role this skill needs with the model that role will actually run on and the readiness you verified in Capability Detection:
 
-- **Model:** read it from the registered agent file's `model` field. If the file has no `model` field (the shipped examples intentionally omit it), pass the current harness default model — the same model the main agent (Coordinator) is running on (Pi: `PI_MODEL`; Codex: the session default). Report that model name; do not invent a provider-specific one.
-- **Readiness:** `ready` (registered and spawnable) or `missing` (not registered / cannot be confirmed). A host that advertises dispatch but has no loaded role agent will accept the call and then idle — `Waiting for agents` / `No agents completed yet` in a loop with no role pass ever running — so report the unverified agent as `missing`, not `ready`.
+- **Model:** the carrier inherits the current harness model — the same model the main agent (Coordinator) is running on (Pi: `PI_MODEL`; Codex: the session default). Report that model name; do not invent a provider-specific one.
+- **Readiness:** on Pi, `ready` means the carrier agent (`pi-agent`) is registered and spawnable; `missing` means it is not (run `csl-agent-kit install --target pi`, or fall back). On Codex, `ready` means the host can spawn an agent process by prompt; `missing` means it cannot. A host that accepts the spawn call but runs no agent will idle on `Waiting for agents` — report that as `missing`, not `ready`.
 
-Example, adversarial-deliberate on a host where both example agents were copied in without a `model` field:
+Example, adversarial-deliberate on Pi after `csl-agent-kit install --target pi`:
 
 ```text
 | Dispatch metadata |                                                                    |
 |-------------------|--------------------------------------------------------------------|
 | Topic             | Should we ship the new cache layer before or after the API split? |
 | Host              | Codex                                                              |
-| Dispatch mode     | SUBAGENT (Codex)                                                   |
-| Isolation         | isolated                                                           |
-| Roles             | synthesizer (<harness default>, ready), challenger (<harness default>, ready) |
+| Dispatch mode     | SUBAGENT (Pi)                                                     |
+| Isolation         | isolated                                                          |
+| Roles             | synthesizer (glm-5.2, ready), challenger (glm-5.2, ready)         |
 ```
 
 ### Enter the loop or ask
