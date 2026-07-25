@@ -11,12 +11,15 @@ Before the first role pass, detect whether the host can dispatch an isolated sub
 3. A `tmux` session is available and a non-interactive `pi`/`codex` invocation can run in a separate pane.
 4. None of the above — inline fallback.
 
-Record the chosen mode once per run:
+Detecting the capability is not enough — you must also confirm the role agents are actually registered and spawnable on this host before choosing `SUBAGENT`. A host that advertises `multi_agent` but has no loaded role agent will accept the dispatch call and then idle: the parent session prints `Waiting for agents` / `No agents completed yet` in a loop with no role pass ever running. To prevent that, verify readiness, do not merely assume it:
 
-```text
-DISPATCH MODE: SUBAGENT (<host>) | INLINE-FALLBACK
-ISOLATION: isolated | simulated
-```
+- Pi: the role agent file exists under `~/.pi/agent/agents/` (user scope) or `.pi/agents/` (project scope) and the `subagent` tool lists it as available.
+- Codex: the role is loadable from the plugin `agents/` directory and `multi_agent` is actually enabled in the active config — not just advertised by the host. If you cannot confirm the agent is registered, treat dispatch as unavailable and fall back.
+- tmux: a `tmux` session exists and a non-interactive `pi`/`codex` invocation starts without error in a test pane.
+
+If any role agent cannot be confirmed ready, downgrade the whole run to `INLINE-FALLBACK` for that host. Do not enter the loop in `SUBAGENT` mode on an unverified dispatch path.
+
+Record the chosen mode and per-role readiness once per run (this is what the disclosure table in the next section prints):
 
 Never claim `isolated` under inline fallback. Under `INLINE-FALLBACK`, set `ISOLATION: simulated` and proceed with the role-separation rules below.
 
@@ -24,7 +27,7 @@ Never claim `isolated` under inline fallback. Under `INLINE-FALLBACK`, set `ISOL
 
 Each adversarial role maps to one subagent. Reuse the same subagent identity across passes within a run; do not spawn a fresh process per round unless the role contract requires a replacement.
 
-Example agent definitions live under each skill's `examples/agents/` and are ready to copy into the host's agent directory (Pi: `~/.pi/agent/agents/`; Codex: plugin `agents/`). They are inner-role templates — they restate the role contract from the skill's references so the subagent is self-contained.
+Example agent definitions live under each skill's `examples/agents/` and are ready to copy into the host's agent directory (Pi: `~/.pi/agent/agents/`; Codex: plugin `agents/`). They are inner-role templates — they restate the role contract from the skill's references so the subagent is self-contained. The example files intentionally omit a `model` field: model names are provider-specific (`sonnet` is meaningless on Codex; `gpt-*` is meaningless on Pi), so each host resolves the model from its own default or an override you set after copying the file in.
 
 | Skill | Role | Subagent identity | Example file | Constraint carried into its system prompt |
 |-------|------|-------------------|--------------|-------------------------------------------|
@@ -54,9 +57,9 @@ subagent tool, chain:
 
 ### Codex (multi_agent + plugin agents)
 
-Pre-define each role as a plugin agent file under `<plugin>/agents/<role>.md` with YAML frontmatter (`name`, `description`, `tools`, `model`). Dispatch via the host's subagent spawn; the parent thread acts as Coordinator.
+Pre-define each role as a plugin agent file under `<plugin>/agents/<role>.md` with YAML frontmatter (`name`, `description`, `tools`). Dispatch via the host's subagent spawn; the parent thread acts as Coordinator.
 
-- Reviewer/Synthesizer/Challenger: `tools` read-only (`Read, Grep, Glob, Bash`); `model` may be a cheaper tier for scout-style passes.
+- Reviewer/Synthesizer/Challenger: `tools` read-only (`Read, Grep, Glob, Bash`); you may set a cheaper model tier for scout-style passes.
 - Editor: `tools` include write access scoped to the artifact.
 - `subagent_start` / `subagent_stop` hooks fire on each dispatch and may load matching SOP context.
 
@@ -84,12 +87,41 @@ When no isolation capability is available, run all roles in the current context 
 
 ## Disclosure
 
-State the dispatch mode to the user before the first role pass and whenever it changes:
+State the dispatch metadata to the user **once, before entering the adversarial loop**, and again whenever it changes mid-run. This is the single point where the user sees what will be discussed and how the roles will execute; emitting it only after the loop has started (or letting the host's `Waiting for agents` spinner speak first) hides a material execution fact. Print it as the first thing after Step 0 resolves, before any role pass, as a table:
 
 ```text
-Dispatch: <SUBAGENT (Pi) | SUBAGENT (Codex) | SUBAGENT (tmux) | INLINE-FALLBACK>
-Isolation: isolated | simulated
+| Dispatch metadata |                                                                |
+|-------------------|----------------------------------------------------------------|
+| Topic             | <the question/problem this run deliberates or reviews>         |
+| Host              | <Pi | Codex | tmux | unknown>                                |
+| Dispatch mode     | <SUBAGENT (<host>) | INLINE-FALLBACK>                         |
+| Isolation         | <isolated | simulated>                                          |
+| Roles             | <role> (<model>, <ready|missing>) ...                          |
 ```
+
+`Topic` is the user's original question/problem for this run (one line; refine inside the loop, not in this banner). `Roles` lists every adversarial role this skill needs with the model that role will actually run on and the readiness you verified in Capability Detection:
+
+- **Model:** read it from the registered agent file's `model` field. If the file has no `model` field (the shipped examples intentionally omit it), pass the current harness default model — the same model the main agent (Coordinator) is running on (Pi: `PI_MODEL`; Codex: the session default). Report that model name; do not invent a provider-specific one.
+- **Readiness:** `ready` (registered and spawnable) or `missing` (not registered / cannot be confirmed). A host that advertises dispatch but has no loaded role agent will accept the call and then idle — `Waiting for agents` / `No agents completed yet` in a loop with no role pass ever running — so report the unverified agent as `missing`, not `ready`.
+
+Example, adversarial-deliberate on a host where both example agents were copied in without a `model` field:
+
+```text
+| Dispatch metadata |                                                                    |
+|-------------------|--------------------------------------------------------------------|
+| Topic             | Should we ship the new cache layer before or after the API split? |
+| Host              | Codex                                                              |
+| Dispatch mode     | SUBAGENT (Codex)                                                   |
+| Isolation         | isolated                                                           |
+| Roles             | synthesizer (<harness default>, ready), challenger (<harness default>, ready) |
+```
+
+### Enter the loop or ask
+
+- **All roles `ready`:** enter `SUBAGENT` mode immediately. Do not ask the user; isolation is the stronger default.
+- **Any role `missing`:** do not enter the loop. Present the table above and ask the user a single yes/no question whether to proceed in `INLINE-FALLBACK` (roles run inline with `ISOLATION: simulated`). Only enter `INLINE-FALLBACK` after explicit user confirmation; if the user declines, stop and wait for them to register the missing agent(s) or resolve the dispatch path.
+
+Never auto-downgrade silently, and never enter the loop on an unverified dispatch path. Entering the loop with an unregistered role agent is exactly the state that produces the empty `Waiting for agents` cycle.
 
 A `simulated` Reviewer/Challenger is weaker evidence than an isolated one. Do not treat inline convergence as stronger than it is: a `SUFFICIENT`/`APPROVED` reached under `simulated` isolation must be reported with that caveat, and the loop must not silently upgrade `simulated` to `isolated` between rounds.
 

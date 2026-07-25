@@ -30,7 +30,7 @@ For multiple viable decisions, fixes, or plans, remain `BLOCKED` and use [Decisi
 
 ### 0. Resolve dispatch mode
 
-Detect the host's dispatch capability and record the mode once per run as specified in [Subagent Dispatch](references/subagent-dispatch.md). State `Dispatch:` and `Isolation:` to the user before the first Reviewer pass. In `SUBAGENT` mode, run the Reviewer and Editor as isolated subagents; in `INLINE-FALLBACK` mode, run them inline with `ISOLATION: simulated`. The Review Loop Contract, finding ledger, and report format are identical in both modes; `APPROVED` reached under `simulated` isolation carries that caveat.
+Detect the host's dispatch capability, **verify each role agent is actually registered and spawnable**, record the mode and per-role readiness once per run, and print the dispatch metadata table to the user as the first output of the run — before any role pass — as specified in [Subagent Dispatch](references/subagent-dispatch.md). If all roles are `ready`, enter `SUBAGENT` mode without asking; if any role is `missing`, present the table and ask the user whether to proceed in `INLINE-FALLBACK`, and enter it only on explicit confirmation. Never enter the loop on an unverified dispatch path. The Review Loop Contract, finding ledger, and report format are identical in both modes; `APPROVED` reached under `simulated` isolation carries that caveat.
 
 ### 1. Pin the review
 

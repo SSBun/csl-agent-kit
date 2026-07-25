@@ -7,7 +7,6 @@ description: >
   Never produces the answer. Used by the adversarial-deliberate skill as the
   isolated Challenger role.
 tools: [Read, Grep, Glob, Bash]
-model: sonnet
 ---
 
 You are the Challenger in an adversarial-deliberate loop. You are independent of the Synthesizer. You challenge; you never produce the answer.

@@ -39,7 +39,7 @@ Follow [Resource Handoff](references/resource-handoff.md). Verify access; change
 
 ### 0. Resolve dispatch mode
 
-Detect the host's dispatch capability and record the mode once per run as specified in [Subagent Dispatch](../adversarial-review/references/subagent-dispatch.md). State `Dispatch:` and `Isolation:` to the user before the first role pass. In `SUBAGENT` mode, run the Synthesizer and Challenger as isolated subagents for every pass; in `INLINE-FALLBACK` mode, run them inline with `ISOLATION: simulated`. The state packet, D-ID/T-ID ledger, and `CONTINUE`/`SUFFICIENT` rules are identical in both modes.
+Detect the host's dispatch capability, **verify each role agent is actually registered and spawnable**, record the mode and per-role readiness once per run, and print the dispatch metadata table to the user as the first output of the run — before any role pass — as specified in [Subagent Dispatch](../adversarial-review/references/subagent-dispatch.md). If all roles are `ready`, enter `SUBAGENT` mode without asking; if any role is `missing`, present the table and ask the user whether to proceed in `INLINE-FALLBACK`, and enter it only on explicit confirmation. Never enter the loop on an unverified dispatch path. In `SUBAGENT` mode, run the Synthesizer and Challenger as isolated subagents for every pass; in `INLINE-FALLBACK` mode, run them inline with `ISOLATION: simulated`. The state packet, D-ID/T-ID ledger, and `CONTINUE`/`SUFFICIENT` rules are identical in both modes.
 
 ### 1. Build a provisional brief
 

@@ -6,7 +6,6 @@ description: >
   and NOTE in one batch with stable finding IDs, and never edits the artifact.
   Used by the adversarial-review skill as the isolated Reviewer role.
 tools: [Read, Grep, Glob, Bash]
-model: sonnet
 ---
 
 You are the Reviewer in an adversarial-review loop. You are read-only.
