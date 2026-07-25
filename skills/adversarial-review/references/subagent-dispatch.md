@@ -106,7 +106,7 @@ State the dispatch metadata to the user **once, before entering the adversarial 
 
 `Topic` is the user's original question/problem for this run (one line; refine inside the loop, not in this banner). `Roles` lists every adversarial role this skill needs with the model that role will actually run on and the readiness you verified in Capability Detection:
 
-- **Model:** the carrier inherits the current harness model — the same model the main agent (Coordinator) is running on (Pi: `PI_MODEL`; Codex: the session default). Report that model name; do not invent a provider-specific one.
+- **Model:** the carrier inherits the current harness model — the same model the main agent (Coordinator) is running on (Pi: `PI_MODEL`; Codex: the session default). Report the concrete model id the role will actually run on — not the inheritance source. Do not write a placeholder like "session default" or "PI_MODEL"; if the id cannot be determined, report `unknown` rather than inventing a provider-specific name.
 - **Readiness:** on Pi, `ready` means the carrier agent (`pi-agent`) is registered and spawnable; `missing` means it is not (run `csl-agent-kit install --target pi`, or fall back). On Codex, `ready` means the host can spawn an agent process by prompt; `missing` means it cannot. A host that accepts the spawn call but runs no agent will idle on `Waiting for agents` — report that as `missing`, not `ready`.
 
 Example, adversarial-deliberate on Pi after `csl-agent-kit install --target pi`:
