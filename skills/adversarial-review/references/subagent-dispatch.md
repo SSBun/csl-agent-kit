@@ -27,7 +27,7 @@ Never claim `isolated` under inline fallback. Under `INLINE-FALLBACK`, set `ISOL
 
 Each adversarial role is defined by a **role contract file** under the skill's `examples/agents/`. These are not registered as host agents — the Coordinator reads the file and inlines its full text into the task/prompt when spawning a carrier subagent each pass. Because Pi subagents are disposable processes (and Codex spawns roles via prompt the same way), role identity is carried by the contract in the prompt, not by a long-lived agent process.
 
-Role contract files intentionally omit a `model` field: the carrier inherits the current harness model (`PI_MODEL` on Pi; session default on Codex). They also omit `tools`: read-only constraints are enforced by the role contract text, not the tool layer.
+Role contract files intentionally omit a `model` field: the carrier inherits the current harness model (`PI_MODEL` on Pi; session default on Codex). Their `tools` frontmatter is **not parsed** by the carrier spawn path (only the registered carrier's frontmatter is read; the role contract is inlined into the task verbatim), so it has no runtime effect. Read-only constraints are therefore enforced by the role contract text, not the tool layer — and because the `pi-agent` carrier registers no `tools` restriction, every role subprocess has the full toolset available and abstains from mutation only by obeying its contract. This is a prompt-level guarantee, not a tool-layer sandbox; do not treat read-only roles as sandboxed.
 
 | Skill | Role | Carrier (Pi) | Role contract file (inlined into task/prompt) | Constraint carried into the role contract |
 |-------|------|--------------|----------------------------------------------|-------------------------------------------|
@@ -115,7 +115,7 @@ Example, adversarial-deliberate on Pi after `csl-agent-kit install --target pi`:
 | Dispatch metadata |                                                                    |
 |-------------------|--------------------------------------------------------------------|
 | Topic             | Should we ship the new cache layer before or after the API split? |
-| Host              | Codex                                                              |
+| Host              | Pi                                                                 |
 | Dispatch mode     | SUBAGENT (Pi)                                                     |
 | Isolation         | isolated                                                          |
 | Roles             | synthesizer (glm-5.2, ready), challenger (glm-5.2, ready)         |
@@ -124,7 +124,7 @@ Example, adversarial-deliberate on Pi after `csl-agent-kit install --target pi`:
 ### Enter the loop or ask
 
 - **All roles `ready`:** enter `SUBAGENT` mode immediately. Do not ask the user; isolation is the stronger default.
-- **Any role `missing`:** do not enter the loop. Present the table above and ask the user a single yes/no question whether to proceed in `INLINE-FALLBACK` (roles run inline with `ISOLATION: simulated`). Only enter `INLINE-FALLBACK` after explicit user confirmation; if the user declines, stop and wait for them to register the missing agent(s) or resolve the dispatch path.
+- **Any role `missing`:** do not enter the loop. Present the table above and ask the user a single yes/no question whether to proceed in `INLINE-FALLBACK` (roles run inline with `ISOLATION: simulated`). Only enter `INLINE-FALLBACK` after explicit user confirmation; if the user declines, stop and wait for them to resolve the dispatch path (on Pi: run `csl-agent-kit install --target pi` to register the `pi-agent` carrier).
 
 Never auto-downgrade silently, and never enter the loop on an unverified dispatch path. Entering the loop with an unregistered role agent is exactly the state that produces the empty `Waiting for agents` cycle.
 
