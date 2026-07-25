@@ -8,6 +8,7 @@ description: Run a fail-closed, uncapped Reviewer–Editor loop for code, PRDs, 
 ## Gate Contract
 
 - Start `BLOCKED` with distinct Reviewer and Editor agents.
+- Prefer real isolated subagents for the Reviewer and Editor when the host can dispatch them; fall back to inline role-play with `ISOLATION: simulated` disclosed. Follow [Subagent Dispatch](references/subagent-dispatch.md).
 - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.
 - `APPROVED` is review evidence, not external-action authorization.
 - Set no total round or cycle limit. Continue by review state under [Review Loop Contract](references/review-loop.md).
@@ -26,6 +27,10 @@ Reuse the Reviewer. A replacement receives the complete state, artifact, availab
 For multiple viable decisions, fixes, or plans, remain `BLOCKED` and use [Decision Consensus Gate](references/decision-consensus.md) before choosing one.
 
 ## Workflow
+
+### 0. Resolve dispatch mode
+
+Detect the host's dispatch capability and record the mode once per run as specified in [Subagent Dispatch](references/subagent-dispatch.md). State `Dispatch:` and `Isolation:` to the user before the first Reviewer pass. In `SUBAGENT` mode, run the Reviewer and Editor as isolated subagents; in `INLINE-FALLBACK` mode, run them inline with `ISOLATION: simulated`. The Review Loop Contract, finding ledger, and report format are identical in both modes; `APPROVED` reached under `simulated` isolation carries that caveat.
 
 ### 1. Pin the review
 

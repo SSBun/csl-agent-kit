@@ -1,5 +1,9 @@
 # 任务索引
 
+- [实现 `csl-agent-kit benchmark` 命令](todo/skill-benchmark-command.md) — In Progress (2026-07-25 11:30)
+
+- [Dispatch real subagents in adversarial skills](todo/dispatch-real-subagents-in-adversarial-skills.md) — Completed (2026-07-25 12:38)
+
 - [重构 Triggerify 并增加规则校验脚本](todo/refactor-triggerify-architecture.md) — Completed (2026-07-24 16:55)
 
 - [闭合 adversarial-deliberate 的高优先级协议缺口](todo/close-adversarial-deliberate-gaps.md) — Completed (2026-07-24 14:05)

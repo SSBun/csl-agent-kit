@@ -9,6 +9,7 @@ description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop
 
 - Use a Coordinator, a Synthesizer, and an independent Challenger. The Coordinator may synthesize, never challenge.
 - Route exchanges through the Coordinator; reuse both roles and send complete state.
+- Prefer real isolated subagents for the Synthesizer and Challenger when the host can dispatch them; fall back to inline role-play with `ISOLATION: simulated` disclosed. Follow [Subagent Dispatch](../adversarial-review/references/subagent-dispatch.md).
 - Discuss internally first. Ask only about material user-owned choices that research, reasoning, or a reversible default cannot settle.
 - Process every related topic and visible issue per pass; never drip-feed known issues.
 - Set no round limit. Use `CONTINUE` only for a material open issue with a concrete next-pass change; otherwise stop or pause.
@@ -35,6 +36,10 @@ Give each topic a fixed T-ID. Allocate D-IDs monotonically; never reuse or renum
 Follow [Resource Handoff](references/resource-handoff.md). Verify access; changed resources invalidate dependent conclusions.
 
 ## Workflow
+
+### 0. Resolve dispatch mode
+
+Detect the host's dispatch capability and record the mode once per run as specified in [Subagent Dispatch](../adversarial-review/references/subagent-dispatch.md). State `Dispatch:` and `Isolation:` to the user before the first role pass. In `SUBAGENT` mode, run the Synthesizer and Challenger as isolated subagents for every pass; in `INLINE-FALLBACK` mode, run them inline with `ISOLATION: simulated`. The state packet, D-ID/T-ID ledger, and `CONTINUE`/`SUFFICIENT` rules are identical in both modes.
 
 ### 1. Build a provisional brief
 

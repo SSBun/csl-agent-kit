@@ -14,8 +14,13 @@ compatibility:
     mode: "manual"
     paths: []
   execution:
-    context: "inline"
+    context: "isolation-preferred, inline-fallback"
     shell: "bash"
+    dispatch:
+      prefer: "subagent"
+      fallback: "inline"
+      roles: ["synthesizer", "challenger"]
+      disclosure: "required-on-simulated"
   trust:
     source_tier: "local"
     remote_inline_execution: "forbid"
