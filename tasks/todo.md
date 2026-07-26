@@ -1,8 +1,8 @@
 # 任务索引
 
-- [CSL Task Overlay Pi Extension](todo/csl-task-overlay-extension.md) — Completed (2026-07-26 16:20)
+- [修复 CLI 安装启动与任务状态刷新](todo/fix-cli-install-and-task-overlay-refresh.md) — Completed (2026-07-26 18:14)
 
-- [实现 `csl-agent-kit benchmark` 命令](todo/skill-benchmark-command.md) — Aborted (2026-07-26 16:30)
+- [CSL Task Overlay Pi Extension](todo/csl-task-overlay-extension.md) — Completed (2026-07-26 16:20)
 
 - [Dispatch real subagents in adversarial skills](todo/dispatch-real-subagents-in-adversarial-skills.md) — Completed (2026-07-25 12:38)
 

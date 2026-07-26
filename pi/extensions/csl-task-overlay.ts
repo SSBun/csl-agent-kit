@@ -8,8 +8,7 @@
  *
  * Refresh triggers:
  *   - `session_start`: initial paint for the foreground session.
- *   - `tool_execution_end` on write/edit/bash that touch `tasks/todo.md` or
- *     `tasks/todo/*.md`: re-read and repaint.
+ *   - `tool_execution_end` after write/edit/bash: re-read and repaint.
  *   - `/csl-tasks` command: print the full list grouped by status.
  *
  * Headless (`ctx.hasUI === false`): no widget, no side effects.
@@ -230,35 +229,6 @@ function refresh(pi: ExtensionAPI, ctx: { ui: ExtensionUIContext; cwd: string; h
 	ctx.ui.setWidget(WIDGET_KEY, rows.length > 0 ? rows : undefined, { placement: "aboveEditor" });
 }
 
-/**
- * Heuristic: did a tool execution just touch the task index or a task file?
- * Used to decide whether `tool_execution_end` should trigger a refresh.
- */
-function touchedTasks(toolName: string, input: unknown): boolean {
-	const path = extractPath(toolName, input);
-	if (!path) return false;
-	const normalized = path.replace(/\\/g, "/");
-	return (
-		normalized.endsWith(TODO_INDEX) ||
-		normalized.endsWith("todo.md") ||
-		/\/tasks\/todo\//.test(normalized)
-	);
-}
-
-function extractPath(toolName: string, args: unknown): string | undefined {
-	if (typeof args !== "object" || args === null) return undefined;
-	const record = args as Record<string, unknown>;
-	if (toolName === "write" || toolName === "edit" || toolName === "read") {
-		const p = record.path ?? record.filePath;
-		return typeof p === "string" ? p : undefined;
-	}
-	if (toolName === "bash") {
-		const cmd = record.command;
-		return typeof cmd === "string" ? cmd : undefined;
-	}
-	return undefined;
-}
-
 // Re-declare the slice of ExtensionUIContext we use, to avoid importing the
 // full type (keeps the file decoupled and the compile gate cheap).
 interface ExtensionUIContext {
@@ -278,29 +248,16 @@ interface RefreshCtx {
 }
 
 export default function cslTaskOverlay(pi: ExtensionAPI): void {
-	// tool_execution_end has no input field; cache whether the matching
-	// tool_call touched tasks, keyed by toolCallId, so the post-execution
-	// refresh knows whether to repaint.
-	const touchedByCallId = new Map<string, boolean>();
-
 	pi.on("session_start", async (_event, ctx) => {
 		refresh(pi, ctx as RefreshCtx);
 	});
 
-	pi.on("tool_call", async (event) => {
-		const touched = touchedTasks(event.toolName, event.input);
-		touchedByCallId.set(event.toolCallId, touched);
-		// A write to a task body changes its Target progress; invalidate the
-		// cache so the post-execution refresh recomputes it from disk.
-		if (touched) invalidateProgressCache(process.cwd());
-	});
-
 	pi.on("tool_execution_end", async (event, ctx) => {
-		if (event.isError) return;
-		if (touchedByCallId.get(event.toolCallId)) {
-			touchedByCallId.delete(event.toolCallId);
-			refresh(pi, ctx as RefreshCtx);
-		}
+		if (!["write", "edit", "bash"].includes(event.toolName)) return;
+		// Task-body writes change Target progress; use the active session cwd so
+		// a session opened from another directory cannot retain stale progress.
+		invalidateProgressCache(ctx.cwd);
+		refresh(pi, ctx as RefreshCtx);
 	});
 
 	pi.registerCommand("csl-tasks", {

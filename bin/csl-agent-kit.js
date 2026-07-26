@@ -4,7 +4,6 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const triggerify = require("../skills/triggerify/scripts/triggerify.js");
-const benchmark = require("../scripts/benchmark-cli.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -56,11 +55,6 @@ async function main() {
 
   if (command === "triggerify") {
     process.exit(triggerify.runCli(args));
-  }
-
-  if (command === "benchmark") {
-    await benchmark.run();
-    return;
   }
 
   if (command === "install") {
@@ -567,7 +561,7 @@ function flatten(value) {
 }
 
 function printHelp() {
-  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit triggerify <command> [options]\n  csl-agent-kit benchmark --skill <name> [options]\n\nRun \"csl-agent-kit install --help\", \"csl-agent-kit triggerify help\", or \"csl-agent-kit benchmark --help\" for details.`);
+  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit triggerify <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit triggerify help\" for details.`);
 }
 
 function printInstallHelp() {
