@@ -202,6 +202,15 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/todo.md` 渲染最近 6 个任务的实时进度面板（状态 emoji + Target checkbox 进度），在编辑器上方显示；通过 `tool_call`/`tool_execution_end` 配对检测任务文件变更并自动刷新；提供 `/csl-tasks` 命令按状态分组打印完整列表。
 
+**启用/禁用扩展或技能：** 装完整包后，用 pi 原生命令精细控制：
+
+```bash
+pi config          # 全局：启用/禁用包资源（skills + extensions）
+pi config -l       # 项目级：覆盖全局设置（写入 .pi/settings.json）
+```
+
+TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无需手动编辑 `settings.json`。
+
 Fast Mode usage:
 
 ```bash
