@@ -2,6 +2,8 @@
 
 - [修复 CLI 安装启动与任务状态刷新](todo/fix-cli-install-and-task-overlay-refresh.md) — Completed (2026-07-26 18:14)
 
+- [Replace Pi example subagent extension with pi-subagents](todo/replace-pi-example-subagent-extension.md) — Completed (2026-07-26 18:14)
+
 - [CSL Task Overlay Pi Extension](todo/csl-task-overlay-extension.md) — Completed (2026-07-26 16:20)
 
 - [Dispatch real subagents in adversarial skills](todo/dispatch-real-subagents-in-adversarial-skills.md) — Completed (2026-07-25 12:38)
