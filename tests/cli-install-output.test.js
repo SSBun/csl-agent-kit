@@ -201,7 +201,6 @@ test("vendored third-party skills retain their upstream source metadata", () => 
     "resolving-merge-conflicts": "skills/engineering/resolving-merge-conflicts",
     tdd: "skills/engineering/tdd",
     teach: "skills/productivity/teach",
-    "ubiquitous-language": "skills/deprecated/ubiquitous-language",
     "writing-great-skills": "skills/productivity/writing-great-skills",
   };
   const leafNames = readdirSync(vendorRoot, { withFileTypes: true })
@@ -218,7 +217,7 @@ test("vendored third-party skills retain their upstream source metadata", () => 
       ref: "main",
       commit: "66898f60e8c744e269f8ce06c2b2b99ce7660d5f",
       license: "MIT",
-      upstreamStatus: name === "ubiquitous-language" ? "deprecated" : "active",
+      upstreamStatus: "active",
     });
   }
 });

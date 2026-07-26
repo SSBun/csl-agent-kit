@@ -22,7 +22,6 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | handoff | `/csl:handoff` | `/handoff` | 将当前对话压缩为可继续工作的交接文档。 |
 | teach | `/csl:teach` | `/teach` | 在当前工作区中分多轮教授概念或技能。 |
 | writing-great-skills | `/csl:writing-great-skills` | `/writing-great-skills` | 编写和维护高质量 Agent Skill 的参考。 |
-| ubiquitous-language | `/csl:ubiquitous-language` | `/ubiquitous-language` | 提取 DDD 风格术语表；该技能在上游已废弃，但按用户选择保留。 |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
 | code-reviewer | `/csl:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
 | adversarial-review | `/csl:adversarial-review` | `/adversarial-review` | 以不限轮次、状态驱动的 Reviewer–Editor 闭环审查代码、PRD、RFC、设计文档等交付物。 |
