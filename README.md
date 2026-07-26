@@ -200,6 +200,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-reviewer`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：桥接 Triggerify 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
+- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/todo.md` 渲染最近 6 个任务的实时进度面板（状态 emoji + Target checkbox 进度），在编辑器上方显示；通过 `tool_call`/`tool_execution_end` 配对检测任务文件变更并自动刷新；提供 `/csl-tasks` 命令按状态分组打印完整列表。
 
 Fast Mode usage:
 
