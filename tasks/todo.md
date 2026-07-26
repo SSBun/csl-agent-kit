@@ -1,6 +1,6 @@
 # 任务索引
 
-- [实现 `csl-agent-kit benchmark` 命令](todo/skill-benchmark-command.md) — In Progress (2026-07-25 11:30)
+- [实现 `csl-agent-kit benchmark` 命令](todo/skill-benchmark-command.md) — Aborted (2026-07-26 16:30)
 
 - [Dispatch real subagents in adversarial skills](todo/dispatch-real-subagents-in-adversarial-skills.md) — Completed (2026-07-25 12:38)
 
@@ -34,7 +34,7 @@
 - [Design the Triggerify event automation RFC](todo/design-triggerify-rfc.md) — Completed (2026-07-22 17:07)
 
 - [研究 Agent 任务记录格式最佳实践](todo/research-task-record-format.md) — Completed (2026-07-22 11:51)
-- [为任务状态增加分钟级时间戳](todo/add-task-status-minute-timestamps.md) — In Progress (2026-07-22 12:52)
+- [为任务状态增加分钟级时间戳](todo/add-task-status-minute-timestamps.md) — Aborted (2026-07-26 16:30)
 - [Rename conventions to standing-orders and harden the skill](todo/rename-conventions-to-standing-orders.md) — Completed (2026-07-22 11:04)
 - [用 conventions skill 取代 tips](todo/retire-tips-and-add-conventions-skill.md) — Completed (2026-07-21)
 - [Install Super Agent via CLI & Retire Skill](todo/install-super-agent-via-cli-and-retire-skill.md) — Completed (2026-07-21)
@@ -50,7 +50,7 @@
 - [重构 adversarial-discuss 的角色与批量讨论流程](todo/redesign-adversarial-discuss-workflow.md) — 已完成（2026-07-21）
 - [让 adversarial review 基于共同原则独立审议](todo/principled-adversarial-review.md) — 已完成（2026-07-20）
 - [提交当前全部本地改动（2026-07-20）](todo/commit-current-worktree.md) — 已完成（2026-07-20）
-- [重写 analyze-project 双模式 skill](todo/analyze-project-skill.md) — 进行中（2026-07-19）
+- [重写 analyze-project 双模式 skill](todo/analyze-project-skill.md) — Aborted (2026-07-26 16:30)
 - [提交当前改动并拆分任务记录](todo/split-task-records.md) — 已完成（2026-07-19）
 - [将 adversarial review 报告改为文件化记录](todo/file-based-review-report.md) — 已完成（2026-07-20）
 - [设计 analyze-project 的 Learn 模式 PRD](todo/analyze-project-learn-prd.md) — 已完成（2026-07-19）
