@@ -6,6 +6,7 @@
 
 ## Components
 
+- `pi/extensions/csl-context-hooks.ts` 是 Triggerify 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
 - `pi/extensions/csl-task-overlay.ts` 以 `<ctx.cwd>/tasks/todo.md` 作为任务状态来源，任务正文只提供 Target 进度；每次 Pi 的 `write`、`edit` 或 `bash` 完成（包括失败结果）后刷新并按 `ctx.cwd` 清除进度缓存，Pi 外部修改在下一次 session/reload 或相关工具事件前不会主动可见。权威实现与回归测试为该 extension 和 `tests/pi-task-overlay.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/triggerify/scripts/triggerify.js` 是稳定 facade；V1 规则语义、文件存储、宿主无关运行时、CLI 与 Codex/Claude native hook 适配分别由 `scripts/lib/{rule,store,runtime,cli,native-hook}.js` 负责，外部宿主适配应通过 facade 的 `createEvent()` 和 `runEvent()` 接入。权威边界是这些模块导出与 `tests/triggerify.test.js`；修改跨层行为时复核两者。

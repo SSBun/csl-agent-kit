@@ -1,5 +1,6 @@
+import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -22,7 +23,32 @@ interface TriggerPrompt {
 	content: string;
 }
 
+interface ChangedFile {
+	path: string;
+	operation: "created" | "modified";
+}
+
+interface TriggerContext {
+	prompt?: string;
+	toolName?: string;
+	toolCommand?: string;
+	toolSuccess?: boolean;
+	compactTrigger?: string;
+	changedFiles?: ChangedFile[] | null;
+	nativeEvent?: string;
+}
+
 interface TriggerifyModule {
+	createEvent(input: {
+		event: string;
+		host: string;
+		workspace: string;
+		prompt?: string | null;
+		tool?: object | null;
+		compact?: object | null;
+		changedFiles?: ChangedFile[] | null;
+		nativeEvent?: string | null;
+	}): object;
 	runEvent(
 		payload: object,
 		options: { host: string; workspace: string },
@@ -54,6 +80,7 @@ const triggerify = require(
 ) as TriggerifyModule;
 
 const MUTATING_TOOLS = new Set(["bash", "edit", "write", "apply_patch"]);
+const PI_FILE_TOOLS = new Set(["edit", "write"]);
 const DESIGN_FETCH_TOOL = /mcp__.*figma.*(get_design_context|get_metadata|get_screenshot|get_figjam|get_variable_defs|get_libraries|search_design_system)|mcp__mastergo_magic_mcp.*(getDesignSections|getDsl|getD2c|getMeta|getDesignTexts|getDesignSvgs|extractSvg)/i;
 const DESIGN_REMINDER = [
 	"CSL Agent Kit reminder: Figma/MasterGo design data was fetched.",
@@ -64,9 +91,9 @@ const DESIGN_REMINDER = [
 const DEFAULT_SCRIPT_TIMEOUT = 10;
 const MAX_OUTPUT = 64 * 1024;
 
-function toolCategory(toolName: string): string | null {
+function toolCategory(toolName: string | null): string | null {
 	if (toolName === "bash") return "shell";
-	if (["edit", "write", "apply_patch"].includes(toolName)) return "file";
+	if (toolName && ["edit", "write", "apply_patch"].includes(toolName)) return "file";
 	if (typeof toolName === "string" && toolName.startsWith("mcp__")) return "mcp";
 	return toolName ? "tool" : null;
 }
@@ -78,12 +105,7 @@ function toolCategory(toolName: string): string | null {
 function buildPayload(
 	event: string,
 	workspace: string,
-	context: {
-		prompt?: string;
-		toolName?: string;
-		toolCommand?: string;
-		compactTrigger?: string;
-	},
+	context: TriggerContext,
 ) {
 	const toolName = context.toolName ?? null;
 	const tool =
@@ -92,26 +114,40 @@ function buildPayload(
 					name: toolName,
 					category: toolCategory(toolName),
 					command: context.toolCommand ?? null,
-					success: null,
+					success: context.toolSuccess ?? null,
 				}
 			: null;
 	const prompt = event === "prompt-submit" || event === "session-start" ? (context.prompt ?? null) : null;
 	const compact =
 		event === "before-compact" || event === "after-compact" ? { trigger: context.compactTrigger ?? null } : null;
-	return {
-		schema: "triggerify.event/v1",
+	return triggerify.createEvent({
 		event,
-		host: { name: "pi", version: null },
-		workspace: { root: workspace, trusted: null },
-		session: { id: null },
+		host: "pi",
+		workspace,
 		prompt,
 		tool,
-		permission: null,
 		compact,
-		subagent: null,
-		stop: null,
-		changed_files: null,
-		native: { event: null, payload: {} },
+		changedFiles: context.changedFiles ?? null,
+		nativeEvent: context.nativeEvent ?? null,
+	});
+}
+
+function pendingFileChange(
+	toolName: string,
+	input: { path?: string },
+	workspace: string,
+): ChangedFile | null {
+	if (!PI_FILE_TOOLS.has(toolName) || typeof input.path !== "string") return null;
+
+	const absolutePath = resolve(workspace, input.path);
+	const workspacePath = relative(workspace, absolutePath);
+	if (!workspacePath || workspacePath === ".." || workspacePath.startsWith(`..${sep}`) || isAbsolute(workspacePath)) {
+		return null;
+	}
+
+	return {
+		path: workspacePath.split(sep).join("/"),
+		operation: toolName === "write" && !existsSync(absolutePath) ? "created" : "modified",
 	};
 }
 
@@ -126,6 +162,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	let sops: SopSummary[] = [];
 	let activeCandidates: SopSummary[] = [];
 	let toolReminderShown = false;
+	const pendingFileChanges = new Map<string, ChangedFile>();
 
 	const refresh = () => {
 		try {
@@ -135,19 +172,14 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		}
 	};
 
-	const workspace = () => process.cwd();
-
 	/**
 	 * Run Triggerify for `event` and return the prompts to inject.
 	 * Fail open: any runtime error yields no prompts (Pi keeps running).
 	 */
-	function triggerPrompts(
-		event: string,
-		context: { prompt?: string; toolName?: string; toolCommand?: string; compactTrigger?: string } = {},
-	): TriggerPrompt[] {
+	function triggerPrompts(event: string, workspace: string, context: TriggerContext = {}): TriggerPrompt[] {
 		try {
-			const payload = buildPayload(event, workspace(), context);
-			const result = triggerify.runEvent(payload, { host: "pi", workspace: workspace() });
+			const payload = buildPayload(event, workspace, context);
+			const result = triggerify.runEvent(payload, { host: "pi", workspace });
 			return result.prompts;
 		} catch {
 			return [];
@@ -160,31 +192,29 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	 * stdout is not surfaced to the model on Pi (no inject channel for these
 	 * events). Use this for side-effect scripts (notifications, indexing).
 	 */
-	function triggerScripts(
-		event: string,
-		context: { prompt?: string; toolName?: string; toolCommand?: string; compactTrigger?: string } = {},
-	): void {
+	function triggerScripts(event: string, workspace: string, context: TriggerContext = {}): void {
 		try {
-			const payload = buildPayload(event, workspace(), context);
+			const payload = buildPayload(event, workspace, context);
 			// runEvent already executes scripts; we call it purely for its
 			// side effects here. Diagnostics are ignored on Pi.
-			triggerify.runEvent(payload, { host: "pi", workspace: workspace() });
+			triggerify.runEvent(payload, { host: "pi", workspace });
 		} catch {
 			// fail open
 		}
 	}
 
 	pi.on("session_start", async () => {
+		pendingFileChanges.clear();
 		refresh();
 	});
 
-	pi.on("session_compact", async () => {
+	pi.on("session_compact", async (_event, ctx) => {
 		refresh();
 		// after-compact: side-effect scripts only
-		triggerScripts("after-compact");
+		triggerScripts("after-compact", ctx.cwd);
 	});
 
-	pi.on("before_agent_start", async (event) => {
+	pi.on("before_agent_start", async (event, ctx) => {
 		refresh();
 		try {
 			activeCandidates = candidateModule.findCandidates(event.prompt, sops);
@@ -195,8 +225,8 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 
 		// session-start inject (session_start) + prompt-submit inject (when a
 		// prompt is present, before_agent_start fires per turn).
-		const sessionPrompts = triggerPrompts("session-start");
-		const promptPrompts = event.prompt ? triggerPrompts("prompt-submit", { prompt: event.prompt }) : [];
+		const sessionPrompts = triggerPrompts("session-start", ctx.cwd);
+		const promptPrompts = event.prompt ? triggerPrompts("prompt-submit", ctx.cwd, { prompt: event.prompt }) : [];
 
 		const triggerContext = formatTriggerContext([...sessionPrompts, ...promptPrompts], sops, activeCandidates);
 		if (!triggerContext) return undefined;
@@ -206,19 +236,20 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		};
 	});
 
-	pi.on("session_before_compact", async () => {
+	pi.on("session_before_compact", async (_event, ctx) => {
 		// before-compact: side-effect scripts only (no inject channel)
-		triggerScripts("before-compact");
+		triggerScripts("before-compact", ctx.cwd);
 		return undefined;
 	});
 
 	pi.on("tool_call", async (event, ctx) => {
 		// before-tool: Pi has no inject channel into the in-flight tool call,
 		// so only run-script side effects fire here.
-		const input = (event as { input?: { command?: string } }).input;
-		triggerScripts("before-tool", {
+		const input = (event as { input?: { command?: string } }).input ?? {};
+		triggerScripts("before-tool", ctx.cwd, {
 			toolName: event.toolName,
-			toolCommand: input?.command,
+			toolCommand: input.command,
+			nativeEvent: "tool_call",
 		});
 
 		if (toolReminderShown || activeCandidates.length === 0 || !MUTATING_TOOLS.has(event.toolName)) {
@@ -232,11 +263,28 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		return undefined;
 	});
 
-	pi.on("tool_result", async (event) => {
+	pi.on("tool_execution_start", async (event, ctx) => {
+		const change = pendingFileChange(event.toolName, event.args, ctx.cwd);
+		if (change) pendingFileChanges.set(event.toolCallId, change);
+		else pendingFileChanges.delete(event.toolCallId);
+	});
+
+	pi.on("tool_result", async (event, ctx) => {
+		const input = (event as { input?: { command?: string; path?: string } }).input ?? {};
+		const pendingChange = pendingFileChanges.get(event.toolCallId) ?? pendingFileChange(event.toolName, input, ctx.cwd);
+		pendingFileChanges.delete(event.toolCallId);
+		let changedFiles: ChangedFile[] | null = null;
+		if (PI_FILE_TOOLS.has(event.toolName)) {
+			changedFiles = !event.isError && pendingChange ? [pendingChange] : [];
+		}
+
 		// after-tool inject: rewrite tool_result content with Triggerify prompts.
-		const prompts = triggerPrompts("after-tool", {
+		const prompts = triggerPrompts("after-tool", ctx.cwd, {
 			toolName: event.toolName,
-			toolCommand: undefined,
+			toolCommand: input.command,
+			toolSuccess: !event.isError,
+			changedFiles,
+			nativeEvent: "tool_result",
 		});
 		const triggerBlock = prompts.length > 0 ? `\n\n${formatPrompts(prompts)}` : "";
 
@@ -252,9 +300,9 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		};
 	});
 
-	pi.on("agent_end", async () => {
+	pi.on("agent_end", async (_event, ctx) => {
 		// stop: side-effect scripts only
-		triggerScripts("stop");
+		triggerScripts("stop", ctx.cwd);
 		return undefined;
 	});
 }
