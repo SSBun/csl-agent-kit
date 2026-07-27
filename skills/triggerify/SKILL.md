@@ -14,7 +14,7 @@ Validate proposed rule files with `node scripts/validate-rules.js [--scope globa
 ## Boundaries
 
 - Use global rules for runtime execution; project rules remain metadata-only.
-- Inner scope (`inner:*`) ships read-only hooks with the triggerify skill (e.g. `inner:simple-rules`). Inspect with `list`/`show`; do not create, update, delete, or toggle them — change the skill source instead.
+- Inner scope (`inner:*`) ships hooks with the triggerify skill (e.g. `inner:simple-rules`). Hook source is read-only: do not create, update, or delete it through the CLI. All inner hooks default enabled; `enable`/`disable` persists user choices in `$CSL_AGENT_KIT_HOME/triggerify/config.json` (default `~/.csl-agent-kit/triggerify/config.json`). Optional `hookSettings` are keyed by qualified inner ID; runtime passes only the matching object to that script as JSON in `TRIGGERIFY_HOOK_CONFIG`.
 - Codex is the reference host: all events support inject/script (and block where the protocol allows). Claude Code shares Codex's hook protocol and is now supported at parity.
 - Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result); script runs as a best-effort side effect on all supported events. A `run-script` rule with `inject-output: true` additionally surfaces the script stdout as an injected prompt on inject-capable events. Block and permission/subagent events are not physically realizable on Pi and remain unsupported.
 - Use Triggerify for persistent automation, direct commands for one-time work, and native Git hooks for Git enforcement.
@@ -22,7 +22,7 @@ Validate proposed rule files with `node scripts/validate-rules.js [--scope globa
 ## Workflow
 
 1. Identify timing, action, scope, description, and the smallest condition.
-2. Run `list`; use `show` before changing an existing rule.
+2. Run `list`; use `show` before changing an existing rule. For inner hooks, inspect Default, Override, Configured, and Effective before toggling.
 3. Keep `run-script` executables with valid shebangs inside the permitted directory.
 4. Run the CLI mutation, then `show <qualified-id>` and inspect configured, validation, trust, support, effective, and reasons.
 5. Report the ID, diagnostics, script readiness, host limits, and effective state.
@@ -46,6 +46,7 @@ For explicit future-session persistence, use one global `session-start` / `injec
 ## Safety and Operations
 
 - Create only unused IDs. Successful storage does not prove host activation.
+- Treat an invalid inner config as fail-closed for inner hooks; repair it before calling any inner hook active.
 - Update only requested fields; preserve enabled state. Rename by create, verify, delete.
 - Enable/disable changes configured state only. Preserve scripts on rule deletion unless separately requested.
 - Audit with `list` and `show`; report diagnostics, support, trust, and state without executing actions.

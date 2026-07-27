@@ -1,5 +1,7 @@
 # 任务索引
 
+- [Triggerify inner hook 用户配置](todo/triggerify-inner-hook-config.md) — Completed (2026-07-27 18:22)
+
 - [triggerify inner scope + simple-rules 内置 hook](todo/inner-scope-simple-rules.md) — Completed
 - [深入研究 pi-simplify](todo/research-pi-simplify.md) — Completed (2026-07-26 23:25)
 

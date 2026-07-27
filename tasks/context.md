@@ -9,6 +9,7 @@
 - `pi/extensions/csl-task-overlay.ts` 以 `<ctx.cwd>/tasks/todo.md` 作为任务状态来源，任务正文只提供 Target 进度；每次 Pi 的 `write`、`edit` 或 `bash` 完成（包括失败结果）后刷新并按 `ctx.cwd` 清除进度缓存，Pi 外部修改在下一次 session/reload 或相关工具事件前不会主动可见。权威实现与回归测试为该 extension 和 `tests/pi-task-overlay.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/triggerify/scripts/triggerify.js` 是稳定 facade；V1 规则语义、文件存储、宿主无关运行时、CLI 与 Codex/Claude native hook 适配分别由 `scripts/lib/{rule,store,runtime,cli,native-hook}.js` 负责，外部宿主适配应通过 facade 的 `createEvent()` 和 `runEvent()` 接入。权威边界是这些模块导出与 `tests/triggerify.test.js`；修改跨层行为时复核两者。
+- Triggerify inner hooks 从 `skills/triggerify/hooks/` 随包分发、默认启用且源文件不可由 CLI 创建/更新/删除；用户通过 `<data-root>/triggerify/config.json` 的 `disabledHooks` 控制启用状态，并可用 qualified ID 键控的 `hookSettings` 保存专属设置。配置无效时仅 inner hooks fail-closed；运行时只把当前 hook 的设置作为 `TRIGGERIFY_HOOK_CONFIG` 传给脚本，stdin event payload 不变。`inner:refresh-tab-title` 的状态也必须写入 data root，不能写入 skill 源目录；权威实现与回归入口为 `store.js`、`runtime.js`、`cli.js` 和 `tests/triggerify.test.js`。
 - `skills/triggerify/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 trigger Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `triggerify show` 为准。权威入口是该脚本与 `skills/triggerify/SKILL.md`。
 - `skills/triggerify/` 是 Triggerify V1 的共享管理与运行核心；规则可选 `description` 为单行、非空、无控制字符且最多 160 字符，qualified ID 仍由文件名决定，`list`/`show` 负责展示。`csl-agent-kit triggerify` 提供 create/list/show/update/enable/disable/delete 恢复控制面，`hooks/hooks.json` 将 Codex/Claude 生命周期事件映射到同一 dispatcher，Pi extension 在每次 `before_agent_start` 加载全局 `session-start` Prompt 规则。Codex hook payload 不提供 workspace trust verdict，因此运行时只加载 global rules，项目 `list` 保持 metadata-only；Claude Code 和 Pi 目前只验证了 `session-start` Prompt 注入，Cursor V1 因宿主仍丢弃 `additional_context` 而保持 unsupported。
 
@@ -34,7 +35,7 @@
 ## Decisions and Conventions
 
 - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
-- 新建或更新任务状态时，`tasks/todo.md` 与 canonical task 文件使用完全一致的 `Status (YYYY-MM-DD HH:MM)` 本地时间文本；不批量改写未触及的历史任务。
+- 新建或更新任务状态时，canonical task 使用 `Status: <state> (YYYY-MM-DD HH:MM)`，`tasks/todo.md` 使用完全一致的 `<state> (YYYY-MM-DD HH:MM)`；不批量改写未触及的历史任务。
 - `skills/workspace-workflow/` 以三个独立 leaf skills 承载默认 Agent 的工作区记录流程：`workspace-maintain-context` 只保留已确认、项目特有、会改变未来判断且可复核的事实，并要求易变边界有权威入口、复核触发，临时事实有事件型退出；`workspace-manage-task` 维护任务契约、状态与 adversarial-review 交接，`workspace-capture-lessons` 在工作前应用相关经验并在纠正后维护可复用规则。`super-agent/AGENTS.md` 保留稳定触发、文件职责与跳过边界，`super-agent/workspace-workflow-gates.md` 固定 SessionStart/PostCompact 的五步调度顺序，三个 skills 拥有易变执行契约。Workflow skill 的核心操作契约完整保留在主 `SKILL.md`，准确性和完整性优先于 Yao 的 1000-token 初始加载预算。Codex 与 Cursor 从 skills 根递归发现，Pi 动态递归注册别名，Claude manifest 显式列出三个 leaf 路径。
 - 可分发默认 `AGENTS.md` 保留稳定的通用原则与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证；独立审查门禁固定为 `Explicit OR Critical OR (Complex AND Verification Gap)`，否则记录 `Skipped` 并在常规验证通过后直接完成。
 - `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。

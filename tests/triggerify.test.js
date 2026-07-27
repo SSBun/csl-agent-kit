@@ -7,6 +7,9 @@ const path = require("node:path");
 const test = require("node:test");
 
 const triggerify = require("../skills/triggerify/scripts/triggerify.js");
+const triggerifyRuntime = require("../skills/triggerify/scripts/lib/runtime.js");
+const triggerifyStore = require("../skills/triggerify/scripts/lib/store.js");
+const titleHook = require("../skills/triggerify/scripts/refresh-tab-title.js");
 const ruleValidator = require("../skills/triggerify/scripts/validate-rules.js");
 const codexProtocol = require("../skills/triggerify/references/codex-protocol.json");
 const sessionStartProtocols = require("../skills/triggerify/references/session-start-protocols.json");
@@ -548,14 +551,130 @@ test("inner scope ships a read-only simple-rules hook that injects non-empty fil
   }
 });
 
-test("CLI rejects create/update/delete/toggle on the read-only inner scope", () => {
+test("inner hooks default enabled and persist user disable/enable state", { concurrency: false }, () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-inner-config-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  const output = [];
+  const errors = [];
+  const io = { log: (line) => output.push(line), error: (line) => errors.push(line) };
+
+  try {
+    assert.equal(triggerify.runCli(["show", "inner:simple-rules", "--host", "pi", "--json"], io), 0);
+    let status = JSON.parse(output.pop());
+    assert.equal(status.default, "enabled");
+    assert.equal(status.override, "none");
+    assert.equal(status.configured, "enabled");
+    assert.equal(status.effective, "active");
+
+    assert.equal(triggerify.runCli(["disable", "inner:simple-rules"], io), 0);
+    const configFile = path.join(data, "triggerify", "config.json");
+    assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")), {
+      schema: "triggerify.config/v1",
+      disabledHooks: ["inner:simple-rules"],
+    });
+    assert.equal(fs.statSync(configFile).mode & 0o777, 0o600);
+
+    assert.equal(triggerify.runCli(["list", "--scope", "inner", "--host", "pi", "--json"], io), 0);
+    const inner = JSON.parse(output.pop());
+    status = inner.find((item) => item.id === "inner:simple-rules");
+    assert.equal(status.override, "disabled");
+    assert.equal(status.configured, "disabled");
+    assert.equal(status.effective, "inactive");
+    assert.ok(status.reasons.includes("inner-disabled-by-user"));
+    const titleStatus = inner.find((item) => item.id === "inner:refresh-tab-title");
+    assert.equal(titleStatus.configured, "enabled");
+    assert.equal(titleStatus.validation, "valid");
+    assert.equal(titleStatus.effective, "active");
+
+    fs.writeFileSync(path.join(data, "simple-rules.md"), "- enabled again\n");
+    let payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
+    assert.equal(triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:simple-rules"), false);
+
+    assert.equal(triggerify.runCli(["enable", "inner:simple-rules"], io), 0);
+    assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")).disabledHooks, []);
+    payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
+    assert.equal(triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:simple-rules"), true);
+
+    const hookSettings = { "inner:refresh-tab-title": { model: "openai-codex/gpt-5.4-mini" } };
+    fs.writeFileSync(configFile, `${JSON.stringify({ schema: "triggerify.config/v1", disabledHooks: [], hookSettings })}\n`);
+    assert.equal(triggerify.runCli(["disable", "inner:simple-rules"], io), 0);
+    assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")).hookSettings, hookSettings);
+    assert.deepEqual(
+      triggerifyStore.discover("inner", data).find((entry) => entry.id === "inner:refresh-tab-title").hookConfig,
+      hookSettings["inner:refresh-tab-title"],
+    );
+    assert.equal(triggerify.runCli(["enable", "inner:simple-rules"], io), 0);
+    assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")).hookSettings, hookSettings);
+
+    const hooks = path.join(data, "triggerify", "hooks");
+    fs.mkdirSync(hooks, { recursive: true });
+    fs.writeFileSync(path.join(hooks, "global.md"), "---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\nenabled: true\n---\nglobal survives\n");
+    fs.writeFileSync(configFile, "{ invalid\n");
+    const invalid = triggerify.runEvent(payload, { host: "pi", workspace: data });
+    assert.ok(invalid.prompts.some((item) => item.id === "global:global"));
+    assert.ok(invalid.diagnostics.includes("inner:config-invalid"));
+    assert.equal(invalid.prompts.some((item) => item.id === "inner:simple-rules"), false);
+
+    assert.equal(triggerify.runCli(["show", "inner:simple-rules", "--host", "pi", "--json"], io), 1);
+    status = JSON.parse(output.pop());
+    assert.equal(status.override, "invalid");
+    assert.equal(status.configured, "unavailable");
+    assert.equal(status.effective, "inactive");
+    assert.ok(status.reasons.includes("inner-config-invalid"));
+    assert.equal(triggerify.runCli(["disable", "inner:simple-rules"], io), 2);
+    assert.ok(errors.pop().includes("invalid inner hook config"));
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("runtime passes only the current hook settings without changing the event payload", () => {
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-hook-config-"));
+  const scripts = path.join(workspace, ".csl-agent-kit", "triggerify", "scripts");
+  fs.mkdirSync(scripts, { recursive: true });
+  fs.writeFileSync(path.join(scripts, "emit-config.js"), `#!/usr/bin/env node
+const fs = require("node:fs");
+const payload = JSON.parse(fs.readFileSync(0, "utf8"));
+process.stdout.write(JSON.stringify({
+  config: JSON.parse(process.env.TRIGGERIFY_HOOK_CONFIG),
+  hookId: process.env.TRIGGERIFY_HOOK_ID,
+  prompt: payload.prompt,
+}));
+`, { mode: 0o700 });
+
+  try {
+    const entry = {
+      id: "project:emit-config",
+      scope: "project",
+      hookConfig: { model: "openai-codex/gpt-5.4-mini" },
+      rule: { action: "run-script", script: "emit-config.js", timeout: 5 },
+    };
+    const payload = triggerify.createEvent({ event: "prompt-submit", host: "pi", workspace, prompt: "original prompt" });
+    const result = triggerifyRuntime.executeScript(entry, payload, workspace, 5_000);
+    assert.equal(result.status, 0);
+    assert.deepEqual(JSON.parse(result.stdout), {
+      config: entry.hookConfig,
+      hookId: entry.id,
+      prompt: "original prompt",
+    });
+    assert.equal(titleHook.modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: JSON.stringify(entry.hookConfig) }), "openai-codex/gpt-5.4-mini");
+    assert.equal(titleHook.modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: "{}" }), "deepseek/deepseek-v4-flash");
+    assert.equal(titleHook.modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: '{"model":"bad model"}' }), "deepseek/deepseek-v4-flash");
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("CLI keeps inner hook source immutable", () => {
   const errors = [];
   const io = { log() {}, error: (message) => errors.push(message) };
   const cases = [
     ["create", "x", "--event", "session-start", "--action", "inject-prompt", "--scope", "inner"],
     ["update", "inner:simple-rules", "--description", "x"],
     ["delete", "inner:simple-rules"],
-    ["disable", "inner:simple-rules"],
   ];
   for (const argv of cases) {
     errors.length = 0;

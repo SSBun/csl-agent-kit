@@ -236,6 +236,22 @@ The CSL Agent Kit CLI also supports:
 csl-agent-kit install --target pi
 csl-agent-kit triggerify list
 csl-agent-kit triggerify disable project:broken-rule
+csl-agent-kit triggerify disable inner:refresh-tab-title
+csl-agent-kit triggerify enable inner:refresh-tab-title
+```
+
+所有 `inner:*` hooks 随 skill 内置并默认启用。用户禁用项持久化在 `<data-root>/triggerify/config.json` 的 `disabledHooks` 数组中；`enable` 会从数组移除对应 ID。Inner hook 源文件仍不可通过 CLI 创建、更新或删除。可选的 `hookSettings` 按 qualified ID 保存；Triggerify 只把当前 hook 的配置通过 `TRIGGERIFY_HOOK_CONFIG` 传给对应脚本：
+
+```json
+{
+  "schema": "triggerify.config/v1",
+  "disabledHooks": [],
+  "hookSettings": {
+    "inner:refresh-tab-title": {
+      "model": "deepseek/deepseek-v4-flash"
+    }
+  }
+}
 ```
 
 ### Codex

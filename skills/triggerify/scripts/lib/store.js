@@ -13,6 +13,7 @@ const {
 
 const MAX_RULES = 256;
 const MAX_RULE_FILE = 256 * 1024;
+const INNER_CONFIG_SCHEMA = "triggerify.config/v1";
 
 function innerRoot() {
   return path.join(__dirname, "..", "..");
@@ -20,6 +21,52 @@ function innerRoot() {
 
 function dataRoot() {
   return process.env.CSL_AGENT_KIT_HOME || path.join(os.homedir(), ".csl-agent-kit");
+}
+
+function innerConfigPath() {
+  return path.join(dataRoot(), "triggerify", "config.json");
+}
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function readInnerConfig() {
+  const file = innerConfigPath();
+  let value;
+  try {
+    value = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    if (error.code === "ENOENT") return { valid: true, file, disabledHooks: new Set(), hookSettings: {} };
+    return { valid: false, file, error: `invalid inner hook config at ${file}: ${error.message}` };
+  }
+
+  const fields = isPlainObject(value) ? Object.keys(value) : [];
+  const disabled = value?.disabledHooks;
+  const settings = value?.hookSettings ?? {};
+  const valid = value?.schema === INNER_CONFIG_SCHEMA
+    && fields.every((field) => ["schema", "disabledHooks", "hookSettings"].includes(field))
+    && Array.isArray(disabled)
+    && disabled.every((id) => typeof id === "string" && /^inner:[a-z0-9][a-z0-9-]*$/.test(id))
+    && new Set(disabled).size === disabled.length
+    && isPlainObject(settings)
+    && Object.entries(settings).every(([id, config]) => /^inner:[a-z0-9][a-z0-9-]*$/.test(id) && isPlainObject(config));
+  return valid
+    ? { valid: true, file, disabledHooks: new Set(disabled), hookSettings: settings }
+    : { valid: false, file, error: `invalid inner hook config at ${file}: expected ${INNER_CONFIG_SCHEMA} with unique inner:* disabledHooks and object hookSettings` };
+}
+
+function setInnerHookEnabled(id, enabled) {
+  const config = readInnerConfig();
+  if (!config.valid) throw new Error(config.error);
+  if (enabled) config.disabledHooks.delete(id);
+  else config.disabledHooks.add(id);
+  const value = {
+    schema: INNER_CONFIG_SCHEMA,
+    disabledHooks: [...config.disabledHooks].sort(compareUtf8),
+  };
+  if (Object.keys(config.hookSettings).length > 0) value.hookSettings = config.hookSettings;
+  writeAtomic(config.file, `${JSON.stringify(value, null, 2)}\n`);
 }
 
 function canonicalWorkspace(value = process.cwd()) {
@@ -55,12 +102,24 @@ function discover(scope, workspace = process.cwd(), read = true, deadline = Infi
     path: path.join(hooks, file),
   }));
   const counts = entries.reduce((result, entry) => result.set(entry.id, (result.get(entry.id) || 0) + 1), new Map());
+  const config = scope === "inner" ? readInnerConfig() : null;
   return entries.map((entry) => {
-    if ((counts.get(entry.id) || 0) > 1) return { ...entry, valid: false, errors: [issue("id-conflict", `${entry.path}: shared/local ID conflict`)] };
-    if (scope === "global" && entry.local) return { ...entry, valid: false, errors: [issue("global-local-hook", `${entry.path}: global hooks cannot be local`)] };
-    if (!read) return { ...entry, valid: null, errors: [] };
-    if (Date.now() >= deadline) throw budgetError("event-budget-exhausted");
-    return readEntry(entry, workspace, deadline);
+    let result;
+    if ((counts.get(entry.id) || 0) > 1) result = { ...entry, valid: false, errors: [issue("id-conflict", `${entry.path}: shared/local ID conflict`)] };
+    else if (scope === "global" && entry.local) result = { ...entry, valid: false, errors: [issue("global-local-hook", `${entry.path}: global hooks cannot be local`)] };
+    else if (!read) result = { ...entry, valid: null, errors: [] };
+    else {
+      if (Date.now() >= deadline) throw budgetError("event-budget-exhausted");
+      result = readEntry(entry, workspace, deadline);
+    }
+    if (!config) return result;
+    return {
+      ...result,
+      innerConfigValid: config.valid,
+      innerConfigError: config.valid ? null : config.error,
+      innerDisabled: config.valid ? config.disabledHooks.has(entry.id) : true,
+      hookConfig: config.valid ? (config.hookSettings[entry.id] || {}) : null,
+    };
   });
 }
 
@@ -198,5 +257,6 @@ module.exports = {
   resolveEntry,
   scopeRoot,
   setEntryEnabled,
+  setInnerHookEnabled,
   writeAtomic,
 };

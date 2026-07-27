@@ -94,10 +94,21 @@ function ruleStatus(entry, host = "codex") {
   const supported = capability && (rule.action === "inject-prompt" ? capability.inject : capability.script);
   const trust = entry.scope === "global" || entry.scope === "inner" ? "not-applicable" : "unavailable";
   const validation = entry.valid === null ? "unavailable" : entry.valid ? "valid" : "invalid";
-  const configured = rule ? (rule.enabled ? "enabled" : "disabled") : "unavailable";
+  const sourceConfigured = rule ? (rule.enabled ? "enabled" : "disabled") : "unavailable";
+  const defaultState = entry.scope === "inner" ? sourceConfigured : "not-applicable";
+  const override = entry.scope !== "inner"
+    ? "not-applicable"
+    : entry.innerConfigValid === false
+      ? "invalid"
+      : entry.innerDisabled
+        ? "disabled"
+        : "none";
+  const configured = override === "invalid" ? "unavailable" : override === "disabled" ? "disabled" : sourceConfigured;
   const support = supported ? "supported" : "unsupported";
   const active = configured === "enabled" && validation === "valid" && trust !== "unavailable" && support === "supported";
   const reasons = entry.errors.map((error) => error.code);
+  if (override === "invalid") reasons.push("inner-config-invalid");
+  if (override === "disabled") reasons.push("inner-disabled-by-user");
   if (trust === "unavailable") reasons.push("workspace-trust-unavailable");
   if (support === "unsupported") reasons.push("capability-unsupported");
   return {
@@ -109,6 +120,8 @@ function ruleStatus(entry, host = "codex") {
     action: rule?.action ?? null,
     script: rule?.script ?? null,
     path: entry.path,
+    default: defaultState,
+    override,
     configured,
     validation,
     trust,
@@ -140,6 +153,11 @@ function runEvent(payload, options = {}) {
     throw error;
   }
   for (const entry of entries.sort((left, right) => compareUtf8(left.id, right.id))) {
+    if (entry.scope === "inner" && entry.innerConfigValid === false) {
+      if (!diagnostics.includes("inner:config-invalid")) diagnostics.push("inner:config-invalid");
+      continue;
+    }
+    if (entry.scope === "inner" && entry.innerDisabled) continue;
     if (!entry.valid) {
       diagnostics.push(...entry.errors.map((error) => `${entry.id}:${error.code}`));
       continue;
@@ -214,6 +232,7 @@ function executeScript(entry, payload, workspace, remaining) {
         TRIGGERIFY_WORKSPACE: canonicalWorkspace(workspace),
         TRIGGERIFY_HOST: payload.host.name,
         TRIGGERIFY_EVENT: payload.event,
+        TRIGGERIFY_HOOK_CONFIG: JSON.stringify(entry.hookConfig || {}),
       },
       stdio: [payloadDescriptor, "pipe", "pipe"],
       encoding: "utf8",
@@ -244,6 +263,7 @@ module.exports = {
   HOST_CAPABILITIES,
   bounded,
   createEvent,
+  executeScript,
   ruleStatus,
   runEvent,
 };
