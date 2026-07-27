@@ -13,7 +13,7 @@
 
 - [Replace Pi example subagent extension with pi-subagents](todo/replace-pi-example-subagent-extension.md) — Completed (2026-07-26 18:14)
 
-- [CSL Task Overlay Pi Extension](todo/csl-task-overlay-extension.md) — Completed (2026-07-26 16:20)
+- [CSL Task Overlay Pi Extension](todo/csl-task-overlay-extension.md) — Completed (2026-07-27 20:24)
 
 - [Dispatch real subagents in adversarial skills](todo/dispatch-real-subagents-in-adversarial-skills.md) — Completed (2026-07-25 12:38)
 

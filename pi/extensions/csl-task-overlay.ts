@@ -7,9 +7,9 @@
  * extension only reads and renders it — it never writes.
  *
  * Refresh triggers:
- *   - `session_start`: initial paint for the foreground session.
- *   - `tool_execution_end` after write/edit/bash: re-read and repaint.
+ *   - `session_start`: initial paint and start a five-second refresh timer.
  *   - `/csl-tasks` command: print the full list grouped by status.
+ *   - `session_shutdown`: stop the refresh timer.
  *
  * Headless (`ctx.hasUI === false`): no widget, no side effects.
  *
@@ -25,6 +25,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const WIDGET_KEY = "csl-tasks";
 const TODO_INDEX = join("tasks", "todo.md");
+const REFRESH_INTERVAL_MS = 5_000;
 
 /** One parsed index entry. `progress` is filled lazily from the task file. */
 interface TaskRow {
@@ -223,8 +224,9 @@ function renderRows(rows: TaskRow[], cwd: string): string[] {
  * Refresh the widget for `ctx`. No-op when headless or when the list is empty
  * (the widget is cleared, which also unregisters it visually).
  */
-function refresh(pi: ExtensionAPI, ctx: { ui: ExtensionUIContext; cwd: string; hasUI: boolean }): void {
+function refresh(ctx: { ui: ExtensionUIContext; cwd: string; hasUI: boolean }): void {
 	if (!ctx.hasUI) return;
+	invalidateProgressCache(ctx.cwd);
 	const rows = renderRows(loadTasks(ctx.cwd), ctx.cwd);
 	ctx.ui.setWidget(WIDGET_KEY, rows.length > 0 ? rows : undefined, { placement: "aboveEditor" });
 }
@@ -248,17 +250,25 @@ interface RefreshCtx {
 }
 
 export default function cslTaskOverlay(pi: ExtensionAPI): void {
+	let refreshTimer: ReturnType<typeof setInterval> | undefined;
+
+	const stopRefreshTimer = () => {
+		if (!refreshTimer) return;
+		clearInterval(refreshTimer);
+		refreshTimer = undefined;
+	};
+
 	pi.on("session_start", async (_event, ctx) => {
-		refresh(pi, ctx as RefreshCtx);
+		stopRefreshTimer();
+		if (!ctx.hasUI) return;
+
+		const refreshCtx = ctx as RefreshCtx;
+		refresh(refreshCtx);
+		refreshTimer = setInterval(() => refresh(refreshCtx), REFRESH_INTERVAL_MS);
+		refreshTimer.unref?.();
 	});
 
-	pi.on("tool_execution_end", async (event, ctx) => {
-		if (!["write", "edit", "bash"].includes(event.toolName)) return;
-		// Task-body writes change Target progress; use the active session cwd so
-		// a session opened from another directory cannot retain stale progress.
-		invalidateProgressCache(ctx.cwd);
-		refresh(pi, ctx as RefreshCtx);
-	});
+	pi.on("session_shutdown", stopRefreshTimer);
 
 	pi.registerCommand("csl-tasks", {
 		description: "Print workspace tasks grouped by status (from tasks/todo.md).",
@@ -271,7 +281,7 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 			const lines = formatGrouped(rows, ctx.cwd);
 			ctx.ui.notify(lines.join("\n"), "info");
 			// Also refresh the widget so the printed list and overlay stay in sync.
-			refresh(pi, ctx as RefreshCtx);
+			refresh(ctx as RefreshCtx);
 		},
 	});
 }

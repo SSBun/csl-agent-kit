@@ -18,8 +18,29 @@ function installFakeExtension() {
   return { handlers, widgets };
 }
 
-test("refreshes task status and Target progress after mutating tool completion", async () => {
+test("polls task content every five seconds and clears session timers", { concurrency: false }, async () => {
   const cwd = mkdtempSync(path.join(os.tmpdir(), "csl-task-overlay-"));
+  const originalSetInterval = globalThis.setInterval;
+  const originalClearInterval = globalThis.clearInterval;
+  const timers = [];
+
+  globalThis.setInterval = (callback, delay) => {
+    const timer = {
+      callback,
+      delay,
+      cleared: false,
+      unreferenced: false,
+      unref() {
+        this.unreferenced = true;
+      },
+    };
+    timers.push(timer);
+    return timer;
+  };
+  globalThis.clearInterval = (timer) => {
+    timer.cleared = true;
+  };
+
   try {
     mkdirSync(path.join(cwd, "tasks", "todo"), { recursive: true });
     writeFileSync(
@@ -45,6 +66,8 @@ test("refreshes task status and Target progress after mutating tool completion",
 
     await handlers.get("session_start")({}, ctx);
     assert.match(widgets.at(-1).at(-1), /🔄 \(0\/1\) Demo task/);
+    assert.equal(timers[0].delay, 5_000);
+    assert.equal(timers[0].unreferenced, true);
 
     writeFileSync(
       path.join(cwd, "tasks", "todo.md"),
@@ -55,9 +78,18 @@ test("refreshes task status and Target progress after mutating tool completion",
       "# Demo task\n\n## Target\n\n- [x] T1: Finish the task\n",
     );
 
-    await handlers.get("tool_execution_end")({ toolName: "bash", isError: true }, ctx);
+    timers[0].callback();
     assert.match(widgets.at(-1).at(-1), /✅ \(1\/1\) Demo task/);
+
+    await handlers.get("session_start")({}, ctx);
+    assert.equal(timers[0].cleared, true);
+    assert.equal(timers.length, 2);
+
+    await handlers.get("session_shutdown")({}, ctx);
+    assert.equal(timers[1].cleared, true);
   } finally {
+    globalThis.setInterval = originalSetInterval;
+    globalThis.clearInterval = originalClearInterval;
     rmSync(cwd, { recursive: true, force: true });
   }
 });
