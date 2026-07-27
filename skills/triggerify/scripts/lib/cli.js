@@ -61,10 +61,10 @@ function runCli(args, io = console) {
 
 function listCommand(options, io) {
   const scope = options.scope || "all";
-  if (!["all", "global", "project"].includes(scope)) throw new Error("--scope must be all, global, or project");
+  if (!["all", "global", "project", "inner"].includes(scope)) throw new Error("--scope must be all, global, project, or inner");
   const workspace = options.workspace || process.cwd();
-  const scopes = scope === "all" ? ["global", "project"] : [scope];
-  const items = scopes.flatMap((name) => discover(name, workspace, name === "global")).map((entry) => ruleStatus(entry, options.host || "codex"));
+  const scopes = scope === "all" ? ["global", "inner", "project"] : [scope];
+  const items = scopes.flatMap((name) => discover(name, workspace, name !== "project")).map((entry) => ruleStatus(entry, options.host || "codex"));
   if (options.json) io.log(JSON.stringify(items, null, 2));
   else if (items.length === 0) io.log("No triggers configured.");
   else {
@@ -86,7 +86,7 @@ function createCommand(options, io) {
   const name = options.positional[0];
   if (!name || !/^[a-z0-9][a-z0-9-]*$/.test(name)) throw new Error("create requires a kebab-case name");
   const scope = options.scope || "project";
-  if (!["global", "project"].includes(scope)) throw new Error("--scope must be global or project");
+  if (!["global", "project"].includes(scope)) throw new Error("--scope must be global or project (inner is read-only)");
   const workspace = options.workspace || process.cwd();
   const local = scope === "project" && !options.shared;
   const file = path.join(scopeRoot(scope, workspace), "hooks", `${name}${local ? ".local" : ""}.md`);
@@ -104,6 +104,7 @@ function createCommand(options, io) {
 }
 
 function updateCommand(options, io) {
+  if (options.positional[0]?.startsWith("inner:")) throw new Error("inner scope is read-only; update the skill source instead");
   const entry = resolveEntry(requiredId(options), options.workspace);
   if (options.from !== undefined) {
     const replacement = fs.readFileSync(options.from, "utf8");
@@ -138,6 +139,7 @@ function updateCommand(options, io) {
 
 function toggleCommand(command, options, io) {
   const id = requiredId(options);
+  if (id.startsWith("inner:")) throw new Error("inner scope is read-only; toggle the source file in the triggerify skill");
   const scope = id.startsWith("global:") ? "global" : "project";
   const workspace = options.workspace || process.cwd();
   const matches = discover(scope, workspace, false).filter((entry) => entry.id === id);
@@ -149,6 +151,7 @@ function toggleCommand(command, options, io) {
 }
 
 function deleteCommand(options, io) {
+  if (options.positional[0]?.startsWith("inner:")) throw new Error("inner scope is read-only; inner hooks ship with the triggerify skill");
   const entry = resolveEntry(requiredId(options), options.workspace);
   fs.unlinkSync(entry.path);
   io.log(`Deleted ${entry.id}; referenced scripts were preserved.`);
@@ -157,8 +160,8 @@ function deleteCommand(options, io) {
 
 function requiredId(options) {
   const id = options.positional[0];
-  if (!/^(global|project):[a-z0-9][a-z0-9-]*$/.test(id || "")) {
-    throw new Error("a qualified ID such as global:name or project:name is required");
+  if (!/^(global|inner|project):[a-z0-9][a-z0-9-]*$/.test(id || "")) {
+    throw new Error("a qualified ID such as global:name, inner:name, or project:name is required");
   }
   return id;
 }

@@ -92,7 +92,7 @@ function ruleStatus(entry, host = "codex") {
   const rule = entry.rule;
   const capability = rule ? HOST_CAPABILITIES[host]?.[rule.event] : null;
   const supported = capability && (rule.action === "inject-prompt" ? capability.inject : capability.script);
-  const trust = entry.scope === "global" ? "not-applicable" : "unavailable";
+  const trust = entry.scope === "global" || entry.scope === "inner" ? "not-applicable" : "unavailable";
   const validation = entry.valid === null ? "unavailable" : entry.valid ? "valid" : "invalid";
   const configured = rule ? (rule.enabled ? "enabled" : "disabled") : "unavailable";
   const support = supported ? "supported" : "unsupported";
@@ -127,24 +127,28 @@ function runEvent(payload, options = {}) {
   const diagnostics = [];
   const deadline = Date.now() + (options.eventBudgetMs || EVENT_BUDGET);
   let entries;
+  let discoveringScope = "global";
   try {
-    entries = discover("global", workspace, true, deadline);
+    const globalEntries = discover("global", workspace, true, deadline);
+    discoveringScope = "inner";
+    const innerEntries = discover("inner", workspace, true, deadline);
+    entries = [...globalEntries, ...innerEntries];
   } catch (error) {
     if (error.code === "TRIGGERIFY_BUDGET") {
-      return { prompts, diagnostics: [`global:${error.reason}`], blocked: false };
+      return { prompts, diagnostics: [`${discoveringScope}:${error.reason}`], blocked: false };
     }
     throw error;
   }
   for (const entry of entries.sort((left, right) => compareUtf8(left.id, right.id))) {
-    if (Date.now() >= deadline) {
-      diagnostics.push(`${entry.id}:event-budget-exhausted`);
-      break;
-    }
     if (!entry.valid) {
       diagnostics.push(...entry.errors.map((error) => `${entry.id}:${error.code}`));
       continue;
     }
     if (!entry.rule.enabled || entry.rule.event !== payload.event) continue;
+    if (Date.now() >= deadline) {
+      diagnostics.push(`${entry.id}:event-budget-exhausted`);
+      break;
+    }
     const condition = evaluateCondition(entry.rule.when, payload, deadline);
     if (condition.value === "unknown") diagnostics.push(`${entry.id}:condition-unknown`);
     if (condition.value !== "true") continue;
@@ -180,6 +184,9 @@ function runEvent(payload, options = {}) {
       if (capability.block) return { prompts: [], diagnostics, blocked: true, reason: result.stderr || `${entry.id} blocked the event` };
       diagnostics.push(`${entry.id}:block-unsupported`);
     } else if (result.status !== 0) diagnostics.push(`${entry.id}:runtime-error`);
+    else if (entry.rule["inject-output"] && capability.inject && result.stdout) {
+      prompts.push({ id: entry.id, content: result.stdout });
+    }
   }
   return { prompts, diagnostics, blocked: false };
 }

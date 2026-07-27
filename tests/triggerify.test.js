@@ -464,3 +464,103 @@ test("event deadline covers discovery and stops expired collection evaluation", 
     fs.rmSync(data, { recursive: true, force: true });
   }
 });
+
+test("run-script inject-output surfaces stdout as a prompt on session-start", () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-inject-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  const scripts = path.join(data, "triggerify", "scripts");
+  const hooks = path.join(data, "triggerify", "hooks");
+  fs.mkdirSync(scripts, { recursive: true });
+  fs.mkdirSync(hooks, { recursive: true });
+  fs.writeFileSync(path.join(scripts, "emit.js"), "#!/usr/bin/env node\nprocess.stdout.write('dynamic context');\n", { mode: 0o700 });
+  fs.writeFileSync(path.join(hooks, "emit.md"), "---\nschema: triggerify/v1\nevent: session-start\naction: run-script\nenabled: true\nscript: emit.js\ninject-output: true\n---\n");
+  try {
+    const payload = triggerify.normalizePayload({ hook_event_name: "SessionStart", session_id: "s" }, "pi", "session-start", data);
+    const result = triggerify.runEvent(payload, { host: "pi", workspace: data });
+    assert.deepEqual(result.diagnostics, []);
+    assert.equal(result.prompts.length, 1);
+    assert.equal(result.prompts[0].id, "global:emit");
+    assert.equal(result.prompts[0].content, "dynamic context");
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("run-script without inject-output keeps stdout out of prompts", () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-no-inject-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  const scripts = path.join(data, "triggerify", "scripts");
+  const hooks = path.join(data, "triggerify", "hooks");
+  fs.mkdirSync(scripts, { recursive: true });
+  fs.mkdirSync(hooks, { recursive: true });
+  fs.writeFileSync(path.join(scripts, "emit.js"), "#!/usr/bin/env node\nprocess.stdout.write('ignored');\n", { mode: 0o700 });
+  fs.writeFileSync(path.join(hooks, "emit.md"), "---\nschema: triggerify/v1\nevent: session-start\naction: run-script\nenabled: true\nscript: emit.js\n---\n");
+  try {
+    const payload = triggerify.normalizePayload({ hook_event_name: "SessionStart", session_id: "s" }, "pi", "session-start", data);
+    const result = triggerify.runEvent(payload, { host: "pi", workspace: data });
+    assert.deepEqual(result.diagnostics, []);
+    assert.equal(result.prompts.length, 0);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("inject-output is validated as boolean and rejected on inject-prompt", () => {
+  const valid = triggerify.parseMarkdown("---\nschema: triggerify/v1\nevent: session-start\naction: run-script\nscript: s.js\ninject-output: true\n---\n");
+  const wrongType = triggerify.parseMarkdown("---\nschema: triggerify/v1\nevent: session-start\naction: run-script\nscript: s.js\ninject-output: yes\n---\n");
+  const onInject = triggerify.parseMarkdown("---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\ninject-output: true\n---\nbody\n");
+  assert.equal(valid.valid, true);
+  assert.equal(valid.rule["inject-output"], true);
+  assert.deepEqual(wrongType.errors.map((error) => error.code), ["inject-output-type"]);
+  assert.deepEqual(onInject.errors.map((error) => error.code), ["inject-output-unexpected"]);
+});
+
+test("inner scope ships a read-only simple-rules hook that injects non-empty files", () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-inner-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  try {
+    // empty: no prompt
+    let payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
+    let result = triggerify.runEvent(payload, { host: "pi", workspace: data });
+    const empty = result.prompts.find((prompt) => prompt.id === "inner:simple-rules");
+    assert.equal(empty, undefined);
+
+    // non-empty: injected
+    fs.writeFileSync(path.join(data, "simple-rules.md"), "- rule one\n- rule two\n");
+    payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
+    result = triggerify.runEvent(payload, { host: "pi", workspace: data });
+    const prompt = result.prompts.find((item) => item.id === "inner:simple-rules");
+    assert.ok(prompt, "expected inner:simple-rules prompt");
+    assert.match(prompt.content, /^## Simple Rules\n/);
+    assert.match(prompt.content, /- rule one/);
+    assert.match(prompt.content, /- rule two/);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("CLI rejects create/update/delete/toggle on the read-only inner scope", () => {
+  const errors = [];
+  const io = { log() {}, error: (message) => errors.push(message) };
+  const cases = [
+    ["create", "x", "--event", "session-start", "--action", "inject-prompt", "--scope", "inner"],
+    ["update", "inner:simple-rules", "--description", "x"],
+    ["delete", "inner:simple-rules"],
+    ["disable", "inner:simple-rules"],
+  ];
+  for (const argv of cases) {
+    errors.length = 0;
+    const code = triggerify.runCli(argv, io);
+    assert.equal(code, 2, `expected exit 2 for ${argv[0]}`);
+    assert.ok(errors.some((message) => /read-only/.test(message)), `expected read-only error for ${argv[0]}, got ${errors.join("; ")}`);
+  }
+});

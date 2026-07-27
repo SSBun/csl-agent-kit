@@ -1,5 +1,8 @@
 # 任务索引
 
+- [triggerify inner scope + simple-rules 内置 hook](todo/inner-scope-simple-rules.md) — Completed
+- [深入研究 pi-simplify](todo/research-pi-simplify.md) — Completed (2026-07-26 23:25)
+
 - [修复 CLI 安装启动与任务状态刷新](todo/fix-cli-install-and-task-overlay-refresh.md) — Completed (2026-07-26 18:14)
 
 - [Replace Pi example subagent extension with pi-subagents](todo/replace-pi-example-subagent-extension.md) — Completed (2026-07-26 18:14)

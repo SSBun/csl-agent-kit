@@ -17,7 +17,7 @@ const EVENTS = new Set([
   "stop",
 ]);
 const ACTIONS = new Set(["inject-prompt", "run-script"]);
-const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout"]);
+const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout", "inject-output"]);
 const MAX_TIMEOUT = 60;
 const MAX_DESCRIPTION = 160;
 const MAX_CONDITION_DEPTH = 32;
@@ -95,11 +95,13 @@ function validateRule(rule, body, scope, file) {
   if (rule.action === "inject-prompt") {
     if (!body.trim()) errors.push(issue("prompt-empty", `${file}: inject-prompt requires a non-empty Markdown body`));
     if (rule.script !== undefined) errors.push(issue("script-unexpected", `${file}: inject-prompt cannot define script`));
+    if (rule["inject-output"] !== undefined) errors.push(issue("inject-output-unexpected", `${file}: inject-prompt cannot define inject-output`));
   }
   if (rule.action === "run-script") {
     const scriptError = validateScriptReference(rule.script, scope);
     if (scriptError) errors.push(issue(scriptError.code, `${file}: ${scriptError.message}`));
     if (body.trim()) errors.push(issue("body-unexpected", `${file}: run-script cannot contain a Markdown body`));
+    if (rule["inject-output"] !== undefined && typeof rule["inject-output"] !== "boolean") errors.push(issue("inject-output-type", `${file}: inject-output must be a boolean`));
   }
   if (rule.when !== undefined) errors.push(...validateCondition(rule.when, file));
   return errors;
@@ -299,7 +301,7 @@ function globRegex(pattern) {
 function serialize(rule) {
   const body = rule.body || "";
   const frontmatter = {};
-  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "when"]) {
+  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "inject-output", "when"]) {
     if (rule[field] !== undefined) frontmatter[field] = rule[field];
   }
   const suffix = body ? `\n${body.replace(/^\n+/, "")}` : "";

@@ -14,6 +14,10 @@ const {
 const MAX_RULES = 256;
 const MAX_RULE_FILE = 256 * 1024;
 
+function innerRoot() {
+  return path.join(__dirname, "..", "..");
+}
+
 function dataRoot() {
   return process.env.CSL_AGENT_KIT_HOME || path.join(os.homedir(), ".csl-agent-kit");
 }
@@ -23,6 +27,7 @@ function canonicalWorkspace(value = process.cwd()) {
 }
 
 function scopeRoot(scope, workspace = process.cwd()) {
+  if (scope === "inner") return innerRoot();
   return scope === "global"
     ? path.join(dataRoot(), "triggerify")
     : path.join(canonicalWorkspace(workspace), ".csl-agent-kit", "triggerify");
@@ -134,7 +139,7 @@ function ensureLocalIgnore(workspace) {
 }
 
 function resolveEntry(id, workspace = process.cwd()) {
-  const scope = id.startsWith("global:") ? "global" : "project";
+  const scope = id.startsWith("global:") ? "global" : id.startsWith("inner:") ? "inner" : "project";
   const matches = discover(scope, workspace, false).filter((entry) => entry.id === id);
   if (matches.length === 0) throw new Error(`Trigger not found: ${id}`);
   if (matches.length > 1) throw new Error(`Trigger ID conflict: ${id}`);
