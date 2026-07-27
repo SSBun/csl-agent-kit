@@ -10,6 +10,7 @@ node_modules/
 .cursor/
 .vscode/
 .idea/
+.pi-subagents/
 
 # 仅跟踪项目本地的第三方技能集成流程。
 .agents/skills/*
