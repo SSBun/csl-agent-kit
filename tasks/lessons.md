@@ -1,5 +1,16 @@
 # Lessons
 
+## 2026-07-27 删除 Skill 时同步清理发现契约
+
+- **Trigger:**
+  - 删除、弃用或重命名一个 skill 或其 slash alias。
+- **Rule:**
+  - 在同一改动中搜索并清理当前 README、manifest、安装枚举和测试期望清单中的旧名称；历史任务记录保持不变。
+  - 已有替代 skill 时，发现与命令测试只断言当前 canonical 名称。
+- **Check:**
+  - 搜索旧名称后只剩有意保留的历史或迁移记录。
+  - 相关 skill 发现、命令注册与安装清单测试通过。
+
 ## 2026-07-23 Workflow skill 完整性优先于 Yao token 预算
 
 - **Trigger:**

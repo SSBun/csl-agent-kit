@@ -23,7 +23,6 @@ test("registers aliases for nested skills", () => {
     "resolving-merge-conflicts",
     "tdd",
     "teach",
-    "ubiquitous-language",
     "workspace-capture-lessons",
     "workspace-maintain-context",
     "workspace-manage-task",
