@@ -11,9 +11,12 @@ const MODEL_TIMEOUT_MS = 20_000;
 const MAX_PROMPT = 4_000;
 const MAX_SUMMARY = 56;
 const MAX_TITLE = 72;
+const KEEP_TITLE = "KEEP_CURRENT_TITLE";
 const SYSTEM_PROMPT = [
-  "Generate a concise terminal tab title for the latest user task.",
-  "Return only the title, 2-6 words, without quotes, Markdown, or ending punctuation.",
+  "Classify the latest user's main requested action.",
+  `Return exactly ${KEEP_TITLE} when that action is only an acknowledgement, continuation, retry, commit, push, or test run for existing work.`,
+  "Do not keep the title when the main action creates, changes, fixes, optimizes, researches, or explains a concrete subject, even if the request mentions routine operations.",
+  "Otherwise return only a concise terminal tab title, 2-6 words, without quotes, Markdown, or ending punctuation.",
   "Preserve the task language exactly: English task means English title; Chinese task means Chinese title.",
 ].join(" ");
 
@@ -59,6 +62,7 @@ function cleanModelTitle(value) {
 }
 
 function buildTitle(payload, workspace, modelTitle = "") {
+  if (modelTitle === KEEP_TITLE) return null;
   const project = sanitize(path.basename(workspace || "")) || "Pi";
   const summary = cleanModelTitle(modelTitle) || truncate(sanitize(payload?.prompt), MAX_SUMMARY);
   return truncate(summary ? `${project} · ${summary}` : project, MAX_TITLE);
@@ -207,10 +211,11 @@ function isLatest(state, token) {
 }
 
 function runWorker(input) {
-  const modelTitle = generateModelTitle(input.prompt);
+  const title = buildTitle({ prompt: input.prompt }, input.workspace, generateModelTitle(input.prompt));
+  if (title === null) return true;
   const result = withTtyLock(input.tty, () => {
     if (!isLatest(input.state, input.token)) return false;
-    return writeTitle(input.tty, buildTitle({ prompt: input.prompt }, input.workspace, modelTitle));
+    return writeTitle(input.tty, title);
   });
   return result === true;
 }
@@ -250,6 +255,8 @@ function startWorker(payload, workspace) {
 function selfTest() {
   assert.equal(buildTitle({ prompt: "Add a cache" }, "/tmp/my-project"), "my-project · Add a cache");
   assert.equal(buildTitle({ prompt: "fallback" }, "/tmp/app", "Auth Refresh Race Fix"), "app · Auth Refresh Race Fix");
+  assert.equal(buildTitle({ prompt: "commit these changes" }, "/tmp/app", KEEP_TITLE), null);
+  assert.equal(cleanModelTitle(KEEP_TITLE), KEEP_TITLE);
   assert.equal(cleanModelTitle('Title: “Fix the tests.”'), "Fix the tests");
   assert.equal(buildTitle({ prompt: "\u001b]0;owned\u0007" }, "/tmp/app"), "app · ]0;owned");
   assert.ok(Array.from(buildTitle({ prompt: "界".repeat(100) }, "/tmp/app")).length <= MAX_TITLE);

@@ -4,6 +4,8 @@
 
 - [Triggerify inner hook 用户配置](todo/triggerify-inner-hook-config.md) — Completed (2026-07-27 18:22)
 
+- [根据当前对话刷新终端标签标题](todo/refresh-terminal-tab-title.md) — Completed (2026-07-27 19:57)
+
 - [triggerify inner scope + simple-rules 内置 hook](todo/inner-scope-simple-rules.md) — Completed
 - [深入研究 pi-simplify](todo/research-pi-simplify.md) — Completed (2026-07-26 23:25)
 

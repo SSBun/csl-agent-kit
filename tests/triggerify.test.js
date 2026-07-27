@@ -668,6 +668,13 @@ process.stdout.write(JSON.stringify({
   }
 });
 
+test("title hook keeps the current title for routine follow-ups", () => {
+  const decision = titleHook.cleanModelTitle("KEEP_CURRENT_TITLE");
+  assert.equal(decision, "KEEP_CURRENT_TITLE");
+  assert.equal(titleHook.buildTitle({ prompt: "commit these changes" }, "/tmp/app", decision), null);
+  assert.equal(titleHook.buildTitle({ prompt: "build authentication" }, "/tmp/app", "Build Authentication"), "app · Build Authentication");
+});
+
 test("CLI keeps inner hook source immutable", () => {
   const errors = [];
   const io = { log() {}, error: (message) => errors.push(message) };
