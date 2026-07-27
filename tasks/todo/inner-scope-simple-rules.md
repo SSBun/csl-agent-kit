@@ -1,11 +1,12 @@
 ---
 title: triggerify inner scope + simple-rules 内置 hook
-status: Completed
 created: 2026-07-26
 updated: 2026-07-26
 ---
 
 # triggerify inner scope + simple-rules 内置 hook
+
+Status: Completed
 
 ## Goal
 
@@ -51,6 +52,8 @@ updated: 2026-07-26
 - 工作区有预存暂存项（zhihu-circle、deploy.sh、.DS_Store 等），非本任务引入。
 
 Review gate: Skipped — triggerify 测试套件已覆盖核心逻辑；功能链路经端到端验证。
+
+- Review: APPROVED — [Triggerify inner scope + simple-rules 审查报告](../../reports/adversarial-review/inner-scope-simple-rules.md)
 
 ## Non-Goals
 

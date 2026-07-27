@@ -1,6 +1,6 @@
 # 重写 analyze-project 双模式 skill
 
-状态：进行中（2026-07-19）
+Status: Aborted (2026-07-26 16:30)
 
 ## 目标
 

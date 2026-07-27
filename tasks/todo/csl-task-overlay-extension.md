@@ -1,5 +1,7 @@
 # CSL Task Overlay Pi Extension
 
+Status: Completed (2026-07-26 16:20)
+
 ## Target
 
 - [x] T1: `pi/extensions/csl-task-overlay.ts` exists, exports default factory, parses `tasks/todo.md` of `ctx.cwd` into task rows.
