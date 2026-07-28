@@ -25,7 +25,8 @@
 
 ## Relationships
 
-- Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Triggerify `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。当前全局规则 `global:open-todo-in-typora` 只解析真实 `apply_patch` 目标，并仅用 Typora 打开规范化后仍位于 workspace `tasks/todo/` 内的现有 Markdown 文件。
+- 全局 Triggerify 规则 `global:notify-todo-changed` 在 Pi 上通过 `edit` / `write` 的标准 `changed_files` 识别 `tasks/todo/*.md` 变更，在 Codex 上保留 `apply_patch` header fallback；脚本规范化真实路径并限制在 workspace 的真实 `tasks/todo` 目录后，使用 `terminal-notifier` 发送可点击的 macOS 通知。权威来源为 `~/.csl-agent-kit/triggerify/hooks/notify-todo-changed.md` 与同目录 `scripts/notify-todo-changed.js`。
+- Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Triggerify `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。
 - 用户跨会话持久指令以单条全局 Triggerify `session-start` / `inject-prompt` 规则存放在 `<data-root>/triggerify/hooks/`；Codex 与 Claude Code 通过 `SessionStart` dispatcher 注入，Pi 在每次 `before_agent_start` 重新加载。规则不按用户 prompt 关键词匹配。
 - `csl-agent-kit install` 在没有已确认选择时默认预选 `codex-skills` 和 `codex-plugin`；交互式已确认目标保存在 `/Users/caishilin/.csl-agent-kit/install-selection.json`，下次 checklist 会以其为预选项。
 - hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；持久指令通过 Triggerify `SessionStart` 规则注入。Pi 在 `before_agent_start` 重建 Triggerify session prompts 与 SOP context。

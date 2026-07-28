@@ -1,6 +1,6 @@
 # 任务索引
 
-- [让 Triggerify 识别 Pi 文件工具变更](todo/adapt-pi-file-tools-for-triggerify.md) — Completed (2026-07-27 18:37)
+- [让 Triggerify 识别 Pi 文件工具变更](todo/adapt-pi-file-tools-for-triggerify.md) — Completed (2026-07-28 13:37)
 
 - [Triggerify inner hook 用户配置](todo/triggerify-inner-hook-config.md) — Completed (2026-07-27 18:22)
 
