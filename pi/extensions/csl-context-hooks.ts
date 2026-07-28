@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, SessionEntry } from "@earendil-works/pi-coding-agent";
 
 interface SopSummary {
 	name: string;
@@ -51,7 +51,7 @@ interface TriggerifyModule {
 	}): object;
 	runEvent(
 		payload: object,
-		options: { host: string; workspace: string },
+		options: { host: string; workspace: string; hookInputs?: Record<string, object> },
 	): { prompts: TriggerPrompt[]; diagnostics: string[]; blocked: boolean };
 }
 
@@ -90,6 +90,8 @@ const DESIGN_REMINDER = [
 
 const DEFAULT_SCRIPT_TIMEOUT = 10;
 const MAX_OUTPUT = 64 * 1024;
+const TITLE_HOOK_ID = "inner:refresh-tab-title";
+const MAX_TITLE_CONTEXT = 12_000;
 
 function toolCategory(toolName: string | null): string | null {
 	if (toolName === "bash") return "shell";
@@ -130,6 +132,49 @@ function buildPayload(
 		changedFiles: context.changedFiles ?? null,
 		nativeEvent: context.nativeEvent ?? null,
 	});
+}
+
+function messageText(content: unknown): string {
+	if (typeof content === "string") return content.trim();
+	if (!Array.isArray(content)) return "";
+	return content
+		.filter((part): part is { type: "text"; text: string } =>
+			Boolean(part) && typeof part === "object" && part.type === "text" && typeof part.text === "string",
+		)
+		.map((part) => part.text.trim())
+		.filter(Boolean)
+		.join("\n");
+}
+
+export function buildTitleContext(entries: SessionEntry[], latestPrompt: string): string {
+	const sections: string[] = [];
+	let lastUserText = "";
+
+	for (const entry of entries) {
+		if (entry.type === "compaction" || entry.type === "branch_summary") {
+			sections.push(`Session summary: ${entry.summary.trim()}`);
+			continue;
+		}
+		if (entry.type !== "message" || !["user", "assistant"].includes(entry.message.role)) continue;
+
+		const text = messageText(entry.message.content);
+		if (!text) continue;
+		if (entry.message.role === "user") lastUserText = text;
+		sections.push(`${entry.message.role === "user" ? "User" : "Assistant"}: ${text}`);
+	}
+
+	const latest = latestPrompt.trim();
+	if (latest && latest !== lastUserText) sections.push(`User: ${latest}`);
+
+	const chars = Array.from(sections.join("\n\n"));
+	if (chars.length <= MAX_TITLE_CONTEXT) return chars.join("");
+	const marker = Array.from("\n\n[older middle context omitted]\n\n");
+	const headSize = Math.floor((MAX_TITLE_CONTEXT - marker.length) / 3);
+	return [
+		...chars.slice(0, headSize),
+		...marker,
+		...chars.slice(-(MAX_TITLE_CONTEXT - headSize - marker.length)),
+	].join("");
 }
 
 function pendingFileChange(
@@ -176,10 +221,15 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	 * Run Triggerify for `event` and return the prompts to inject.
 	 * Fail open: any runtime error yields no prompts (Pi keeps running).
 	 */
-	function triggerPrompts(event: string, workspace: string, context: TriggerContext = {}): TriggerPrompt[] {
+	function triggerPrompts(
+		event: string,
+		workspace: string,
+		context: TriggerContext = {},
+		hookInputs?: Record<string, object>,
+	): TriggerPrompt[] {
 		try {
 			const payload = buildPayload(event, workspace, context);
-			const result = triggerify.runEvent(payload, { host: "pi", workspace });
+			const result = triggerify.runEvent(payload, { host: "pi", workspace, hookInputs });
 			return result.prompts;
 		} catch {
 			return [];
@@ -226,7 +276,17 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		// session-start inject (session_start) + prompt-submit inject (when a
 		// prompt is present, before_agent_start fires per turn).
 		const sessionPrompts = triggerPrompts("session-start", ctx.cwd);
-		const promptPrompts = event.prompt ? triggerPrompts("prompt-submit", ctx.cwd, { prompt: event.prompt }) : [];
+		const titleContext = event.prompt
+			? buildTitleContext(ctx.sessionManager.buildContextEntries(), event.prompt)
+			: "";
+		const promptPrompts = event.prompt
+			? triggerPrompts(
+					"prompt-submit",
+					ctx.cwd,
+					{ prompt: event.prompt },
+					{ [TITLE_HOOK_ID]: { sessionContext: titleContext } },
+				)
+			: [];
 
 		const triggerContext = formatTriggerContext([...sessionPrompts, ...promptPrompts], sops, activeCandidates);
 		if (!triggerContext) return undefined;

@@ -5,6 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 
 import cslContextHooks, {
+  buildTitleContext,
   formatTriggerContext,
   isDesignFetchTool,
 } from "../pi/extensions/csl-context-hooks.ts";
@@ -59,9 +60,54 @@ function fakePi() {
   return { handlers, api: { on: (name, handler) => handlers.set(name, handler) } };
 }
 
-function fakeContext(cwd) {
-  return { cwd, ui: { notify() {} } };
+function fakeContext(cwd, entries = []) {
+  return {
+    cwd,
+    sessionManager: { buildContextEntries: () => entries },
+    ui: { notify() {} },
+  };
 }
+
+test("builds bounded title context from the active Pi conversation without tool data", () => {
+  const context = buildTitleContext([
+    { type: "compaction", summary: "Build the authentication cache", id: "c", parentId: null, timestamp: "" },
+    { type: "message", message: { role: "user", content: "Fix cache invalidation" }, id: "u", parentId: "c", timestamp: "" },
+    {
+      type: "message",
+      message: {
+        role: "assistant",
+        content: [
+          { type: "text", text: "I will fix the shared invalidation path." },
+          { type: "toolCall", name: "read", arguments: { path: "secret.txt" } },
+        ],
+      },
+      id: "a",
+      parentId: "u",
+      timestamp: "",
+    },
+    {
+      type: "message",
+      message: { role: "toolResult", content: [{ type: "text", text: "private tool output" }] },
+      id: "t",
+      parentId: "a",
+      timestamp: "",
+    },
+    {
+      type: "message",
+      message: { role: "assistant", content: [{ type: "text", text: "x".repeat(20_000) }] },
+      id: "long",
+      parentId: "t",
+      timestamp: "",
+    },
+  ], "commit the completed cache fix");
+
+  assert.ok(Array.from(context).length <= 12_000);
+  assert.match(context, /Session summary: Build the authentication cache/);
+  assert.match(context, /User: Fix cache invalidation/);
+  assert.match(context, /User: commit the completed cache fix/);
+  assert.match(context, /older middle context omitted/);
+  assert.doesNotMatch(context, /secret\.txt|private tool output|Tool/);
+});
 
 test("formats Triggerify session prompts into Pi context", () => {
   const context = formatTriggerContext(

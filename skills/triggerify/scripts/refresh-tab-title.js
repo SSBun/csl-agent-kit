@@ -9,15 +9,17 @@ const { execFileSync, spawn, spawnSync } = require("node:child_process");
 const DEFAULT_MODEL = "deepseek/deepseek-v4-flash";
 const MODEL_TIMEOUT_MS = 20_000;
 const MAX_PROMPT = 4_000;
+const MAX_CONTEXT = 12_000;
 const MAX_SUMMARY = 56;
 const MAX_TITLE = 72;
 const KEEP_TITLE = "KEEP_CURRENT_TITLE";
 const SYSTEM_PROMPT = [
-  "Classify the latest user's main requested action.",
-  `Return exactly ${KEEP_TITLE} when that action is only an acknowledgement, continuation, retry, commit, push, or test run for existing work.`,
-  "Do not keep the title when the main action creates, changes, fixes, optimizes, researches, or explains a concrete subject, even if the request mentions routine operations.",
+  "Name the stable main task of the supplied conversation context.",
+  "Use the whole context; do not merely summarize the latest user message.",
+  `Return exactly ${KEEP_TITLE} when the latest message only continues, acknowledges, retries, commits, pushes, or tests the existing main task, or when you cannot confidently identify a better title.`,
+  "Return a new title only when the conversation's main task has materially changed or no stable title exists yet.",
   "Otherwise return only a concise terminal tab title, 2-6 words, without quotes, Markdown, or ending punctuation.",
-  "Preserve the task language exactly: English task means English title; Chinese task means Chinese title.",
+  "Preserve the main task language exactly: English task means English title; Chinese task means Chinese title.",
 ].join(" ");
 
 function truncate(value, limit) {
@@ -32,6 +34,24 @@ function sanitize(value) {
     .replace(/\s+/g, " ")
     .replace(/^[#>*_`~\-\s]+/, "")
     .trim();
+}
+
+function cleanContext(value) {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/\r\n?/g, "\n")
+    .replace(/[\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f-\u009f]/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function contextFromEnv(env = process.env) {
+  try {
+    return truncate(cleanContext(JSON.parse(env.TRIGGERIFY_HOOK_INPUT || "{}").sessionContext), MAX_CONTEXT);
+  } catch {
+    return "";
+  }
 }
 
 function modelFromConfig(env = process.env) {
@@ -61,11 +81,11 @@ function cleanModelTitle(value) {
   );
 }
 
-function buildTitle(payload, workspace, modelTitle = "") {
-  if (modelTitle === KEEP_TITLE) return null;
+function buildTitle(_payload, workspace, modelTitle = "") {
+  const summary = cleanModelTitle(modelTitle);
+  if (!summary || summary === KEEP_TITLE) return null;
   const project = sanitize(path.basename(workspace || "")) || "Pi";
-  const summary = cleanModelTitle(modelTitle) || truncate(sanitize(payload?.prompt), MAX_SUMMARY);
-  return truncate(summary ? `${project} · ${summary}` : project, MAX_TITLE);
+  return truncate(`${project} · ${summary}`, MAX_TITLE);
 }
 
 function parentInfo(pid) {
@@ -115,11 +135,12 @@ function isolatedEnv() {
     "PI_SESSION_ID",
     "PI_SUBAGENT_PARENT_SESSION",
     "TRIGGERIFY_HOOK_CONFIG",
+    "TRIGGERIFY_HOOK_INPUT",
   ]) delete env[key];
   return env;
 }
 
-function generateModelTitle(prompt, model = modelFromConfig()) {
+function generateModelTitle(context, model = modelFromConfig()) {
   const result = spawnSync("pi", [
     "--print",
     "--model", model,
@@ -131,7 +152,7 @@ function generateModelTitle(prompt, model = modelFromConfig()) {
     "--no-context-files",
     "--system-prompt", SYSTEM_PROMPT,
   ], {
-    input: truncate(sanitize(prompt), MAX_PROMPT),
+    input: truncate(cleanContext(context), MAX_CONTEXT),
     encoding: "utf8",
     env: isolatedEnv(),
     stdio: ["pipe", "pipe", "ignore"],
@@ -211,7 +232,8 @@ function isLatest(state, token) {
 }
 
 function runWorker(input) {
-  const title = buildTitle({ prompt: input.prompt }, input.workspace, generateModelTitle(input.prompt));
+  const context = cleanContext(input.sessionContext) || `User: ${input.prompt}`;
+  const title = buildTitle({ prompt: input.prompt }, input.workspace, generateModelTitle(context));
   if (title === null) return true;
   const result = withTtyLock(input.tty, () => {
     if (!isLatest(input.state, input.token)) return false;
@@ -222,6 +244,7 @@ function runWorker(input) {
 
 function startWorker(payload, workspace) {
   const prompt = truncate(sanitize(payload?.prompt), MAX_PROMPT);
+  const sessionContext = contextFromEnv();
   const tty = writableAncestorTty();
   if (!prompt || !tty) return false;
 
@@ -236,7 +259,7 @@ function startWorker(payload, workspace) {
   const inputFile = path.join(os.tmpdir(), `triggerify-title-${process.pid}-${crypto.randomBytes(8).toString("hex")}.json`);
   let descriptor;
   try {
-    fs.writeFileSync(inputFile, JSON.stringify({ prompt, workspace, tty, state, token }), { mode: 0o600, flag: "wx" });
+    fs.writeFileSync(inputFile, JSON.stringify({ prompt, sessionContext, workspace, tty, state, token }), { mode: 0o600, flag: "wx" });
     descriptor = fs.openSync(inputFile, "r");
     fs.unlinkSync(inputFile);
     const child = spawn(process.execPath, [__filename, "--worker"], {
@@ -253,14 +276,16 @@ function startWorker(payload, workspace) {
 }
 
 function selfTest() {
-  assert.equal(buildTitle({ prompt: "Add a cache" }, "/tmp/my-project"), "my-project · Add a cache");
+  assert.equal(buildTitle({ prompt: "Add a cache" }, "/tmp/my-project"), null);
   assert.equal(buildTitle({ prompt: "fallback" }, "/tmp/app", "Auth Refresh Race Fix"), "app · Auth Refresh Race Fix");
   assert.equal(buildTitle({ prompt: "commit these changes" }, "/tmp/app", KEEP_TITLE), null);
   assert.equal(cleanModelTitle(KEEP_TITLE), KEEP_TITLE);
   assert.equal(cleanModelTitle('Title: “Fix the tests.”'), "Fix the tests");
-  assert.equal(buildTitle({ prompt: "\u001b]0;owned\u0007" }, "/tmp/app"), "app · ]0;owned");
-  assert.ok(Array.from(buildTitle({ prompt: "界".repeat(100) }, "/tmp/app")).length <= MAX_TITLE);
-  assert.equal(/[\u0000-\u001f\u007f-\u009f]/.test(buildTitle({ prompt: "safe" }, "/tmp/app")), false);
+  assert.equal(buildTitle({}, "/tmp/app", "\u001b]0;owned\u0007"), "app · ]0;owned");
+  assert.ok(Array.from(buildTitle({}, "/tmp/app", "界".repeat(100))).length <= MAX_TITLE);
+  assert.equal(/[\u0000-\u001f\u007f-\u009f]/.test(buildTitle({}, "/tmp/app", "safe")), false);
+  assert.equal(contextFromEnv({ TRIGGERIFY_HOOK_INPUT: '{"sessionContext":"User: Build auth\\n\\nAssistant: Working"}' }), "User: Build auth\n\nAssistant: Working");
+  assert.equal(contextFromEnv({ TRIGGERIFY_HOOK_INPUT: "invalid" }), "");
   assert.equal(modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: '{"model":"openai-codex/gpt-5.4-mini"}' }), "openai-codex/gpt-5.4-mini");
   assert.equal(modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: '{"model":"bad model"}' }), DEFAULT_MODEL);
   assert.equal(modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: "invalid" }), DEFAULT_MODEL);
@@ -303,6 +328,7 @@ function selfTest() {
 module.exports = {
   buildTitle,
   cleanModelTitle,
+  contextFromEnv,
   generateModelTitle,
   modelFromConfig,
   sanitize,

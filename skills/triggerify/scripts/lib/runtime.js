@@ -193,7 +193,7 @@ function runEvent(payload, options = {}) {
         diagnostics.push(`${entry.id}:event-budget-exhausted`);
         break;
       }
-      result = executeScript(entry, payload, workspace, remaining);
+      result = executeScript(entry, payload, workspace, remaining, options.hookInputs?.[entry.id]);
     } catch {
       diagnostics.push(`${entry.id}:runtime-error`);
       continue;
@@ -209,7 +209,7 @@ function runEvent(payload, options = {}) {
   return { prompts, diagnostics, blocked: false };
 }
 
-function executeScript(entry, payload, workspace, remaining) {
+function executeScript(entry, payload, workspace, remaining, hookInput = {}) {
   const scripts = fs.realpathSync(path.join(scopeRoot(entry.scope, workspace), "scripts"));
   const executable = fs.realpathSync(path.join(scripts, entry.rule.script));
   if (!isWithin(scripts, executable)) return { status: 1, stderr: "script-escape" };
@@ -233,6 +233,7 @@ function executeScript(entry, payload, workspace, remaining) {
         TRIGGERIFY_HOST: payload.host.name,
         TRIGGERIFY_EVENT: payload.event,
         TRIGGERIFY_HOOK_CONFIG: JSON.stringify(entry.hookConfig || {}),
+        TRIGGERIFY_HOOK_INPUT: JSON.stringify(hookInput || {}),
       },
       stdio: [payloadDescriptor, "pipe", "pipe"],
       encoding: "utf8",

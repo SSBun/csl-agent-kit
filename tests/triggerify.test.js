@@ -631,7 +631,7 @@ test("inner hooks default enabled and persist user disable/enable state", { conc
   }
 });
 
-test("runtime passes only the current hook settings without changing the event payload", () => {
+test("runtime passes only the current hook settings and adapter input without changing the event payload", () => {
   const workspace = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-hook-config-"));
   const scripts = path.join(workspace, ".csl-agent-kit", "triggerify", "scripts");
   fs.mkdirSync(scripts, { recursive: true });
@@ -640,6 +640,7 @@ const fs = require("node:fs");
 const payload = JSON.parse(fs.readFileSync(0, "utf8"));
 process.stdout.write(JSON.stringify({
   config: JSON.parse(process.env.TRIGGERIFY_HOOK_CONFIG),
+  hookInput: JSON.parse(process.env.TRIGGERIFY_HOOK_INPUT),
   hookId: process.env.TRIGGERIFY_HOOK_ID,
   prompt: payload.prompt,
 }));
@@ -653,13 +654,17 @@ process.stdout.write(JSON.stringify({
       rule: { action: "run-script", script: "emit-config.js", timeout: 5 },
     };
     const payload = triggerify.createEvent({ event: "prompt-submit", host: "pi", workspace, prompt: "original prompt" });
-    const result = triggerifyRuntime.executeScript(entry, payload, workspace, 5_000);
+    const hookInput = { sessionContext: "User: original task\n\nAssistant: working" };
+    const result = triggerifyRuntime.executeScript(entry, payload, workspace, 5_000, hookInput);
     assert.equal(result.status, 0);
     assert.deepEqual(JSON.parse(result.stdout), {
       config: entry.hookConfig,
+      hookInput,
       hookId: entry.id,
       prompt: "original prompt",
     });
+    assert.equal(titleHook.contextFromEnv({ TRIGGERIFY_HOOK_INPUT: JSON.stringify(hookInput) }), hookInput.sessionContext);
+    assert.equal(titleHook.contextFromEnv({ TRIGGERIFY_HOOK_INPUT: "invalid" }), "");
     assert.equal(titleHook.modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: JSON.stringify(entry.hookConfig) }), "openai-codex/gpt-5.4-mini");
     assert.equal(titleHook.modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: "{}" }), "deepseek/deepseek-v4-flash");
     assert.equal(titleHook.modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: '{"model":"bad model"}' }), "deepseek/deepseek-v4-flash");
@@ -668,10 +673,11 @@ process.stdout.write(JSON.stringify({
   }
 });
 
-test("title hook keeps the current title for routine follow-ups", () => {
+test("title hook keeps the current title for routine follow-ups and model failure", () => {
   const decision = titleHook.cleanModelTitle("KEEP_CURRENT_TITLE");
   assert.equal(decision, "KEEP_CURRENT_TITLE");
   assert.equal(titleHook.buildTitle({ prompt: "commit these changes" }, "/tmp/app", decision), null);
+  assert.equal(titleHook.buildTitle({ prompt: "build authentication" }, "/tmp/app", ""), null);
   assert.equal(titleHook.buildTitle({ prompt: "build authentication" }, "/tmp/app", "Build Authentication"), "app · Build Authentication");
 });
 
