@@ -1,5 +1,7 @@
 # 任务索引
 
+- [仅在用户明确要求时执行任务审查](todo/make-task-review-explicit-only.md) — Completed (2026-07-28 22:58)
+
 - [让 Triggerify 识别 Pi 文件工具变更](todo/adapt-pi-file-tools-for-triggerify.md) — Completed (2026-07-28 13:37)
 
 - [Triggerify inner hook 用户配置](todo/triggerify-inner-hook-config.md) — Completed (2026-07-27 18:22)

@@ -1,12 +1,13 @@
 ---
 name: adversarial-review
-description: Run a fail-closed, uncapped Reviewer–Editor loop for code, PRDs, RFCs, design documents, and other deliverables. Use only when the user explicitly requests adversarial or two-agent review, or an applicable requirement mandates independent Reviewer approval before completion. Exclude ordinary one-pass review, self-review, routine file operations, and feedback-only requests without remediation.
+description: Run a fail-closed, uncapped Reviewer–Editor loop for code, PRDs, RFCs, design documents, and other deliverables. Use only when the user explicitly requests adversarial review, a two-agent Reviewer–Editor loop, or independent Reviewer approval. Exclude ordinary one-pass review, self-review, routine file operations, and feedback-only requests without remediation.
 ---
 
 # Adversarial Review
 
 ## Gate Contract
 
+- Enter only from an explicit user request; never infer the need from risk, complexity, verification gaps, or another workflow.
 - Start `BLOCKED` with distinct Reviewer and Editor agents.
 - Prefer real isolated subagents for the Reviewer and Editor when the host can dispatch them; fall back to inline role-play with `ISOLATION: simulated` disclosed. Follow [Subagent Dispatch](references/subagent-dispatch.md).
 - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.

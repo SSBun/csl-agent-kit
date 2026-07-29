@@ -71,4 +71,4 @@
 
 ### 7. Verification Before Done
 - Verify outcomes in proportion to risk with deterministic checks, tests, logs, or behavioral comparison as appropriate.
-- Use an independent review workflow only when the user requests it or an applicable task requirement makes it a completion gate.
+- Use an independent review workflow only when the user explicitly requests adversarial, two-agent, or independent Reviewer approval; never infer it from task risk or another workflow.

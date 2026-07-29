@@ -1,6 +1,6 @@
 ---
 name: workspace-manage-task
-description: Manage workspace task records for non-trivial deliverable changes, including scope, evidence, status, and gated adversarial review. Excludes read-only answers, trivial mechanical work, context maintenance, and correction lessons.
+description: Manage workspace task records for non-trivial deliverable changes, including scope, evidence, status, and user-requested adversarial review. Excludes read-only answers, trivial mechanical work, context maintenance, and correction lessons.
 ---
 
 # Manage Workspace Tasks
@@ -55,7 +55,7 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 - Map every Target ID to current evidence that states the checked object, method, and observed result.
 - A shared check may support multiple Targets, but name each covered ID explicitly.
 - Record the delivered artifact and only material scope, approach, or verification deviations.
-- Before completion, record `Review gate: Required — <evidence>` or `Review gate: Skipped — <evidence>`.
+- Before completion, record `Review gate: Required — <explicit user request>` or `Review gate: Skipped — no explicit user request`.
 - After an actual review, append the decision and report link; never prewrite approval.
 
 ### Block
@@ -72,23 +72,18 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 
 ## Review Gate
 
-Use task meaning and evidence, never size or scores:
+Set `Required` only when the user explicitly requests `$adversarial-review`, a two-agent Reviewer–Editor loop, or independent Reviewer approval for the current task. Otherwise set `Skipped`.
 
-`Required = Explicit OR Critical OR (Complex AND Verification Gap)`
-
-- `Explicit`: the user or an applicable workflow requires independent review.
-- `Critical`: security, permissions, privacy, secrets, data loss, irreversible or production effects, publish/deploy, breaking compatibility, high stakes, or global Agent safety/lifecycle risk.
-- `Complex`: at least two distinct categories apply: integration surface (multiple components, hosts, or protocols); state/change (state, concurrency, migration, or rollback); competing constraints; non-local effects; correctness ambiguity. Multiple items within one category still count as one category.
-- `Verification Gap`: a core outcome lacks deterministic checks, an available environment, regression/rollback coverage, or a direct pass/fail criterion, or relies mainly on judgment.
-
-Set `Required` exactly when the formula is true; otherwise set `Skipped`. Re-evaluate whenever scope, risk, or verification evidence changes. A self-check finding may change `Critical`, a complexity category, or `Verification Gap`; then re-evaluate the same formula. Never require review outside the formula.
+- Do not infer a review requirement from risk, criticality, complexity, verification gaps, another rule or workflow, or Agent judgment.
+- Ordinary one-pass review, verification, testing, proofreading, or self-review requests do not request `$adversarial-review`.
+- Re-evaluate only when the user's review request changes. Do not ask whether review is wanted merely because a task appears risky or difficult.
 
 Keep `evals/review_gate_cases.json` aligned with this gate.
 
 ## Lifecycle
 
 - Use `Pending`, `In Progress`, `In Review`, `Completed`, or `Blocked`, followed by the current local date and 24-hour time in `YYYY-MM-DD HH:MM` format.
-- For a small follow-up that extends a completed task's existing outcome, reopen its canonical task instead of creating a new file: append the next Target ID, revise the Plan, set `In Progress`, update its exact index entry, and re-evaluate the Review Gate. Use a separate task only when the Subtasks boundary applies.
+- For a small follow-up that extends a completed task's existing outcome, reopen its canonical task instead of creating a new file: append the next Target ID, revise the Plan, set `In Progress`, update its exact index entry, and re-evaluate the Review Gate from the current user request. Use a separate task only when the Subtasks boundary applies.
 - Before `In Progress`, require at least one valid Target.
 - Before completion, require every Target to be checked and mapped to current Result evidence, proportionate verification to pass, and the Review gate to be recorded.
 - For `Required`, set `In Review`, invoke `$adversarial-review`, and complete only after recorded `APPROVED`.

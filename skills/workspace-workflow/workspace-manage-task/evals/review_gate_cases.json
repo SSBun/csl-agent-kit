@@ -1,85 +1,46 @@
 {
   "cases": [
     {
-      "id": "simple-deterministic",
+      "id": "simple-without-request",
       "task": "Rename one verified local file.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": [],
-      "verification_gap": false,
+      "user_requested_adversarial_review": false,
       "expected": "Skipped"
     },
     {
-      "id": "multi-category-gap",
+      "id": "complex-gap-without-request",
       "task": "Migrate persistent directives across three hosts when one host cannot be tested.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": ["integration-surface", "state-change"],
-      "verification_gap": true,
-      "expected": "Required"
-    },
-    {
-      "id": "one-category-verified",
-      "task": "Add an optional backward-compatible schema field with complete regression coverage.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": ["state-change"],
-      "verification_gap": false,
+      "user_requested_adversarial_review": false,
       "expected": "Skipped"
     },
     {
-      "id": "critical",
+      "id": "critical-without-request",
       "task": "Change production authentication and permission behavior.",
-      "explicit": false,
-      "critical": true,
-      "complexity_categories": [],
-      "verification_gap": false,
+      "user_requested_adversarial_review": false,
+      "expected": "Skipped"
+    },
+    {
+      "id": "workflow-mandate-without-user-request",
+      "task": "A workflow marks independent review as required, but the user did not request it.",
+      "user_requested_adversarial_review": false,
+      "expected": "Skipped"
+    },
+    {
+      "id": "ordinary-one-pass-review",
+      "task": "Review this pull request for bugs and security issues.",
+      "user_requested_adversarial_review": false,
+      "expected": "Skipped"
+    },
+    {
+      "id": "explicit-adversarial-review",
+      "task": "Run adversarial-review with an independent Reviewer and Editor before completion.",
+      "user_requested_adversarial_review": true,
       "expected": "Required"
     },
     {
-      "id": "explicit",
-      "task": "Review a local deterministic change because the user explicitly requested independent review.",
-      "explicit": true,
-      "critical": false,
-      "complexity_categories": [],
-      "verification_gap": false,
+      "id": "explicit-two-agent-review",
+      "task": "Use a two-agent Reviewer–Editor loop and block completion until approval.",
+      "user_requested_adversarial_review": true,
       "expected": "Required"
-    },
-    {
-      "id": "one-category-no-gap",
-      "task": "Update two host adapters with complete deterministic protocol fixtures.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": ["integration-surface"],
-      "verification_gap": false,
-      "expected": "Skipped"
-    },
-    {
-      "id": "gap-only",
-      "task": "Change one local formatter when its runtime environment is unavailable.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": [],
-      "verification_gap": true,
-      "expected": "Skipped"
-    },
-    {
-      "id": "one-category-gap",
-      "task": "Update multiple hosts and protocols when one fixture is unavailable.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": ["integration-surface"],
-      "verification_gap": true,
-      "expected": "Skipped"
-    },
-    {
-      "id": "multi-category-no-gap",
-      "task": "Migrate a schema across two adapters with complete deterministic regression and rollback checks.",
-      "explicit": false,
-      "critical": false,
-      "complexity_categories": ["integration-surface", "state-change"],
-      "verification_gap": false,
-      "expected": "Skipped"
     }
   ]
 }

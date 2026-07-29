@@ -169,6 +169,17 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(rules, /load `\$workspace-manage-task` and follow its `SKILL\.md` before execution/);
   assert.match(rules, /load `\$workspace-capture-lessons` and follow its `SKILL\.md` before continuing/);
   assert.match(rules, /Do not wait for the user to request/);
+  assert.match(rules, /Use an independent review workflow only when the user explicitly requests/);
+  assert.equal(rules.includes("applicable task requirement"), false);
+
+  const projectRules = readFileSync(path.join(root, "AGENTS.md"), "utf8");
+  assert.match(projectRules, /Run `adversarial-review` or request human review only when the user explicitly asks/);
+  assert.match(projectRules, /high risk alone does not trigger it/);
+
+  const reviewSkill = readFileSync(path.join(root, "skills", "adversarial-review", "SKILL.md"), "utf8");
+  assert.match(reviewSkill, /Use only when the user explicitly requests adversarial review/);
+  assert.match(reviewSkill, /Enter only from an explicit user request/);
+  assert.equal(reviewSkill.includes("applicable requirement mandates"), false);
 });
 
 test("injected workspace workflow gates define proactive execution order", () => {
@@ -271,14 +282,15 @@ test("workspace task contract keeps implementation and review out of acceptance"
   assert.equal(skill.includes("### Checklist"), false);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
   assert.match(skill, /Do not include implementation steps, commands, shared workflow gates, or review status/);
-  assert.match(skill, /Required = Explicit OR Critical OR \(Complex AND Verification Gap\)/);
+  assert.match(skill, /Set `Required` only when the user explicitly requests `\$adversarial-review`/);
   assert.match(skill, /Review gate: Required/);
   assert.match(skill, /Review gate: Skipped/);
+  assert.match(skill, /Do not infer a review requirement from risk, criticality, complexity, verification gaps, another rule or workflow, or Agent judgment/);
+  assert.match(skill, /Ordinary one-pass review, verification, testing, proofreading, or self-review requests do not request `\$adversarial-review`/);
+  assert.match(skill, /Re-evaluate only when the user's review request changes/);
   assert.match(skill, /For `Required`.*invoke `\$adversarial-review`/);
   assert.match(skill, /For `Skipped`, do not enter `In Review`/);
-  assert.match(skill, /Re-evaluate whenever scope, risk, or verification evidence changes/);
-  assert.match(skill, /Multiple items within one category still count as one category/);
-  assert.match(skill, /Never require review outside the formula/);
+  assert.equal(skill.includes("Explicit OR Critical"), false);
   assert.equal(/Escalate if/.test(skill), false);
 
   assert.match(skill, /Skip task records for read-only answers and simple operations with direct deterministic verification/);
@@ -305,31 +317,24 @@ test("workspace task contract keeps implementation and review out of acceptance"
   }
 });
 
-test("workspace review-gate cases follow the binary formula", () => {
+test("workspace review-gate cases require an explicit user request", () => {
   const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-manage-task", "evals", "review_gate_cases.json"), "utf8"));
   const outcomes = new Set();
-  const expectedCategories = new Set(["integration-surface", "state-change", "competing-constraints", "non-local-effects", "correctness-ambiguity"]);
 
   for (const item of fixture.cases) {
-    assert.equal(new Set(item.complexity_categories).size, item.complexity_categories.length, `${item.id}: duplicate category`);
-    assert.ok(item.complexity_categories.every((category) => expectedCategories.has(category)), `${item.id}: unknown category`);
-    const complex = new Set(item.complexity_categories).size >= 2;
-    const required = item.explicit || item.critical || complex && item.verification_gap;
-    const actual = required ? "Required" : "Skipped";
+    const actual = item.user_requested_adversarial_review ? "Required" : "Skipped";
     assert.equal(actual, item.expected, item.id);
     outcomes.add(actual);
   }
 
   assert.deepEqual([...outcomes].sort(), ["Required", "Skipped"]);
   const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
-  assert.equal(byId["gap-only"].expected, "Skipped");
-  assert.equal(byId["one-category-gap"].expected, "Skipped");
-  assert.equal(byId["multi-category-gap"].complexity_categories.length, 2);
-  assert.equal(byId["multi-category-gap"].verification_gap, true);
-  assert.equal(byId["multi-category-gap"].expected, "Required");
-  assert.ok(byId["multi-category-no-gap"].complexity_categories.length >= 2);
-  assert.equal(byId["multi-category-no-gap"].verification_gap, false);
-  assert.equal(byId["multi-category-no-gap"].expected, "Skipped");
+  assert.equal(byId["critical-without-request"].expected, "Skipped");
+  assert.equal(byId["complex-gap-without-request"].expected, "Skipped");
+  assert.equal(byId["workflow-mandate-without-user-request"].expected, "Skipped");
+  assert.equal(byId["ordinary-one-pass-review"].expected, "Skipped");
+  assert.equal(byId["explicit-adversarial-review"].expected, "Required");
+  assert.equal(byId["explicit-two-agent-review"].expected, "Required");
 });
 
 test("workspace lesson contract keeps one confirmed current rule set", () => {
