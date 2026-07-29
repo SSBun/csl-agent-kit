@@ -21,7 +21,21 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 
 ## Task Contract
 
-- Give the task a result-oriented title and a local-time status formatted as `Status (YYYY-MM-DD HH:MM)`.
+- 新建任务必须使用以下任务索引条目格式，标题使用普通文本，任务链接放在条目末尾；时间戳必须替换为创建或状态变更时的当前本地时间：
+
+  ```md
+  - 任务标题 — Status (<YYYY-MM-DD HH:MM>): In Progress — [任务记录](todo/task-slug.md)
+  ```
+
+- 新建任务的正文必须使用以下状态行格式，使用与索引条目完全相同的状态和时间戳：
+
+  ```md
+  Status (<YYYY-MM-DD HH:MM>): In Progress
+  ```
+
+- `<state>` 只能使用 `Pending`、`In Progress`、`In Review`、`Completed` 或 `Blocked`；索引条目与任务正文中的状态和时间戳必须完全一致。
+- 每次新建、重新打开或更改任务状态并同步索引后，立即运行 `node "<skill-dir>/scripts/check-task-index.js" "tasks/todo/task-slug.md"`；`<skill-dir>` 是本 `SKILL.md` 所在目录。检查通过前不得继续交付工作或完成状态迁移。
+- 检查脚本只校验参数指定的 canonical task 及其索引项；已存在的历史条目不需要批量迁移，重新打开或更新历史任务时才必须按上述新格式同步该条目。
 - Create `Target` and `Plan` when the task starts.
 - Add `Scope`, `Block`, `Result`, and review details only when their lifecycle conditions apply.
 - Do not create an independent `Checklist`; task-specific completion conditions belong in `Target`, while shared verification and review gates belong in this workflow.

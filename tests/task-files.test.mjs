@@ -1,18 +1,33 @@
 import assert from "node:assert/strict";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const taskDir = path.join(root, "tasks", "todo");
 const reportDir = path.join(root, "reports", "adversarial-review");
 const workflowDir = path.join(root, "skills", "workspace-workflow");
+const require = createRequire(import.meta.url);
+const { checkTaskIndex } = require(path.join(workflowDir, "workspace-manage-task", "scripts", "check-task-index.js"));
 
 function readMarkdown(dir) {
   return new Map(readdirSync(dir)
     .filter((file) => file.endsWith(".md"))
     .map((file) => [file, readFileSync(path.join(dir, file), "utf8")]));
+}
+
+function writeTaskIndexFixture(t, { entry, status = "Status (2026-07-29 13:43): In Progress", legacyEntry = "" }) {
+  const workspace = mkdtempSync(path.join(os.tmpdir(), "task-index-"));
+  const todoDir = path.join(workspace, "tasks", "todo");
+  const taskFile = path.join(todoDir, "task-a.md");
+  mkdirSync(todoDir, { recursive: true });
+  writeFileSync(taskFile, `# 任务 A\n\n${status}\n`, "utf8");
+  writeFileSync(path.join(workspace, "tasks", "todo.md"), `# 任务索引\n\n${entry}${legacyEntry ? `\n${legacyEntry}` : ""}\n`, "utf8");
+  t.after(() => rmSync(workspace, { recursive: true, force: true }));
+  return taskFile;
 }
 
 function validateReviewReport(markdown, { task, cycles, dialogue = [] } = {}) {
@@ -85,9 +100,12 @@ function validateReviewReport(markdown, { task, cycles, dialogue = [] } = {}) {
 
 function validateTaskGraph(index, tasks, reports) {
   const entries = index.split("\n").slice(2).filter(Boolean).map((line) => {
-    const match = line.match(/^- \[(.+)]\(todo\/([a-z0-9-]+\.md)\) — (.+)$/);
-    assert.ok(match, `invalid task index entry: ${line}`);
-    return { title: match[1], file: match[2], status: match[3] };
+    const current = line.match(/^- (.+) — (Status \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}\): (?:Pending|In Progress|In Review|Completed|Blocked)) — \[[^\]]+]\(todo\/([a-z0-9-]+\.md)\)$/);
+    if (current) return { title: current[1], status: current[2], file: current[3] };
+
+    const legacy = line.match(/^- \[(.+)]\(todo\/([a-z0-9-]+\.md)\) — (.+)$/);
+    assert.ok(legacy, `invalid task index entry: ${line}`);
+    return { title: legacy[1], file: legacy[2], status: legacy[3] };
   });
   const linkedReports = new Set();
 
@@ -98,7 +116,8 @@ function validateTaskGraph(index, tasks, reports) {
   for (const entry of entries) {
     const body = tasks.get(entry.file);
     assert.equal(body.match(/^# (.+)$/m)?.[1], entry.title, entry.file);
-    const status = body.match(/^状态：\s*(.+)$/m)?.[1]
+    const status = body.match(/^(Status \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}\): (?:Pending|In Progress|In Review|Completed|Blocked))$/m)?.[1]
+      ?? body.match(/^状态：\s*(.+)$/m)?.[1]
       ?? body.match(/^- 状态：\s*(.+)$/m)?.[1]
       ?? body.match(/^- \*\*Status:\*\*\s*(.+)$/m)?.[1]
       ?? body.match(/^\*\*Status:\*\*\s*(.+)$/m)?.[1]
@@ -131,6 +150,40 @@ test("task index and review reports resolve to isolated same-slug files", () => 
   );
 });
 
+test("task index checker accepts the target standard record without migrating legacy siblings", (t) => {
+  const taskFile = writeTaskIndexFixture(t, {
+    entry: "- 任务 A — Status (2026-07-29 13:43): In Progress — [任务记录](todo/task-a.md)",
+    legacyEntry: "- [旧任务](todo/legacy-task.md) — Completed (2026-07-01 09:00)",
+  });
+  assert.doesNotThrow(() => checkTaskIndex(taskFile));
+});
+
+test("task index checker rejects old target format and canonical mismatches", (t) => {
+  const cases = [
+    {
+      entry: "- [任务 A](todo/task-a.md) — In Progress (2026-07-29 13:43)",
+      error: /does not match the standard format/,
+    },
+    {
+      entry: "- 任务 A — Status (2026-07-29 13:43): Completed — [任务记录](todo/task-a.md)",
+      error: /status does not match/,
+    },
+    {
+      entry: "- 任务 B — Status (2026-07-29 13:43): In Progress — [任务记录](todo/task-a.md)",
+      error: /title does not match/,
+    },
+    {
+      entry: "- 任务 A — Status (2026-07-29 25:61): In Progress — [任务记录](todo/task-a.md)",
+      error: /does not match the standard format/,
+    },
+  ];
+
+  for (const item of cases) {
+    const taskFile = writeTaskIndexFixture(t, item);
+    assert.throws(() => checkTaskIndex(taskFile), item.error);
+  }
+});
+
 test("task links to deleted reports fail validation", () => {
   const index = "# 任务索引\n\n- [任务 A](todo/task-a.md) — 进行中\n";
   const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../../reports/adversarial-review/task-a.md)\n"]]);
@@ -155,7 +208,10 @@ test("default agent instructions explain workspace records and route work to wor
   for (const [name, ownedPath] of Object.entries(expected)) {
     const skillDir = path.join(workflowDir, name);
     const evaluatedSkill = ["workspace-maintain-context", "workspace-manage-task"].includes(name);
-    assert.deepEqual(readdirSync(skillDir).sort(), evaluatedSkill ? ["SKILL.md", "agents", "evals"] : ["SKILL.md", "agents"]);
+    const skillFiles = name === "workspace-manage-task"
+      ? ["SKILL.md", "agents", "evals", "scripts"]
+      : evaluatedSkill ? ["SKILL.md", "agents", "evals"] : ["SKILL.md", "agents"];
+    assert.deepEqual(readdirSync(skillDir).sort(), skillFiles);
     assert.deepEqual(readdirSync(path.join(skillDir, "agents")).sort(), evaluatedSkill ? ["interface.yaml", "openai.yaml"] : ["openai.yaml"]);
     const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
     assert.match(skill, new RegExp(`^name: ${name}$`, "m"));
@@ -310,7 +366,14 @@ test("workspace task contract keeps implementation and review out of acceptance"
   for (const status of ["Pending", "In Progress", "In Review", "Completed", "Blocked"]) {
     assert.ok(skill.includes(`\`${status}\``), `missing task status: ${status}`);
   }
-  assert.match(skill, /Status \(YYYY-MM-DD HH:MM\)/);
+  assert.match(skill, /- 任务标题 — Status \(<YYYY-MM-DD HH:MM>\): In Progress — \[任务记录\]\(todo\/task-slug\.md\)/);
+  assert.match(skill, /Status \(<YYYY-MM-DD HH:MM>\): In Progress/);
+  assert.match(skill, /时间戳必须替换为创建或状态变更时的当前本地时间/);
+  assert.match(skill, /状态和时间戳必须完全一致/);
+  assert.match(skill, /scripts\/check-task-index\.js/);
+  assert.match(skill, /检查通过前不得继续交付工作或完成状态迁移/);
+  assert.match(skill, /只校验参数指定的 canonical task 及其索引项/);
+  assert.deepEqual(readdirSync(path.join(skillDir, "scripts")).sort(), ["check-task-index.js"]);
   assert.match(skill, /current local date and 24-hour time/);
   for (const status of ["待执行", "进行中", "待审查", "已完成", "阻塞"]) {
     assert.equal(skill.includes(`\`${status}\``), false, `translated task status remains: ${status}`);
