@@ -2,7 +2,7 @@
 schema: triggerify/v1
 event: prompt-submit
 action: run-script
-description: Name the active conversation from available context; keep the current title for follow-ups or model failure.
+description: Regenerate a project-prefixed, sub-8-word title from bounded recent conversation context.
 enabled: true
 script: refresh-tab-title.js
 timeout: 5

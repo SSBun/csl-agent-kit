@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -673,12 +674,67 @@ process.stdout.write(JSON.stringify({
   }
 });
 
-test("title hook keeps the current title for routine follow-ups and model failure", () => {
-  const decision = titleHook.cleanModelTitle("KEEP_CURRENT_TITLE");
-  assert.equal(decision, "KEEP_CURRENT_TITLE");
-  assert.equal(titleHook.buildTitle({ prompt: "commit these changes" }, "/tmp/app", decision), null);
-  assert.equal(titleHook.buildTitle({ prompt: "build authentication" }, "/tmp/app", ""), null);
-  assert.equal(titleHook.buildTitle({ prompt: "build authentication" }, "/tmp/app", "Build Authentication"), "app · Build Authentication");
+test("title hook publishes a manual refresh failure result", () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-title-result-"));
+  const script = path.join(__dirname, "../skills/triggerify/scripts/refresh-tab-title.js");
+  const requestId = "manual-request";
+  try {
+    const result = spawnSync(process.execPath, [script], {
+      input: JSON.stringify({ prompt: "", workspace: data }),
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        CSL_AGENT_KIT_HOME: data,
+        TRIGGERIFY_HOOK_INPUT: JSON.stringify({ requestId }),
+      },
+    });
+    assert.equal(result.status, 0);
+    assert.deepEqual(
+      JSON.parse(fs.readFileSync(path.join(data, "triggerify", ".tab-title", `${requestId}.result.json`), "utf8")),
+      { ok: false, changed: false, reason: "missing-prompt" },
+    );
+  } finally {
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("title hook regenerates concise core-intent titles from conversation context", () => {
+  assert.equal(titleHook.cleanModelTitle("KEEP_CURRENT_TITLE"), "");
+  assert.equal(titleHook.cleanModelTitle("Commit these changes"), "");
+  assert.equal(titleHook.cleanModelTitle("Run the tests again"), "");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", ""), null);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "Concise tab titles"), "app · Concise tab titles");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "stable main task: Commit focused git changes with conventional message"), null);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "R1: NOTE:"), null);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "Authentication cache invalidation behavior"), "app · Authentication cache");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "a b c d e f g h i"), "app · a b c d e f");
+  assert.ok(Array.from(titleHook.cleanModelTitle("Authentication cache invalidation behavior")).length <= 24);
+
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-saved-title-"));
+  const previousHome = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = home;
+  try {
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "app");
+    titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "app · Concise tab titles");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "app · Concise tab titles");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/other"), "other");
+    const input = { prompt: "fix title", tty: "/dev/ttys999", workspace: "/tmp/app" };
+    assert.equal(titleHook.generatedTitleAction(input, ""), null);
+    assert.equal(titleHook.generatedTitleAction(input, "KEEP_CURRENT_TITLE"), null);
+    assert.deepEqual(titleHook.generatedTitleAction(input, "Concise tab titles"), {
+      title: "app · Concise tab titles",
+      remember: false,
+    });
+    assert.equal(titleHook.titleModelInput(input), "User: fix title");
+    assert.equal(
+      titleHook.titleModelInput({ ...input, sessionContext: "User: Build auth\nAssistant: Working\nUser: commit" }),
+      "User: Build auth\nAssistant: Working\nUser: commit",
+    );
+  } finally {
+    if (previousHome === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previousHome;
+    fs.rmSync(home, { recursive: true, force: true });
+  }
 });
 
 test("CLI keeps inner hook source immutable", () => {

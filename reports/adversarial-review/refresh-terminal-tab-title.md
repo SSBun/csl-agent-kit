@@ -44,8 +44,8 @@ Topic: 会话级命名与模型失败行为
 
 ---
 
-**Final decision:** `APPROVED`
+**Final decision:** `SUPERSEDED`
 
-**Outcome:** Triggerify 标签标题 hook 已通过独立审查，可使用有界 Pi 会话上下文生成稳定标题，并在模型失败时保持原标题。
+**Outcome:** 用户实测发现已批准版本仍可能复制模型元标签，并把 commit 操作误作会话主任务。
 
-**Remaining:** none
+**Remaining:** 后续修复由所属任务记录继续跟踪。

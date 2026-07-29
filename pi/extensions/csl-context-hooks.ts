@@ -1,4 +1,5 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, unlinkSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { createRequire } from "node:module";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,6 +37,10 @@ interface TriggerContext {
 	compactTrigger?: string;
 	changedFiles?: ChangedFile[] | null;
 	nativeEvent?: string;
+}
+
+interface TitleHookModule {
+	titleResultFile(requestId: string): string;
 }
 
 interface TriggerifyModule {
@@ -78,6 +83,9 @@ const candidateModule = require(
 const triggerify = require(
 	join(packageRoot, "skills", "triggerify", "scripts", "triggerify.js"),
 ) as TriggerifyModule;
+const titleHook = require(
+	join(packageRoot, "skills", "triggerify", "scripts", "refresh-tab-title.js"),
+) as TitleHookModule;
 
 const MUTATING_TOOLS = new Set(["bash", "edit", "write", "apply_patch"]);
 const PI_FILE_TOOLS = new Set(["edit", "write"]);
@@ -92,6 +100,8 @@ const DEFAULT_SCRIPT_TIMEOUT = 10;
 const MAX_OUTPUT = 64 * 1024;
 const TITLE_HOOK_ID = "inner:refresh-tab-title";
 const MAX_TITLE_CONTEXT = 12_000;
+const TITLE_RESULT_TIMEOUT = 25_000;
+const TITLE_RESULT_POLL_INTERVAL = 100;
 
 function toolCategory(toolName: string | null): string | null {
 	if (toolName === "bash") return "shell";
@@ -151,12 +161,7 @@ export function buildTitleContext(entries: SessionEntry[], latestPrompt: string)
 	let lastUserText = "";
 
 	for (const entry of entries) {
-		if (entry.type === "compaction" || entry.type === "branch_summary") {
-			sections.push(`Session summary: ${entry.summary.trim()}`);
-			continue;
-		}
 		if (entry.type !== "message" || !["user", "assistant"].includes(entry.message.role)) continue;
-
 		const text = messageText(entry.message.content);
 		if (!text) continue;
 		if (entry.message.role === "user") lastUserText = text;
@@ -168,13 +173,18 @@ export function buildTitleContext(entries: SessionEntry[], latestPrompt: string)
 
 	const chars = Array.from(sections.join("\n\n"));
 	if (chars.length <= MAX_TITLE_CONTEXT) return chars.join("");
-	const marker = Array.from("\n\n[older middle context omitted]\n\n");
-	const headSize = Math.floor((MAX_TITLE_CONTEXT - marker.length) / 3);
-	return [
-		...chars.slice(0, headSize),
-		...marker,
-		...chars.slice(-(MAX_TITLE_CONTEXT - headSize - marker.length)),
-	].join("");
+	const marker = Array.from("[older conversation omitted]\n\n");
+	return [...marker, ...chars.slice(-(MAX_TITLE_CONTEXT - marker.length))].join("");
+}
+
+function latestUserPrompt(entries: SessionEntry[]): string {
+	for (let i = entries.length - 1; i >= 0; i -= 1) {
+		const entry = entries[i];
+		if (entry.type !== "message" || entry.message.role !== "user") continue;
+		const text = messageText(entry.message.content);
+		if (text) return text;
+	}
+	return "";
 }
 
 function pendingFileChange(
@@ -201,6 +211,53 @@ function pendingFileChange(
  */
 function formatPrompts(prompts: TriggerPrompt[]): string {
 	return prompts.map((prompt) => `[Triggerify ${prompt.id}]\n${prompt.content}`).join("\n\n");
+}
+
+interface TitleRefreshResult {
+	ok: boolean;
+	changed?: boolean;
+	title?: string;
+	reason?: string;
+}
+
+function watchTitleResult(requestId: string, ctx: { ui: { notify(message: string, level?: "info" | "warning" | "error"): void } }): void {
+	const resultFile = titleHook.titleResultFile(requestId);
+	const deadline = Date.now() + TITLE_RESULT_TIMEOUT;
+
+	const poll = () => {
+		let result: TitleRefreshResult | undefined;
+		try {
+			result = JSON.parse(readFileSync(resultFile, "utf8")) as TitleRefreshResult;
+			unlinkSync(resultFile);
+		} catch {
+			// The detached worker has not published its result yet.
+		}
+
+		if (result) {
+			if (result.ok) {
+				ctx.ui.notify(
+					result.changed
+						? `Tab title refreshed: ${result.title || "(unnamed)"}`
+						: `Tab title unchanged: ${result.title || "current title"}`,
+					"info",
+				);
+			} else {
+				ctx.ui.notify(
+					`Tab title refresh failed: ${(result.reason || "unknown error").replace(/-/g, " ")}`,
+					"error",
+				);
+			}
+			return;
+		}
+
+		if (Date.now() >= deadline) {
+			ctx.ui.notify("Tab title refresh failed: timed out", "error");
+			return;
+		}
+		setTimeout(poll, TITLE_RESULT_POLL_INTERVAL);
+	};
+
+	setTimeout(poll, TITLE_RESULT_POLL_INTERVAL);
 }
 
 export default function cslContextHooks(pi: ExtensionAPI) {
@@ -364,6 +421,24 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		// stop: side-effect scripts only
 		triggerScripts("stop", ctx.cwd);
 		return undefined;
+	});
+
+	pi.registerCommand("title", {
+		description: "Force-refresh the terminal tab title for the current thread",
+		handler: async (args, ctx) => {
+			const entries = ctx.sessionManager.buildContextEntries();
+			const requestedTitle = args.trim();
+			const prompt = requestedTitle || latestUserPrompt(entries) || "(manual refresh)";
+			const sessionContext = buildTitleContext(entries, prompt);
+			const requestId = randomUUID();
+			triggerPrompts(
+				"prompt-submit",
+				ctx.cwd,
+				{ prompt },
+				{ [TITLE_HOOK_ID]: { sessionContext, requestId } },
+			);
+			watchTitleResult(requestId, ctx);
+		},
 	});
 }
 

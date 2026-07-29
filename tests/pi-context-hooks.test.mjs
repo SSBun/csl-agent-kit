@@ -57,7 +57,15 @@ function capturedPayloads(file) {
 
 function fakePi() {
   const handlers = new Map();
-  return { handlers, api: { on: (name, handler) => handlers.set(name, handler) } };
+  const commands = new Map();
+  return {
+    handlers,
+    commands,
+    api: {
+      on: (name, handler) => handlers.set(name, handler),
+      registerCommand: (name, command) => commands.set(name, command),
+    },
+  };
 }
 
 function fakeContext(cwd, entries = []) {
@@ -68,45 +76,44 @@ function fakeContext(cwd, entries = []) {
   };
 }
 
-test("builds bounded title context from the active Pi conversation without tool data", () => {
+test("builds bounded recent title context from user and assistant text only", () => {
   const context = buildTitleContext([
-    { type: "compaction", summary: "Build the authentication cache", id: "c", parentId: null, timestamp: "" },
-    { type: "message", message: { role: "user", content: "Fix cache invalidation" }, id: "u", parentId: "c", timestamp: "" },
+    { type: "message", message: { role: "user", content: `old-start ${"x".repeat(12_000)}` }, id: "old", parentId: null, timestamp: "" },
     {
       type: "message",
       message: {
         role: "assistant",
         content: [
-          { type: "text", text: "I will fix the shared invalidation path." },
+          { type: "text", text: "Working on the authentication cache." },
           { type: "toolCall", name: "read", arguments: { path: "secret.txt" } },
         ],
       },
-      id: "a",
-      parentId: "u",
+      id: "assistant",
+      parentId: "old",
       timestamp: "",
     },
     {
       type: "message",
       message: { role: "toolResult", content: [{ type: "text", text: "private tool output" }] },
-      id: "t",
-      parentId: "a",
+      id: "tool",
+      parentId: "assistant",
       timestamp: "",
     },
     {
       type: "message",
-      message: { role: "assistant", content: [{ type: "text", text: "x".repeat(20_000) }] },
-      id: "long",
-      parentId: "t",
+      message: { role: "user", content: "Fix cache invalidation" },
+      id: "latest",
+      parentId: "tool",
       timestamp: "",
     },
-  ], "commit the completed cache fix");
+  ], "commit these changes");
 
   assert.ok(Array.from(context).length <= 12_000);
-  assert.match(context, /Session summary: Build the authentication cache/);
+  assert.match(context, /^\[older conversation omitted\]/);
+  assert.match(context, /Assistant: Working on the authentication cache/);
   assert.match(context, /User: Fix cache invalidation/);
-  assert.match(context, /User: commit the completed cache fix/);
-  assert.match(context, /older middle context omitted/);
-  assert.doesNotMatch(context, /secret\.txt|private tool output|Tool/);
+  assert.match(context, /User: commit these changes/);
+  assert.doesNotMatch(context, /old-start|secret\.txt|private tool output|Tool:/);
 });
 
 test("formats Triggerify session prompts into Pi context", () => {
