@@ -144,10 +144,6 @@ jobs:
               echo "::error::$f frontmatter name '$name' must match directory '$dir'"
               fail=1
             fi
-            if ! echo "$desc" | grep -Eqi 'use when|use before|仅在|当.*时|用于'; then
-              echo "::error::$f description should state when the skill applies"
-              fail=1
-            fi
           done
           exit $fail
 

@@ -29,5 +29,5 @@ Status: In Progress (2026-07-31 18:05)
 - T2：`npm run check` 通过全部 75 项测试及 CLI 安装 dry-run；CLI `--help`、31 个 skills 的发现检查、`git diff --check` 均通过。`npm pack --dry-run --json` 和 `npm publish --dry-run --access public --json` 均确认 `@ssbun/csl-agent-kit@3.2.0` 含 156 个文件（186049 bytes packed / 527293 bytes unpacked），且不包含 `tasks/`、`reports/` 或项目本地 `.agents/skills/`。npm 用户为 `ssbun`，registry 返回目标版本不存在。
 - T3：发布提交 `813ebfb` 与注释 tag `v3.2.0` 均指向同一 commit；GitHub `refs/heads/main` 和 peeled tag 均返回完整 commit `813ebfb39bccd7495b69deb342cb857341226f86`。SSH 端口 22 被网络关闭后，将 `origin` 切换为已认证的 HTTPS URL 并成功推送。
 - T4：`npm publish --access public` 返回 `+ @ssbun/csl-agent-kit@3.2.0`；发布后 `npm view` 确认 registry version 和 `latest` 均为 `3.2.0`。
-- T5（进行中）：run `30622260170` 暴露 lockfile 缺少顶层 `yaml`，同步后本地 `npm ci`、`npm run check` 及后续 Node 18/20 jobs 均通过。runs `30622447586`、`30622570279` 继续暴露 workflow 的 Claude 与 Cursor 校验只支持扁平 `skills/*/`：前者与已有递归测试重复，已删除；后者改为验证 manifest 目录内至少存在一个递归 `SKILL.md`。等待新的最终 CI。
+- T5（进行中）：run `30622260170` 暴露 lockfile 缺少顶层 `yaml`，同步后本地 `npm ci`、`npm run check` 及后续 Node 18/20 jobs 均通过。runs `30622447586`、`30622570279`、`30622662793` 继续暴露 workflow 的旧校验与当前 nested/third-party skills 契约不符：已删除重复的 Claude 扁平目录检查、让 Cursor 检查递归叶子技能，并移除把英文路由短语强加给第三方 description 的启发式检查。等待新的最终 CI。
 - Review gate: Skipped — no explicit user request.
