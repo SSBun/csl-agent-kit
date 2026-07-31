@@ -1,6 +1,6 @@
 # 任务索引
 
-- [发布 CSL Agent Kit 3.2.0](todo/release-csl-agent-kit-3-2-0.md) — Completed (2026-07-31 18:03)
+- [发布 CSL Agent Kit 3.2.0](todo/release-csl-agent-kit-3-2-0.md) — In Progress (2026-07-31 18:05)
 
 - [统一任务索引新格式提示约束](todo/standardize-task-index-prompt-format.md) — Completed (2026-07-31 17:35)
 

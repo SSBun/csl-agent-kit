@@ -1,5 +1,16 @@
 # Lessons
 
+## 2026-07-31 发布完成前必须验证最终远端 CI
+
+- **Trigger:**
+  - 任务包含向受 CI 保护的分支 push、打 tag 或发布包。
+- **Rule:**
+  - 最终 push 后必须定位与远端目标 branch HEAD 完全一致的 CI run，并等待其成功；本地测试、dry-run、registry 发布成功或旧 commit 的 CI 结果都不能替代该检查。
+  - CI 失败时立即重新打开所属任务，修复并验证新的最终 run 后才能报告发布完成。
+- **Check:**
+  - CI run 的 `headSha` 与远端 branch HEAD 一致，且结论为 `success`。
+  - 任务 Result 记录最终 run 的 ID 或 URL 与成功结论。
+
 ## 2026-07-31 共享格式迁移必须覆盖所有读写方
 
 - **Trigger:**
