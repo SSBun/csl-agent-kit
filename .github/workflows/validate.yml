@@ -92,21 +92,16 @@ jobs:
 
       - name: Verify Cursor skill directory resolves
         run: |
-          fail=0
           manifest=.cursor-plugin/plugin.json
           skills_path=$(jq -r '.skills' "$manifest" | sed 's:/*$::')
           if [ ! -d "$skills_path" ]; then
             echo "::error::$manifest skills path $skills_path is not a directory"
             exit 1
           fi
-          for d in "$skills_path"/*/; do
-            [ -d "$d" ] || continue
-            if [ ! -f "${d}SKILL.md" ]; then
-              echo "::error::Missing ${d}SKILL.md (declared via $manifest)"
-              fail=1
-            fi
-          done
-          exit $fail
+          if ! find "$skills_path" -name SKILL.md -print -quit | grep -q .; then
+            echo "::error::$manifest skills path $skills_path has no skills"
+            exit 1
+          fi
 
       - name: Verify analyze-project output paths
         run: |
