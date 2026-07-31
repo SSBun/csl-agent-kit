@@ -4,6 +4,25 @@
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-07-31
+
+### Added
+
+- 新增 Triggerify V1 生命周期自动化、持久指令管理和可配置 inner hooks，并支持 Codex、Claude Code 与 Pi 共享运行语义。
+- 新增 `adversarial-deliberate`、通用化的 `adversarial-review`，以及跨宿主的隔离 subagent 调度。
+- 新增三个 workspace workflow skills 与 Pi task overlay，用于维护上下文、任务生命周期、经验规则和实时任务进度。
+- `analyze-project` 新增 develop/learn 双模式及源码驱动的学习验证流程。
+
+### Changed
+
+- Codex 分发收敛为单一 plugin，CLI 与 Pi 统一递归发现共享目录中的叶子 skills。
+- Triggerify 重构为共享 facade、存储、规则、运行时和宿主适配层，并增强 Pi 文件变更、终端标题与 session 状态处理。
+- 任务记录采用 canonical task 与轻量索引分离的格式，独立审查仅在用户明确要求时启用。
+
+### Removed
+
+- 移除旧 `tips`、`super-agent` skill 和 `ubiquitous-language` skill；持久指令改由 Triggerify 管理，默认 Agent 规则继续由 `super-agent/` 资产分发。
+
 ## [3.1.0] - 2026-07-16
 
 ### Added
@@ -69,7 +88,8 @@
 - 旧 `~/.ssbun-skills/` 路径不再读取；用户数据只使用 `~/.csl-agent-kit/`。
 - 旧 `inject-may-agents` invocation 不再存在；改用 `super-agent`。
 
-[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.1.0
 [3.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.0.0
 [2.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v2.0.0

@@ -1,5 +1,7 @@
 # 任务索引
 
+- [发布 CSL Agent Kit 3.2.0](todo/release-csl-agent-kit-3-2-0.md) — In Progress (2026-07-31 17:58)
+
 - [统一任务索引新格式提示约束](todo/standardize-task-index-prompt-format.md) — Completed (2026-07-31 17:35)
 
 - [仅在用户明确要求时执行任务审查](todo/make-task-review-explicit-only.md) — Completed (2026-07-28 22:58)
