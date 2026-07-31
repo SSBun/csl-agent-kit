@@ -21,16 +21,16 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 
 ## Task Contract
 
-- 新建任务必须使用以下任务索引条目格式，标题使用普通文本，任务链接放在条目末尾；时间戳必须替换为创建或状态变更时的当前本地时间：
+- 新建任务必须使用以下任务索引条目格式，标题链接放在条目开头，状态和时间戳放在链接后；时间戳必须替换为创建或状态变更时的当前本地时间：
 
   ```md
-  - 任务标题 — Status (<YYYY-MM-DD HH:MM>): In Progress — [任务记录](todo/task-slug.md)
+  - [任务标题](todo/task-slug.md) — In Progress (<YYYY-MM-DD HH:MM>)
   ```
 
 - 新建任务的正文必须使用以下状态行格式，使用与索引条目完全相同的状态和时间戳：
 
   ```md
-  Status (<YYYY-MM-DD HH:MM>): In Progress
+  Status: In Progress (<YYYY-MM-DD HH:MM>)
   ```
 
 - `<state>` 只能使用 `Pending`、`In Progress`、`In Review`、`Completed` 或 `Blocked`；索引条目与任务正文中的状态和时间戳必须完全一致。

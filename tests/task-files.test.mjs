@@ -19,7 +19,7 @@ function readMarkdown(dir) {
     .map((file) => [file, readFileSync(path.join(dir, file), "utf8")]));
 }
 
-function writeTaskIndexFixture(t, { entry, status = "Status (2026-07-29 13:43): In Progress", legacyEntry = "" }) {
+function writeTaskIndexFixture(t, { entry, status = "Status: In Progress (2026-07-29 13:43)", legacyEntry = "" }) {
   const workspace = mkdtempSync(path.join(os.tmpdir(), "task-index-"));
   const todoDir = path.join(workspace, "tasks", "todo");
   const taskFile = path.join(todoDir, "task-a.md");
@@ -100,12 +100,12 @@ function validateReviewReport(markdown, { task, cycles, dialogue = [] } = {}) {
 
 function validateTaskGraph(index, tasks, reports) {
   const entries = index.split("\n").slice(2).filter(Boolean).map((line) => {
-    const current = line.match(/^- (.+) — (Status \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}\): (?:Pending|In Progress|In Review|Completed|Blocked)) — \[[^\]]+]\(todo\/([a-z0-9-]+\.md)\)$/);
-    if (current) return { title: current[1], status: current[2], file: current[3] };
+    const current = line.match(/^- \[(.+)]\(todo\/([a-z0-9-]+\.md)\) — (.+)$/);
+    if (current) return { title: current[1], file: current[2], status: current[3] };
 
-    const legacy = line.match(/^- \[(.+)]\(todo\/([a-z0-9-]+\.md)\) — (.+)$/);
-    assert.ok(legacy, `invalid task index entry: ${line}`);
-    return { title: legacy[1], file: legacy[2], status: legacy[3] };
+    const historical = line.match(/^- (.+) — (Status \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}\): (?:Pending|In Progress|In Review|Completed|Blocked)) — \[[^\]]+]\(todo\/([a-z0-9-]+\.md)\)$/);
+    assert.ok(historical, `invalid task index entry: ${line}`);
+    return { title: historical[1], status: historical[2], file: historical[3] };
   });
   const linkedReports = new Set();
 
@@ -150,30 +150,30 @@ test("task index and review reports resolve to isolated same-slug files", () => 
   );
 });
 
-test("task index checker accepts the target standard record without migrating legacy siblings", (t) => {
+test("task index checker accepts the todo extension format without migrating legacy siblings", (t) => {
   const taskFile = writeTaskIndexFixture(t, {
-    entry: "- 任务 A — Status (2026-07-29 13:43): In Progress — [任务记录](todo/task-a.md)",
-    legacyEntry: "- [旧任务](todo/legacy-task.md) — Completed (2026-07-01 09:00)",
+    entry: "- [任务 A](todo/task-a.md) — In Progress (2026-07-29 13:43)",
+    legacyEntry: "- 旧任务 — Status (2026-07-01 09:00): Completed — [任务记录](todo/legacy-task.md)",
   });
   assert.doesNotThrow(() => checkTaskIndex(taskFile));
 });
 
-test("task index checker rejects old target format and canonical mismatches", (t) => {
+test("task index checker rejects the incompatible target format and canonical mismatches", (t) => {
   const cases = [
     {
-      entry: "- [任务 A](todo/task-a.md) — In Progress (2026-07-29 13:43)",
+      entry: "- 任务 A — Status (2026-07-29 13:43): In Progress — [任务记录](todo/task-a.md)",
       error: /does not match the standard format/,
     },
     {
-      entry: "- 任务 A — Status (2026-07-29 13:43): Completed — [任务记录](todo/task-a.md)",
+      entry: "- [任务 A](todo/task-a.md) — Completed (2026-07-29 13:43)",
       error: /status does not match/,
     },
     {
-      entry: "- 任务 B — Status (2026-07-29 13:43): In Progress — [任务记录](todo/task-a.md)",
+      entry: "- [任务 B](todo/task-a.md) — In Progress (2026-07-29 13:43)",
       error: /title does not match/,
     },
     {
-      entry: "- 任务 A — Status (2026-07-29 25:61): In Progress — [任务记录](todo/task-a.md)",
+      entry: "- [任务 A](todo/task-a.md) — In Progress (2026-07-29 25:61)",
       error: /does not match the standard format/,
     },
   ];
@@ -366,8 +366,8 @@ test("workspace task contract keeps implementation and review out of acceptance"
   for (const status of ["Pending", "In Progress", "In Review", "Completed", "Blocked"]) {
     assert.ok(skill.includes(`\`${status}\``), `missing task status: ${status}`);
   }
-  assert.match(skill, /- 任务标题 — Status \(<YYYY-MM-DD HH:MM>\): In Progress — \[任务记录\]\(todo\/task-slug\.md\)/);
-  assert.match(skill, /Status \(<YYYY-MM-DD HH:MM>\): In Progress/);
+  assert.match(skill, /- \[任务标题\]\(todo\/task-slug\.md\) — In Progress \(<YYYY-MM-DD HH:MM>\)/);
+  assert.match(skill, /Status: In Progress \(<YYYY-MM-DD HH:MM>\)/);
   assert.match(skill, /时间戳必须替换为创建或状态变更时的当前本地时间/);
   assert.match(skill, /状态和时间戳必须完全一致/);
   assert.match(skill, /scripts\/check-task-index\.js/);

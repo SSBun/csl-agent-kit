@@ -6,9 +6,9 @@ const path = require("node:path");
 
 const TIMESTAMP_PATTERN = "\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]) (?:[01]\\d|2[0-3]):[0-5]\\d";
 const STATE_PATTERN = "(?:Pending|In Progress|In Review|Completed|Blocked)";
-const STATUS_PATTERN = `Status \\(${TIMESTAMP_PATTERN}\\): ${STATE_PATTERN}`;
-const STATUS_LINE = new RegExp(`^${STATUS_PATTERN}$`);
-const INDEX_ENTRY = new RegExp(`^- (.+) — (${STATUS_PATTERN}) — \\[[^\\]]+\\]\\(todo\\/([a-z0-9-]+\\.md)\\)$`);
+const STATUS_PATTERN = `${STATE_PATTERN} \\(${TIMESTAMP_PATTERN}\\)`;
+const STATUS_LINE = new RegExp(`^Status: (${STATUS_PATTERN})$`);
+const INDEX_ENTRY = new RegExp(`^- \\[(.+)\\]\\(todo\\/([a-z0-9-]+\\.md)\\) — (${STATUS_PATTERN})$`);
 
 function run(args, io = console) {
   if (args.length !== 1 || args[0] === "--help") {
@@ -37,7 +37,7 @@ function checkTaskIndex(taskFile) {
 
   const taskLines = fs.readFileSync(absoluteTask, "utf8").split(/\r?\n/);
   const title = taskLines.find((line) => line.startsWith("# "))?.slice(2);
-  const status = taskLines.find((line) => STATUS_LINE.test(line));
+  const status = taskLines.map((line) => line.match(STATUS_LINE)).find(Boolean)?.[1];
   if (!title) throw new Error("canonical task is missing its title");
   if (!status) throw new Error("canonical task is missing a standard status line");
 
@@ -49,8 +49,8 @@ function checkTaskIndex(taskFile) {
   const match = entries[0].match(INDEX_ENTRY);
   if (!match) throw new Error("task index entry does not match the standard format");
   if (match[1] !== title) throw new Error("task index title does not match the canonical task");
-  if (match[2] !== status) throw new Error("task index status does not match the canonical task");
-  if (match[3] !== fileName) throw new Error("task index link does not match the canonical task");
+  if (match[2] !== fileName) throw new Error("task index link does not match the canonical task");
+  if (match[3] !== status) throw new Error("task index status does not match the canonical task");
 }
 
 if (require.main === module) process.exit(run(process.argv.slice(2)));
