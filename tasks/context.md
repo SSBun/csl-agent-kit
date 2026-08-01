@@ -37,6 +37,7 @@
 
 ## Decisions and Conventions
 
+- 新的用户请求只要形成可独立验收的 outcome，就默认创建新的 canonical task；只有请求直接修正、补全或重新验证旧任务的同一 outcome，且不处理会让旧 Target/Result 失真时，才复用或重开旧任务。同一组件、文件、主题或实现重叠不足以建立 ownership，无法确定时创建新任务。权威来源为 `workspace-manage-task/SKILL.md` 与 `evals/task_ownership_cases.json`。
 - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
 - 新建、重新打开或变更任务状态时，canonical task 使用 `Status: <state> (<YYYY-MM-DD HH:MM>)`，`tasks/todo.md` 使用 `- [<title>](todo/<task-slug>.md) — <state> (<YYYY-MM-DD HH:MM>)`，以兼容 `csl-task-overlay` 的索引解析；两处状态与时间戳必须完全一致，每次同步后必须用 `workspace-manage-task/scripts/check-task-index.js` 校验指定 canonical task，脚本不会要求迁移未触及的历史条目。权威来源为该 skill 的 `SKILL.md`、检查脚本与 `pi/extensions/csl-task-overlay.ts`。
 - `skills/workspace-workflow/` 以三个独立 leaf skills 承载默认 Agent 的工作区记录流程：`workspace-maintain-context` 只保留已确认、项目特有、会改变未来判断且可复核的事实，并要求易变边界有权威入口、复核触发，临时事实有事件型退出；`workspace-manage-task` 维护任务契约、状态与 adversarial-review 交接，`workspace-capture-lessons` 在工作前应用相关经验并在纠正后维护可复用规则。`super-agent/AGENTS.md` 保留稳定触发、文件职责与跳过边界，`super-agent/workspace-workflow-gates.md` 固定 SessionStart/PostCompact 的五步调度顺序，三个 skills 拥有易变执行契约。Workflow skill 的核心操作契约完整保留在主 `SKILL.md`，准确性和完整性优先于 Yao 的 1000-token 初始加载预算。Codex 与 Cursor 从 skills 根递归发现，Pi 动态递归注册别名，Claude manifest 显式列出三个 leaf 路径。

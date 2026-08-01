@@ -350,12 +350,16 @@ test("workspace task contract keeps implementation and review out of acceptance"
   assert.equal(/Escalate if/.test(skill), false);
 
   assert.match(skill, /Skip task records for read-only answers and simple operations with direct deterministic verification/);
+  assert.match(skill, /Start a new canonical task for each new user-requested outcome that can be accepted independently/);
+  assert.match(skill, /directly corrects, completes, or re-verifies.*same outcome.*Target or Result unchanged would be incomplete or misleading/);
+  assert.match(skill, /Component, file, topic, or implementation overlap alone does not establish ownership.*when ownership is ambiguous, create a new task/);
   assert.match(skill, /Modify only the owning task file and its exact index entry/);
   assert.match(skill, /Check a Target only when its current evidence is recorded under the same ID in `Result`/);
   assert.match(skill, /Add `Block` only while the task status is `Blocked`/);
   assert.match(skill, /Remove the section when work resumes/);
-  assert.match(skill, /Create a separate canonical task only for work with an independent deliverable, blocking condition, or review boundary/);
-  assert.match(skill, /small follow-up that extends a completed task's existing outcome.*reopen its canonical task instead of creating a new file.*append the next Target ID.*re-evaluate the Review Gate/);
+  assert.match(skill, /Create a separate canonical task for work with an independently acceptable outcome, blocking condition, or review boundary/);
+  assert.match(skill, /Reopen a completed task only when the Record Ownership boundary holds.*append the next Target ID.*Otherwise create a new canonical task/);
+  assert.equal(skill.includes("small follow-up that extends a completed task's existing outcome"), false);
   assert.match(skill, /treat the canonical task as authoritative and repair the index/);
   assert.match(skill, /Apply this contract to new tasks and reopened scope/);
   assert.match(skill, /Do not retrofit untouched completed history/);
@@ -378,6 +382,30 @@ test("workspace task contract keeps implementation and review out of acceptance"
   for (const status of ["待执行", "进行中", "待审查", "已完成", "阻塞"]) {
     assert.equal(skill.includes(`\`${status}\``), false, `translated task status remains: ${status}`);
   }
+});
+
+test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {
+  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-manage-task", "evals", "task_ownership_cases.json"), "utf8"));
+  const outcomes = new Set();
+
+  for (const item of fixture.cases) {
+    const reopen = item.corrects_completes_or_reverifies_existing_outcome
+      && item.leaving_existing_result_unchanged_would_be_misleading
+      && !item.independently_acceptable_outcome
+      && !item.ambiguous;
+    const actual = reopen ? "Reopen" : "New";
+    assert.equal(actual, item.expected, item.id);
+    outcomes.add(actual);
+  }
+
+  assert.deepEqual([...outcomes].sort(), ["New", "Reopen"]);
+  const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+  assert.equal(byId["release-ci-failure"].expected, "Reopen");
+  assert.equal(byId["completed-document-correction"].expected, "Reopen");
+  assert.equal(byId["same-skill-new-behavior"].expected, "New");
+  assert.equal(byId["same-component-new-feature"].expected, "New");
+  assert.equal(byId["new-session-independent-improvement"].expected, "New");
+  assert.equal(byId["ambiguous-relationship"].expected, "New");
 });
 
 test("workspace review-gate cases require an explicit user request", () => {

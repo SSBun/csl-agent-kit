@@ -1,5 +1,7 @@
 # 任务索引
 
+- [让新用户目标默认创建独立任务](todo/clarify-new-task-boundary.md) — Completed (2026-08-01 13:43)
+
 - [发布 CSL Agent Kit 3.2.0](todo/release-csl-agent-kit-3-2-0.md) — Completed (2026-07-31 18:13)
 
 - [统一任务索引新格式提示约束](todo/standardize-task-index-prompt-format.md) — Completed (2026-07-31 17:35)

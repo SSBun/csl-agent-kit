@@ -1,0 +1,67 @@
+{
+  "cases": [
+    {
+      "id": "release-ci-failure",
+      "request": "Fix the CI failure discovered immediately after this release.",
+      "corrects_completes_or_reverifies_existing_outcome": true,
+      "leaving_existing_result_unchanged_would_be_misleading": true,
+      "independently_acceptable_outcome": false,
+      "ambiguous": false,
+      "expected": "Reopen"
+    },
+    {
+      "id": "completed-document-correction",
+      "request": "Correct a factual error in the document that task just delivered.",
+      "corrects_completes_or_reverifies_existing_outcome": true,
+      "leaving_existing_result_unchanged_would_be_misleading": true,
+      "independently_acceptable_outcome": false,
+      "ambiguous": false,
+      "expected": "Reopen"
+    },
+    {
+      "id": "missing-verification",
+      "request": "Run and fix the missing verification required by the existing target.",
+      "corrects_completes_or_reverifies_existing_outcome": true,
+      "leaving_existing_result_unchanged_would_be_misleading": true,
+      "independently_acceptable_outcome": false,
+      "ambiguous": false,
+      "expected": "Reopen"
+    },
+    {
+      "id": "same-skill-new-behavior",
+      "request": "Change a different behavior in the same workflow skill.",
+      "corrects_completes_or_reverifies_existing_outcome": false,
+      "leaving_existing_result_unchanged_would_be_misleading": false,
+      "independently_acceptable_outcome": true,
+      "ambiguous": false,
+      "expected": "New"
+    },
+    {
+      "id": "same-component-new-feature",
+      "request": "Add an independently usable feature to the same component.",
+      "corrects_completes_or_reverifies_existing_outcome": false,
+      "leaving_existing_result_unchanged_would_be_misleading": false,
+      "independently_acceptable_outcome": true,
+      "ambiguous": false,
+      "expected": "New"
+    },
+    {
+      "id": "new-session-independent-improvement",
+      "request": "In a later session, make an independently acceptable improvement near the prior work.",
+      "corrects_completes_or_reverifies_existing_outcome": false,
+      "leaving_existing_result_unchanged_would_be_misleading": false,
+      "independently_acceptable_outcome": true,
+      "ambiguous": false,
+      "expected": "New"
+    },
+    {
+      "id": "ambiguous-relationship",
+      "request": "Improve this area; it is unclear whether the prior result is incomplete.",
+      "corrects_completes_or_reverifies_existing_outcome": true,
+      "leaving_existing_result_unchanged_would_be_misleading": true,
+      "independently_acceptable_outcome": false,
+      "ambiguous": true,
+      "expected": "New"
+    }
+  ]
+}

@@ -8,7 +8,8 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 ## Activation Boundary
 
 - Create or update a task before non-trivial work that changes a deliverable.
-- Reuse the existing task that owns the requested outcome.
+- Start a new canonical task for each new user-requested outcome that can be accepted independently.
+- Reuse an existing task only when it owns the request under the Record Ownership boundary.
 - Skip task records for read-only answers and simple operations with direct deterministic verification.
 - Do not create a task solely to host an adversarial-review report.
 
@@ -16,6 +17,8 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 
 - Keep `tasks/todo.md` as a newest-first index containing only title, status, and task link.
 - Keep `tasks/todo/<task-slug>.md` as the canonical task record.
+- An existing task owns the request only when the request directly corrects, completes, or re-verifies that task's same outcome and leaving its current Target or Result unchanged would be incomplete or misleading.
+- Component, file, topic, or implementation overlap alone does not establish ownership; when ownership is ambiguous, create a new task.
 - Modify only the owning task file and its exact index entry.
 - Preserve completed task files and unrelated task state.
 
@@ -80,7 +83,7 @@ description: Manage workspace task records for non-trivial deliverable changes, 
 
 ## Subtasks
 
-- Create a separate canonical task only for work with an independent deliverable, blocking condition, or review boundary.
+- Create a separate canonical task for work with an independently acceptable outcome, blocking condition, or review boundary, even when it touches the same component as another task.
 - Link the subtask from the parent Plan without copying its Target, Plan, status, or Result.
 - A completed subtask does not prove the parent Target; verify the parent independently.
 
@@ -97,7 +100,7 @@ Keep `evals/review_gate_cases.json` aligned with this gate.
 ## Lifecycle
 
 - Use `Pending`, `In Progress`, `In Review`, `Completed`, or `Blocked`, followed by the current local date and 24-hour time in `YYYY-MM-DD HH:MM` format.
-- For a small follow-up that extends a completed task's existing outcome, reopen its canonical task instead of creating a new file: append the next Target ID, revise the Plan, set `In Progress`, update its exact index entry, and re-evaluate the Review Gate from the current user request. Use a separate task only when the Subtasks boundary applies.
+- Reopen a completed task only when the Record Ownership boundary holds: append the next Target ID, revise the Plan, set `In Progress`, update its exact index entry, and re-evaluate the Review Gate from the current user request. Otherwise create a new canonical task.
 - Before `In Progress`, require at least one valid Target.
 - Before completion, require every Target to be checked and mapped to current Result evidence, proportionate verification to pass, and the Review gate to be recorded.
 - For `Required`, set `In Review`, invoke `$adversarial-review`, and complete only after recorded `APPROVED`.
