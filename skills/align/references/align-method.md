@@ -1,4 +1,4 @@
-# Same Page Method
+# Align Method
 
 ## Format Selection
 

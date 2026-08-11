@@ -1,9 +1,9 @@
 ---
-name: same-page
+name: align
 description: Re-explains and re-verifies prior assistant messages with evidence-backed explanations, confidence levels, and ASCII diagrams. Use when the user asks to clarify, justify, get on the same page, or understand the reasoning behind a previous answer.
 ---
 
-# Same Page
+# Align
 
 Re-explain the prior substantive assistant message so the user can verify the reasoning. Re-read sources and re-run checks as needed; do not rely on memory.
 
@@ -27,7 +27,7 @@ Re-explain the prior substantive assistant message so the user can verify the re
 
 ## Reference
 
-Read `references/same-page-method.md` for confidence definitions, format-selection rules, diagram patterns, and trivial-clarification criteria.
+Read `references/align-method.md` for confidence definitions, format-selection rules, diagram patterns, and trivial-clarification criteria.
 
 ## Principles
 
