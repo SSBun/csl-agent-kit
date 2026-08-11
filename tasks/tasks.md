@@ -1,5 +1,7 @@
 # 任务索引
 
+- [测试 Session 任务关注显示](tasks/test-session-task-focus-display.md) — In Progress (2026-08-11 13:23)
+
 - [按 Session 区分任务面板](tasks/add-session-task-focus.md) — Completed (2026-08-11 12:54)
 
 - [让任务面板链接可点击](tasks/make-task-overlay-links-clickable.md) — Completed (2026-08-11 11:27)
