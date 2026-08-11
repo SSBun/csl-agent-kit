@@ -8,10 +8,10 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 |-------|--------|------------------------------|-------------|
 | create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Generate an AI-image-generator prompt for an app icon. |
 | release | `/csl:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
-| analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份源码可证的开发地图或学习指南。 |
+| analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份含 Mermaid 架构/复杂流程图，且职责、功能模块与核心工作流均有源码证据的系统化持久报告。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | grill-me | `/csl:grill-me` | `/grill-me` | Stress-test a plan or design through relentless questioning. |
-| code-review | `/csl:code-review` | `/code-review` | 按代码规范与原始需求审查改动。 |
+| code-review | `/csl:code-review` | `/code-review` | 审查代码变更中的正确性、安全、需求符合度、规范、测试与可维护性。 |
 | domain-modeling | `/csl:domain-modeling` | `/domain-modeling` | 建立领域术语、统一语言与架构决策。 |
 | grill-with-docs | `/csl:grill-with-docs` | `/grill-with-docs` | 深入澄清方案，并同步产出 ADR 与术语文档。 |
 | improve-codebase-architecture | `/csl:improve-codebase-architecture` | `/improve-codebase-architecture` | 扫描架构改进机会并生成可视化报告。 |
@@ -23,19 +23,21 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | teach | `/csl:teach` | `/teach` | 在当前工作区中分多轮教授概念或技能。 |
 | writing-great-skills | `/csl:writing-great-skills` | `/writing-great-skills` | 编写和维护高质量 Agent Skill 的参考。 |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
-| code-reviewer | `/csl:code-reviewer` | `/code-reviewer` | Structured PR/MR code review with reference checklists. |
 | adversarial-review | `/csl:adversarial-review` | `/adversarial-review` | 以不限轮次、状态驱动的 Reviewer–Editor 闭环审查代码、PRD、RFC、设计文档等交付物。 |
-| adversarial-deliberate | `/csl:adversarial-deliberate` | `/adversarial-deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
+| deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
-| workspace-maintain-context | `/csl:workspace-maintain-context` | `/workspace-maintain-context` | Maintain confirmed durable workspace context. |
-| workspace-manage-task | `/csl:workspace-manage-task` | `/workspace-manage-task` | Manage scoped task contracts, lifecycle, and review handoff. |
-| workspace-capture-lessons | `/csl:workspace-capture-lessons` | `/workspace-capture-lessons` | Apply relevant lessons and capture reusable corrections. |
+| workspace-context | `/csl:workspace-context` | `/workspace-context` | Load Project Core and task-relevant Context Packs, then maintain durable context. |
+| csl-task | `/csl:csl-task` | `/csl-task` | Manage one canonical task through evidence and completion. |
+| csl-task-plan | `/csl:csl-task-plan` | `/csl-task-plan` | Prepare a read-only, decisions-only implementation handoff. |
+| csl-task-auto | `/csl:csl-task-auto` | `/csl-task-auto` | Run ordered parent and child tasks with a final integration gate. |
+| workspace-lessons | `/csl:workspace-lessons` | `/workspace-lessons` | Query, apply, and maintain reusable workspace lessons. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
 | triggerify | `/csl:triggerify` | `/triggerify` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 trigger。 |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
-| same-page | `/csl:same-page` | `/same-page` | Re-explain prior messages with evidence and confidence levels. |
+| align | `/csl:align` | `/align` | Re-explain prior messages with evidence and confidence levels. |
+| tldr | `/csl:tldr` | `/tldr` | 为任意输入生成一屏内、忠实且面向全貌的 overview。 |
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
@@ -45,7 +47,7 @@ Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
 This repository is the **canonical source** for CSL Agent Kit. Install via the [`csl-agent-kit` CLI](#csl-agent-kit-cli), [`npx skills`](#npx-skills-cursor-codex-and-other-agents), `pi install`, or each platform's plugin marketplace.
 
-If you also have same-named skills from other marketplaces or personal folders (e.g. `grill-me`, `create-app-icon`, `code-reviewer`), remove or rename those copies to avoid the agent loading the wrong version. After installing CSL Agent Kit, prefer invoking skills from this plugin only.
+If you also have same-named skills from other marketplaces or personal folders (e.g. `grill-me`, `create-app-icon`), remove or rename those copies to avoid the agent loading the wrong version. After installing CSL Agent Kit, prefer invoking skills from this plugin only.
 
 第三方导入技能位于 `skills/<来源分组>/<技能名>/`。每个含 `SKILL.md` 的第三方叶子目录都必须有 `.repository.json`，记录上游仓库 URL、上游相对路径、导入 ref 与 commit、许可证及上游状态。该文件描述上游基线；更新时必须先比较本地改写，不能直接覆盖。
 
@@ -58,10 +60,10 @@ If you also have same-named skills from other marketplaces or personal folders (
 node .agents/skills/integrate-third-skills/scripts/third-party-skills.js status
 
 # 比较某项技能：上游自导入后的变化，以及当前上游与本地副本的差异
-node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff code-review
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff research
 
 # 需要完整 unified diff 时才输出补丁
-node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff code-review --patch
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff research --patch
 ```
 
 它们从 `.repository.json` 获取上游地址、ref 与导入 commit；不会更新本地技能或 `~/.agents/skills`。每个来源/ref 只在系统临时目录中检出一次上游，并在结束后删除。
@@ -197,10 +199,10 @@ The Pi package manifest in `package.json` exposes:
 
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
-- `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-reviewer`、`/brainstorming` 等 Cursor/Codex 风格别名。
+- `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-review`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：桥接 Triggerify 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
-- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/todo.md` 渲染最近 6 个任务的实时进度面板（状态 emoji + Target checkbox 进度），在编辑器上方显示；通过 `tool_call`/`tool_execution_end` 配对检测任务文件变更并自动刷新；提供 `/csl-tasks` 命令按状态分组打印完整列表。
+- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度面板（状态 emoji + Target checkbox 进度），在编辑器上方显示；通过 `tool_call`/`tool_execution_end` 配对检测任务文件变更并自动刷新；提供 `/csl-tasks` 命令按状态分组打印完整列表。
 
 **启用/禁用扩展或技能：** 装完整包后，用 pi 原生命令精细控制：
 
@@ -281,7 +283,8 @@ csl-agent-kit install --all
 
 ```
 skills/                  # Shared skill source (all platforms)
-skills/workspace-workflow/ # Context, task, and lessons workflow skills
+skills/csl-tasks/        # Cross-host task, planning, auto-execution, and shared state core
+skills/workspace-workflow/ # Context and lessons workflow skills
 skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest

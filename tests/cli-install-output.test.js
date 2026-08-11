@@ -128,6 +128,28 @@ test("Claude plugin exports every project-owned leaf skill", () => {
   assert.deepEqual([...manifest.skills].sort(), expected);
 });
 
+test("does not ship the retired deep-explore skill", () => {
+  const manifest = JSON.parse(readFileSync(path.join(root, ".claude-plugin", "plugin.json"), "utf8"));
+
+  assert.equal(existsSync(path.join(root, "skills", "deep-explore")), false);
+  assert.equal(manifest.skills.includes("./skills/deep-explore"), false);
+});
+
+test("ships one canonical merged code-review skill", () => {
+  const skillDir = path.join(root, "skills", "code-review");
+  const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
+  const contract = JSON.parse(readFileSync(path.join(skillDir, "evals", "contract_cases.json"), "utf8"));
+  const findingContract = contract.cases.find(({ id }) => id === "finding-contract");
+
+  assert.equal(existsSync(path.join(root, "skills", "code-reviewer")), false);
+  assert.equal(existsSync(path.join(root, "skills", "mattpocock", "code-review")), false);
+  assert.match(skill, /^name: code-review$/m);
+  for (const lens of ["Correctness", "security", "Spec", "Standards", "Tests", "Maintainability"]) {
+    assert.ok(skill.includes(lens), `missing ${lens} review lens`);
+  }
+  assert.deepEqual(findingContract.expect.required_fields, ["lens", "file:line", "impact", "evidence", "fix"]);
+});
+
 test("root hook commands execute bundled resources from plugin root variables", () => {
   const directory = mkdtempSync(path.join(tmpdir(), "csl-hook-root-"));
   const pluginRoot = path.join(directory, "plugin");
@@ -190,7 +212,6 @@ test("third-party integration workflow is a tracked project-local skill", () => 
 test("vendored third-party skills retain their upstream source metadata", () => {
   const vendorRoot = path.join(root, "skills", "mattpocock");
   const expectedSources = {
-    "code-review": "skills/engineering/code-review",
     "domain-modeling": "skills/engineering/domain-modeling",
     "grill-me": "skills/productivity/grill-me",
     "grill-with-docs": "skills/engineering/grill-with-docs",
