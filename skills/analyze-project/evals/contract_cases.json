@@ -1,240 +1,285 @@
 {
-  "version": 1,
+  "version": 3,
+  "note": "Declarative contract and manual-review input; not an executed test suite.",
   "cases": [
     {
       "id": "single-scope-single-report",
       "given": "one invocation names more than one project or component scope",
-      "expect": {
-        "write_count": 0,
-        "action": "ask user to select exactly one scope"
-      }
+      "expect": { "write_count": 0, "action": "ask the user to select exactly one scope" }
     },
     {
-      "id": "develop-project-output",
-      "given": "develop mode targets the canonical Git root",
-      "expect": {
-        "reports": ["docs/analysis/project-map.md"],
-        "sections": ["Scope Summary", "Functional Module Map", "Core Working Flows"],
-        "mermaid_count": 1
-      }
+      "id": "default-invocation",
+      "given": "/analyze-project is invoked from one Git root",
+      "expect": { "target": "current directory", "report_type": "systematic current-state report", "report_count": 1 }
     },
     {
-      "id": "develop-directory-output",
-      "given": "develop mode targets directory src/scheduler",
-      "expect": {
-        "reports": ["docs/analysis/components/dir/src/scheduler/map.md"],
-        "scope": "component only"
-      }
+      "id": "explicit-target",
+      "given": "/analyze-project src/scheduler names one existing component",
+      "expect": { "target": "src/scheduler", "report_type": "systematic component report" }
     },
     {
-      "id": "develop-file-output",
-      "given": "develop mode targets file bin/csl-agent-kit.js",
-      "expect": {
-        "reports": ["docs/analysis/components/file/bin/csl-agent-kit.js.md"],
-        "preserve_source_extension": true
-      }
+      "id": "develop-compatibility-alias",
+      "given": "/analyze-project src/scheduler develop",
+      "expect": { "target": "src/scheduler", "behavior_differs_from_default": false }
     },
     {
-      "id": "learn-project-output",
-      "given": "learn mode targets the canonical Git root",
-      "expect": {
-        "reports": ["docs/analysis/learning/project-guide.md"],
-        "material_status": "学习材料就绪",
-        "mermaid_count": 0
-      }
+      "id": "existing-path-wins-over-alias",
+      "given": "/analyze-project develop and develop is an existing path or uniquely resolved component",
+      "expect": { "target": "develop", "compatibility_alias": false }
     },
     {
-      "id": "learn-directory-output",
-      "given": "learn mode targets directory src/scheduler",
-      "expect": {
-        "reports": ["docs/analysis/learning/dir/src/scheduler/guide.md"]
-      }
+      "id": "existing-learn-path-is-a-target",
+      "given": "/analyze-project learn and learn is an existing path or uniquely resolved component",
+      "expect": { "target": "learn", "learning_mode": false }
     },
     {
-      "id": "learn-file-output",
-      "given": "learn mode targets file bin/csl-agent-kit.js",
-      "expect": {
-        "reports": ["docs/analysis/learning/file/bin/csl-agent-kit.js.md"],
-        "preserve_source_extension": true
-      }
+      "id": "unsupported-learn-mode",
+      "given": "/analyze-project src/scheduler learn and learn is not the target path",
+      "expect": { "write_count": 0, "action": "explain the supported invocation" }
     },
     {
-      "id": "path-collision-avoidance",
-      "given": "directory foo, extensionless file foo, files foo.js and foo.ts all exist",
-      "expect": {
-        "distinct_type_namespaces": true,
-        "hash_fallback": false
-      }
+      "id": "unsupported-need-option",
+      "given": "/analyze-project src/scheduler --need explain retries",
+      "expect": { "write_count": 0, "action": "explain that detail-question mode is not supported" }
+    },
+    {
+      "id": "project-output",
+      "given": "the canonical Git root is analyzed",
+      "expect": { "reports": ["docs/analysis/project-map.md"] }
+    },
+    {
+      "id": "directory-output",
+      "given": "directory src/scheduler is analyzed",
+      "expect": { "reports": ["docs/analysis/components/dir/src/scheduler/map.md"], "scope": "component only" }
+    },
+    {
+      "id": "file-output",
+      "given": "file bin/cli.js is analyzed",
+      "expect": { "reports": ["docs/analysis/components/file/bin/cli.js.md"], "preserve_source_extension": true }
     },
     {
       "id": "ambiguous-scope",
-      "given": "a component name has multiple candidates or target contains independent Git roots",
-      "expect": {
-        "write_count": 0,
-        "action": "ask user to select one scope"
-      }
+      "given": "a component name has multiple candidates or the target contains independent Git roots",
+      "expect": { "write_count": 0, "action": "ask the user to select one scope" }
     },
     {
       "id": "canonical-path-escape",
-      "given": "target or derived output escapes through a symlink or cannot be safely represented",
-      "expect": {
-        "write_count": 0,
-        "hash_fallback": false
-      }
+      "given": "the target or derived output escapes through a symlink or cannot be represented safely",
+      "expect": { "write_count": 0, "hash_fallback": false }
     },
     {
       "id": "nonregular-report-target",
-      "given": "the final report target is a symlink, directory, device, or other non-regular file",
+      "given": "the active report target is a symlink, directory, device, or other non-regular file",
+      "expect": { "write_count": 0, "follow_target": false }
+    },
+    {
+      "id": "systematic-report-shape",
+      "given": "a report is publishable",
       "expect": {
-        "write_count": 0,
-        "follow_target": false
+        "required": ["Metadata", "Scope Summary", "Functional Module Map", "Core Working Flows"],
+        "optional": ["Domain Glossary", "Cross-flow Invariants"],
+        "forbidden": ["Need", "Direct Answer", "Learning Check"]
       }
     },
     {
-      "id": "existing-develop-report",
-      "given": "a regular develop report already exists",
-      "expect": {
-        "write_count_before_confirmation": 0,
-        "choices": ["基于现有报告完整更新", "完整替换"],
-        "partial_patch_update": false
-      }
+      "id": "metadata-scope-canonical-absolute-path",
+      "given": "a project, directory, or file target is analyzed through any lexical path",
+      "expect": { "scope": "canonical absolute target path", "dot_abbreviation": false, "repo_relative_scope": false }
     },
     {
-      "id": "existing-learn-report",
-      "given": "a regular learn report already exists",
-      "expect": {
-        "write_count_before_confirmation": 0,
-        "choices": ["完整重分析并替换"],
-        "incremental_update": false,
-        "atomic_same_directory_replace": true
-      }
+      "id": "scope-summary-boundaries",
+      "given": "the report describes a project or component",
+      "expect": { "covers": ["caller or user", "owned responsibility", "principal inputs", "principal outputs", "adjacent non-responsibilities"] }
     },
     {
-      "id": "atomic-replace-unavailable",
-      "given": "the current filesystem cannot guarantee a non-following same-directory atomic replacement",
-      "expect": {
-        "write_count": 0,
-        "original_report_unchanged": true
-      }
+      "id": "glossary-is-optional",
+      "given": "no project-specific term changes the module or flow model",
+      "expect": { "domain_glossary_present": false, "empty_section": false }
     },
     {
-      "id": "freshness-input-state",
-      "given": "clean, dirty, and unborn repositories are analyzed",
-      "expect": {
-        "sample_before_output_write": true,
-        "states": ["clean", "includes uncommitted changes", "HEAD: unborn"],
-        "unborn_develop_statement": "map is based entirely on uncommitted working-tree content and does not represent any revision",
-        "timezone_timestamp": true
-      }
+      "id": "modules-by-function-not-directory",
+      "given": "directories and functional responsibilities do not align one-to-one",
+      "expect": { "module_basis": "functional responsibility", "directory_inventory": false, "utilities_folded_into_owner": true }
     },
     {
-      "id": "develop-mermaid-validator-missing",
-      "given": "no existing local read-only Mermaid parser or renderer is available",
-      "expect": {
-        "write_count": 0,
-        "install_dependency": false,
-        "final": "delivery blocker only"
-      }
+      "id": "project-module-coverage",
+      "given": "a project scope has several highest-level responsibilities needed for its primary value",
+      "expect": { "all_major_responsibilities_modeled": true, "exhaustive_internal_inventory": false }
     },
     {
-      "id": "develop-mermaid-invalid",
-      "given": "the final Mermaid graph fails parsing or rendering",
-      "expect": {
-        "write_count": 0,
-        "final": "delivery blocker only"
-      }
+      "id": "component-boundary",
+      "given": "one directory or file component is analyzed",
+      "expect": { "covers": ["component internals", "direct neighbors", "flows owned or materially participated in"], "reanalyze_whole_repo": false }
     },
     {
-      "id": "develop-mermaid-valid",
-      "given": "an existing local validator successfully parses or renders the final graph",
-      "expect": {
-        "report_write_allowed_after_all_checks": true,
-        "dependency_install": false
-      }
+      "id": "external-boundary",
+      "given": "a core flow crosses a direct external system",
+      "expect": { "external_boundary_labeled": true, "unrelated_external_inventory": false }
     },
     {
-      "id": "learn-does-not-consume-develop",
-      "given": "a matching develop map already exists",
-      "expect": {
-        "develop_map_read": false,
-        "mermaid_count": 0,
-        "derive_from_source": true
-      }
+      "id": "core-flow-coverage",
+      "given": "multiple evidenced flows realize the scope's primary value",
+      "expect": { "covers_each_qualifying_core_flow": true, "fixed_flow_count": false, "helper_call_inventory": false }
     },
     {
-      "id": "learn-disconnected-project-or-directory",
-      "given": "project or directory coverage chains share no required concept, state/data boundary, or representative behavior",
-      "expect": {
-        "write_count": 0,
-        "action": "list components with anchors and ask for a smaller directory or file scope"
-      }
+      "id": "core-flow-content",
+      "given": "one core flow is documented",
+      "expect": { "covers": ["trigger", "input", "functional path", "state changes", "observable output", "main failure exit", "nearby evidence"] }
     },
     {
-      "id": "learn-connected-project-or-directory",
-      "given": "all project or directory learning chains form one connected coverage graph",
-      "expect": {
-        "scope_shrink": false,
-        "one_report": true
-      }
+      "id": "detail-answer-is-incomplete",
+      "given": "a project or multi-responsibility component report explains only one detailed behavior chain",
+      "expect": { "publication_allowed": false, "reason": "systematic module and core-flow coverage is missing" }
     },
     {
-      "id": "learn-disconnected-file",
-      "given": "a file has multiple disconnected coverage components",
-      "expect": {
-        "reports": ["one grouped file guide"],
-        "scope_shrink": false,
-        "cover_all_major_responsibilities": true
-      }
+      "id": "cross-flow-invariants-optional",
+      "given": "no evidenced rule constrains multiple modules or flows",
+      "expect": { "cross_flow_invariants_present": false, "empty_section": false }
     },
     {
-      "id": "learn-human-material-order",
-      "given": "human checks are generated",
-      "expect": {
-        "order": ["Recall", "Prediction", "Transfer", "Verification Key"],
-        "key_hidden_until_all_initial_answers_fixed": true,
-        "early_key_view": "review only"
-      }
+      "id": "source-evidence",
+      "given": "the report states project-specific responsibilities, boundaries, or behavior",
+      "expect": { "nearby_repo_relative_anchor": true, "readme_alone_proves_runtime": false, "codegraph_is_evidence": false }
     },
     {
-      "id": "learn-agent-semantics",
-      "given": "the report addresses Agent use",
-      "expect": {
-        "claims_memory_or_learned": false,
-        "evaluation": "sealed held-out prediction or transfer task"
-      }
+      "id": "evidence-anchor-markdown-list",
+      "given": "source evidence supports prose, a table row, or a numbered flow step",
+      "expect": { "adjacent_markdown_list": true, "one_inline_code_anchor_per_bullet": true, "anchor_appended_to_prose": false, "anchor_inside_table": false, "plain_text_anchor": false }
     },
     {
       "id": "static-evidence-without-tests",
-      "given": "behavior is statically provable but has no direct test",
-      "expect": {
-        "report_write_allowed": true,
-        "claim_tested": false,
-        "invent_command": false
-      }
+      "given": "source proves a module responsibility but no direct test exists",
+      "expect": { "report_write_allowed": true, "verification": "No direct test found", "invent_command": false }
     },
     {
       "id": "runtime-proof-requires-authorization",
-      "given": "a core fact cannot be proved without executing project behavior and authorization is absent",
-      "expect": {
-        "write_count": 0,
-        "run_project": false
-      }
+      "given": "a central responsibility or core causal boundary cannot be proved without executing project behavior and authorization is absent",
+      "expect": { "write_count": 0, "run_project": false }
+    },
+    {
+      "id": "architecture-diagram-required",
+      "given": "any project or component report is publishable",
+      "expect": { "functional_architecture_diagram_count": 1, "covers": ["modeled functional modules", "direct external boundaries", "call data or event direction"], "file_nodes": false }
+    },
+    {
+      "id": "complex-flow-diagram-required",
+      "given": "a core flow has a meaningful branch, async or external collaboration, important state transition, or ordered multi-module path",
+      "expect": { "diagram_count_for_flow": 1, "diagram_before_steps": true, "plain_prose_fallback": false }
+    },
+    {
+      "id": "simple-flow-does-not-force-diagram",
+      "given": "a core flow is short, linear, and has no material branch, async boundary, state transition, or ordering complexity",
+      "expect": { "diagram_required": false, "redundant_visual": false }
+    },
+    {
+      "id": "diagram-type-selection",
+      "given": "architecture and complex-flow diagrams are selected",
+      "expect": { "ordered_collaboration": "sequenceDiagram", "branch_or_data_flow": "flowchart", "lifecycle": "stateDiagram-v2" }
+    },
+    {
+      "id": "mermaid-validator-present",
+      "given": "an existing local read-only Mermaid parser or renderer is available",
+      "expect": { "validate_every_final_mermaid": true, "install_dependency": false, "network_renderer": false }
+    },
+    {
+      "id": "mermaid-validator-absent",
+      "given": "no local Mermaid validator exists",
+      "expect": { "format": "mermaid code fence", "manual_syntax_review": true, "ascii_fallback": false, "report_blocked": false }
+    },
+    {
+      "id": "mermaid-validation-remains-invalid",
+      "given": "an available local validator still rejects a Mermaid diagram after bounded repair",
+      "expect": { "write_count": 0, "ascii_fallback": false, "action": "report the validation blocker" }
+    },
+    {
+      "id": "diagram-and-prose-nonduplication",
+      "given": "a diagram appears with a responsibility table or numbered flow steps",
+      "expect": { "diagram_owns": "relationships order branches or state", "text_owns": "semantics evidence and edge conditions", "duplicate_description": false, "fixed_total_diagram_count": false }
+    },
+    {
+      "id": "existing-report-confirmation",
+      "given": "a regular active report exists and the current request does not authorize replacement",
+      "expect": { "write_count_before_confirmation": 0, "display": ["active path", "old Scope", "old HEAD", "old Generated at", "new Scope"], "choices": ["Replace", "Cancel"] }
+    },
+    {
+      "id": "explicit-regeneration-authorizes-replacement",
+      "given": "the current request explicitly says regenerate, re-analyze, replace, or analyze again",
+      "expect": { "duplicate_confirmation": false, "full_reanalysis": true, "prepublication_state_recheck": true }
+    },
+    {
+      "id": "legacy-need-metadata",
+      "given": "an old active report contains Need or lacks a current metadata field",
+      "expect": { "old_need_displayed": false, "missing_field_fallback": "unknown", "replacement_safety_unchanged": true }
+    },
+    {
+      "id": "replacement-cancel",
+      "given": "the user selects Cancel",
+      "expect": { "old_bytes_unchanged": true, "output_mutation_count": 0 }
+    },
+    {
+      "id": "replacement-reanalyzes-source",
+      "given": "replacement is authorized",
+      "expect": { "old_body_used_as_evidence": false, "partial_patch_update": false, "derive_from_current_source": true }
+    },
+    {
+      "id": "legacy-learning-report",
+      "given": "a matching historical report exists under docs/analysis/learning",
+      "expect": { "read_as_evidence": false, "mutated": false, "notice": "Legacy report retained at <path>; archival only." }
+    },
+    {
+      "id": "freshness",
+      "given": "clean, dirty, and unborn repositories are analyzed",
+      "expect": { "sample_after_candidate_and_redaction": true, "sample_before_output_mutation": true, "need_field": false, "timezone_timestamp": true, "active_report_affects_source_state": false }
+    },
+    {
+      "id": "host-metadata-outside-target",
+      "given": "the clean fresh-session harness writes metadata outside the target Git root",
+      "expect": { "target_working_tree_state_affected": false, "external_host_metadata_used_as_evidence": false }
     },
     {
       "id": "suspected-secret",
       "given": "analysis encounters a synthetic suspected secret",
-      "expect": {
-        "report_contains_value_fragment_hash_location_or_security_section": false,
-        "final_fields": ["suspected category", "repo-relative path", "未记录秘密值"]
-      }
+      "expect": { "report_contains_value_fragment_hash_or_security_section": false, "warning": "Suspected <category> at <repo-relative path>; secret value was not recorded." }
+    },
+    {
+      "id": "missing-parent-publication",
+      "given": "one or more active-path parent directories do not exist",
+      "expect": { "mkdir_recursive": false, "create_each_segment_then_lstat": true, "symlink_or_type_change_refused": true }
+    },
+    {
+      "id": "absent-target-no-clobber",
+      "given": "link(temp, target) returns EEXIST",
+      "expect": { "competing_target_bytes_unchanged": true, "direct_write_fallback": false }
+    },
+    {
+      "id": "existing-target-changed-before-publication",
+      "given": "the confirmed target identity, byte length, or SHA-256 changes before rename",
+      "expect": { "replacement_refused": true, "changed_bytes_preserved": true }
+    },
+    {
+      "id": "parent-changed-before-publication",
+      "given": "an output parent becomes a symlink, changes type, or changes identity",
+      "expect": { "publication_refused": true, "active_report_partial_write": false }
+    },
+    {
+      "id": "replacement-rename-failure",
+      "given": "same-directory replacement rename is unsupported or fails",
+      "expect": { "old_bytes_unchanged": true, "direct_write_fallback": false }
+    },
+    {
+      "id": "owned-temp-cleanup",
+      "given": "publication succeeds, is refused, or fails",
+      "expect": { "cleanup_scope": "only the temp successfully created by this run with open(wx)", "unknown_temp_deleted": false }
+    },
+    {
+      "id": "publication-limitations",
+      "given": "publication completes or refuses safely",
+      "expect": { "claims": { "fsync_durability": false, "concurrent_writer_isolation": false, "hostile_toctou_prevention": false, "path_level_confinement": false, "cross_filesystem_equivalence": false } }
     },
     {
       "id": "minimal-final-response",
       "given": "a report is delivered or safely blocked",
-      "expect": {
-        "allowed": ["report path", "blocking question or condition", "redacted secret warning"],
-        "repeat_report_content": false
-      }
+      "expect": { "allowed": ["absolute Markdown-linked active report path", "one blocker or selection question", "archival notice", "redacted warning"], "repeat_report_content": false }
     }
   ]
 }

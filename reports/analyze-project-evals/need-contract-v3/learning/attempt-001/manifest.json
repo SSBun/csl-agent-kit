@@ -1,0 +1,60 @@
+{
+  "schema": "analyze-project-eval-attempt/v1",
+  "evalVersion": "need-contract-v3",
+  "caseId": "learning",
+  "attempt": 1,
+  "verdict": "accepted",
+  "verdictReason": "覆盖冻结代表路径、Prediction、Transfer 与 Key；无 Recall、课程、掌握声明或实施计划。",
+  "source": {
+    "revision": "05a6c689e2344dc925b7dc111f02aa03750114f6",
+    "dirty": false,
+    "files": {
+      "bin/csl-agent-kit.js": "f3a3342b514d0c67381672229a20afffbc31a1448332addeb9696948a6bdc7b5",
+      "tests/cli-install-output.test.js": "ce35af5d92de14a0448209f8a0472a5ad3f7f5a8ff16dea8200a2c00466c6897",
+      "package.json": "390b2dad27bc87bb0bea57e6d83d7d8af5937373187e9792376fed9aa5fd58f8"
+    }
+  },
+  "skillSnapshot": {
+    "files": {
+      "agents/interface.yaml": "679f34ee1327c513f42fe5f8151afa1a21516728db210aa78e4bb98135bbd1be",
+      "evals/contract_cases.json": "00d6e551ee8f1eb38f686d2806ee64239a088ad423cd27a0a8dada45e4c4a92a",
+      "evals/semantic_config.json": "aab837d67566088b010623ac211cbe338c72c287689cfa45809fab2415d15273",
+      "evals/trigger_cases.json": "fe35f675e1b4a82944db8cebe72f735a6502c6cb36c47dc107884d2eac520e47",
+      "evals/value_cases.json": "db98cc2447119fbef5f0a0ade3202db8722acdca8f737b2f8eced095aa7a35dd",
+      "references/report-contract.md": "3e77390432e263ca4a7430f5cb9ca35527975a19a79c59fe6b7dd37923f4135d",
+      "SKILL.md": "862fb59f2ae0abcb412b7c12e823a87620ef69149eb34699ca0504580c194e36"
+    }
+  },
+  "execution": {
+    "host": "pi-subagents",
+    "agent": "delegate",
+    "context": "fresh",
+    "ambientSkillContract": "disabled by launch and task instruction",
+    "requestedModel": "inherited",
+    "resolvedModel": "openai-codex/gpt-5.6-sol",
+    "backendRevision": "unavailable",
+    "processExitCode": 0,
+    "runId": "aed86ea3"
+  },
+  "observedWrites": [
+    ".pi-glla/",
+    ".pi-subagents/",
+    "docs/analysis/components/file/bin/csl-agent-kit.js.md"
+  ],
+  "limitations": [
+    "The host csl-task contract forbids nested pi --print, so this attempt did not use a fresh HOME or PI_CODING_AGENT_DIR.",
+    "The subagent runtime created .pi-glla and .pi-subagents metadata in the isolated fixture; these host-generated paths were not report evidence.",
+    "Observed file inventories are post-run evidence, not path-level confinement or sandbox proof.",
+    "Model outputs are nondeterministic."
+  ],
+  "artifacts": {
+    "report": "report.md",
+    "transcript": "transcript.jsonl",
+    "transcriptRedaction": "model thinking and encrypted reasoning payloads removed; no suspected secret found"
+  },
+  "report": {
+    "lines": 54,
+    "words": 361,
+    "sha256": "eac570684c0eb21dd486adf409d654c2707f91319cd0f7825014d3a818d11bbd"
+  }
+}

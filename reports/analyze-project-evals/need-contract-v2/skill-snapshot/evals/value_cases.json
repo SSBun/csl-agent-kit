@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "fixture": {
+    "revision": "05a6c689e2344dc925b7dc111f02aa03750114f6",
+    "files": {
+      "bin/csl-agent-kit.js": "f3a3342b514d0c67381672229a20afffbc31a1448332addeb9696948a6bdc7b5",
+      "tests/cli-install-output.test.js": "ce35af5d92de14a0448209f8a0472a5ad3f7f5a8ff16dea8200a2c00466c6897",
+      "package.json": "390b2dad27bc87bb0bea57e6d83d7d8af5937373187e9792376fed9aa5fd58f8"
+    }
+  },
+  "acceptance": {
+    "accepted_attempts_per_case": 1,
+    "attempt_limit": null,
+    "baseline_improvement_required": false,
+    "retain_failed_attempts": true,
+    "new_version_when_any_input_changes": true
+  },
+  "cases": [
+    {
+      "id": "default-develop",
+      "focus": "standard",
+      "prompt": "/analyze-project bin/csl-agent-kit.js develop --need Before changing non-interactive external-integration authorization, explain the current selection/consent path, failure exits, and existing verification entry. Do not provide an implementation plan.",
+      "report": "docs/analysis/components/file/bin/csl-agent-kit.js.md",
+      "must_cover": [
+        "selector precedence is all, explicit, yes, interactive",
+        "all preserves registry order",
+        "explicit selection validates the complete set before stable deduplication",
+        "yes selects the default codex-plugin target",
+        "all, explicit, and yes do not read interactive state, prompt, or run external confirmation",
+        "bare install passes through TTY admission, saved state, checklist, external confirmation, and persistence",
+        "authorization denial exits through die before persistence and dispatch",
+        "an unknown explicit target fails before state and effects",
+        "the dispatcher is only the downstream boundary of this need"
+      ],
+      "must_exclude": [
+        "installer-internal inventory",
+        "risk list",
+        "implementation plan",
+        "Learning Check"
+      ],
+      "required_sections": [
+        "Direct Answer",
+        "Need-bounded Working Model",
+        "Critical Evidence Path",
+        "Verification Anchors"
+      ]
+    },
+    {
+      "id": "learning",
+      "focus": "learning",
+      "prompt": "/analyze-project bin/csl-agent-kit.js learn --need Learn how --all, an explicit target, --yes, and bare install currently select targets. Use --target pi,cursor,pi as the representative path. For Prediction, ask whether install --yes --dry-run in CI/non-TTY reaches the TTY gate, reads saved selection state, or shows external confirmation. For Transfer, ask where install --target unknown --yes fails first and which later stages are unreachable. Do not create a course or change plan.",
+      "report": "docs/analysis/components/file/bin/csl-agent-kit.js.md",
+      "source_anchors": [
+        "#parseInstallArgs",
+        "#targets",
+        "#resolveInstallTargets",
+        "#validateTargets",
+        "#die",
+        "tests/cli-install-output.test.js#explicit target installs do not overwrite the saved interactive selection"
+      ],
+      "must_cover": [
+        "the representative explicit --target pi,cursor,pi path splits, validates the complete set, then stably deduplicates to pi,cursor",
+        "the representative explicit path bypasses interactive state and consent",
+        "one Prediction asks whether install --yes --dry-run in CI or non-TTY reaches the TTY gate, reads saved state, or shows external confirmation",
+        "the Prediction Key explains that yes selects the registry default codex-plugin before the TTY gate and does not read state or prompt",
+        "at most one Transfer asks where install --target unknown --yes fails and which later stages are unreachable",
+        "the Transfer Key explains that explicit selection wins, validateTargets exits through die with status 2, and state, prompt, consent, dispatch, and effects are unreachable"
+      ],
+      "must_exclude": [
+        "Recall ceremony",
+        "course structure",
+        "mastery or memory claim",
+        "hypothetical change",
+        "implementation plan",
+        "more than one Transfer"
+      ],
+      "required_sections": [
+        "Direct Answer",
+        "Need-bounded Working Model",
+        "Critical Evidence Path",
+        "Verification Anchors",
+        "Learning Check"
+      ]
+    }
+  ]
+}

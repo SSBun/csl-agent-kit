@@ -1,33 +1,35 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
-    "/analyze-project . develop",
-    "Create a durable project map that explains what this codebase does, its functional modules, and core working flows.",
-    "Analyze src/scheduler as a component so the next developer can continue development without rescanning the repo.",
-    "用 develop 模式说明这个项目做什么、各功能模块如何分工、核心流程如何运行。",
-    "/analyze-project bin/cli.js learn",
-    "Build a source-driven learning guide for this component with a concept ladder, code walkthrough, and recall, prediction, and transfer checks.",
-    "Help me learn how this project behaves and verify my understanding against source anchors.",
-    "用 learn 模式帮助我学会这个组件，并用回忆、预测、迁移题检验理解。",
-    "Explain how React state management specifically works in this repository and give me source-based checks.",
-    "Help me understand this component's responsibilities and then quiz me using its source code."
+    "/analyze-project",
+    "/analyze-project .",
+    "/analyze-project src/scheduler develop",
+    "Create a durable source-backed project map covering responsibilities, functional modules, and core working flows.",
+    "Analyze this component systematically so future developers understand what it owns, how its modules divide work, and how its main flows run.",
+    "Generate a current-state component report under docs/analysis with module boundaries and cross-module workflows.",
+    "Build a reusable architecture understanding report for this repository from source evidence.",
+    "Map this project's major functional responsibilities, external boundaries, state ownership, and core user flows.",
+    "为这个项目生成一份系统化源码分析报告，说明职责、功能模块和核心工作流。",
+    "分析这个组件的边界、主要模块、状态所有权和跨模块流程，并保存为长期复用的报告。"
   ],
   "should_not_trigger": [
     "Give me a quick repo map so I know which files to inspect for this bug.",
+    "Find the entry point for the scheduler before I make one small change.",
+    "Explain why this retry branch returns false.",
+    "Trace one install request from parsing to dispatch and answer my question in chat.",
     "Audit this architecture and list security, performance, and maintainability risks.",
     "Review this pull request for correctness and regressions.",
     "Write an implementation plan for adding OAuth to this project.",
     "Teach me React hooks from beginner to advanced as a multi-lesson course.",
-    "Use teach to create a persistent multi-lesson course about distributed systems.",
-    "List every dependency version and license in this repository.",
+    "List every dependency, module, public API, type, and test in this repository.",
     "Summarize the Git history and identify high-churn files."
   ],
   "near_neighbor": [
-    "Orient me to this repository before I make one small change.",
-    "Explain the architecture of this service and recommend improvements.",
-    "Teach me the framework used here, but do not inspect repository-specific behavior.",
     "Create onboarding documentation for this codebase.",
-    "Trace this one bug and propose the code changes.",
-    "Document every public API endpoint."
+    "Explain the architecture of this service and recommend improvements.",
+    "Document every public API endpoint.",
+    "Draw only a dependency graph for these packages.",
+    "Explain one function without creating a persistent report.",
+    "Give me a compact glossary and file map before I start coding."
   ]
 }

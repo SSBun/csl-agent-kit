@@ -2,10 +2,10 @@
 
 ## 文档状态
 
-- 状态：设计已收敛，已通过独立 adversarial review
+- 状态：Learn 独立产品已退役；仅保留为历史设计依据
 - 日期：2026-07-19
-- 当前范围：只定义 `learn` 模式
-- 实现前置门：本 PRD 与 Develop PRD 均批准后，一次性重写完整双模式 skill
+- 退役日期：2026-08-10
+- 当前合同：`skills/analyze-project/SKILL.md` 与 `skills/analyze-project/references/report-contract.md`
 
 ## 1. 问题
 

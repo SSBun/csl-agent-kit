@@ -1,0 +1,88 @@
+{
+  "fallback_positive_concepts": [
+    "need_bounded_source_report"
+  ],
+  "positive_concepts": {
+    "need_bounded_source_report": {
+      "weight": 0.85,
+      "phrases": [
+        "/analyze-project",
+        "durable source-backed report",
+        "persistent source-backed report",
+        "current implementation question",
+        "current behavior chain",
+        "current responsibility",
+        "observable result",
+        "source anchors",
+        "repository-specific prediction",
+        "repository-specific state transition",
+        "current source code",
+        "predict how",
+        "develop focus",
+        "learn focus",
+        "报告 under docs/analysis",
+        "持久的源码分析报告",
+        "当前源码",
+        "当前如何",
+        "已有对比分支",
+        "检验我的预测"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "quick_orientation": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "quick repo map",
+        "orient me",
+        "one small change",
+        "which files to inspect",
+        "find the entry point",
+        "快速定位"
+      ]
+    },
+    "audit_review_or_change": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "audit",
+        "list security",
+        "recommend improvements",
+        "review this pull request",
+        "implementation plan",
+        "propose the code changes",
+        "trace this bug",
+        "risks",
+        "审计",
+        "改进建议"
+      ]
+    },
+    "external_research_or_general_course": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "official documentation",
+        "external api",
+        "multi-lesson course",
+        "from beginner to advanced",
+        "do not inspect repository-specific behavior",
+        "general framework course",
+        "通用课程"
+      ]
+    },
+    "inventory_or_history": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "every dependency",
+        "every module",
+        "every public api",
+        "every test",
+        "git history",
+        "high-churn files",
+        "完整清单"
+      ]
+    }
+  }
+}

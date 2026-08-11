@@ -1,0 +1,35 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "/analyze-project",
+    "/analyze-project bin/cli.js --need Explain how one install request reaches its observable result.",
+    "/analyze-project src/scheduler develop --need Explain the current retry decision and failure exit.",
+    "/analyze-project bin/cli.js learn --need Help me predict how explicit and default target selection differ in the current source.",
+    "Create a durable source-backed report that answers how this component currently selects and dispatches a handler.",
+    "Analyze this repository's current authorization chain from the real entry to the rejected result, with source anchors.",
+    "Explain this component's current responsibility and one need-relevant behavior chain in a report under docs/analysis.",
+    "Help me understand and predict this repository-specific state transition using its current source code.",
+    "生成一份持久的源码分析报告，回答这个组件当前如何选择目标并进入派发流程。",
+    "用 learn focus 解释当前源码中的成功分支和一个已有对比分支，并检验我的预测。"
+  ],
+  "should_not_trigger": [
+    "Give me a quick repo map so I know which files to inspect for this bug.",
+    "Orient me to this repository before I make one small change.",
+    "Audit this architecture and list security, performance, and maintainability risks.",
+    "Review this pull request for correctness and regressions.",
+    "Write an implementation plan for adding OAuth to this project.",
+    "Trace this bug and propose the code changes.",
+    "Teach me React hooks from beginner to advanced as a multi-lesson course.",
+    "Research the official documentation for this external API.",
+    "List every dependency, module, public API, and test in this repository.",
+    "Summarize the Git history and identify high-churn files."
+  ],
+  "near_neighbor": [
+    "Create onboarding documentation for this codebase.",
+    "Explain the architecture of this service and recommend improvements.",
+    "Teach me the framework used here, but do not inspect repository-specific behavior.",
+    "Document every public API endpoint.",
+    "Find the entry point for the scheduler.",
+    "Explain one function in chat without creating a persistent report."
+  ]
+}

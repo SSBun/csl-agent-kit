@@ -1,58 +1,69 @@
 {
   "fallback_positive_concepts": [
-    "durable_or_learning_analysis"
+    "systematic_source_report"
   ],
   "positive_concepts": {
-    "durable_or_learning_analysis": {
-      "weight": 0.8,
+    "systematic_source_report": {
+      "weight": 0.85,
       "phrases": [
         "/analyze-project",
-        "develop mode",
-        "learn mode",
-        "develop 模式",
-        "learn 模式",
+        "systematic project report",
+        "systematic component report",
+        "analyze this component systematically",
+        "modules divide work",
+        "main flows run",
         "durable project map",
-        "project map",
-        "component map",
-        "functional modules",
+        "durable component map",
+        "source-backed project map",
+        "source-backed current-state report",
+        "functional module map",
+        "functional responsibilities",
+        "module boundaries",
+        "state ownership",
         "core working flows",
-        "continue development",
-        "source-driven learning guide",
-        "source based checks",
-        "source-based checks",
-        "concept ladder",
-        "code walkthrough",
-        "recall, prediction, and transfer",
-        "verify my understanding",
-        "learn how this project behaves",
-        "source anchors",
-        "specifically works in this repository",
-        "quiz me using its source code",
-        "继续开发",
+        "cross-module workflows",
+        "external boundaries",
+        "reusable architecture understanding",
+        "continued development",
+        "系统化源码分析报告",
         "功能模块",
-        "核心流程",
-        "项目做什么",
-        "源码驱动",
-        "学会这个组件",
-        "回忆、预测、迁移",
-        "检验理解"
+        "核心工作流",
+        "组件边界",
+        "状态所有权",
+        "跨模块流程",
+        "长期复用的报告"
       ]
     }
   },
   "negative_concepts": {
     "quick_orientation": {
-      "weight": 0.65,
+      "weight": 0.7,
       "exclusive": true,
       "phrases": [
         "quick repo map",
-        "orient me",
+        "compact glossary",
+        "file map before",
+        "find the entry point",
         "one small change",
         "which files to inspect",
         "快速定位"
       ]
     },
-    "audit_or_change": {
-      "weight": 0.65,
+    "detail_question": {
+      "weight": 0.75,
+      "exclusive": true,
+      "phrases": [
+        "explain why this",
+        "one install request",
+        "answer my question in chat",
+        "one function",
+        "single behavior question",
+        "详细问题",
+        "单条行为"
+      ]
+    },
+    "audit_review_or_change": {
+      "weight": 0.7,
       "exclusive": true,
       "phrases": [
         "audit",
@@ -66,19 +77,39 @@
         "改进建议"
       ]
     },
-    "general_course_or_inventory": {
+    "external_research_or_general_course": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "official documentation",
+        "external api",
+        "multi-lesson course",
+        "from beginner to advanced",
+        "general framework course",
+        "通用课程"
+      ]
+    },
+    "inventory_or_history": {
       "weight": 0.65,
       "exclusive": true,
       "phrases": [
-        "multi-lesson course",
-        "from beginner to advanced",
-        "do not inspect repository-specific behavior",
-        "every dependency version",
+        "every dependency",
+        "every module",
         "every public api",
+        "every type",
+        "every test",
         "git history",
         "high-churn files",
-        "通用课程",
         "完整清单"
+      ]
+    },
+    "single_artifact_diagram": {
+      "weight": 0.55,
+      "exclusive": true,
+      "phrases": [
+        "only a dependency graph",
+        "draw only",
+        "just a diagram"
       ]
     }
   }

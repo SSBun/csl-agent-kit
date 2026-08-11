@@ -2,10 +2,10 @@
 
 ## 文档状态
 
-- 状态：设计已收敛，已通过独立 adversarial review
+- 状态：系统化报告产品方向已恢复；本文保留设计依据，运行时细节以当前 skill contract 为准
 - 日期：2026-07-19
-- 当前范围：只定义 `develop` 模式
-- 实现前置门：`learn` PRD 另行完成并批准后，才一次性重写完整双模式 skill；不交付 develop-only 过渡版本
+- 恢复日期：2026-08-10
+- 当前合同：`skills/analyze-project/SKILL.md` 与 `skills/analyze-project/references/report-contract.md`
 
 ## 1. 问题
 

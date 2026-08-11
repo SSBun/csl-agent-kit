@@ -1,0 +1,323 @@
+{
+  "version": 2,
+  "note": "Declarative contract and manual-review input; not an executed test suite.",
+  "cases": [
+    {
+      "id": "single-scope-single-report",
+      "given": "one invocation names more than one project or component scope",
+      "expect": {
+        "write_count": 0,
+        "action": "ask the user to select exactly one scope"
+      }
+    },
+    {
+      "id": "default-invocation",
+      "given": "/analyze-project is invoked in a scope with one primary real entry",
+      "expect": {
+        "target": "current directory",
+        "focus": "standard",
+        "need": "one normal call from the primary entry to its main observable result, earliest result-changing branch, and existing verification entry",
+        "report_count": 1
+      }
+    },
+    {
+      "id": "default-invocation-without-primary-entry",
+      "given": "/analyze-project is invoked where no unique primary entry or observable behavior can be identified",
+      "expect": {
+        "write_count": 0,
+        "question": "Which observable behavior should this report explain?"
+      }
+    },
+    {
+      "id": "path-named-learn-wins-over-alias",
+      "given": "/analyze-project ./learn and ./learn is an existing directory",
+      "expect": {
+        "target": "./learn",
+        "focus": "standard"
+      }
+    },
+    {
+      "id": "path-named-develop-wins-over-alias",
+      "given": "/analyze-project ./develop and ./develop is an existing directory",
+      "expect": {
+        "target": "./develop",
+        "focus": "standard"
+      }
+    },
+    {
+      "id": "explicit-target-and-learning-alias",
+      "given": "/analyze-project ./learn learn and ./learn is an existing directory",
+      "expect": {
+        "target": "./learn",
+        "focus": "learning",
+        "report_path": "docs/analysis/components/dir/learn/map.md"
+      }
+    },
+    {
+      "id": "need-tail-is-free-text",
+      "given": "/analyze-project bin/csl-agent-kit.js develop --need explain why learn wins",
+      "expect": {
+        "focus": "standard",
+        "need": "explain why learn wins",
+        "tail_alias_reinterpretation": false
+      }
+    },
+    {
+      "id": "empty-need",
+      "given": "/analyze-project bin/csl-agent-kit.js --need",
+      "expect": {
+        "write_count": 0,
+        "question": "What current implementation question should this report answer?"
+      }
+    },
+    {
+      "id": "extra-positional-target",
+      "given": "/analyze-project src/a src/b",
+      "expect": {
+        "write_count": 0,
+        "action": "ask the user to choose one scope"
+      }
+    },
+    {
+      "id": "project-output",
+      "given": "the canonical Git root is analyzed in either focus",
+      "expect": {
+        "reports": ["docs/analysis/project-map.md"],
+        "focus_changes_path": false
+      }
+    },
+    {
+      "id": "directory-output",
+      "given": "directory src/scheduler is analyzed in either focus",
+      "expect": {
+        "reports": ["docs/analysis/components/dir/src/scheduler/map.md"],
+        "scope": "component only"
+      }
+    },
+    {
+      "id": "file-output",
+      "given": "file bin/csl-agent-kit.js is analyzed in either focus",
+      "expect": {
+        "reports": ["docs/analysis/components/file/bin/csl-agent-kit.js.md"],
+        "preserve_source_extension": true
+      }
+    },
+    {
+      "id": "path-collision-avoidance",
+      "given": "directory foo, extensionless file foo, files foo.js and foo.ts all exist",
+      "expect": {
+        "distinct_type_namespaces": true,
+        "hash_fallback": false
+      }
+    },
+    {
+      "id": "ambiguous-scope",
+      "given": "a component name has multiple candidates or target contains independent Git roots",
+      "expect": {
+        "write_count": 0,
+        "action": "ask the user to select one scope"
+      }
+    },
+    {
+      "id": "canonical-path-escape",
+      "given": "the target or derived output escapes through a symlink or cannot be represented safely",
+      "expect": {
+        "write_count": 0,
+        "hash_fallback": false
+      }
+    },
+    {
+      "id": "nonregular-report-target",
+      "given": "the active report target is a symlink, directory, device, or other non-regular file",
+      "expect": {
+        "write_count": 0,
+        "follow_target": false
+      }
+    },
+    {
+      "id": "existing-report-confirmation",
+      "given": "a regular active report already exists",
+      "expect": {
+        "write_count_before_confirmation": 0,
+        "display": ["active path", "old Need", "old HEAD", "old Generated at", "new Need"],
+        "choices": ["Replace", "Cancel"]
+      }
+    },
+    {
+      "id": "legacy-report-metadata",
+      "given": "an old active report has Scope, HEAD, Working tree, and Generated at but no valid unique Need",
+      "expect": {
+        "old_need": "unknown (pre-need report)",
+        "replacement_requires_confirmation": true
+      }
+    },
+    {
+      "id": "replacement-cancel",
+      "given": "the user selects Cancel for an existing active report",
+      "expect": {
+        "old_bytes_unchanged": true,
+        "output_mutation_count": 0
+      }
+    },
+    {
+      "id": "replacement-reanalyzes-source",
+      "given": "the user confirms Replace",
+      "expect": {
+        "old_body_used_as_fact_evidence": false,
+        "derive_from_current_source": true,
+        "partial_patch_update": false
+      }
+    },
+    {
+      "id": "legacy-learning-report",
+      "given": "a matching historical report exists under docs/analysis/learning",
+      "expect": {
+        "read_as_evidence": false,
+        "mutated": false,
+        "notice": "Legacy report retained at <path>; archival only."
+      }
+    },
+    {
+      "id": "freshness-input-state",
+      "given": "clean, dirty, and unborn repositories are analyzed",
+      "expect": {
+        "sample_after_candidate_and_redaction": true,
+        "sample_before_any_output_mutation": true,
+        "states": ["clean", "includes uncommitted changes", "HEAD: unborn"],
+        "timezone_timestamp": true,
+        "unborn_statement": "This report is based on uncommitted working-tree content and does not represent a revision."
+      }
+    },
+    {
+      "id": "mermaid-validator-missing",
+      "given": "no existing local read-only Mermaid parser or renderer is available",
+      "expect": {
+        "install_dependency": false,
+        "fallback": "text or table",
+        "report_blocked": false
+      }
+    },
+    {
+      "id": "mermaid-invalid",
+      "given": "an optional Mermaid diagram fails parsing or rendering",
+      "expect": {
+        "fallback": "text or table",
+        "report_blocked": false
+      }
+    },
+    {
+      "id": "mermaid-valid",
+      "given": "an existing local validator successfully validates a useful optional diagram",
+      "expect": {
+        "diagram_allowed": true,
+        "fixed_diagram_count": false
+      }
+    },
+    {
+      "id": "learning-focus",
+      "given": "learning focus is selected",
+      "expect": {
+        "same_answer_core_and_path": true,
+        "prediction_count": 1,
+        "transfer_maximum": 1,
+        "transfer_uses_existing_need_relevant_branch": true,
+        "recall_or_mastery_claim": false
+      }
+    },
+    {
+      "id": "static-evidence-without-tests",
+      "given": "the answer core is statically provable but has no direct test",
+      "expect": {
+        "report_write_allowed": true,
+        "claim_tested": false,
+        "invent_command": false
+      }
+    },
+    {
+      "id": "runtime-proof-requires-authorization",
+      "given": "a core fact cannot be proved without executing project behavior and authorization is absent",
+      "expect": {
+        "write_count": 0,
+        "run_project": false
+      }
+    },
+    {
+      "id": "suspected-secret",
+      "given": "analysis encounters a synthetic suspected secret",
+      "expect": {
+        "report_contains_value_fragment_hash_or_security_section": false,
+        "warning": "Suspected <category> at <repo-relative path>; secret value was not recorded."
+      }
+    },
+    {
+      "id": "missing-parent-publication",
+      "given": "one or more active-path parent directories do not exist",
+      "expect": {
+        "mkdir_recursive": false,
+        "create_each_segment_then_lstat": true,
+        "symlink_or_type_change_refused": true
+      }
+    },
+    {
+      "id": "absent-target-no-clobber",
+      "given": "the target was absent but link(temp, target) returns EEXIST",
+      "expect": {
+        "competing_target_bytes_unchanged": true,
+        "direct_write_fallback": false
+      }
+    },
+    {
+      "id": "existing-target-changed-before-publication",
+      "given": "the confirmed target identity, byte length, or SHA-256 changes before rename",
+      "expect": {
+        "replacement_refused": true,
+        "changed_bytes_preserved": true
+      }
+    },
+    {
+      "id": "parent-changed-before-publication",
+      "given": "an output parent becomes a symlink, changes type, or changes identity",
+      "expect": {
+        "publication_refused": true,
+        "active_report_partial_write": false
+      }
+    },
+    {
+      "id": "replacement-rename-failure",
+      "given": "same-directory replacement rename is unsupported or fails",
+      "expect": {
+        "old_bytes_unchanged": true,
+        "direct_write_fallback": false
+      }
+    },
+    {
+      "id": "owned-temp-cleanup",
+      "given": "publication succeeds, is refused, or fails",
+      "expect": {
+        "cleanup_scope": "only the temp successfully created by this run with open(wx)",
+        "unknown_temp_deleted": false
+      }
+    },
+    {
+      "id": "publication-limitations",
+      "given": "publication completes or refuses safely",
+      "expect": {
+        "claims": {
+          "fsync_durability": false,
+          "concurrent_writer_isolation": false,
+          "hostile_toctou_prevention": false,
+          "path_level_confinement": false,
+          "cross_filesystem_equivalence": false
+        }
+      }
+    },
+    {
+      "id": "minimal-final-response",
+      "given": "a report is delivered or safely blocked",
+      "expect": {
+        "allowed": ["absolute Markdown-linked active report path", "one blocker or selection question", "archival notice", "redacted warning"],
+        "repeat_report_content": false
+      }
+    }
+  ]
+}

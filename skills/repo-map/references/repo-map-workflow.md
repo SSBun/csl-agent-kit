@@ -67,4 +67,4 @@ Mark `Unknown` when evidence is insufficient instead of guessing.
 
 Stop when you can define the component summary, relevant vocabulary, file structure, modules, key type duties, and main objective flows.
 
-Do not turn this into `analyze-project`; use that skill only for a durable develop map or source-driven learning guide written under `docs/analysis/`.
+Do not turn this into `analyze-project`; use that skill only when the user wants a durable, source-backed report under `docs/analysis/` that systematically models responsibilities, functional modules, and core working flows. A `repo-map` remains lightweight orientation even when it identifies some responsibilities and flows.

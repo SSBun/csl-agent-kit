@@ -1,11 +1,11 @@
 ---
 name: repo-map
-description: Build a lightweight map and project glossary before exploring an unknown repository or unfamiliar module. Use before broad code exploration, feature work in a new codebase, architecture orientation, or when the agent and user need shared vocabulary for key domain concepts, classes, types, entry points, responsibilities, and call relationships. Use CodeGraph when available.
+description: Build a lightweight map and project glossary before exploring an unknown repository or unfamiliar module. Use for quick orientation, entry-point discovery, broad code exploration, feature work in a new codebase, or shared vocabulary for key concepts, types, responsibilities, and call relationships. Do not use for a durable systematic project or component report; use analyze-project for that. Use CodeGraph when available.
 ---
 
 # Repo Map
 
-Build a compact, objective structure map and shared glossary before editing or deep-diving. This is orientation work, not a full audit or recommendation document.
+Build a compact, objective structure map and shared glossary before editing or deep-diving. This is quick orientation work, not a durable systematic analysis, full audit, or recommendation document. Use `analyze-project` when the requested deliverable is a source-backed report of a scope's responsibilities, functional modules, and core working flows.
 
 ## Output Contract
 
