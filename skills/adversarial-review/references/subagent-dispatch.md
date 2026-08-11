@@ -27,14 +27,14 @@ Never claim `isolated` under inline fallback. Under `INLINE-FALLBACK`, set `ISOL
 
 Each adversarial role is defined by a **role contract file** under the skill's `examples/agents/`. These are not registered as host agents — the Coordinator reads the file and inlines its full text into the task/prompt when spawning a carrier subagent each pass. Because Pi subagents are disposable processes (and Codex spawns roles via prompt the same way), role identity is carried by the contract in the prompt, not by a long-lived agent process.
 
-Role contract files intentionally omit a `model` field: the carrier inherits the current harness model (`PI_MODEL` on Pi; session default on Codex). Their `tools` frontmatter is **not parsed** by the carrier spawn path (only the registered carrier's frontmatter is read; the role contract is inlined into the task verbatim), so it has no runtime effect. Read-only constraints are therefore enforced by the role contract text, not the tool layer — and because the `pi-agent` carrier registers no `tools` restriction, every role subprocess has the full toolset available and abstains from mutation only by obeying its contract. This is a prompt-level guarantee, not a tool-layer sandbox; do not treat read-only roles as sandboxed.
+Role contract files intentionally omit a `model` field. On Pi, the carrier's effective model may come from agent configuration or overrides rather than `PI_MODEL`; on Codex, the launcher may choose a model per role. Resolve the concrete model at dispatch time as described below. Their `tools` frontmatter is **not parsed** by the carrier spawn path (only the registered carrier's frontmatter is read; the role contract is inlined into the task verbatim), so it has no runtime effect. Read-only constraints are therefore enforced by the role contract text, not the tool layer — and because the `pi-agent` carrier registers no `tools` restriction, every role subprocess has the full toolset available and abstains from mutation only by obeying its contract. This is a prompt-level guarantee, not a tool-layer sandbox; do not treat read-only roles as sandboxed.
 
 | Skill | Role | Carrier (Pi) | Role contract file (inlined into task/prompt) | Constraint carried into the role contract |
 |-------|------|--------------|----------------------------------------------|-------------------------------------------|
 | adversarial-review | Reviewer | `pi-agent` | `adversarial-review/examples/agents/adversarial-reviewer.md` | Read-only; never edits the artifact; never self-approves |
 | adversarial-review | Editor | `pi-agent` | `adversarial-review/examples/agents/adversarial-editor.md` | Never Reviewer; never self-approves; answers every finding in one batch |
-| adversarial-deliberate | Synthesizer | `pi-agent` | `adversarial-deliberate/examples/agents/adversarial-synthesizer.md` | Produces the complete answer; never challenges |
-| adversarial-deliberate | Challenger | `pi-agent` | `adversarial-deliberate/examples/agents/adversarial-challenger.md` | Independent of Synthesizer; reports every visible issue in one batch |
+| deliberate | Synthesizer | `pi-agent` | `deliberate/examples/agents/adversarial-synthesizer.md` | Produces the complete answer; never challenges |
+| deliberate | Challenger | `pi-agent` | `deliberate/examples/agents/adversarial-challenger.md` | Independent of Synthesizer; reports every visible issue in one batch |
 
 The Coordinator runs in the parent context in both modes: it pins scope, routes exchanges, validates findings, and maintains the ledger. It never becomes the Reviewer/Challenger.
 
@@ -55,7 +55,7 @@ subagent tool, chain:
   3. agent: pi-agent, task: "<reviewer.md role contract>\n\nRe-review accounting for every prior ID.\n\n{previous}"
 ```
 
-- The carrier agent (`pi-agent`) omits a `model` field, so the spawned process inherits the current harness model (`PI_MODEL`). Tools are unrestricted; enforce read-only roles (Reviewer/Synthesizer/Challenger) via the role contract in the task, not at the tool layer.
+- Before disclosure, inspect the effective `pi-agent` configuration with `subagent({ action: "get", agent: "pi-agent" })`. Report its concrete model when available; otherwise report `unknown`. Never infer the child model from `PI_MODEL` alone because agent configuration or overrides may differ. Tools are unrestricted; enforce read-only roles (Reviewer/Synthesizer/Challenger) via the role contract in the task, not at the tool layer.
 - Send the complete state packet + role contract in each task; `{previous}` is the only cross-process channel, so every handoff must be self-contained. Because processes are disposable, the state packet must include the full prior-round ledger (every D-ID/R-ID) — the new process has no memory of earlier passes.
 - `Ctrl+C` aborts propagate to the subagent process; a killed subagent is treated as a stall under the loop contract, not an approval.
 
@@ -106,10 +106,10 @@ State the dispatch metadata to the user **once, before entering the adversarial 
 
 `Topic` is the user's original question/problem for this run (one line; refine inside the loop, not in this banner). `Roles` lists every adversarial role this skill needs with the model that role will actually run on and the readiness you verified in Capability Detection:
 
-- **Model:** the carrier inherits the current harness model — the same model the main agent (Coordinator) is running on (Pi: `PI_MODEL`; Codex: the session default). Report the concrete model id the role will actually run on — not the inheritance source. Do not write a placeholder like "session default" or "PI_MODEL"; if the id cannot be determined, report `unknown` rather than inventing a provider-specific name.
+- **Model:** report the concrete model the role will actually run on. On Pi, resolve it from the effective carrier configuration with `subagent({ action: "get", agent: "pi-agent" })`; do not infer it from `PI_MODEL`. On Codex, use the launcher's effective per-role model when available. If the concrete id cannot be determined before the first role pass, report `unknown` rather than an inheritance source or an invented provider-specific name.
 - **Readiness:** on Pi, `ready` means the carrier agent (`pi-agent`) is registered and spawnable; `missing` means it is not (run `csl-agent-kit install --target pi`, or fall back). On Codex, `ready` means the host can spawn an agent process by prompt; `missing` means it cannot. A host that accepts the spawn call but runs no agent will idle on `Waiting for agents` — report that as `missing`, not `ready`.
 
-Example, adversarial-deliberate on Pi after `csl-agent-kit install --target pi`:
+Example, deliberate on Pi after `csl-agent-kit install --target pi`:
 
 ```text
 | Dispatch metadata |                                                                    |

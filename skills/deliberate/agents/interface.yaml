@@ -1,0 +1,32 @@
+interface:
+  display_name: "Deliberate"
+  short_description: "Develop answers through iterative synthesis and challenge"
+  default_prompt: "Use $deliberate to develop this question through an uncapped Synthesizer–Challenger loop."
+
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "vscode"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "fork"
+    shell: "bash"
+    dispatch:
+      prefer: "subagent"
+      fallback: "inline"
+      roles: ["synthesizer", "challenger"]
+      disclosure: "required-on-simulated"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+  degradation:
+    openai: "metadata-adapter"
+    claude: "neutral-source-plus-adapter"
+    generic: "neutral-source"
+    vscode: "agent-skills-source-with-vscode-notes"

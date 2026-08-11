@@ -1,7 +1,7 @@
 interface:
-  display_name: "Adversarial Deliberate"
-  short_description: "Develop answers through iterative synthesis and challenge"
-  default_prompt: "Use $adversarial-deliberate to develop this question through an uncapped Synthesizer–Challenger loop."
+  display_name: "Adversarial Review"
+  short_description: "Review artifacts through an independent Reviewer–Editor loop"
+  default_prompt: "Use $adversarial-review to review this artifact until the independent Reviewer approves it."
 
 compatibility:
   canonical_format: "agent-skills"
@@ -14,12 +14,12 @@ compatibility:
     mode: "manual"
     paths: []
   execution:
-    context: "isolation-preferred, inline-fallback"
+    context: "fork"
     shell: "bash"
     dispatch:
       prefer: "subagent"
       fallback: "inline"
-      roles: ["synthesizer", "challenger"]
+      roles: ["reviewer", "editor"]
       disclosure: "required-on-simulated"
   trust:
     source_tier: "local"

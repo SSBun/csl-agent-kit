@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 将 `adversarial-deliberate` 重命名为 `deliberate`；工作流与角色职责保持不变。
+- 强化 `deliberate` 的 effective carrier model 披露、INLINE-FALLBACK `SUFFICIENT` 语义与量化证据要求。
+
 ## [3.2.0] - 2026-07-31
 
 ### Added

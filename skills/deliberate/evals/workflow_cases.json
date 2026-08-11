@@ -72,6 +72,65 @@
         "omit an existing D-ID from recheck",
         "return SUFFICIENT while a material D-ID remains open"
       ]
+    },
+    {
+      "name": "effective_carrier_model",
+      "given": "The Pi parent model differs from the effective model configured for the pi-agent carrier.",
+      "must": [
+        "query the effective pi-agent configuration before printing dispatch metadata",
+        "report the carrier's concrete model or unknown when it cannot be resolved"
+      ],
+      "must_not": [
+        "infer the child model from PI_MODEL alone",
+        "report the parent model as the child model without verifying it"
+      ]
+    },
+    {
+      "name": "inline_fallback_sufficiency",
+      "given": "Isolated dispatch is unavailable, the user explicitly accepts INLINE-FALLBACK, and the simulated Challenger finds no material open issue.",
+      "must": [
+        "allow the simulated Challenger to return SUFFICIENT",
+        "report SUFFICIENT with ISOLATION: simulated disclosed as weaker evidence"
+      ],
+      "must_not": [
+        "present simulated convergence as independent sufficiency",
+        "enter INLINE-FALLBACK without explicit user confirmation"
+      ]
+    },
+    {
+      "name": "no_challenger_role",
+      "given": "Neither an isolated nor a simulated Challenger role can run.",
+      "must": [
+        "disclose that the deliberate discussion cannot run",
+        "stop without claiming sufficiency"
+      ],
+      "must_not": [
+        "deliver an unchallenged answer as SUFFICIENT"
+      ]
+    },
+    {
+      "name": "quantitative_evidence",
+      "given": "The Synthesizer makes claims about counts, sizes, timings, scores, or estimated savings.",
+      "must": [
+        "cite a reproducible command, tool result, or explicit measurement method for every quantitative claim"
+      ],
+      "must_not": [
+        "present an unsupported estimate as a verified measurement"
+      ]
+    },
+    {
+      "name": "persist_final_result",
+      "given": "The deliberate loop reaches SUFFICIENT or stops with a current answer because of a blocker or user request.",
+      "must": [
+        "create tasks/thinking under the current workspace when it is missing",
+        "save the user-facing deliverable to a new collision-safe dated topic file",
+        "return the complete result in chat and include the saved file path",
+        "include user-relevant unresolved items when the loop did not reach SUFFICIENT"
+      ],
+      "must_not": [
+        "overwrite an earlier result",
+        "save role exchanges, private reasoning, the state packet, or the D-ID/T-ID ledger"
+      ]
     }
   ]
 }

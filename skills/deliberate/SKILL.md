@@ -1,9 +1,9 @@
 ---
-name: adversarial-deliberate
+name: deliberate
 description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop that develops a comprehensive answer through full-batch internal discussion, asking users only for key choices. Use only when the user explicitly requests iterative adversarial or multi-perspective synthesis of a question, topic, idea, decision, or plan. Exclude approval-gated artifact review, one-pass feedback, factual answers, brainstorming without that loop, and user grilling.
 ---
 
-# Adversarial Deliberate
+# Deliberate
 
 ## Contract
 
@@ -13,8 +13,8 @@ description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop
 - Discuss internally first. Ask only about material user-owned choices that research, reasoning, or a reversible default cannot settle.
 - Process every related topic and visible issue per pass; never drip-feed known issues.
 - Set no round limit. Use `CONTINUE` only for a material open issue with a concrete next-pass change; otherwise stop or pause.
-- Without an independent Challenger, disclose that the discussion cannot run; never simulate sufficiency.
-- Create resources only when authorized.
+- Without any Challenger role, disclose that the discussion cannot run. In `INLINE-FALLBACK`, a simulated Challenger may return `SUFFICIENT` only with `ISOLATION: simulated` disclosed; never present simulated convergence as independent sufficiency.
+- Persist every delivered result under the current workspace's `tasks/thinking/`; create other resources only when authorized.
 
 ## State
 
@@ -94,5 +94,7 @@ The Challenger must report every existing D-ID. Use `SUFFICIENT` only after ever
 ### 5. Deliver
 
 At `SUFFICIENT`, return the complete Synthesizer answer plus limitations or resources. Coordinator edits require recheck. At a blocker or user stop, return the current answer with unresolved items and limitations.
+
+Before returning either result, create `tasks/thinking/` under the current workspace and write the user-facing deliverable to a new `YYYY-MM-DD-<topic-slug>.md` file there. If that path exists, append `-2`, `-3`, and so on; never overwrite an earlier result. Save only the final answer and user-relevant limitations, resources, or unresolved items — never role exchanges, private reasoning, the state packet, or the D-ID/T-ID ledger. Return the complete result in chat and include the saved file path.
 
 After routing changes, rerun `evals/trigger_cases.json` with `evals/semantic_config.json`.

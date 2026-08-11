@@ -6,7 +6,7 @@
     "iterative_multi_perspective_deliberation": {
       "weight": 1.0,
       "phrases": [
-        "adversarial-deliberate",
+        "deliberate",
         "adversarial discussion",
         "iterative adversarial",
         "iteratively test",
