@@ -1,17 +1,17 @@
 /**
- * csl-task-overlay — read-only Pi widget that surfaces workspace tasks.
+ * csl-task-overlay — Pi widget that surfaces workspace tasks.
  *
- * Renders a live panel above the editor from `<cwd>/tasks/tasks.md` so you can
- * see what the agent is working on, what is done, and what is queued. The task
- * index is the source of truth (see the `csl-task` skill); this
- * extension only reads and renders it — it never writes.
+ * Renders a live panel above the editor from `<cwd>/tasks/tasks.md`. Task state
+ * stays workspace-shared; a Pi custom entry stores only the current session's
+ * focused task.
  *
  * Refresh triggers:
- *   - `session_start`: initial paint and start a five-second refresh timer.
- *   - `/csl-tasks` command: print the full list grouped by status.
+ *   - `session_start`: restore focus, paint, and start a five-second timer.
+ *   - `session_tree`: restore focus after branch navigation.
+ *   - `/csl-tasks`: print the full workspace list grouped by status.
  *   - `session_shutdown`: stop the refresh timer.
  *
- * Headless (`ctx.hasUI === false`): no widget, no side effects.
+ * Headless (`ctx.hasUI === false`): no widget is registered.
  *
  * Format parsed (per `csl-task`):
  *   `- [Title](tasks/slug.md) — Status (YYYY-MM-DD HH:MM)`
@@ -21,10 +21,12 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { Container, Text, type TUI } from "@earendil-works/pi-tui";
+import { Container, getCapabilities, hyperlink, Text, type TUI } from "@earendil-works/pi-tui";
 
 const WIDGET_KEY = "csl-tasks";
+const FOCUS_ENTRY_TYPE = "csl-task-focus";
 const TASK_INDEX = join("tasks", "tasks.md");
 const REFRESH_INTERVAL_MS = 5_000;
 
@@ -74,6 +76,8 @@ const RECENT_LIMIT = 6;
 
 /** Match `- [Title](path) — Status (...)`. Captures path for progress lookup. */
 const INDEX_LINE = /^\s*-\s+\[(.+?)\]\(([^)]+)\)\s*[—-]\s*(.+?)\s*$/;
+const CANONICAL_TASK_PATH = /^tasks\/([a-z0-9-]+)\.md$/;
+const TASK_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
  * Parse a status tail like `In Progress (2026-07-25 11:30)` or `已完成（...）`
@@ -179,48 +183,60 @@ function countActive(rows: TaskRow[]): number {
 	).length;
 }
 
-/**
- * Render the widget body as a string array. Shows only the `RECENT_LIMIT`
- * newest tasks (tasks/tasks.md is newest-first), lazily reading each one's
- * Target checkbox progress from its task file.
- *
- * Layout:
- *   📋 Tasks (3/7)
- *   ├─ 🔄 Write the parser (2/5)
- *   ├─ ⏳ Add tests
- *   └─ ✅ Set up repo
- */
-function renderRows(rows: TaskRow[], cwd: string): string[] {
-	if (isEmpty(rows)) return [];
+const STATUS_RANK: Record<Status, number> = {
+	in_progress: 0,
+	in_review: 1,
+	pending: 2,
+	blocked: 3,
+	cancelled: 4,
+	aborted: 5,
+	completed: 6,
+	unknown: 7,
+};
 
-	const recent = rows.slice(0, RECENT_LIMIT).map((row) => ({
-		...row,
-		progress: loadProgress(cwd, row.path),
-	}));
-	const out: string[] = ["📋 Tasks"];
+function taskIdForRow(row: TaskRow): string | undefined {
+	return CANONICAL_TASK_PATH.exec(row.path)?.[1];
+}
 
-	// Order recent by status rank (active first), stable within each bucket.
-	const rank: Record<Status, number> = {
-		in_progress: 0,
-		in_review: 1,
-		pending: 2,
-		blocked: 3,
-		cancelled: 4,
-		aborted: 5,
-		completed: 6,
-		unknown: 7,
-	};
-	const visible = [...recent]
-		.map((row, i) => ({ row, i }))
-		.sort((a, b) => rank[a.row.status] - rank[b.row.status] || a.i - b.i)
+/** Add progress, sort active-first, and format one tree section. */
+function renderTaskLines(rows: TaskRow[], cwd: string, linkTitles: boolean): string[] {
+	const visible = rows
+		.map((row, index) => ({ row: { ...row, progress: loadProgress(cwd, row.path) }, index }))
+		.sort((a, b) => STATUS_RANK[a.row.status] - STATUS_RANK[b.row.status] || a.index - b.index)
 		.map((entry) => entry.row);
 
-	visible.forEach((row, i) => {
-		const prefix = i === visible.length - 1 ? "└─" : "├─";
+	return visible.map((row, index) => {
+		const prefix = index === visible.length - 1 ? "└─" : "├─";
 		const tail = row.progress ? ` (${row.progress})` : "";
-		out.push(`${prefix} ${GLYPH[row.status]}${tail} ${row.title}`);
+		const title = linkTitles && taskIdForRow(row)
+			? hyperlink(row.title, pathToFileURL(join(cwd, "tasks", row.path)).href)
+			: row.title;
+		return `${prefix} ${GLYPH[row.status]}${tail} ${title}`;
 	});
+}
 
+/**
+ * Render at most `RECENT_LIMIT` tasks. With a valid session focus, reserve the
+ * first section for it and fill the remaining slots from the newest workspace
+ * tasks. A stale focus falls back to the normal shared list.
+ */
+function renderRows(rows: TaskRow[], cwd: string, linkTitles = false, focusedTaskId?: string): string[] {
+	if (isEmpty(rows)) return [];
+
+	const focused = focusedTaskId
+		? rows.find((row) => taskIdForRow(row) === focusedTaskId)
+		: undefined;
+	if (!focused) {
+		return ["📋 Tasks", ...renderTaskLines(rows.slice(0, RECENT_LIMIT), cwd, linkTitles)];
+	}
+
+	const workspace = rows
+		.filter((row) => row !== focused)
+		.slice(0, RECENT_LIMIT - 1);
+	const out = ["📋 This Session", ...renderTaskLines([focused], cwd, linkTitles)];
+	if (workspace.length > 0) {
+		out.push("📁 Workspace", ...renderTaskLines(workspace, cwd, linkTitles));
+	}
 	return out;
 }
 
@@ -242,6 +258,7 @@ class TaskWidget extends Container {
 
 interface RefreshState {
 	widget?: TaskWidget;
+	focusedTaskId?: string;
 }
 
 /**
@@ -251,7 +268,12 @@ interface RefreshState {
 function refresh(ctx: RefreshCtx, state: RefreshState): void {
 	if (!ctx.hasUI) return;
 	invalidateProgressCache(ctx.cwd);
-	const rows = renderRows(loadTasks(ctx.cwd), ctx.cwd);
+	const rows = renderRows(
+		loadTasks(ctx.cwd),
+		ctx.cwd,
+		ctx.mode === "tui" && getCapabilities().hyperlinks,
+		ctx.mode === "tui" ? state.focusedTaskId : undefined,
+	);
 
 	if (ctx.mode !== "tui") {
 		ctx.ui.setWidget(WIDGET_KEY, rows.length > 0 ? rows : undefined, { placement: "aboveEditor" });
@@ -296,6 +318,21 @@ interface RefreshCtx {
 	mode: "tui" | "rpc" | "json" | "print";
 }
 
+interface FocusEntryData {
+	taskId: string | null;
+}
+
+/** Read the latest focus entry on the active session branch. */
+function restoreFocusedTask(entries: readonly unknown[]): string | undefined {
+	for (let index = entries.length - 1; index >= 0; index--) {
+		const entry = entries[index] as { type?: unknown; customType?: unknown; data?: unknown };
+		if (entry.type !== "custom" || entry.customType !== FOCUS_ENTRY_TYPE) continue;
+		const taskId = (entry.data as { taskId?: unknown } | undefined)?.taskId;
+		return typeof taskId === "string" && TASK_ID.test(taskId) ? taskId : undefined;
+	}
+	return undefined;
+}
+
 export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	let refreshTimer: ReturnType<typeof setInterval> | undefined;
 	const refreshState: RefreshState = {};
@@ -306,9 +343,48 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 		refreshTimer = undefined;
 	};
 
+	const setFocusedTask = (taskId: string | undefined, ctx: RefreshCtx) => {
+		refreshState.focusedTaskId = taskId;
+		pi.appendEntry<FocusEntryData>(FOCUS_ENTRY_TYPE, { taskId: taskId ?? null });
+		refresh(ctx, refreshState);
+	};
+
+	pi.registerTool({
+		name: "csl_task_focus",
+		label: "CSL Task Focus",
+		description: "Associate this Pi session with one canonical workspace task.",
+		promptSnippet: "Focus this Pi session on a canonical CSL task.",
+		promptGuidelines: [
+			"After csl-task, csl-task-plan, or csl-task-auto creates, resumes, reopens, or activates a canonical task for this session, call csl_task_focus with that task ID.",
+		],
+		parameters: {
+			type: "object",
+			required: ["taskId"],
+			properties: {
+				taskId: {
+					type: "string",
+					description: "Canonical task ID without the .md suffix",
+					pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+				},
+			},
+		},
+		async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+			const taskId = params.taskId.trim();
+			if (!TASK_ID.test(taskId) || !loadTasks(ctx.cwd).some((row) => taskId === taskIdForRow(row))) {
+				throw new Error(`Canonical task not found: ${taskId}`);
+			}
+			setFocusedTask(taskId, ctx as RefreshCtx);
+			return {
+				content: [{ type: "text", text: `Focused this session on task: ${taskId}` }],
+				details: { taskId },
+			};
+		},
+	});
+
 	pi.on("session_start", async (_event, ctx) => {
 		stopRefreshTimer();
 		refreshState.widget = undefined;
+		refreshState.focusedTaskId = restoreFocusedTask(ctx.sessionManager.getBranch());
 		if (!ctx.hasUI) return;
 
 		const refreshCtx = ctx as RefreshCtx;
@@ -317,7 +393,34 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 		refreshTimer.unref?.();
 	});
 
+	pi.on("session_tree", async (_event, ctx) => {
+		refreshState.focusedTaskId = restoreFocusedTask(ctx.sessionManager.getBranch());
+		refresh(ctx as RefreshCtx, refreshState);
+	});
+
 	pi.on("session_shutdown", stopRefreshTimer);
+
+	pi.registerCommand("csl-task-focus", {
+		description: "Focus this session on a task ID, or clear the current focus.",
+		handler: async (args, ctx) => {
+			const taskId = args.trim();
+			if (taskId === "clear") {
+				setFocusedTask(undefined, ctx as RefreshCtx);
+				ctx.ui.notify("Cleared this session's task focus.", "info");
+				return;
+			}
+			if (!TASK_ID.test(taskId)) {
+				ctx.ui.notify("Usage: /csl-task-focus <task-id|clear>", "warning");
+				return;
+			}
+			if (!loadTasks(ctx.cwd).some((row) => taskId === taskIdForRow(row))) {
+				ctx.ui.notify(`Canonical task not found: ${taskId}`, "warning");
+				return;
+			}
+			setFocusedTask(taskId, ctx as RefreshCtx);
+			ctx.ui.notify(`Focused this session on task: ${taskId}`, "info");
+		},
+	});
 
 	pi.registerCommand("csl-tasks", {
 		description: "Print workspace tasks grouped by status (from tasks/tasks.md).",

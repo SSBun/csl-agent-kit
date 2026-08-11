@@ -1,5 +1,9 @@
 # 任务索引
 
+- [按 Session 区分任务面板](tasks/add-session-task-focus.md) — Completed (2026-08-11 12:54)
+
+- [让任务面板链接可点击](tasks/make-task-overlay-links-clickable.md) — Completed (2026-08-11 11:27)
+
 - [按关注点拆分并提交全部本地改动](tasks/commit-local-changes-by-concern.md) — Completed (2026-08-11 10:59)
 
 - [用干净子 Agent 验证 analyze-project](tasks/test-analyze-project-zhshortstory.md) — Completed (2026-08-10 10:43)

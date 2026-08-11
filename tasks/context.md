@@ -84,6 +84,26 @@
 - 所有项目事实必须有就近源码证据组：使用独立 Markdown bullet list，每项只包含一个 inline-code `path#symbol`、`path#key` 或 line anchor；锚点不得追加在正文尾部或放入表格。项目报告覆盖解释主要产品价值所需的最高层职责与核心流程，组件报告只覆盖内部、直接邻居和参与流程。所有必需视觉都使用 Mermaid flowchart、sequence 或 state code fence，不再生成 ASCII 图；有本地 validator 时必须验证，无 validator 时保留 Mermaid 并人工检查语法，已有 validator 经有限修复仍失败则不发布。build/test、项目执行、安装、网络和外部 mutation 需要明确授权。
 - active report 通过 Node 标准库 owned sibling temp 加 `link`/获准且旧 bytes 未变时 `rename` 发布；失败时不直接覆盖。`evals/contract_cases.json` 是声明式人工核对输入，实际输出价值以禁用 ambient skill 的 fresh-context 子 Agent 在真实项目生成并由父 Agent检查的报告为证据；旧 need-contract eval 仅是历史记录。
 
+## CTX-pi-task-overlay — Pi task overlay rendering
+- Scope: Pi task widget parsing, session focus persistence, progress rendering, refresh lifecycle, mode boundaries, and clickable task titles.
+- Paths: `pi/extensions/csl-task-overlay.ts`, `tests/pi-task-overlay.test.mjs`, `tasks/tasks.md`, `tasks/tasks/`
+- Keywords: Pi, task overlay, session focus, custom entry, widget, OSC 8, hyperlink, progress, refresh, RPC
+- Authority: `pi/extensions/csl-task-overlay.ts`, `tests/pi-task-overlay.test.mjs`
+- Recheck: The canonical task index format, Pi session-entry or widget API, terminal hyperlink capability detection, or refresh lifecycle changes.
+
+### Purpose and Boundaries
+- 任务面板以 `<ctx.cwd>/tasks/tasks.md` 和任务正文作为工作区共享状态与 Target 进度来源，不修改任务 Markdown；每个 session 的 focused task 只写入该 Pi session 的 `csl-task-focus` custom entry。
+
+### Structure
+- `session_start` 与 `session_tree` 从当前 branch 的最新 focus entry 恢复关联；`csl_task_focus` 工具通过 prompt guidance 供 Agent 在创建、恢复、重开或激活 canonical task 后自动关联，`/csl-task-focus <task-id|clear>` 提供手动切换或清除。
+- 有有效关联时，TUI 把该任务单列于 `This Session`，其余近期任务列于 `Workspace`；无关联或失效关联回退普通共享列表。已完成任务保持关联，直到被替换或清除。
+- TUI 对非空任务只注册一次自定义 Component，每 5 秒清除当前工作区进度缓存、重读任务并原位更新；空列表注销组件，重复启动释放旧 timer，`session_shutdown` 最终清理。
+- 支持 OSC 8 的 TUI 将 canonical `tasks/<task-slug>.md` 标题链接到对应绝对文件 URL；不支持 hyperlink 的终端保持纯文本。RPC 忽略 session 分组并保持可序列化纯字符串数组，headless 不注册 widget。
+
+### Decision and Verification Boundaries
+- 只有符合 `tasks/[a-z0-9-]+.md` 的 canonical index path 才能被关联或生成文件链接；`pathToFileURL` 负责绝对路径和特殊字符编码。
+- `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
+
 ## Components
 
 - `csl-agent-kit install` treats the integration multiselect as sufficient authorization and does not ask a second external-CLI confirmation.
@@ -92,7 +112,6 @@
 - `skills/csl-tasks/` 是 Codex、Claude、Cursor 与 Pi 共享的宿主中立任务集合：`csl-task` 管理单任务，`csl-task-plan` 只规划并交接最终 decisions，`csl-task-auto` 用有序父子任务串行推进并执行父级集成门禁；三者共享 `shared/lib/task-core.js` 与 `shared/scripts/csl-tasks.js`，核心只维护 Markdown 状态和证据，不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。权威契约与回归入口为三个 `SKILL.md`、共享 core/CLI 及 `tests/csl-tasks-core.test.mjs`。
 - `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/triggerify/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/triggerify.test.js`。
 - `pi/extensions/csl-context-hooks.ts` 是 Triggerify 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
-- `pi/extensions/csl-task-overlay.ts` 以 `<ctx.cwd>/tasks/tasks.md` 作为任务状态来源，任务正文只提供 Target 进度；TUI session 对非空任务只注册一次自定义 Component，随后每 5 秒清除当前工作区进度缓存、重读任务并原位更新组件，避免 Pi 的 insertion-ordered widget map 改变面板位置；空列表会注销组件，RPC 继续使用可序列化字符串数组。重复启动会先释放旧 timer，`session_shutdown` 负责最终清理。权威实现与回归测试为该 extension 和 `tests/pi-task-overlay.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/triggerify/scripts/triggerify.js` 是稳定 facade；V1 规则语义、文件存储、宿主无关运行时、CLI 与 Codex/Claude native hook 适配分别由 `scripts/lib/{rule,store,runtime,cli,native-hook}.js` 负责，外部宿主适配应通过 facade 的 `createEvent()` 和 `runEvent()` 接入。权威边界是这些模块导出与 `tests/triggerify.test.js`；修改跨层行为时复核两者。
 - Triggerify inner hooks 从 `skills/triggerify/hooks/` 随包分发、默认启用且源文件不可由 CLI 创建/更新/删除；用户通过 `<data-root>/triggerify/config.json` 的 `disabledHooks` 控制启用状态，并可用 qualified ID 键控的 `hookSettings` 保存专属设置。配置无效时仅 inner hooks fail-closed；运行时把当前 hook 的设置作为 `TRIGGERIFY_HOOK_CONFIG` 传给脚本，host adapter 还可按 qualified ID 通过 `TRIGGERIFY_HOOK_INPUT` 提供只对该脚本可见的临时输入，stdin event payload 保持不变。`inner:refresh-tab-title` 的状态也必须写入 data root，不能写入 skill 源目录；权威实现与回归入口为 `store.js`、`runtime.js`、`cli.js` 和 `tests/triggerify.test.js`。
