@@ -1,5 +1,7 @@
 # 任务索引
 
+- [创建 Apple Notes HTML 写作 SOP](tasks/create-apple-notes-html-sop.md) — In Progress (2026-08-11 15:29)
+
 - [测试 Session 任务关注显示](tasks/test-session-task-focus-display.md) — In Progress (2026-08-11 13:23)
 
 - [按 Session 区分任务面板](tasks/add-session-task-focus.md) — Completed (2026-08-11 12:54)
