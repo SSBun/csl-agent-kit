@@ -1,6 +1,6 @@
 # 任务索引
 
-- [按关注点拆分并提交全部本地改动](tasks/commit-local-changes-by-concern.md) — In Progress (2026-08-11 10:47)
+- [按关注点拆分并提交全部本地改动](tasks/commit-local-changes-by-concern.md) — Completed (2026-08-11 10:59)
 
 - [用干净子 Agent 验证 analyze-project](tasks/test-analyze-project-zhshortstory.md) — Completed (2026-08-10 10:43)
 
