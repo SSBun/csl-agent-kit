@@ -42,10 +42,10 @@ metadata:
 node .agents/skills/integrate-third-skills/scripts/third-party-skills.js status
 
 # 显示某项技能的上游变化和本地副本差异摘要
-node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff code-review
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff research
 
 # 需要逐行补丁时才追加 --patch
-node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff code-review --patch
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff research --patch
 ```
 
 `status` 使用 `.repository.json` 的 `repository`、`ref` 与 `commit`；`diff` 还会从该 ref 检出上游并分别展示“导入后上游变化”和“当前上游对本地副本的差异”。对其他工作区可追加 `--skills-root <path>`。无法访问远端、缺少 Git、名称不唯一或元数据损坏时停止并报告，不猜测或覆盖文件。

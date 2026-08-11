@@ -26,7 +26,7 @@
     "Run an adversarial review of your own changes yourself before marking this task complete; use no other agent."
   ],
   "near_neighbor": [
-    "Use code-reviewer to inspect the current diff.",
+    "Use code-review to inspect the current diff.",
     "Review changes since main against the product spec.",
     "Review this architecture proposal and suggest alternatives.",
     "Review this product requirements document and leave comments.",

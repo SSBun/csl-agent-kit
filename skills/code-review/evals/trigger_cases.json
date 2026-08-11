@@ -1,0 +1,32 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Review this pull request for bugs, security issues, and missing tests.",
+    "Use code-review to inspect the current diff.",
+    "Review changes since main against the product spec.",
+    "Check this GitLab merge request before I merge it.",
+    "Can you review my staged and unstaged code changes?",
+    "Review this branch for regressions and violations of our coding standards.",
+    "检查这个 PR 的正确性、安全性和测试缺口。",
+    "从 release/1.2 开始审查当前分支的代码变更。"
+  ],
+  "should_not_trigger": [
+    "Audit the entire codebase architecture and produce a remediation roadmap.",
+    "Run a security audit across the whole service.",
+    "Implement the feature described in issue 42.",
+    "Fix the failing tests and make CI pass.",
+    "Review this PRD and improve the wording.",
+    "Summarize this RFC for the team.",
+    "Run an adversarial review with an independent Reviewer and Editor until approval.",
+    "Explain how this unfamiliar repository is structured.",
+    "Research whether this API is deprecated.",
+    "Address the findings from the previous code review."
+  ],
+  "near_neighbor": [
+    "Review this architecture proposal and suggest alternatives.",
+    "Have two independent agents approve my implementation before completion.",
+    "Audit only the authentication subsystem for security vulnerabilities.",
+    "Give me a quick map of files involved in this bug.",
+    "Compare the implementation with the spec, then fix every mismatch."
+  ]
+}

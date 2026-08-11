@@ -1,0 +1,86 @@
+{
+  "fallback_positive_concepts": [
+    "code_change_review"
+  ],
+  "positive_concepts": {
+    "code_change_review": {
+      "weight": 0.8,
+      "phrases": [
+        "/code-review",
+        "code review",
+        "review this pull request",
+        "review this pr",
+        "review this merge request",
+        "check this gitlab merge request",
+        "review the current diff",
+        "review my changes",
+        "review changes since",
+        "review this branch",
+        "staged changes",
+        "unstaged changes",
+        "review my staged and unstaged code changes",
+        "bugs and security issues",
+        "regressions and missing tests",
+        "coding standards",
+        "代码审查",
+        "审查这个 pr",
+        "检查这个 pr",
+        "审查当前 diff",
+        "审查当前分支的代码变更",
+        "审查代码变更"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "whole_subject_audit": {
+      "weight": 0.75,
+      "exclusive": true,
+      "phrases": [
+        "entire codebase audit",
+        "whole service audit",
+        "architecture audit",
+        "security audit",
+        "remediation roadmap",
+        "审计整个代码库",
+        "安全审计"
+      ]
+    },
+    "implementation_or_fix": {
+      "weight": 0.75,
+      "exclusive": true,
+      "phrases": [
+        "implement the feature",
+        "fix the failing tests",
+        "make ci pass",
+        "address the findings",
+        "then fix every mismatch",
+        "实现功能",
+        "修复测试"
+      ]
+    },
+    "non_code_artifact": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "review this prd",
+        "review this rfc",
+        "architecture proposal",
+        "improve the wording",
+        "summarize this rfc",
+        "审查这份 prd"
+      ]
+    },
+    "independent_approval": {
+      "weight": 0.75,
+      "exclusive": true,
+      "phrases": [
+        "adversarial review",
+        "independent reviewer",
+        "reviewer and editor",
+        "two independent agents",
+        "until approval",
+        "独立 reviewer"
+      ]
+    }
+  }
+}
