@@ -1,9 +1,9 @@
 /**
  * csl-task-overlay — read-only Pi widget that surfaces workspace tasks.
  *
- * Renders a live panel above the editor from `<cwd>/tasks/todo.md` so you can
+ * Renders a live panel above the editor from `<cwd>/tasks/tasks.md` so you can
  * see what the agent is working on, what is done, and what is queued. The task
- * index is the source of truth (see the `workspace-manage-task` skill); this
+ * index is the source of truth (see the `csl-task` skill); this
  * extension only reads and renders it — it never writes.
  *
  * Refresh triggers:
@@ -13,31 +13,32 @@
  *
  * Headless (`ctx.hasUI === false`): no widget, no side effects.
  *
- * Format parsed (per `workspace-manage-task`):
- *   `- [Title](todo/slug.md) — Status (YYYY-MM-DD HH:MM)`
+ * Format parsed (per `csl-task`):
+ *   `- [Title](tasks/slug.md) — Status (YYYY-MM-DD HH:MM)`
  * Status words (English canonical + legacy Chinese):
- *   Pending / In Progress / In Review / Completed / Blocked
+ *   Pending / In Progress / In Review / Completed / Blocked / Cancelled
  *   待办 / 进行中 / 审查中 / 已完成 / 未标注
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { Container, Text, type TUI } from "@earendil-works/pi-tui";
 
 const WIDGET_KEY = "csl-tasks";
-const TODO_INDEX = join("tasks", "todo.md");
+const TASK_INDEX = join("tasks", "tasks.md");
 const REFRESH_INTERVAL_MS = 5_000;
 
 /** One parsed index entry. `progress` is filled lazily from the task file. */
 interface TaskRow {
 	title: string;
 	status: Status;
-	/** Index-relative path to the task file, e.g. `todo/slug.md`. */
+	/** Index-relative path to the task file, e.g. `tasks/slug.md`. */
 	path: string;
 	/** Target step progress `done/total`, or undefined when the task has no Target. */
 	progress?: string;
 }
 
-type Status = "pending" | "in_progress" | "in_review" | "completed" | "blocked" | "aborted" | "unknown";
+type Status = "pending" | "in_progress" | "in_review" | "completed" | "blocked" | "cancelled" | "aborted" | "unknown";
 
 const STATUS_WORDS: Record<string, Status> = {
 	// English canonical
@@ -46,6 +47,7 @@ const STATUS_WORDS: Record<string, Status> = {
 	"in review": "in_review",
 	completed: "completed",
 	blocked: "blocked",
+	cancelled: "cancelled",
 	aborted: "aborted",
 	deprecated: "aborted",
 	// Legacy Chinese
@@ -62,11 +64,12 @@ const GLYPH: Record<Status, string> = {
 	in_review: "🔍",
 	completed: "✅",
 	blocked: "🚫",
+	cancelled: "⏹️",
 	aborted: "⛔",
 	unknown: "❓",
 };
 
-/** How many recent tasks the widget shows. `tasks/todo.md` is newest-first. */
+/** How many recent tasks the widget shows. `tasks/tasks.md` is newest-first. */
 const RECENT_LIMIT = 6;
 
 /** Match `- [Title](path) — Status (...)`. Captures path for progress lookup. */
@@ -83,14 +86,14 @@ function parseStatus(tail: string): Status {
 }
 
 /**
- * Read and parse `<cwd>/tasks/todo.md`. Returns [] when the file is missing or
+ * Read and parse `<cwd>/tasks/tasks.md`. Returns [] when the file is missing or
  * unreadable — the overlay stays hidden. Synchronous and cheap: the index is a
  * flat list, not the task bodies. `path` is filled for later progress lookup.
  */
 function loadTasks(cwd: string): TaskRow[] {
 	let text: string;
 	try {
-		text = readFileSync(join(cwd, TODO_INDEX), "utf8");
+		text = readFileSync(join(cwd, TASK_INDEX), "utf8");
 	} catch {
 		return [];
 	}
@@ -120,7 +123,7 @@ function invalidateProgressCache(cwd: string): void {
 
 /**
  * Match a markdown checkbox line: `- [x] ...` or `- [ ] ...`. Used only inside a
- * `## Target` section, which the `workspace-manage-task` contract defines as
+ * `## Target` section, which the `csl-task` contract defines as
  * the single checkbox list with stable IDs (T1, T2, ...).
  */
 const CHECKBOX = /^\s*-\s+\[([ xX])\]/;
@@ -129,7 +132,7 @@ const CHECKBOX = /^\s*-\s+\[([ xX])\]/;
  * Read `<cwd>/<indexRelativePath>` and count Target checkboxes. Returns
  * `"done/total"` when the task has a Target with at least one checkbox, else
  * undefined (no progress to show). The index path is relative to the project
- * root (`todo/slug.md`), so resolve under `tasks/`.
+ * root (`tasks/slug.md`), so resolve under `tasks/`.
  */
 function loadProgress(cwd: string, indexPath: string): string | undefined {
 	const abs = join(cwd, "tasks", indexPath);
@@ -166,19 +169,19 @@ function isEmpty(rows: TaskRow[]): boolean {
 }
 
 /**
- * Count active (non-completed, non-aborted, non-unknown) tasks for the heading
- * ratio. `unknown` (legacy `未标注`) and `aborted` are excluded so a backlog of
- * untriaged or abandoned history does not inflate the "active" number.
+ * Count active tasks for the heading ratio. Completed, Cancelled, aborted, and
+ * unknown records are excluded so paused or abandoned history does not inflate
+ * the "active" number.
  */
 function countActive(rows: TaskRow[]): number {
 	return rows.filter(
-		(row) => row.status !== "completed" && row.status !== "unknown" && row.status !== "aborted",
+		(row) => !["completed", "cancelled", "unknown", "aborted"].includes(row.status),
 	).length;
 }
 
 /**
  * Render the widget body as a string array. Shows only the `RECENT_LIMIT`
- * newest tasks (tasks/todo.md is newest-first), lazily reading each one's
+ * newest tasks (tasks/tasks.md is newest-first), lazily reading each one's
  * Target checkbox progress from its task file.
  *
  * Layout:
@@ -202,9 +205,10 @@ function renderRows(rows: TaskRow[], cwd: string): string[] {
 		in_review: 1,
 		pending: 2,
 		blocked: 3,
-		aborted: 4,
-		completed: 5,
-		unknown: 6,
+		cancelled: 4,
+		aborted: 5,
+		completed: 6,
+		unknown: 7,
 	};
 	const visible = [...recent]
 		.map((row, i) => ({ row, i }))
@@ -220,15 +224,57 @@ function renderRows(rows: TaskRow[], cwd: string): string[] {
 	return out;
 }
 
+class TaskWidget extends Container {
+	private readonly requestRender: () => void;
+
+	constructor(lines: string[], requestRender: () => void) {
+		super();
+		this.requestRender = requestRender;
+		for (const line of lines) this.addChild(new Text(line, 1, 0));
+	}
+
+	setLines(lines: string[]): void {
+		this.clear();
+		for (const line of lines) this.addChild(new Text(line, 1, 0));
+		this.requestRender();
+	}
+}
+
+interface RefreshState {
+	widget?: TaskWidget;
+}
+
 /**
- * Refresh the widget for `ctx`. No-op when headless or when the list is empty
- * (the widget is cleared, which also unregisters it visually).
+ * Refresh the widget for `ctx`. TUI sessions register one custom component and
+ * update it in place so Pi's insertion-ordered widget map keeps its position.
  */
-function refresh(ctx: { ui: ExtensionUIContext; cwd: string; hasUI: boolean }): void {
+function refresh(ctx: RefreshCtx, state: RefreshState): void {
 	if (!ctx.hasUI) return;
 	invalidateProgressCache(ctx.cwd);
 	const rows = renderRows(loadTasks(ctx.cwd), ctx.cwd);
-	ctx.ui.setWidget(WIDGET_KEY, rows.length > 0 ? rows : undefined, { placement: "aboveEditor" });
+
+	if (ctx.mode !== "tui") {
+		ctx.ui.setWidget(WIDGET_KEY, rows.length > 0 ? rows : undefined, { placement: "aboveEditor" });
+		return;
+	}
+	if (rows.length === 0) {
+		state.widget = undefined;
+		ctx.ui.setWidget(WIDGET_KEY, undefined, { placement: "aboveEditor" });
+		return;
+	}
+	if (state.widget) {
+		state.widget.setLines(rows);
+		return;
+	}
+	ctx.ui.setWidget(
+		WIDGET_KEY,
+		(tui) => {
+			const widget = new TaskWidget(rows, () => tui.requestRender());
+			state.widget = widget;
+			return widget;
+		},
+		{ placement: "aboveEditor" },
+	);
 }
 
 // Re-declare the slice of ExtensionUIContext we use, to avoid importing the
@@ -236,7 +282,7 @@ function refresh(ctx: { ui: ExtensionUIContext; cwd: string; hasUI: boolean }): 
 interface ExtensionUIContext {
 	setWidget(
 		key: string,
-		content: string[] | undefined,
+		content: string[] | ((tui: TUI) => TaskWidget) | undefined,
 		options?: { placement?: "aboveEditor" | "belowEditor" },
 	): void;
 	notify(message: string, type?: "info" | "warning" | "error"): void;
@@ -247,10 +293,12 @@ interface RefreshCtx {
 	ui: ExtensionUIContext;
 	cwd: string;
 	hasUI: boolean;
+	mode: "tui" | "rpc" | "json" | "print";
 }
 
 export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	let refreshTimer: ReturnType<typeof setInterval> | undefined;
+	const refreshState: RefreshState = {};
 
 	const stopRefreshTimer = () => {
 		if (!refreshTimer) return;
@@ -260,28 +308,29 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 
 	pi.on("session_start", async (_event, ctx) => {
 		stopRefreshTimer();
+		refreshState.widget = undefined;
 		if (!ctx.hasUI) return;
 
 		const refreshCtx = ctx as RefreshCtx;
-		refresh(refreshCtx);
-		refreshTimer = setInterval(() => refresh(refreshCtx), REFRESH_INTERVAL_MS);
+		refresh(refreshCtx, refreshState);
+		refreshTimer = setInterval(() => refresh(refreshCtx, refreshState), REFRESH_INTERVAL_MS);
 		refreshTimer.unref?.();
 	});
 
 	pi.on("session_shutdown", stopRefreshTimer);
 
 	pi.registerCommand("csl-tasks", {
-		description: "Print workspace tasks grouped by status (from tasks/todo.md).",
+		description: "Print workspace tasks grouped by status (from tasks/tasks.md).",
 		handler: async (_args, ctx) => {
 			const rows = loadTasks(ctx.cwd);
 			if (rows.length === 0) {
-				ctx.ui.notify("No tasks in tasks/todo.md.", "info");
+				ctx.ui.notify("No tasks in tasks/tasks.md.", "info");
 				return;
 			}
 			const lines = formatGrouped(rows, ctx.cwd);
 			ctx.ui.notify(lines.join("\n"), "info");
 			// Also refresh the widget so the printed list and overlay stay in sync.
-			refresh(ctx as RefreshCtx);
+			refresh(ctx as RefreshCtx, refreshState);
 		},
 	});
 }
@@ -293,6 +342,7 @@ function formatGrouped(rows: TaskRow[], cwd: string): string[] {
 		in_review: [],
 		pending: [],
 		blocked: [],
+		cancelled: [],
 		aborted: [],
 		completed: [],
 		unknown: [],
@@ -308,11 +358,12 @@ function formatGrouped(rows: TaskRow[], cwd: string): string[] {
 		in_review: "In Review",
 		pending: "Pending",
 		blocked: "Blocked",
+		cancelled: "Cancelled",
 		aborted: "Aborted",
 		completed: "Completed",
 		unknown: "Untriaged",
 	};
-	const order: Status[] = ["in_progress", "in_review", "pending", "blocked", "aborted", "completed", "unknown"];
+	const order: Status[] = ["in_progress", "in_review", "pending", "blocked", "cancelled", "aborted", "completed", "unknown"];
 	for (const status of order) {
 		const group = groups[status];
 		if (group.length === 0) continue;
@@ -331,10 +382,10 @@ function formatGrouped(rows: TaskRow[], cwd: string): string[] {
 if (process.argv.includes("--check")) {
 	const check = () => {
 		const sample = [
-			"- [Active task](todo/a.md) — In Progress (2026-07-26 12:00)",
-			"- [Done](todo/b.md) — Completed (2026-07-25 10:00)",
-			"- [Legacy](todo/c.md) — 已完成（2026-07-21）",
-			"- [Untriaged](todo/d.md) — 未标注",
+			"- [Active task](tasks/a.md) — In Progress (2026-07-26 12:00)",
+			"- [Done](tasks/b.md) — Completed (2026-07-25 10:00)",
+			"- [Legacy](tasks/c.md) — 已完成（2026-07-21）",
+			"- [Untriaged](tasks/d.md) — 未标注",
 			"- not a task line",
 			"",
 		].join("\n");
@@ -365,7 +416,7 @@ if (process.argv.includes("--check")) {
 		// Recent limit: 30 tasks render heading + RECENT_LIMIT rows only.
 		const many: TaskRow[] = Array.from({ length: 30 }, (_, i) => ({
 			title: `t${i}`,
-			path: `todo/t${i}.md`,
+			path: `tasks/t${i}.md`,
 			status: i < 5 ? ("in_progress" as Status) : ("completed" as Status),
 		}));
 		const manyRendered = renderRows(many, "/nonexistent-cwd");

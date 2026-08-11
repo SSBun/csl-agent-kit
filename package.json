@@ -84,5 +84,8 @@
     "@earendil-works/pi-coding-agent": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "@earendil-works/pi-tui": "^0.80.10"
   }
 }
