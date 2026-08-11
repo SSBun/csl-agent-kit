@@ -1,0 +1,20 @@
+{
+  "positive_concepts": {
+    "single_task_management": {
+      "weight": 1.0,
+      "phrases": ["tasks/tasks.md", "canonical task record", "resume task", "cancel task", "complete task"]
+    }
+  },
+  "negative_concepts": {
+    "read_only": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["read-only answer", "do not change files", "explain only"]
+    },
+    "multi_task_auto": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["multiple tasks automatically", "parent and child tasks", "auto task"]
+    }
+  }
+}

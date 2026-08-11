@@ -60,9 +60,9 @@ CHECKS = (
     ContractCheck(
         name="mandatory task records",
         required=(
-            "write a plan to `tasks/todo.md`",
-            "Track progress in `tasks/todo.md`",
-            "Add a review section to `tasks/todo.md`",
+            "write a plan to `tasks/tasks.md`",
+            "Track progress in `tasks/tasks.md`",
+            "Add a review section to `tasks/tasks.md`",
             "Capture lessons in `tasks/lessons.md`",
             "After ANY correction from the user",
         ),

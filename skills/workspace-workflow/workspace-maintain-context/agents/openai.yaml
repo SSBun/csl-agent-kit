@@ -1,4 +1,0 @@
-interface:
-  display_name: "Workspace Context"
-  short_description: "Maintain durable decision context"
-  default_prompt: "Use $workspace-maintain-context to refresh this workspace context."

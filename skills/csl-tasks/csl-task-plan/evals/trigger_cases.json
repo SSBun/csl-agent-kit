@@ -1,0 +1,20 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Research this feature and give me an implementation-ready plan, but do not edit the product yet.",
+    "Resolve the requirements and create a task plan for later execution.",
+    "I want a decisions-only handoff before coding.",
+    "Plan how to migrate this system without implementing it."
+  ],
+  "should_not_trigger": [
+    "Implement this feature now.",
+    "Run all child tasks automatically.",
+    "Explain the current implementation without creating a plan.",
+    "Update tasks/context.md after compaction."
+  ],
+  "near_neighbor": [
+    "Brainstorm several product directions with me.",
+    "Manage the current single task through completion.",
+    "Create an Auto parent and ordered children."
+  ]
+}

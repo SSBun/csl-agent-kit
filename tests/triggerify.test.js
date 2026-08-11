@@ -160,12 +160,12 @@ test("creates host-neutral standard events for external adapters", () => {
     workspace: "/workspace",
     sessionId: "session",
     tool: { name: "write", category: "file", command: null, success: true },
-    changedFiles: [{ path: "tasks/todo.md", operation: "modified" }],
+    changedFiles: [{ path: "tasks/tasks.md", operation: "modified" }],
     nativeEvent: "tool_execution_end",
   });
 
   assert.equal(payload.host.name, "pi");
-  assert.deepEqual(payload.changed_files, [{ path: "tasks/todo.md", operation: "modified" }]);
+  assert.deepEqual(payload.changed_files, [{ path: "tasks/tasks.md", operation: "modified" }]);
   assert.equal(payload.native.event, "tool_execution_end");
 });
 

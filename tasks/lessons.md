@@ -1,5 +1,29 @@
 # Lessons
 
+## 2026-08-07 Skill packages use English
+
+- **Trigger:**
+  - Creating or modifying any project-local or distributable skill package.
+- **Rule:**
+  - Write `SKILL.md`, runtime references, prompts, templates, and eval-facing prose in English.
+  - Keep generated reports and user-facing answers in the user's language.
+  - Do not bulk-translate unrelated existing skill packages unless the user explicitly requests a repository-wide migration.
+- **Check:**
+  - Changed skill-package prose is English, except fixtures that intentionally test another language.
+  - Report language remains independent from skill-source language.
+
+## 2026-08-07 深度探索先解释对象再呈现认知边界
+
+- **Trigger:**
+  - 生成或修订主题、项目或任务的 deep-explore 指南与报告。
+- **Rule:**
+  - 第一实质内容必须给出简洁准确的定义，再依次解释对象做什么、如何工作和如何实现。
+  - 限制、开放问题、冲突与失败模式只作为理解对象的认知边界呈现，不得组织成对象缺陷清单或让问题搜寻成为报告主轴。
+  - 用户实际需要审计、review、整改或开发建议时，转交对应能力，不得借探索流程执行。
+- **Check:**
+  - 批准指南和主报告都在认知边界之前覆盖定义、作用、工作原理与实现方式。
+  - 报告没有对对象打分、批准、整改或提出未请求的修复建议。
+
 ## 2026-07-31 发布完成前必须验证最终远端 CI
 
 - **Trigger:**
@@ -80,7 +104,7 @@
 ## 2026-07-23 先建任务记录再动手做非平凡改动
 
 - **Trigger:** 用户测试 triggerify skill 时要求加一个 hook，我直接实现了 hook 却没按 AGENTS.md 的 workspace workflow 先创建任务记录。
-- **Rule:** 凡是改变交付物的非平凡工作（创建 skill、hook、脚本、规则、配置等持久产物），在动手实现前必须先用 `$workspace-manage-task` 建立 `tasks/todo/<task-slug>.md` 并更新 `tasks/todo.md` 索引；不要等工作做完才补。只读回答和琐碎机械操作可跳过。
+- **Rule:** 凡是改变交付物的非平凡工作（创建 skill、hook、脚本、规则、配置等持久产物），在动手实现前必须先用 `$csl-task` 建立 `tasks/tasks/<task-slug>.md` 并更新 `tasks/tasks.md` 索引；不要等工作做完才补。只读回答和琐碎机械操作可跳过。
 - **Why:** 任务记录是强制生命周期关卡，不是事后归档；跳过它会让进度不可追溯，也无法在改动前明确 Target 和验收边界。
 
 ## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection
@@ -142,7 +166,7 @@
 
 - **Trigger:** 为答案形成、方案讨论或最终交付物检查设计多 Agent 工作流。
   - **Rule:** 答案形成阶段使用能表达综合与挑战职责的角色名，例如 Synthesizer / Challenger；Editor / Reviewer 只用于成稿后的修改与验收。不要因通信拓扑相似而复用阶段语义不符的角色名。
-  - **Why:** 角色名会向用户和 Agent 暗示流程目标；混用会让讨论误读为批准门禁，并模糊 `adversarial-deliberate` 与 `adversarial-review` 的边界。
+  - **Why:** 角色名会向用户和 Agent 暗示流程目标；混用会让讨论误读为批准门禁，并模糊 `deliberate` 与 `adversarial-review` 的边界。
 
 ## 2026-07-20 区分文件化审查报告与普通任务交接
 
@@ -153,7 +177,7 @@
 ## 2026-07-19 隔离并发任务记录
 
 - **Trigger:** 多个 Agent 或会话可能同时更新不同任务的进度、审查状态或完成标记。
-  - **Rule:** 每个任务使用独立的 `tasks/todo/<task-slug>.md` 作为唯一权威记录；`tasks/todo.md` 只维护标题、当前状态和链接。每次只修改所属任务文件及其精确索引项，写入前重新读取目标，禁止用整文件旧快照覆盖索引或其他任务。
+  - **Rule:** 每个任务使用独立的 `tasks/tasks/<task-slug>.md` 作为唯一权威记录；`tasks/tasks.md` 只维护标题、当前状态和链接。每次只修改所属任务文件及其精确索引项，写入前重新读取目标，禁止用整文件旧快照覆盖索引或其他任务。
   - **Why:** 共享大文件中的并发整段写入会造成已批准状态回退、任务内容丢失和错误归属；按任务隔离把冲突面缩到单一索引行。
 
 ## 2026-07-19 区分取消流程与取消流程限制
@@ -206,20 +230,20 @@
 
 ## 2026-07-13 Remove Handoff Skills When Existing State Files Cover Continuity
 
-- **Trigger:** handoff-save/restore 主要复制 `tasks/todo/` 中的任务进度和 `tasks/context.md` 的稳定事实，剩余会话状态没有明确独立价值时。
+- **Trigger:** handoff-save/restore 主要复制 `tasks/tasks/` 中的任务进度和 `tasks/context.md` 的稳定事实，剩余会话状态没有明确独立价值时。
   - **Rule:** 先问这两个 skill 是否还需要存在；如果 todo/context 已能可靠恢复工作，优先删除 handoff skills，而不是继续压缩模板或引入线程、归档和生命周期机制。
   - **Why:** 为很少出现的“思考前沿”维护额外命令、文件格式、存储目录和恢复协议，会制造重复 source of truth 与不必要的认知负担。
 
 ## 2026-07-13 Keep Handoff State Distinct From Todo Progress
 
 - **Trigger:** 设计跨会话 handoff，并且 handoff 模板包含 Done、In Progress、Task Scope 或 acceptance criteria 时。
-  - **Rule:** 不要在 handoff 中复制所属 `tasks/todo/<task-slug>.md` 的计划和完成状态；handoff 只引用任务文件，并保存它无法表达的会话边界信息，例如当前思考前沿、下一步切入点、临时假设和恢复所需导航。
+  - **Rule:** 不要在 handoff 中复制所属 `tasks/tasks/<task-slug>.md` 的计划和完成状态；handoff 只引用任务文件，并保存它无法表达的会话边界信息，例如当前思考前沿、下一步切入点、临时假设和恢复所需导航。
   - **Why:** 同一进度维护两个副本会立即产生漂移，让新会话无法判断哪一个才是 source of truth。
 
 ## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents
 
 - **Trigger:** 精简默认 agent 原则但仍要求任务计划时。
-  - **Rule:** 保留在所属 `tasks/todo/<task-slug>.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；后两者由 agent 按实际需要自行决定。
+  - **Rule:** 保留在所属 `tasks/tasks/<task-slug>.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；后两者由 agent 按实际需要自行决定。
   - **Why:** todo 是持久化任务控制和验证记录，plan mode 与 subagent 是可选执行能力，三者不应绑定。
 
 ## 2026-07-13 Distinguish Agent-Specific And Parent AGENTS Files
@@ -278,7 +302,7 @@
 
 ## 2026-07-09 Task Files Newest First
 
-- **Trigger:** Adding a new entry to `tasks/todo.md` or `tasks/lessons.md`.
+- **Trigger:** Adding a new entry to `tasks/tasks.md` or `tasks/lessons.md`.
   - **Rule:** Insert the newest entry at the top of the file, directly under the title, instead of appending to the bottom.
   - **Why:** Newest-first ordering makes active tasks and recent corrections easier to find and read.
 
@@ -399,7 +423,7 @@
 ## 2026-07-07 Todo Lessons Compliance
 
 - **Trigger:** 优化 agent rule、AGENTS、CLAUDE 或项目执行规则时。
-  - **Rule:** 不要把 `tasks/todo.md`、`tasks/todo/<task-slug>.md` 和 `tasks/lessons.md` 规则弱化为可选建议；它们是用户确认有价值且必须遵守的执行机制。
+  - **Rule:** 不要把 `tasks/tasks.md`、`tasks/tasks/<task-slug>.md` 和 `tasks/lessons.md` 规则弱化为可选建议；它们是用户确认有价值且必须遵守的执行机制。
   - **Why:** todo 负责把多步骤工作变成可验证进度，lessons 负责把用户纠正沉淀成可复用规则；弱化它们会让同类错误重复出现。
 
 ## 2026-07-08 AGENTS Template No Local Include

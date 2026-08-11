@@ -1,9 +1,10 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
-    "At session start, read tasks/context.md before exploring the workspace.",
-    "After resume, verify the durable workspace facts before continuing.",
-    "After compaction, refresh the confirmed component relationships.",
+    "At session start, load the Project Core before acting.",
+    "After resume, restore the dispatch-ready workspace context before continuing.",
+    "After compaction, reload Project Core and the task-relevant Context Packs.",
+    "Query tasks/context.md for the packs relevant to this concrete task.",
     "Update tasks/context.md with the newly confirmed repository convention."
   ],
   "should_not_trigger": [
@@ -13,7 +14,7 @@
     "I prefer concise answers."
   ],
   "near_neighbor": [
-    "Create the task record in tasks/todo.md before implementation.",
+    "Create the task record in tasks/tasks.md before implementation.",
     "Capture this user correction in tasks/lessons.md.",
     "Run adversarial review on the completed change.",
     "Save this tip for future Markdown requests."

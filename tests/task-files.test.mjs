@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -7,11 +8,12 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const taskDir = path.join(root, "tasks", "todo");
+const taskDir = path.join(root, "tasks", "tasks");
 const reportDir = path.join(root, "reports", "adversarial-review");
 const workflowDir = path.join(root, "skills", "workspace-workflow");
+const cslTasksDir = path.join(root, "skills", "csl-tasks");
 const require = createRequire(import.meta.url);
-const { checkTaskIndex } = require(path.join(workflowDir, "workspace-manage-task", "scripts", "check-task-index.js"));
+const { checkTaskIndex } = require(path.join(cslTasksDir, "shared", "lib", "task-core.js"));
 
 function readMarkdown(dir) {
   return new Map(readdirSync(dir)
@@ -21,13 +23,13 @@ function readMarkdown(dir) {
 
 function writeTaskIndexFixture(t, { entry, status = "Status: In Progress (2026-07-29 13:43)", legacyEntry = "" }) {
   const workspace = mkdtempSync(path.join(os.tmpdir(), "task-index-"));
-  const todoDir = path.join(workspace, "tasks", "todo");
-  const taskFile = path.join(todoDir, "task-a.md");
-  mkdirSync(todoDir, { recursive: true });
+  const recordsDir = path.join(workspace, "tasks", "tasks");
+  const taskFile = path.join(recordsDir, "task-a.md");
+  mkdirSync(recordsDir, { recursive: true });
   writeFileSync(taskFile, `# 任务 A\n\n${status}\n`, "utf8");
-  writeFileSync(path.join(workspace, "tasks", "todo.md"), `# 任务索引\n\n${entry}${legacyEntry ? `\n${legacyEntry}` : ""}\n`, "utf8");
+  writeFileSync(path.join(workspace, "tasks", "tasks.md"), `# 任务索引\n\n${entry}${legacyEntry ? `\n${legacyEntry}` : ""}\n`, "utf8");
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
-  return taskFile;
+  return { workspace, taskFile };
 }
 
 function validateReviewReport(markdown, { task, cycles, dialogue = [] } = {}) {
@@ -100,10 +102,10 @@ function validateReviewReport(markdown, { task, cycles, dialogue = [] } = {}) {
 
 function validateTaskGraph(index, tasks, reports) {
   const entries = index.split("\n").slice(2).filter(Boolean).map((line) => {
-    const current = line.match(/^- \[(.+)]\(todo\/([a-z0-9-]+\.md)\) — (.+)$/);
+    const current = line.match(/^- \[(.+)]\(tasks\/([a-z0-9-]+\.md)\) — (.+)$/);
     if (current) return { title: current[1], file: current[2], status: current[3] };
 
-    const historical = line.match(/^- (.+) — (Status \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}\): (?:Pending|In Progress|In Review|Completed|Blocked)) — \[[^\]]+]\(todo\/([a-z0-9-]+\.md)\)$/);
+    const historical = line.match(/^- (.+) — (Status \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}\): (?:Pending|In Progress|In Review|Completed|Blocked)) — \[[^\]]+]\(tasks\/([a-z0-9-]+\.md)\)$/);
     assert.ok(historical, `invalid task index entry: ${line}`);
     return { title: historical[1], status: historical[2], file: historical[3] };
   });
@@ -135,7 +137,7 @@ function validateTaskGraph(index, tasks, reports) {
   assert.deepEqual([...linkedReports].sort(), [...reports.keys()].sort());
   for (const [reportFile, report] of reports) {
     const taskFile = report.match(/^task:\s*([a-z0-9-]+)$/m)?.[1]?.concat(".md")
-      ?? report.match(/^- Task: \[[^\]]+]\(\.\.\/\.\.\/tasks\/todo\/([a-z0-9-]+\.md)\)/m)?.[1];
+      ?? report.match(/^- Task: \[[^\]]+]\(\.\.\/\.\.\/tasks\/tasks\/([a-z0-9-]+\.md)\)/m)?.[1];
     assert.ok(taskFile, `missing task link: ${reportFile}`);
     assert.equal(taskFile, reportFile, `report/task slug mismatch: ${reportFile}`);
     assert.ok(tasks.has(taskFile), `missing task: ${taskFile}`);
@@ -144,75 +146,56 @@ function validateTaskGraph(index, tasks, reports) {
 
 test("task index and review reports resolve to isolated same-slug files", () => {
   validateTaskGraph(
-    readFileSync(path.join(root, "tasks", "todo.md"), "utf8"),
+    readFileSync(path.join(root, "tasks", "tasks.md"), "utf8"),
     readMarkdown(taskDir),
     readMarkdown(reportDir),
   );
 });
 
-test("task index checker accepts the todo extension format without migrating legacy siblings", (t) => {
-  const taskFile = writeTaskIndexFixture(t, {
-    entry: "- [任务 A](todo/task-a.md) — In Progress (2026-07-29 13:43)",
-    legacyEntry: "- 旧任务 — Status (2026-07-01 09:00): Completed — [任务记录](todo/legacy-task.md)",
+test("task index checker accepts the current format without migrating legacy siblings", (t) => {
+  const fixture = writeTaskIndexFixture(t, {
+    entry: "- [任务 A](tasks/task-a.md) — In Progress (2026-07-29 13:43)",
+    legacyEntry: "- 旧任务 — Status (2026-07-01 09:00): Completed — [任务记录](tasks/legacy-task.md)",
   });
-  assert.doesNotThrow(() => checkTaskIndex(taskFile));
+  assert.doesNotThrow(() => checkTaskIndex(fixture.workspace, "task-a"));
 });
 
-test("task index checker rejects the incompatible target format and canonical mismatches", (t) => {
+test("task index checker rejects incompatible paths and canonical mismatches", (t) => {
   const cases = [
-    {
-      entry: "- 任务 A — Status (2026-07-29 13:43): In Progress — [任务记录](todo/task-a.md)",
-      error: /does not match the standard format/,
-    },
-    {
-      entry: "- [任务 A](todo/task-a.md) — Completed (2026-07-29 13:43)",
-      error: /status does not match/,
-    },
-    {
-      entry: "- [任务 B](todo/task-a.md) — In Progress (2026-07-29 13:43)",
-      error: /title does not match/,
-    },
-    {
-      entry: "- [任务 A](todo/task-a.md) — In Progress (2026-07-29 25:61)",
-      error: /does not match the standard format/,
-    },
+    "- 任务 A — Status (2026-07-29 13:43): In Progress — [任务记录](tasks/task-a.md)",
+    "- [任务 A](tasks/task-a.md) — Completed (2026-07-29 13:43)",
+    "- [任务 B](tasks/task-a.md) — In Progress (2026-07-29 13:43)",
+    "- [任务 A](tasks/task-a.md) — In Progress (2026-07-29 25:61)",
   ];
 
-  for (const item of cases) {
-    const taskFile = writeTaskIndexFixture(t, item);
-    assert.throws(() => checkTaskIndex(taskFile), item.error);
+  for (const entry of cases) {
+    const fixture = writeTaskIndexFixture(t, { entry });
+    assert.throws(() => checkTaskIndex(fixture.workspace, "task-a"));
   }
 });
 
 test("task links to deleted reports fail validation", () => {
-  const index = "# 任务索引\n\n- [任务 A](todo/task-a.md) — 进行中\n";
+  const index = "# 任务索引\n\n- [任务 A](tasks/task-a.md) — 进行中\n";
   const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../../reports/adversarial-review/task-a.md)\n"]]);
   assert.throws(() => validateTaskGraph(index, tasks, new Map()), /missing report: task-a\.md/);
 });
 
 test("cross-linked task and report slugs fail validation", () => {
-  const index = "# 任务索引\n\n- [任务 A](todo/task-a.md) — 进行中\n";
+  const index = "# 任务索引\n\n- [任务 A](tasks/task-a.md) — 进行中\n";
   const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../../reports/adversarial-review/report-b.md)\n"]]);
-  const reports = new Map([["report-b.md", "# Review\n\n- Task: [tasks/todo/task-a.md](../../tasks/todo/task-a.md) — 任务 A\n"]]);
+  const reports = new Map([["report-b.md", "# Review\n\n- Task: [tasks/tasks/task-a.md](../../tasks/tasks/task-a.md) — 任务 A\n"]]);
   assert.throws(() => validateTaskGraph(index, tasks, reports), /task\/report slug mismatch: task-a\.md/);
 });
 
 test("default agent instructions explain workspace records and route work to workflow skills", () => {
   const rules = readFileSync(path.join(root, "super-agent", "AGENTS.md"), "utf8");
   const expected = {
-    "workspace-maintain-context": "tasks/context.md",
-    "workspace-manage-task": "tasks/todo.md",
-    "workspace-capture-lessons": "tasks/lessons.md",
+    "workspace-context": [path.join(workflowDir, "workspace-context"), "tasks/context.md"],
+    "csl-task": [path.join(cslTasksDir, "csl-task"), "tasks/tasks.md"],
+    "workspace-lessons": [path.join(workflowDir, "workspace-lessons"), "tasks/lessons.md"],
   };
 
-  for (const [name, ownedPath] of Object.entries(expected)) {
-    const skillDir = path.join(workflowDir, name);
-    const evaluatedSkill = ["workspace-maintain-context", "workspace-manage-task"].includes(name);
-    const skillFiles = name === "workspace-manage-task"
-      ? ["SKILL.md", "agents", "evals", "scripts"]
-      : evaluatedSkill ? ["SKILL.md", "agents", "evals"] : ["SKILL.md", "agents"];
-    assert.deepEqual(readdirSync(skillDir).sort(), skillFiles);
-    assert.deepEqual(readdirSync(path.join(skillDir, "agents")).sort(), evaluatedSkill ? ["interface.yaml", "openai.yaml"] : ["openai.yaml"]);
+  for (const [name, [skillDir, ownedPath]] of Object.entries(expected)) {
     const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
     assert.match(skill, new RegExp(`^name: ${name}$`, "m"));
     assert.ok(skill.includes(ownedPath), `${name} missing owned path`);
@@ -221,9 +204,20 @@ test("default agent instructions explain workspace records and route work to wor
     assert.ok(rules.includes(ownedPath), `default instructions missing mechanism path: ${ownedPath}`);
   }
 
-  assert.match(rules, /load `\$workspace-maintain-context` and follow its `SKILL\.md` before acting/);
-  assert.match(rules, /load `\$workspace-manage-task` and follow its `SKILL\.md` before execution/);
-  assert.match(rules, /load `\$workspace-capture-lessons` and follow its `SKILL\.md` before continuing/);
+  for (const name of ["csl-task", "csl-task-plan", "csl-task-auto"]) {
+    assert.ok(existsSync(path.join(cslTasksDir, name, "SKILL.md")), `missing ${name}`);
+    assert.ok(rules.includes(`$${name}`), `default instructions missing route: ${name}`);
+  }
+  assert.equal(existsSync(path.join(workflowDir, "workspace-manage-task")), false);
+  assert.equal(existsSync(path.join(workflowDir, "workspace-maintain-context")), false);
+
+  assert.match(rules, /load `\$workspace-context` and use it to load Project Core before acting/);
+  assert.equal(rules.includes("$workspace-maintain-context"), false);
+  assert.match(rules, /query only the relevant Context Packs, normally one to three/);
+  assert.equal(rules.includes("Read `tasks/context.md` first"), false);
+  assert.match(rules, /load `\$csl-task` and follow its `SKILL\.md` before execution/);
+  assert.match(rules, /load `\$workspace-lessons` and follow its `SKILL\.md` before continuing/);
+  assert.equal(rules.includes("$workspace-capture-lessons"), false);
   assert.match(rules, /Do not wait for the user to request/);
   assert.match(rules, /Use an independent review workflow only when the user explicitly requests/);
   assert.equal(rules.includes("applicable task requirement"), false);
@@ -241,11 +235,11 @@ test("default agent instructions explain workspace records and route work to wor
 test("injected workspace workflow gates define proactive execution order", () => {
   const gates = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
   const order = [
-    "$workspace-maintain-context.",
-    "$workspace-capture-lessons.",
-    "$workspace-manage-task.",
-    "$workspace-capture-lessons before continuing.",
-    "$workspace-maintain-context if durable facts changed.",
+    "$workspace-context.",
+    "$workspace-lessons.",
+    "$csl-task, $csl-task-plan, or $csl-task-auto",
+    "$workspace-lessons before continuing.",
+    "$workspace-context if durable facts changed.",
   ];
 
   let previous = -1;
@@ -257,36 +251,53 @@ test("injected workspace workflow gates define proactive execution order", () =>
 
   assert.match(gates, /load and follow the matching skill SKILL\.md before the next action/);
   assert.match(gates, /This file selects the workflow; each skill owns its current execution contract/);
+  assert.match(gates, /Load Project Core before acting/);
+  assert.match(gates, /query only relevant Context Packs/);
+  assert.match(gates, /do not read the whole file indiscriminately/);
   assert.equal(gates.includes("ask permission before modifying existing entries"), false);
 });
 
-test("workspace context contract keeps only durable decision value", () => {
-  const skill = readFileSync(path.join(workflowDir, "workspace-maintain-context", "SKILL.md"), "utf8");
+test("workspace context contract supports dispatch-ready retrieval and durable admission", () => {
+  const skill = readFileSync(path.join(workflowDir, "workspace-context", "SKILL.md"), "utf8");
 
-  for (const section of ["Purpose", "Workflow", "Admission Gate", "Store", "Route Elsewhere", "Entry Contract", "Mutable Information", "Temporary Unrouted Facts", "Maintenance", "Maintainer Validation"]) {
+  for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Legacy Migration", "Degradation and Failure", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing context section: ${section}`);
   }
 
+  for (const coreSection of ["Purpose", "Global Vocabulary", "System Map", "Global Invariants"]) {
+    assert.match(skill, new RegExp(`### ${coreSection}`), `missing Project Core section: ${coreSection}`);
+  }
+  for (const field of ["Scope", "Paths", "Keywords", "Authority", "Recheck"]) {
+    assert.match(skill, new RegExp(`- ${field}:`), `missing Context Pack metadata: ${field}`);
+  }
+
+  assert.match(skill, /without repeating broad repository exploration, repo mapping, or architecture analysis/);
+  assert.match(skill, /Do not read the whole Context file for orientation/);
+  assert.match(skill, /Usually select one to three Packs/);
+  assert.match(skill, /node <skill-dir>\/scripts\/context\.js --workspace <workspace> core/);
+  assert.match(skill, /one batched `show`/);
+  assert.match(skill, /Keep selected IDs only in session state/);
   assert.match(skill, /Confirmed.*Project-specific.*Stable boundary.*Decision-changing.*Summary-efficient.*Correctly routed.*Verifiable/s);
   assert.match(skill, /Treat discoverability only as a cost signal/);
-  assert.match(skill, /Fact — decision effect — authoritative source \/ concrete review trigger/);
   assert.match(skill, /Verification and observability boundaries/);
   assert.match(skill, /sourced non-goals, and negative knowledge/);
   assert.match(skill, /Never cache a mutable current value/);
   assert.match(skill, /A stable lookup does not qualify by itself/);
   assert.match(skill, /Exclude an obvious version or configuration pointer/);
+  assert.match(skill, /Every persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation/);
+  assert.match(skill, /source-backed Add, Update, or Delete may happen automatically/);
+  assert.match(skill, /If validation fails, restore the pre-write content/);
   assert.match(skill, /the current task ends/);
   assert.match(skill, /the related module next changes materially/);
-  assert.match(skill, /evidence, source, assumption, or authority becomes invalid/);
-  assert.match(skill, /At that event, choose exactly one outcome:[\s\S]*promote it to a normal context entry[\s\S]*move the required rationale, procedure, rule, or contract to its authoritative carrier[\s\S]*delete it when it is false, unverifiable, redundant, or no longer decision-changing/);
-  assert.match(skill, /Before ending, update, migrate, or remove affected entries in the same work/);
-  assert.match(skill, /Update or delete an entry in the same work that changes its conclusion/);
+  assert.match(skill, /evidence, source, assumption, or Authority becomes invalid/);
+  assert.match(skill, /Do not bulk-migrate legacy content/);
+  assert.match(skill, /legacy-<content-hash>/);
+  assert.match(skill, /Missing `tasks\/context\.md`, invalid Project Core, or no trusted relevant Packs/);
   assert.match(skill, /The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget`/);
-  assert.equal(skill.includes("Workspace-level decisions and conventions"), false);
 });
 
 test("workspace context value cases enforce admission and temporary exits", () => {
-  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-maintain-context", "evals", "context_value_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-context", "evals", "context_value_cases.json"), "utf8"));
   const requiredExits = new Set(["task-end", "next-module-change", "evidence-invalid"]);
   const outcomes = new Set();
 
@@ -324,68 +335,185 @@ test("workspace context value cases enforce admission and temporary exits", () =
   assert.equal(byId["temporary-with-event-exits"].expected, "Store");
 });
 
-test("workspace task contract keeps implementation and review out of acceptance", () => {
-  const skillDir = path.join(workflowDir, "workspace-manage-task");
+test("workspace context query cases cover session, task, write, and failure gates", () => {
+  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-context", "evals", "query_cases.json"), "utf8"));
+  assert.equal(fixture.schema, "csl-context.query-cases/v1");
+  const actions = Object.fromEntries(fixture.cases.map((item) => [item.id, item.expected_action]));
+  assert.equal(actions["session-start"], "LoadCore");
+  assert.equal(actions["resume-active-task"], "LoadCoreThenQuery");
+  assert.equal(actions["after-compaction"], "LoadCoreThenQuery");
+  assert.equal(actions["concrete-task"], "QueryRelevantPacks");
+  assert.equal(actions["ordinary-follow-up"], "ReuseSelectedPacks");
+  assert.equal(actions["durable-pack-change"], "MaintainPackThenValidate");
+  assert.equal(actions["project-core-change"], "ShowDiffAndConfirm");
+  assert.equal(actions["missing-or-invalid-core"], "DiscloseAndExplore");
+  assert.equal(actions["duplicate-relevant-id"], "DoNotApply");
+});
+
+test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails closed", (t) => {
+  const workspace = mkdtempSync(path.join(os.tmpdir(), "context-query-"));
+  const contextDir = path.join(workspace, "tasks");
+  const contextFile = path.join(contextDir, "context.md");
+  const script = path.join(workflowDir, "workspace-context", "scripts", "context.js");
+  mkdirSync(contextDir, { recursive: true });
+  t.after(() => rmSync(workspace, { recursive: true, force: true }));
+
+  const core = `# Workspace Context
+
+## Project Core
+
+### Purpose
+- Dispatch tasks without broad exploration.
+
+### Global Vocabulary
+- A Context Pack is one retrieval unit.
+
+### System Map
+- \`skills/\` contains skill packages.
+
+### Global Invariants
+- Task-direct source remains authoritative.
+`;
+  writeFileSync(contextFile, `${core}
+## CTX-workspace-tasks — Workspace tasks
+- Scope: Canonical task records and their index.
+- Paths: \`tasks/tasks.md\`, \`tasks/tasks/\`
+- Keywords: task, target, status
+- Authority: \`skills/csl-tasks/csl-task/SKILL.md\`
+- Recheck: When the CSL Task contract changes.
+
+### Purpose and Boundaries
+- Canonical task records own progress; Context does not.
+
+### Decision and Verification Boundaries
+- Verify status through the shared task core.
+
+## Components
+
+- \`legacy/component.js\` owns the legacy adapter.
+  Its callers must preserve the adapter boundary.
+`, "utf8");
+
+  const run = (...args) => spawnSync(process.execPath, [script, "--workspace", workspace, ...args], { encoding: "utf8" });
+  const coreResult = run("core");
+  assert.equal(coreResult.status, 0, coreResult.stderr);
+  assert.deepEqual(Object.keys(JSON.parse(coreResult.stdout).core), ["purpose", "globalVocabulary", "systemMap", "globalInvariants"]);
+
+  const indexResult = run("index");
+  assert.equal(indexResult.status, 0, indexResult.stderr);
+  const index = JSON.parse(indexResult.stdout);
+  assert.equal(index.schema, "csl-context.index/v1");
+  assert.equal(index.packs.length, 2);
+  assert.deepEqual(Object.keys(index.packs[0]), ["id", "title", "format", "scope", "paths", "keywords"]);
+  assert.equal(index.packs[0].id, "CTX-workspace-tasks");
+  assert.deepEqual(index.packs[0].paths, ["tasks/tasks.md", "tasks/tasks/"]);
+  assert.match(index.packs[1].id, /^legacy-[a-f0-9]{12}$/);
+
+  const showResult = run("show", ...index.packs.map(({ id }) => id));
+  assert.equal(showResult.status, 0, showResult.stderr);
+  const shown = JSON.parse(showResult.stdout);
+  assert.equal(shown.schema, "csl-context.packs/v1");
+  assert.equal(shown.packs[0].authority, "`skills/csl-tasks/csl-task/SKILL.md`");
+  assert.match(shown.packs[1].raw, /Its callers must preserve the adapter boundary/);
+
+  const validationResult = run("validate");
+  assert.equal(validationResult.status, 0, validationResult.stderr);
+  const validation = JSON.parse(validationResult.stdout);
+  assert.equal(validation.valid, true);
+  assert.deepEqual(validation.warnings.map(({ code }) => code), ["legacy-pack"]);
+
+  const selfTest = spawnSync(process.execPath, [script, "--self-test"], { encoding: "utf8" });
+  assert.equal(selfTest.status, 0, selfTest.stderr);
+
+  rmSync(contextFile);
+  const missingResult = run("validate");
+  assert.equal(missingResult.status, 1);
+  const missingCodes = new Set(JSON.parse(missingResult.stdout).errors.map(({ code }) => code));
+  assert.ok(missingCodes.has("missing-context"));
+  assert.ok(missingCodes.has("missing-or-duplicate-core"));
+
+  writeFileSync(contextFile, `${core}
+## CTX-duplicate — First
+- Scope: first
+- Paths: \`one/\`
+- Keywords: one
+- Authority: \`one/source\`
+- Recheck: When one changes.
+
+### Structure
+- First.
+
+## CTX-duplicate — Second
+- Scope: second
+- Paths: \`two/\`
+- Keywords: two
+
+### Structure
+- Second.
+`, "utf8");
+  const malformedPackCoreResult = run("core");
+  assert.equal(malformedPackCoreResult.status, 0, malformedPackCoreResult.stderr);
+
+  const invalidResult = run("validate");
+  assert.equal(invalidResult.status, 1);
+  const invalidCodes = new Set(JSON.parse(invalidResult.stdout).errors.map(({ code }) => code));
+  assert.ok(invalidCodes.has("missing-pack-metadata"));
+  assert.ok(invalidCodes.has("duplicate-id"));
+});
+
+test("current workspace Context has a valid Core plus formal and legacy Packs", () => {
+  const script = path.join(workflowDir, "workspace-context", "scripts", "context.js");
+  const result = spawnSync(process.execPath, [script, "--workspace", root, "validate"], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const validation = JSON.parse(result.stdout);
+  assert.equal(validation.valid, true);
+  assert.ok(validation.warnings.some(({ code }) => code === "legacy-pack"));
+
+  const indexResult = spawnSync(process.execPath, [script, "--workspace", root, "index"], { encoding: "utf8" });
+  assert.equal(indexResult.status, 0, indexResult.stderr);
+  const packs = JSON.parse(indexResult.stdout).packs;
+  assert.ok(packs.some(({ id, format }) => id === "CTX-workspace-context" && format === "v1"));
+  assert.ok(packs.some(({ format }) => format === "legacy"));
+});
+
+test("CSL task contract keeps acceptance, evidence, and review gates explicit", () => {
+  const skillDir = path.join(cslTasksDir, "csl-task");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
 
-  for (const section of ["Scope", "Target", "Plan", "Result"]) {
-    assert.ok(skill.includes(`### ${section}`), `missing task section: ${section}`);
+  for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
+    assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
   }
-  for (const section of ["Activation Boundary", "Record Ownership", "Task Contract", "Subtasks", "Review Gate", "Lifecycle", "Adoption", "Maintainer Validation"]) {
-    assert.ok(skill.includes(`## ${section}`), `missing inline workflow section: ${section}`);
+  for (const section of ["Scope", "Target", "Plan", "Result", "Verification", "Block"]) {
+    assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
   }
-  assert.equal(existsSync(path.join(skillDir, "references")), false, "task contract must remain inline");
   assert.equal(skill.includes("### Checklist"), false);
+  assert.match(skill, /tasks\/tasks\.md/);
+  assert.match(skill, /tasks\/tasks\/<slug>\.md/);
+  assert.match(skill, /Do not hand-edit status or index lines/);
+  assert.match(skill, /load Project Core and task-relevant Context Packs without reading all of `tasks\/context\.md`/);
+  assert.match(skill, /Start a new task for every independently acceptable user outcome/);
+  assert.match(skill, /directly corrects, completes, or re-verifies the same outcome/);
+  assert.match(skill, /Component, file, topic, or implementation overlap alone does not establish ownership/);
+  assert.match(skill, /This is the only checkbox list/);
+  assert.match(skill, /Do not put implementation steps, commands, workflow gates, or review state here/);
+  assert.match(skill, /Never check a Target manually/);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
-  assert.match(skill, /Do not include implementation steps, commands, shared workflow gates, or review status/);
-  assert.match(skill, /Set `Required` only when the user explicitly requests `\$adversarial-review`/);
-  assert.match(skill, /Review gate: Required/);
-  assert.match(skill, /Review gate: Skipped/);
-  assert.match(skill, /Do not infer a review requirement from risk, criticality, complexity, verification gaps, another rule or workflow, or Agent judgment/);
-  assert.match(skill, /Ordinary one-pass review, verification, testing, proofreading, or self-review requests do not request `\$adversarial-review`/);
-  assert.match(skill, /Re-evaluate only when the user's review request changes/);
-  assert.match(skill, /For `Required`.*invoke `\$adversarial-review`/);
-  assert.match(skill, /For `Skipped`, do not enter `In Review`/);
-  assert.equal(skill.includes("Explicit OR Critical"), false);
-  assert.equal(/Escalate if/.test(skill), false);
+  assert.match(skill, /Do not infer review from risk, complexity, verification gaps, another rule, or Agent judgment/);
+  assert.match(skill, /Ordinary review, testing, proofreading, and self-review do not request the independent review workflow/);
+  assert.match(skill, /Use `cancel <id>` for a reversible soft stop/);
+  assert.match(skill, /This is the only route to Completed and fails closed/);
+  assert.match(skill, /Do not retrofit untouched historical record bodies/);
+  assert.match(skill, /only acceptable non-blocking Yao failure is the 1000-token initial-load budget/);
 
-  assert.match(skill, /Skip task records for read-only answers and simple operations with direct deterministic verification/);
-  assert.match(skill, /Start a new canonical task for each new user-requested outcome that can be accepted independently/);
-  assert.match(skill, /directly corrects, completes, or re-verifies.*same outcome.*Target or Result unchanged would be incomplete or misleading/);
-  assert.match(skill, /Component, file, topic, or implementation overlap alone does not establish ownership.*when ownership is ambiguous, create a new task/);
-  assert.match(skill, /Modify only the owning task file and its exact index entry/);
-  assert.match(skill, /Check a Target only when its current evidence is recorded under the same ID in `Result`/);
-  assert.match(skill, /Add `Block` only while the task status is `Blocked`/);
-  assert.match(skill, /Remove the section when work resumes/);
-  assert.match(skill, /Create a separate canonical task for work with an independently acceptable outcome, blocking condition, or review boundary/);
-  assert.match(skill, /Reopen a completed task only when the Record Ownership boundary holds.*append the next Target ID.*Otherwise create a new canonical task/);
-  assert.equal(skill.includes("small follow-up that extends a completed task's existing outcome"), false);
-  assert.match(skill, /treat the canonical task as authoritative and repair the index/);
-  assert.match(skill, /Apply this contract to new tasks and reopened scope/);
-  assert.match(skill, /Do not retrofit untouched completed history/);
-  assert.match(skill, /only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget` against its 1000-token initial-load budget/);
-  assert.match(skill, /Syntax\/frontmatter, lint, governance, every other resource-boundary check, applicable routing evaluation, OpenAI validation, and tests remain blocking/);
-  assert.match(skill, /Never delete, distort, or split core operational guidance merely to satisfy the initial-load budget/);
-
-  for (const status of ["Pending", "In Progress", "In Review", "Completed", "Blocked"]) {
-    assert.ok(skill.includes(`\`${status}\``), `missing task status: ${status}`);
+  for (const status of ["Pending", "In Progress", "Completed", "Blocked", "Cancelled"]) {
+    assert.ok(skill.includes(status), `missing task status: ${status}`);
   }
-  assert.match(skill, /- \[任务标题\]\(todo\/task-slug\.md\) — In Progress \(<YYYY-MM-DD HH:MM>\)/);
-  assert.match(skill, /Status: In Progress \(<YYYY-MM-DD HH:MM>\)/);
-  assert.match(skill, /时间戳必须替换为创建或状态变更时的当前本地时间/);
-  assert.match(skill, /状态和时间戳必须完全一致/);
-  assert.match(skill, /scripts\/check-task-index\.js/);
-  assert.match(skill, /检查通过前不得继续交付工作或完成状态迁移/);
-  assert.match(skill, /只校验参数指定的 canonical task 及其索引项/);
-  assert.deepEqual(readdirSync(path.join(skillDir, "scripts")).sort(), ["check-task-index.js"]);
-  assert.match(skill, /current local date and 24-hour time/);
-  for (const status of ["待执行", "进行中", "待审查", "已完成", "阻塞"]) {
-    assert.equal(skill.includes(`\`${status}\``), false, `translated task status remains: ${status}`);
-  }
+  assert.deepEqual(readdirSync(skillDir).sort(), ["SKILL.md", "agents", "evals"]);
+  assert.deepEqual(readdirSync(path.join(cslTasksDir, "shared")).sort(), ["lib", "scripts"]);
 });
 
 test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {
-  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-manage-task", "evals", "task_ownership_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "csl-task", "evals", "task_ownership_cases.json"), "utf8"));
   const outcomes = new Set();
 
   for (const item of fixture.cases) {
@@ -409,7 +537,7 @@ test("workspace task ownership defaults independent and ambiguous outcomes to ne
 });
 
 test("workspace review-gate cases require an explicit user request", () => {
-  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-manage-task", "evals", "review_gate_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "csl-task", "evals", "review_gate_cases.json"), "utf8"));
   const outcomes = new Set();
 
   for (const item of fixture.cases) {
@@ -428,23 +556,121 @@ test("workspace review-gate cases require an explicit user request", () => {
   assert.equal(byId["explicit-two-agent-review"].expected, "Required");
 });
 
-test("workspace lesson contract keeps one confirmed current rule set", () => {
-  const skill = readFileSync(path.join(workflowDir, "workspace-capture-lessons", "SKILL.md"), "utf8");
+test("workspace lesson contract queries before work and confirms every persistent write", () => {
+  const skillDir = path.join(workflowDir, "workspace-lessons");
+  const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
+  const queryCases = JSON.parse(readFileSync(path.join(skillDir, "evals", "query_cases.json"), "utf8"));
 
   for (const field of ["Trigger", "Rule", "Check"]) {
     assert.match(skill, new RegExp(`- \`${field}\`:`), `missing lesson field: ${field}`);
   }
-  assert.match(skill, /Use only `Trigger`, `Rule`, and `Check`; omit narrative fields such as `Why`/);
-  assert.match(skill, /Give each field at least one list item/);
-  assert.match(skill, /Keep one condition, action, boundary, or check per list item/);
-  assert.match(skill, /addition, update, replacement, deletion, or no change/);
-  assert.match(skill, /current effective rule set, not an append-only record/);
-  assert.match(skill, /new independent entry needs no second write confirmation/);
-  assert.match(skill, /Before updating, merging, replacing, or deleting an existing entry, show the exact proposed change and ask the user for explicit write permission/);
-  assert.match(skill, /If permission is not granted, leave `tasks\/lessons\.md` unchanged/);
-  assert.match(skill, /Remove superseded or invalidated lessons instead of preserving them as history/);
-  assert.match(skill, /Apply each relevant `Rule` and perform its `Check` when present/);
-  assert.match(skill, /Do not bulk-migrate legacy entries/);
+  for (const gate of ["Entry Gate", "Change Gate", "Completion Gate"]) {
+    assert.ok(skill.includes(`### ${gate}`), `missing lesson gate: ${gate}`);
+  }
+  assert.match(skill, /L-YYYYMMDD-ascii-slug/);
+  assert.match(skill, /Keep the section order exactly `Trigger`, `Rule`, `Check`/);
+  assert.match(skill, /Prefer recall: include any plausible match/);
+  assert.match(skill, /Keep selected lesson IDs only in current session state/);
+  assert.match(skill, /Before every persistent Add, Update, Merge, Replace, or Delete/);
+  assert.match(skill, /Obtain explicit confirmation/);
+  assert.match(skill, /Without confirmation, leave `tasks\/lessons\.md` unchanged/);
+  assert.match(skill, /restore the pre-write content/);
+  assert.match(skill, /more specific Trigger/);
+  assert.match(skill, /Never use record date as priority/);
+  assert.match(skill, /Do not bulk-migrate existing records/);
+  assert.match(skill, /missing `tasks\/lessons\.md` means an empty rule set/);
+  assert.match(skill, /manually perform the same Trigger-first scan/);
+  assert.match(skill, /Applied Lessons: <ID\.\.\.>/);
+  assert.match(skill, /node <skill-dir>\/scripts\/lessons\.js --workspace <workspace> index/);
+
+  assert.equal(queryCases.schema, "csl-lessons.query-cases/v1");
+  const expected = Object.fromEntries(queryCases.cases.map((item) => [item.id, item.expected_action]));
+  assert.equal(expected["entry-non-trivial-task"], "Query");
+  assert.equal(expected["resume-with-active-task"], "Query");
+  assert.equal(expected["completion-selected-checks"], "CheckSelected");
+  assert.equal(expected["no-task-session-start"], "Skip");
+  assert.equal(expected["ordinary-follow-up"], "Skip");
+});
+
+test("workspace lesson CLI indexes v1 and legacy records and rejects malformed v1", (t) => {
+  const workspace = mkdtempSync(path.join(os.tmpdir(), "lessons-query-"));
+  const lessonsDir = path.join(workspace, "tasks");
+  const lessonsFile = path.join(lessonsDir, "lessons.md");
+  const script = path.join(workflowDir, "workspace-lessons", "scripts", "lessons.js");
+  mkdirSync(lessonsDir, { recursive: true });
+  t.after(() => rmSync(workspace, { recursive: true, force: true }));
+
+  writeFileSync(lessonsFile, `# Lessons
+
+## L-20260809-shared-format — Shared format
+
+### Trigger
+- Changing a shared format.
+
+### Rule
+- Update every reader.
+
+### Check
+- Producer and consumer tests pass.
+
+## 2026-08-01 Legacy rule
+
+- **Trigger:**
+  - Editing a legacy file.
+- **Rule:**
+  - Preserve compatibility.
+`, "utf8");
+
+  const indexResult = spawnSync(process.execPath, [script, "--workspace", workspace, "index"], { encoding: "utf8" });
+  assert.equal(indexResult.status, 0, indexResult.stderr);
+  const index = JSON.parse(indexResult.stdout);
+  assert.equal(index.schema, "csl-lessons.index/v1");
+  assert.deepEqual(Object.keys(index.lessons[0]), ["id", "title", "format", "triggers"]);
+  assert.equal(index.lessons[0].id, "L-20260809-shared-format");
+  assert.match(index.lessons[1].id, /^legacy-[a-f0-9]{12}$/);
+  assert.deepEqual(index.lessons[1].triggers, ["Editing a legacy file.", "Preserve compatibility."]);
+
+  const showResult = spawnSync(process.execPath, [
+    script,
+    "--workspace",
+    workspace,
+    "show",
+    ...index.lessons.map(({ id }) => id),
+  ], { encoding: "utf8" });
+  assert.equal(showResult.status, 0, showResult.stderr);
+  const shown = JSON.parse(showResult.stdout);
+  assert.equal(shown.schema, "csl-lessons.records/v1");
+  assert.deepEqual(shown.lessons[0].checks, ["Producer and consumer tests pass."]);
+  assert.deepEqual(shown.lessons[1].checks, []);
+
+  const validateResult = spawnSync(process.execPath, [script, "--workspace", workspace, "validate"], { encoding: "utf8" });
+  assert.equal(validateResult.status, 0, validateResult.stderr);
+  const validation = JSON.parse(validateResult.stdout);
+  assert.equal(validation.valid, true);
+  assert.deepEqual(validation.warnings.map(({ code }) => code), ["legacy-record"]);
+
+  const selfTest = spawnSync(process.execPath, [script, "--self-test"], { encoding: "utf8" });
+  assert.equal(selfTest.status, 0, selfTest.stderr);
+
+  writeFileSync(lessonsFile, `# Lessons
+
+## L-bad — Broken
+
+### Rule
+- Run checks.
+
+### Trigger
+  - Nested item.
+
+### Check
+`, "utf8");
+  const invalidResult = spawnSync(process.execPath, [script, "--workspace", workspace, "validate"], { encoding: "utf8" });
+  assert.equal(invalidResult.status, 1);
+  const codes = new Set(JSON.parse(invalidResult.stdout).errors.map(({ code }) => code));
+  assert.ok(codes.has("invalid-id"));
+  assert.ok(codes.has("section-order"));
+  assert.ok(codes.has("non-flat-list"));
+  assert.ok(codes.has("empty-section"));
 });
 
 test("adversarial review report presents compact human-readable dialogue", () => {

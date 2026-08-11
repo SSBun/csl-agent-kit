@@ -14,19 +14,20 @@
 
 ### 2. Workspace Context
 
-- Use the session-start directory as the workspace root and keep `tasks/context.md` there as a compact, current map. Save only confirmed, durable facts a later agent would otherwise need to rediscover: workspace structure, component roles and relationships, domain terms, and workspace-level decisions or conventions.
-- At session start, after resume or compaction, and before ending when durable facts changed, load `$workspace-maintain-context` and follow its `SKILL.md` before acting. Do not wait for the user to request context maintenance.
-- Read `tasks/context.md` first for orientation, then verify task-relevant details in the workspace itself; context guides exploration, but the workspace is the source of truth.
-- Add newly confirmed facts at the top of their list; update or remove superseded facts. Do not save task progress or history, lessons, speculation, secrets, or global preferences.
-- If a material fact is missing or conflicts with evidence, investigate first, then ask focused questions if unresolved. Routine context maintenance needs no task record.
+- Use the session-start directory as the workspace root and keep `tasks/context.md` there as the canonical dispatch-ready project model. Save only confirmed, durable facts a later Agent would otherwise need broad repository exploration or architecture analysis to recover.
+- At session start, after resume or compaction, load `$workspace-context` and use it to load Project Core before acting. Do not wait for the user to request context loading.
+- After understanding a concrete task, use the skill to query only the relevant Context Packs, normally one to three; do not indiscriminately read the whole Context file. Context guides orientation, but task-direct source and tests remain authoritative.
+- Before ending when durable facts changed, load the skill and follow its Pack maintenance, validation, and Project Core confirmation rules. Do not save task progress or history, lessons, speculation, secrets, global preferences, or cached live values.
+- If Context is missing, invalid, untrusted, or conflicts with Authority, disclose the degradation and investigate normally; ask a focused question only when evidence cannot resolve a user-owned fact. Routine context maintenance needs no task record.
 
 ---
 
 ### 3. Goal-Driven Task Management
 
-- Use `tasks/todo.md` as a newest-first index and keep each canonical task record in `tasks/todo/<task-slug>.md`; multiple tasks may be active at once.
-- Before non-trivial work that changes a deliverable, load `$workspace-manage-task` and follow its `SKILL.md` before execution. Do not wait until implementation is underway or finished, and do not wait for the user to request a task record.
-- Create or update the owning task file and only its exact index entry; keep both current as scope, status, or results change. The skill defines the current task contract and lifecycle.
+- Use `tasks/tasks.md` as a newest-first index and keep each canonical task record in `tasks/tasks/<task-slug>.md`; multiple tasks may be active at once.
+- Before non-trivial work that changes a deliverable, load `$csl-task` and follow its `SKILL.md` before execution. Do not wait until implementation is underway or finished, and do not wait for the user to request a task record.
+- Use `$csl-task-plan` for planning-only work and `$csl-task-auto` when the user wants multiple tasks managed and executed as an ordered parent-child workflow.
+- Create or update the owning task file and only its exact index entry; keep both current as scope, status, or results change. The task core owns status, evidence, parent-child links, completion gates, and index consistency.
 - Keep each index entry limited to the task title, current status, and relative task-file link. The task file is authoritative when the index and record disagree.
 - Keep completed task files as history and avoid changing unrelated task files or index entries. Read recent tasks first and search older entries only when relevant.
 - Skip task records for read-only answers, trivial mechanical operations, and routine context or lesson maintenance.
@@ -36,10 +37,10 @@
 ### 4. Self-Improvement Loop
 
 - Treat `tasks/lessons.md` as a compact, current set of durable rules that prevent repeated agent mistakes, not a task diary or project knowledge base.
-- Before non-trivial work and after a user correction, load `$workspace-capture-lessons` and follow its `SKILL.md` before continuing. Do not wait for the user to request lesson review.
+- Before non-trivial work and after a user correction, load `$workspace-lessons` and follow its `SKILL.md` before continuing. Do not wait for the user to request lesson review.
 - Before work, review only the lessons relevant to the current workspace and task, then apply every matching Rule and Check.
 - After a correction, inspect related lessons and use the skill's update and permission rules to add, refine, merge, replace, remove, or leave them unchanged.
-- Keep project facts in `tasks/context.md` and task history in `tasks/todo/`; put only reusable prevention rules in lessons.
+- Keep project facts in `tasks/context.md` and task history in `tasks/tasks/`; put only reusable prevention rules in lessons.
 
 ---
 

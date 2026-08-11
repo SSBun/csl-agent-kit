@@ -7,7 +7,7 @@
 - Stop reason: approved
 - Reviewer: `commit_worktree_reviewer`
 - Current round: INITIAL (1)
-- Task: [tasks/todo/commit-current-worktree.md](../../tasks/todo/commit-current-worktree.md) — 提交当前全部本地改动（2026-07-20）
+- Task: [tasks/tasks/commit-current-worktree.md](../../tasks/tasks/commit-current-worktree.md) — 提交当前全部本地改动（2026-07-20）
 - Updated: 2026-07-20 10:52:00 +08:00
 
 ## 审查范围

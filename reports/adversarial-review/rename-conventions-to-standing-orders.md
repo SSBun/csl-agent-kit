@@ -1,6 +1,6 @@
 # Standing Orders 迁移修复审查
 
-- Task: [Rename conventions to standing-orders and harden the skill](../../tasks/todo/rename-conventions-to-standing-orders.md)
+- Task: [Rename conventions to standing-orders and harden the skill](../../tasks/tasks/rename-conventions-to-standing-orders.md)
 
 ## R1：旧测试与默认验证入口失效
 

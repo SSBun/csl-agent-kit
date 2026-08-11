@@ -7,7 +7,7 @@
 - Stop reason: approved
 - Reviewer: `task_file_split_reviewer`
 - Current round: RE-REVIEW (4)
-- Task: [tasks/todo/split-task-records.md](../../tasks/todo/split-task-records.md) — 提交当前改动并拆分任务记录
+- Task: [tasks/tasks/split-task-records.md](../../tasks/tasks/split-task-records.md) — 提交当前改动并拆分任务记录
 - Updated: 2026-07-19 22:29:00 +08:00
 
 ## 审查范围

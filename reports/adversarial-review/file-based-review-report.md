@@ -141,7 +141,7 @@
 
 ### 审查范围
 
-- Task: [tasks/todo/file-based-review-report.md](../../tasks/todo/file-based-review-report.md) — 将 adversarial review 报告改为文件化记录
+- Task: [tasks/tasks/file-based-review-report.md](../../tasks/tasks/file-based-review-report.md) — 将 adversarial review 报告改为文件化记录
 - Base revision: `647c7b3821725ddaa5c323c4bd8545bce7a05f38`
 - Artifacts:
   - `skills/adversarial-review/SKILL.md`

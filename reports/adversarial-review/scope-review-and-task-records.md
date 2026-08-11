@@ -56,7 +56,7 @@
 
 ### Reviewed scope
 
-- Task: [tasks/todo/scope-review-and-task-records.md](../../tasks/todo/scope-review-and-task-records.md) — 收窄 adversarial review 与任务记录边界
+- Task: [tasks/tasks/scope-review-and-task-records.md](../../tasks/tasks/scope-review-and-task-records.md) — 收窄 adversarial review 与任务记录边界
 - Base or revision: 当前工作区相对 HEAD 的 diff
 - Artifacts: `AGENTS.md`, `skills/super-agent/references/AGENTS.md`, `tasks/context.md`, `tasks/lessons.md`
 - Fingerprint: diff SHA-256 `e5850bd2b9f10ef6b4f63b5e6d8f950320fae928d3f2cce25c4787fd01c9f625`

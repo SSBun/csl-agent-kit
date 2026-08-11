@@ -1,0 +1,20 @@
+{
+  "positive_concepts": {
+    "multi_task_execution": {
+      "weight": 1.0,
+      "phrases": ["multiple tasks", "parent and child tasks", "execute in order", "resume auto task", "integration gate"]
+    }
+  },
+  "negative_concepts": {
+    "single_task": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["one task", "single task"]
+    },
+    "planning_only": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["plan only", "do not execute", "read-only plan"]
+    }
+  }
+}

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Workspace Lessons"
-  short_description: "Capture reusable correction lessons"
-  default_prompt: "Use $workspace-capture-lessons to apply relevant lessons or record this reusable correction."

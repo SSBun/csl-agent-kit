@@ -158,10 +158,10 @@ test("maps Pi file tool results to Triggerify changed_files", async () => {
   const root = createFixture();
   const workspace = join(root, "workspace");
   const capture = join(root, "captured.jsonl");
-  const existing = join(workspace, "tasks", "todo.md");
-  const created = join(workspace, "tasks", "todo", "new.md");
+  const existing = join(workspace, "tasks", "tasks.md");
+  const created = join(workspace, "tasks", "tasks", "new.md");
   const outside = join(root, "outside.md");
-  mkdirSync(join(workspace, "tasks", "todo"), { recursive: true });
+  mkdirSync(join(workspace, "tasks", "tasks"), { recursive: true });
   writeFileSync(existing, "existing\n");
   writeCaptureRule(root);
 
@@ -174,12 +174,12 @@ test("maps Pi file tool results to Triggerify changed_files", async () => {
 
   try {
     cslContextHooks(api);
-    await handlers.get("tool_execution_start")({ toolCallId: "write", toolName: "write", args: { path: "tasks/todo/new.md" } }, context);
+    await handlers.get("tool_execution_start")({ toolCallId: "write", toolName: "write", args: { path: "tasks/tasks/new.md" } }, context);
     await handlers.get("tool_execution_start")({ toolCallId: "edit", toolName: "edit", args: { path: existing } }, context);
     writeFileSync(created, "new\n");
 
     await handlers.get("tool_result")({ toolCallId: "edit", toolName: "edit", input: { path: existing }, content: [], isError: false }, context);
-    await handlers.get("tool_result")({ toolCallId: "write", toolName: "write", input: { path: "tasks/todo/new.md" }, content: [], isError: false }, context);
+    await handlers.get("tool_result")({ toolCallId: "write", toolName: "write", input: { path: "tasks/tasks/new.md" }, content: [], isError: false }, context);
     await handlers.get("tool_execution_start")({ toolCallId: "failed", toolName: "write", args: { path: "failed.md" } }, context);
     await handlers.get("tool_result")({ toolCallId: "failed", toolName: "write", input: { path: "failed.md" }, content: [], isError: true }, context);
     await handlers.get("tool_result")({ toolCallId: "bash", toolName: "bash", input: { command: "true" }, content: [], isError: false }, context);
@@ -189,8 +189,8 @@ test("maps Pi file tool results to Triggerify changed_files", async () => {
 
     const payloads = capturedPayloads(capture);
     assert.deepEqual(payloads.map((payload) => payload.changed_files), [
-      [{ path: "tasks/todo.md", operation: "modified" }],
-      [{ path: "tasks/todo/new.md", operation: "created" }],
+      [{ path: "tasks/tasks.md", operation: "modified" }],
+      [{ path: "tasks/tasks/new.md", operation: "created" }],
       [],
       null,
       [],

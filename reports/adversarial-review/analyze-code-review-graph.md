@@ -132,7 +132,7 @@
 
 ### Reviewed scope
 
-- Task: [tasks/todo/analyze-code-review-graph.md](../../tasks/todo/analyze-code-review-graph.md) — 分析 code-review-graph 的 Tree-sitter 实现
+- Task: [tasks/tasks/analyze-code-review-graph.md](../../tasks/tasks/analyze-code-review-graph.md) — 分析 code-review-graph 的 Tree-sitter 实现
 - Base or revision: `6a1ee1c7063cc35cfa5ff12b8198c29360f3e4ad`
 - Artifacts: `/tmp/code-review-graph-analysis.0NhNlp/docs/analysis/project-map.md`
 - Fingerprint: SHA-256 `e059eecb989b473d94bd4fac64500216a3e63c1076e450fa80aff11b5769eac7`

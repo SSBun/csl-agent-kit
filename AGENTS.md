@@ -7,5 +7,5 @@
 
 ## Task Files
 
-- Store each task in `tasks/todo/<task-slug>.md` and add its title, current status, and relative link at the top of the newest-first `tasks/todo.md` index.
+- Store each task in `tasks/tasks/<task-slug>.md` and add its title, current status, and relative link at the top of the newest-first `tasks/tasks.md` index.
 - Update only the owning task file and its exact index entry; do not rewrite unrelated task records. Add new lessons at the top of `tasks/lessons.md`.

@@ -61,7 +61,7 @@
 
 ### 审查范围
 
-- Task: [tasks/todo/principled-adversarial-review.md](../../tasks/todo/principled-adversarial-review.md) — 让 adversarial review 基于共同原则独立审议
+- Task: [tasks/tasks/principled-adversarial-review.md](../../tasks/tasks/principled-adversarial-review.md) — 让 adversarial review 基于共同原则独立审议
 - Base revision: `5ca82f8`
 - Artifacts: `skills/adversarial-review/SKILL.md`、`references/review-lenses.md`、`references/review-loop.md`、`references/final-review-report.md`、`evals/report_contract_cases.json`。
 - Fingerprint: SHA-256 `2d513d0936a409761e668b81398642e24d69bb93be884652a730ea8d53d02916`。

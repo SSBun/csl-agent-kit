@@ -7,7 +7,7 @@
 - Stop reason: approved
 - Reviewer: `learn_prd_final_reviewer`
 - Current round: RE-REVIEW (5)
-- Task: [tasks/todo/analyze-project-learn-prd.md](../../tasks/todo/analyze-project-learn-prd.md) — 设计 analyze-project 的 Learn 模式 PRD
+- Task: [tasks/tasks/analyze-project-learn-prd.md](../../tasks/tasks/analyze-project-learn-prd.md) — 设计 analyze-project 的 Learn 模式 PRD
 - Updated: 2026-07-19T21:04:38+0800
 
 ## Reviewed scope

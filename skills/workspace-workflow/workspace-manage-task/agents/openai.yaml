@@ -1,4 +1,0 @@
-interface:
-  display_name: "Workspace Task"
-  short_description: "Manage scoped workspace task records"
-  default_prompt: "Use $workspace-manage-task to create or update the owning task record."

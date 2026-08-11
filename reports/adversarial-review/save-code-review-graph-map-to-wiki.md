@@ -45,7 +45,7 @@
 
 ### Reviewed scope
 
-- Task: [tasks/todo/save-code-review-graph-map-to-wiki.md](../../tasks/todo/save-code-review-graph-map-to-wiki.md) — 将 code-review-graph 项目地图保存到 Wiki
+- Task: [tasks/tasks/save-code-review-graph-map-to-wiki.md](../../tasks/tasks/save-code-review-graph-map-to-wiki.md) — 将 code-review-graph 项目地图保存到 Wiki
 - Base or revision: source report SHA-256 `e059eecb989b473d94bd4fac64500216a3e63c1076e450fa80aff11b5769eac7`
 - Artifacts: `/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki/code-review-graph-project-map.md`
 - Fingerprint: SHA-256 `e059eecb989b473d94bd4fac64500216a3e63c1076e450fa80aff11b5769eac7`

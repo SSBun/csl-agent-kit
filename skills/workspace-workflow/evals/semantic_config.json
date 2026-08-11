@@ -14,7 +14,7 @@
     "workspace_task": {
       "weight": 1.0,
       "phrases": [
-        "tasks/todo.md",
+        "tasks/tasks.md",
         "task record",
         "non-trivial work",
         "changes a deliverable",

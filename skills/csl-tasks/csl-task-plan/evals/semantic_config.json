@@ -1,0 +1,20 @@
+{
+  "positive_concepts": {
+    "read_only_task_planning": {
+      "weight": 1.0,
+      "phrases": ["implementation-ready plan", "plan before coding", "decisions-only handoff", "do not implement"]
+    }
+  },
+  "negative_concepts": {
+    "implementation": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["implement now", "edit the deliverable", "finish the task"]
+    },
+    "auto_execution": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["run multiple tasks", "auto parent", "ordered children"]
+    }
+  }
+}

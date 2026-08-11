@@ -1,0 +1,21 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Create the canonical task record before implementing this feature.",
+    "Resume the existing task and finish its remaining targets.",
+    "Cancel this task for now; I may continue it later.",
+    "Verify and complete the current workspace task."
+  ],
+  "should_not_trigger": [
+    "Explain this code without changing files.",
+    "Plan this feature but do not implement it.",
+    "Run these five tasks automatically in order.",
+    "Rename this file and verify the destination exists."
+  ],
+  "near_neighbor": [
+    "At session start, refresh tasks/context.md.",
+    "Capture this correction in tasks/lessons.md.",
+    "Prepare a read-only implementation plan.",
+    "Coordinate several child tasks under one parent."
+  ]
+}

@@ -62,7 +62,7 @@
 
 ### 审查范围
 
-- Task: [tasks/todo/commit-and-refresh-current-skills.md](../../tasks/todo/commit-and-refresh-current-skills.md) — 提交并刷新当前 skills
+- Task: [tasks/tasks/commit-and-refresh-current-skills.md](../../tasks/tasks/commit-and-refresh-current-skills.md) — 提交并刷新当前 skills
 - Base revision: `5ca82f8`
 - Artifacts: 19 个 staged 路径；包含 adversarial-review 原则化、adversarial-discuss 重构、相关 eval/README/context/lesson/task/report记录。
 - Fingerprint: SHA-256 `316ebaad42420d347128098939dbc7b9918da0c99052c4b956951bd88ebd4050`（排除本任务与本报告的管理记录）。

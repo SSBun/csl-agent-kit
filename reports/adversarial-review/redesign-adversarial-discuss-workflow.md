@@ -59,7 +59,7 @@
 
 ### 审查范围
 
-- Task: [tasks/todo/redesign-adversarial-discuss-workflow.md](../../tasks/todo/redesign-adversarial-discuss-workflow.md) — 重构 adversarial-discuss 的角色与批量讨论流程
+- Task: [tasks/tasks/redesign-adversarial-discuss-workflow.md](../../tasks/tasks/redesign-adversarial-discuss-workflow.md) — 重构 adversarial-discuss 的角色与批量讨论流程
 - Base revision: `5ca82f8`
 - Artifacts: `skills/adversarial-discuss/SKILL.md`、三个 eval 文件、`README.md`、`tasks/context.md` 与 `tasks/lessons.md` 的本任务变更。
 - Fingerprint: SHA-256 `7e8ab6f0f5428c6b12723974f98d8708908bc44a4e105dd045894411ab8ffbf1`。

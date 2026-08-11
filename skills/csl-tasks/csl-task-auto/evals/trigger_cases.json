@@ -1,0 +1,20 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Split this outcome into several tasks and execute them automatically in order.",
+    "Deploy and manage these multiple tasks under one parent.",
+    "Resume the Auto task from its first unfinished child.",
+    "Coordinate child tasks and run the final integration gate."
+  ],
+  "should_not_trigger": [
+    "Implement this one small task.",
+    "Prepare a plan only; do not execute it.",
+    "Show the current task list.",
+    "Run an unattended daemon overnight."
+  ],
+  "near_neighbor": [
+    "Manage one canonical task record.",
+    "Create a decisions-only implementation plan.",
+    "Delegate a single isolated research question to a subagent."
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workspace Context"
+  short_description: "Load and maintain dispatch-ready context"
+  default_prompt: "Use $workspace-context to load Project Core, retrieve task-relevant Context Packs, and maintain changed durable context."

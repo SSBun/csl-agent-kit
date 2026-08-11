@@ -1,0 +1,59 @@
+{
+  "schema": "csl-lessons.query-cases/v1",
+  "cases": [
+    {
+      "id": "entry-non-trivial-task",
+      "event": "A concrete non-trivial task is understood and has a Task Fingerprint.",
+      "expected_gate": "Entry",
+      "expected_action": "Query"
+    },
+    {
+      "id": "resume-with-active-task",
+      "event": "A session resumes or returns after compaction with an active task.",
+      "expected_gate": "Change",
+      "expected_action": "Query"
+    },
+    {
+      "id": "material-scope-change",
+      "event": "The task scope, artifacts, domain, constraints, or plan changes materially.",
+      "expected_gate": "Change",
+      "expected_action": "Query"
+    },
+    {
+      "id": "user-correction",
+      "event": "The user corrects the Agent during an active task.",
+      "expected_gate": "Change",
+      "expected_action": "Query"
+    },
+    {
+      "id": "completion-selected-checks",
+      "event": "The Agent is ready to complete work after the last applicable query.",
+      "expected_gate": "Completion",
+      "expected_action": "CheckSelected"
+    },
+    {
+      "id": "completion-after-unqueried-change",
+      "event": "The Agent is ready to complete, but material scope changed after the last query.",
+      "expected_gate": "Change",
+      "expected_action": "Query"
+    },
+    {
+      "id": "no-task-session-start",
+      "event": "A session starts without a concrete task.",
+      "expected_gate": "None",
+      "expected_action": "Skip"
+    },
+    {
+      "id": "ordinary-follow-up",
+      "event": "The user sends an ordinary follow-up that does not materially change the task.",
+      "expected_gate": "None",
+      "expected_action": "Skip"
+    },
+    {
+      "id": "direct-mechanical-operation",
+      "event": "The request is a directly verifiable mechanical operation.",
+      "expected_gate": "None",
+      "expected_action": "Skip"
+    }
+  ]
+}

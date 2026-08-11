@@ -7,7 +7,7 @@
 - Stop reason: in-progress
 - Reviewer: `analyze_skill_reviewer`
 - Current round: INITIAL (1)
-- Task: [tasks/todo/analyze-project-skill.md](../../tasks/todo/analyze-project-skill.md) — 重写 analyze-project 双模式 skill
+- Task: [tasks/tasks/analyze-project-skill.md](../../tasks/tasks/analyze-project-skill.md) — 重写 analyze-project 双模式 skill
 - Updated: 2026-07-19T21:57:14+08:00
 
 ## Reviewed scope
