@@ -1,0 +1,89 @@
+{
+  "fallback_positive_concepts": [
+    "concise_overview"
+  ],
+  "positive_concepts": {
+    "concise_overview": {
+      "weight": 0.8,
+      "phrases": [
+        "/tldr",
+        "tl;dr",
+        "tldr",
+        "quick overview",
+        "concise overview",
+        "brief overview",
+        "one-screen overview",
+        "big-picture summary",
+        "at a high level",
+        "quickly understand",
+        "简短概览",
+        "快速概览",
+        "一屏概览",
+        "用一屏内容",
+        "整体摘要",
+        "快速了解",
+        "快速了解全貌"
+      ]
+    },
+    "current_context": {
+      "weight": 0.2,
+      "phrases": [
+        "current conversation",
+        "current topic",
+        "what we discussed",
+        "当前对话",
+        "当前话题",
+        "刚才讨论的内容"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "deep_or_exhaustive_work": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "deep research",
+        "comprehensive research",
+        "full repository analysis",
+        "analyze the entire repository",
+        "exhaustive analysis",
+        "audit",
+        "完整研究",
+        "深度研究",
+        "完整分析",
+        "审计"
+      ]
+    },
+    "review_teach_or_implement": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "review this pull request",
+        "code review",
+        "step-by-step tutorial",
+        "multi-lesson course",
+        "implementation plan",
+        "implement this",
+        "fix this bug",
+        "代码审查",
+        "分步教程",
+        "实施计划",
+        "实现这个功能",
+        "修复这个错误"
+      ]
+    },
+    "structured_repo_mapping": {
+      "weight": 0.65,
+      "exclusive": true,
+      "phrases": [
+        "repo map",
+        "project glossary",
+        "map every module",
+        "trace callers and callees",
+        "仓库地图",
+        "项目术语表",
+        "追踪调用关系"
+      ]
+    }
+  }
+}
