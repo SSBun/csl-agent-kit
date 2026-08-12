@@ -7,6 +7,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | Skill | Claude | Cursor / Codex / Pi extension | Description |
 |-------|--------|------------------------------|-------------|
 | create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Generate an AI-image-generator prompt for an app icon. |
+| archive | `/csl:archive` | `/archive` | 将当前 Pi Session 中指定范围的 User 与 Agent 可见文本逐字保存到 `tasks/conversations/`。 |
 | release | `/csl:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
 | analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份含 Mermaid 架构/复杂流程图，且职责、功能模块与核心工作流均有源码证据的系统化持久报告。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |

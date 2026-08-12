@@ -40,6 +40,7 @@
   ],
   "skills": [
     "./skills/create-app-icon",
+    "./skills/archive",
     "./skills/release",
     "./skills/analyze-project",
     "./skills/venom-cli",

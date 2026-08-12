@@ -48,11 +48,11 @@
 - 缺失或无效 Core、无可信相关 Packs、相关 malformed/duplicate Pack 必须披露并回退普通探索；CLI self-test、实际 Context validation 和 `tests/task-files.test.mjs` 共同验证格式与消费者。
 
 ## CTX-third-party-skills — Third-party skill integration and discovery
-- Scope: 第三方 skill 的项目内整合、来源元数据、共享发现和分发边界。
-- Paths: `.agents/skills/integrate-third-skills/`, `skills/mattpocock/`, `bin/csl-agent-kit.js`, `pi/extensions/csl-skill-commands.ts`, `tests/cli-install-output.test.js`, `tests/pi-skill-commands.test.mjs`
-- Keywords: third-party skills, vendor, .repository.json, mattpocock, recursive discovery, internal skill
+- Scope: 共享与第三方 skill 的项目内整合、来源元数据、递归发现和 Pi 特定命令接入边界。
+- Paths: `.agents/skills/integrate-third-skills/`, `skills/`, `bin/csl-agent-kit.js`, `pi/extensions/csl-skill-commands.ts`, `tests/cli-install-output.test.js`, `tests/pi-skill-commands.test.mjs`
+- Keywords: shared skills, third-party skills, vendor, .repository.json, recursive discovery, Pi command, host source
 - Authority: `.agents/skills/integrate-third-skills/SKILL.md`, `.agents/skills/integrate-third-skills/scripts/third-party-skills.js`, `bin/csl-agent-kit.js`, `pi/extensions/csl-skill-commands.ts`
-- Recheck: 第三方目录布局、`.repository.json` schema、共享 skill 递归发现机制或 project-local 分发边界变化时复核。
+- Recheck: 共享或第三方目录布局、`.repository.json` schema、共享 skill 递归发现机制、Pi 特定命令上下文或 project-local 分发边界变化时复核。
 
 ### Purpose and Boundaries
 - `.agents/skills/integrate-third-skills/` 是仅在本仓库使用的内部整合流程，不进入共享 skill 发布、全局安装或 Pi 命令发现；第三方源码则导入共享 `skills/<source-group>/<skill>/`。
@@ -60,7 +60,8 @@
 
 ### Structure
 - 每个 vendored 叶子 skill 使用 `.repository.json` 记录 `repository`、`sourcePath`、`ref`、`commit`、`license` 和 `upstreamStatus`；同一来源的许可证位于来源分组根目录。
-- 共享 CLI 与 Pi 命令递归发现 `skills/` 下的叶子 `SKILL.md`，因此 vendored skill 以其 frontmatter 名称公开；project-local `.agents/skills/` 不进入该枚举。
+- 共享 CLI 与 Pi 命令递归发现 `skills/` 下的叶子 `SKILL.md`，因此共享和 vendored skill 都以其 frontmatter 名称公开；project-local `.agents/skills/` 不进入该枚举。
+- `csl-skill-commands.ts` 默认只把 slash alias 转为 skill 请求；需要不可从 Agent 上下文可靠恢复的 Pi 宿主事实时，可在发送请求前附加宿主来源边界。`archive` 使用调用前的 session file、workspace 与 active leaf，避免把归档命令自身或压缩摘要当作原始对话。
 
 ### Workflows
 - `third-party-skills.js status` 按来源与 ref 复用临时上游检出并比较导入 commit；`diff` 区分导入后的上游变化与当前上游相对本地副本的差异，只有 `--patch` 输出逐行补丁。

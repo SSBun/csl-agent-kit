@@ -13,6 +13,7 @@ test("registers aliases for nested skills", () => {
 
   const selectedNames = [
     "align",
+    "archive",
     "code-review",
     "csl-task",
     "csl-task-auto",
@@ -45,4 +46,98 @@ test("registers aliases for nested skills", () => {
   assert.equal(commands.has("workspace-manage-task"), false);
   assert.equal(commands.has("workspace-maintain-context"), false);
   assert.match(commands.get("grilling").description, /Alias for \/skill:grilling/);
+});
+
+test("passes the pre-dispatch Pi branch boundary to archive", async () => {
+  const commands = new Map();
+  const messages = [];
+  cslSkillCommands({
+    registerCommand(name, command) {
+      commands.set(name, command);
+    },
+    sendUserMessage(message, options) {
+      messages.push({ message, options });
+    },
+  });
+
+  await commands.get("archive").handler('"the task focus discussion"', {
+    cwd: "/workspace",
+    isIdle: () => true,
+    sessionManager: {
+      getLeafId: () => "leaf-before-archive",
+      getSessionFile: () => "/sessions/current.jsonl",
+      getSessionId: () => "session-id",
+    },
+    ui: { notify: assert.fail },
+  });
+
+  assert.equal(messages.length, 1);
+  assert.match(messages[0].message, /User request: "the task focus discussion"/);
+  assert.match(messages[0].message, /"sourceLeaf":"leaf-before-archive"/);
+  assert.ok(messages[0].message.includes('"sessionFile":"/sessions/current.jsonl"'));
+  assert.match(messages[0].message, /immediately before this \/archive dispatch/);
+});
+
+test("waits for an active turn before capturing the archive boundary", async () => {
+  const commands = new Map();
+  const messages = [];
+  const notifications = [];
+  let idle = false;
+  let leaf = "leaf-before-wait";
+  cslSkillCommands({
+    registerCommand(name, command) {
+      commands.set(name, command);
+    },
+    sendUserMessage(message) {
+      messages.push(message);
+    },
+  });
+
+  await commands.get("archive").handler("the active discussion", {
+    cwd: "/workspace",
+    isIdle: () => idle,
+    waitForIdle: async () => {
+      idle = true;
+      leaf = "leaf-after-wait";
+    },
+    sessionManager: {
+      getLeafId: () => leaf,
+      getSessionFile: () => "/sessions/current.jsonl",
+      getSessionId: () => "session-id",
+    },
+    ui: { notify: (...args) => notifications.push(args) },
+  });
+
+  assert.deepEqual(notifications, [[
+    "Waiting for the current Agent turn before capturing the archive boundary.",
+    "info",
+  ]]);
+  assert.match(messages[0], /"sourceLeaf":"leaf-after-wait"/);
+});
+
+test("refuses archive when the Pi session is not persisted", async () => {
+  const commands = new Map();
+  const notifications = [];
+  cslSkillCommands({
+    registerCommand(name, command) {
+      commands.set(name, command);
+    },
+    sendUserMessage: assert.fail,
+  });
+
+  await commands.get("archive").handler("this discussion", {
+    cwd: "/workspace",
+    isIdle: () => true,
+    sessionManager: {
+      getLeafId: () => "leaf",
+      getSessionFile: () => undefined,
+      getSessionId: () => "session-id",
+    },
+    ui: { notify: (...args) => notifications.push(args) },
+  });
+
+  assert.deepEqual(notifications, [[
+    "Exact archiving requires a persisted Pi session with an active branch.",
+    "error",
+  ]]);
 });

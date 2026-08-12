@@ -1,0 +1,66 @@
+{
+  "fallback_positive_concepts": [
+    "exact_current_conversation_archive"
+  ],
+  "positive_concepts": {
+    "exact_current_conversation_archive": {
+      "weight": 0.8,
+      "phrases": [
+        "/archive",
+        "archive our conversation",
+        "save this conversation verbatim",
+        "save the part of this pi conversation",
+        "preserve exactly what we said",
+        "local transcript",
+        "current session transcript",
+        "原样归档",
+        "逐字保存",
+        "对话归档",
+        "本地对话记录"
+      ]
+    },
+    "selected_range": {
+      "weight": 0.2,
+      "phrases": [
+        "the part about",
+        "from my question",
+        "between these messages",
+        "this segment",
+        "这段对话",
+        "从这个问题到",
+        "关于这部分"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "summary_or_task_state": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
+        "summarize our conversation",
+        "meeting notes",
+        "extract action items",
+        "update the canonical task",
+        "implementation plan",
+        "总结对话",
+        "会议纪要",
+        "提取行动项",
+        "更新任务状态",
+        "实现方案"
+      ]
+    },
+    "external_or_file_archive": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
+        "external transcript",
+        "zip file",
+        "archive the directory",
+        "backup these files",
+        "外部访谈稿",
+        "压缩目录",
+        "备份文件"
+      ]
+    }
+  }
+}

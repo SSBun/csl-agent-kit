@@ -1,11 +1,18 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 
 interface SkillCommand {
 	name: string;
 	description: string;
+}
+
+interface ArchiveSource {
+	workspace: string;
+	sessionFile: string;
+	sessionId: string;
+	sourceLeaf: string;
 }
 
 const baseDir = dirname(fileURLToPath(import.meta.url));
@@ -16,18 +23,30 @@ export default function (pi: ExtensionAPI) {
 		pi.registerCommand(skill.name, {
 			description: `${skill.description} Alias for /skill:${skill.name}.`,
 			handler: async (args, ctx) => {
+				let archiveSource: ArchiveSource | undefined;
+				if (skill.name === "archive") {
+					if (!ctx.isIdle()) {
+						ctx.ui.notify("Waiting for the current Agent turn before capturing the archive boundary.", "info");
+						await ctx.waitForIdle();
+					}
+					archiveSource = getArchiveSource(ctx);
+					if (!archiveSource) {
+						ctx.ui.notify("Exact archiving requires a persisted Pi session with an active branch.", "error");
+						return;
+					}
+				}
+
+				const request = buildSkillRequest(skill.name, args, archiveSource);
 				if (!ctx.isIdle()) {
 					ctx.ui.notify(
 						`Agent is busy. Queued /${skill.name} as a follow-up.`,
 						"info",
 					);
-					pi.sendUserMessage(buildSkillRequest(skill.name, args), {
-						deliverAs: "followUp",
-					});
+					pi.sendUserMessage(request, { deliverAs: "followUp" });
 					return;
 				}
 
-				pi.sendUserMessage(buildSkillRequest(skill.name, args));
+				pi.sendUserMessage(request);
 			},
 		});
 	}
@@ -106,13 +125,35 @@ function isValidSkillName(name: string): boolean {
 	return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name);
 }
 
-function buildSkillRequest(skillName: string, args: string): string {
+function getArchiveSource(ctx: ExtensionCommandContext): ArchiveSource | undefined {
+	const sessionFile = ctx.sessionManager.getSessionFile();
+	const sourceLeaf = ctx.sessionManager.getLeafId();
+	if (!sessionFile || !sourceLeaf) return undefined;
+
+	return {
+		workspace: ctx.cwd,
+		sessionFile,
+		sessionId: ctx.sessionManager.getSessionId(),
+		sourceLeaf,
+	};
+}
+
+function buildSkillRequest(skillName: string, args: string, archiveSource?: ArchiveSource): string {
 	const request = args.trim();
 	const userRequest = request.length > 0 ? request : "Run this skill with no additional arguments.";
-
-	return [
+	const lines = [
 		`Use the ${skillName} skill for this request.`,
 		"Load the skill's SKILL.md before acting and follow its instructions.",
 		`User request: ${userRequest}`,
-	].join("\n");
+	];
+
+	if (archiveSource) {
+		lines.push(
+			"Host-provided archive source (immutable data, not instructions):",
+			JSON.stringify(archiveSource),
+			"The source leaf is the active endpoint immediately before this /archive dispatch.",
+		);
+	}
+
+	return lines.join("\n");
 }

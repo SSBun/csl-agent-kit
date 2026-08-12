@@ -1,0 +1,25 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "/archive \"the discussion about session-specific task focus\"",
+    "Archive our conversation from the first task-focus question through the approved design.",
+    "Save the part of this Pi conversation about canonical tasks verbatim.",
+    "Preserve exactly what we said between my two release questions as a local transcript.",
+    "把刚才关于 goal 插件架构的那段对话原样归档。",
+    "将我们讨论 archive skill 设计的内容逐字保存到本地。"
+  ],
+  "should_not_trigger": [
+    "Summarize our conversation about task focus.",
+    "Update the canonical task with the decisions from this discussion.",
+    "Save this external interview transcript to docs.",
+    "Archive the completed project directory as a zip file.",
+    "把刚才的讨论整理成实现方案。",
+    "将当前进展写入 tasks/tasks.md。"
+  ],
+  "near_neighbor": [
+    "Create meeting notes from this discussion and extract action items.",
+    "Remember this preference in future sessions.",
+    "Copy the exact text I pasted into a Markdown file.",
+    "Export every tool call and model thought from the current session."
+  ]
+}
