@@ -5,4 +5,4 @@ Kind: Task
 
 ## Target
 
-- [ ] T1: 任务面板在当前 Pi session 的 This Session 分组中显示本任务。
+- [x] T1: 任务面板在当前 Pi session 的 This Session 分组中显示本任务。

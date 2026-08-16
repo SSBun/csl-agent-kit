@@ -1,8 +1,14 @@
 # 任务索引
 
+- [提交当前本地改动](tasks/commit-current-local-changes.md) — Completed (2026-08-16 21:09)
+
+- [支持项目级 SOP](tasks/support-project-level-sops.md) — Completed (2026-08-16 21:02)
+
 - [创建逐字对话归档 Skill](tasks/create-conversation-archive.md) — Completed (2026-08-12 10:50)
 
-- [创建 Apple Notes HTML 写作 SOP](tasks/create-apple-notes-html-sop.md) — In Progress (2026-08-11 15:29)
+- [迁移任务工作流公开名称](tasks/rename-task-workflows.md) — Completed (2026-08-11 17:22)
+
+- [创建 Apple Notes HTML 写作 SOP](tasks/create-apple-notes-html-sop.md) — Completed (2026-08-11 15:32)
 
 - [测试 Session 任务关注显示](tasks/test-session-task-focus-display.md) — In Progress (2026-08-11 13:23)
 
