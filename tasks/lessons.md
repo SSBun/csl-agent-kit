@@ -104,7 +104,7 @@
 ## 2026-07-23 先建任务记录再动手做非平凡改动
 
 - **Trigger:** 用户测试 triggerify skill 时要求加一个 hook，我直接实现了 hook 却没按 AGENTS.md 的 workspace workflow 先创建任务记录。
-- **Rule:** 凡是改变交付物的非平凡工作（创建 skill、hook、脚本、规则、配置等持久产物），在动手实现前必须先用 `$csl-task` 建立 `tasks/tasks/<task-slug>.md` 并更新 `tasks/tasks.md` 索引；不要等工作做完才补。只读回答和琐碎机械操作可跳过。
+- **Rule:** 凡是改变交付物的非平凡工作（创建 skill、hook、脚本、规则、配置等持久产物），在动手实现前必须先用 `$task` 建立 `tasks/tasks/<task-slug>.md` 并更新 `tasks/tasks.md` 索引；不要等工作做完才补。只读回答和琐碎机械操作可跳过。
 - **Why:** 任务记录是强制生命周期关卡，不是事后归档；跳过它会让进度不可追溯，也无法在改动前明确 Target 和验收边界。
 
 ## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection

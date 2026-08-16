@@ -483,9 +483,9 @@ test("run-script inject-output surfaces stdout as a prompt on session-start", ()
     const payload = triggerify.normalizePayload({ hook_event_name: "SessionStart", session_id: "s" }, "pi", "session-start", data);
     const result = triggerify.runEvent(payload, { host: "pi", workspace: data });
     assert.deepEqual(result.diagnostics, []);
-    assert.equal(result.prompts.length, 1);
-    assert.equal(result.prompts[0].id, "global:emit");
-    assert.equal(result.prompts[0].content, "dynamic context");
+    const prompt = result.prompts.find((item) => item.id === "global:emit");
+    assert.ok(prompt);
+    assert.equal(prompt.content, "dynamic context");
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;
@@ -507,7 +507,8 @@ test("run-script without inject-output keeps stdout out of prompts", () => {
     const payload = triggerify.normalizePayload({ hook_event_name: "SessionStart", session_id: "s" }, "pi", "session-start", data);
     const result = triggerify.runEvent(payload, { host: "pi", workspace: data });
     assert.deepEqual(result.diagnostics, []);
-    assert.equal(result.prompts.length, 0);
+    assert.equal(result.prompts.some((item) => item.id === "global:emit"), false);
+    assert.equal(result.prompts.some((item) => item.content.includes("ignored")), false);
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;
@@ -545,6 +546,41 @@ test("inner scope ships a read-only simple-rules hook that injects non-empty fil
     assert.match(prompt.content, /^## Simple Rules\n/);
     assert.match(prompt.content, /- rule one/);
     assert.match(prompt.content, /- rule two/);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    fs.rmSync(data, { recursive: true, force: true });
+  }
+});
+
+test("inner workspace workflow gates inject final task guidance on supported session starts", { concurrency: false }, () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-workspace-gates-"));
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = data;
+  const io = { log() {}, error() {} };
+  try {
+    for (const host of ["codex", "claude-code", "pi"]) {
+      const payload = triggerify.createEvent({ event: "session-start", host, workspace: data });
+      const result = triggerify.runEvent(payload, { host, workspace: data });
+      const prompt = result.prompts.find((item) => item.id === "inner:workspace-workflow-gates");
+      assert.ok(prompt, `expected workspace gates for ${host}`);
+      assert.match(prompt.content, /\$task, \$task-plan, or \$task-queue/);
+      assert.match(prompt.content, /call `task_focus`/);
+      assert.doesNotMatch(prompt.content, /\$csl-task/);
+    }
+
+    assert.equal(triggerify.runCli(["disable", "inner:workspace-workflow-gates"], io), 0);
+    const payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
+    assert.equal(
+      triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:workspace-workflow-gates"),
+      false,
+    );
+    assert.equal(triggerify.runCli(["enable", "inner:workspace-workflow-gates"], io), 0);
+
+    const cursorPayload = triggerify.createEvent({ event: "session-start", host: "cursor", workspace: data });
+    const cursor = triggerify.runEvent(cursorPayload, { host: "cursor", workspace: data });
+    assert.equal(cursor.prompts.length, 0);
+    assert.ok(cursor.diagnostics.includes("capability-unsupported"));
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;

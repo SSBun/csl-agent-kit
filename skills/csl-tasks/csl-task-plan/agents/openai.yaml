@@ -1,4 +1,0 @@
-interface:
-  display_name: "CSL Task Plan"
-  short_description: "Prepare a decisions-only task plan"
-  default_prompt: "Use $csl-task-plan to research and prepare a canonical task plan without implementing it."

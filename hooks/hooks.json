@@ -12,12 +12,6 @@
           },
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/super-agent/workspace-workflow-gates.md\" ]; then cat \"$root/super-agent/workspace-workflow-gates.md\"; fi'",
-            "timeout": 5,
-            "statusMessage": "Loading workspace workflow gates"
-          },
-          {
-            "type": "command",
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/triggerify/scripts/triggerify.js\" dispatch'",
             "timeout": 65,
             "statusMessage": "Running Triggerify session triggers"
@@ -34,12 +28,6 @@
             "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Reloading CSL SOP routing"
-          },
-          {
-            "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -r \"$root/super-agent/workspace-workflow-gates.md\" ]; then cat \"$root/super-agent/workspace-workflow-gates.md\"; fi'",
-            "timeout": 5,
-            "statusMessage": "Reloading workspace workflow gates"
           },
           {
             "type": "command",

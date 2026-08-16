@@ -1,4 +1,0 @@
-interface:
-  display_name: "CSL Task Auto"
-  short_description: "Run ordered parent and child tasks"
-  default_prompt: "Use $csl-task-auto to manage a multi-task outcome through ordered canonical children and a parent integration gate."

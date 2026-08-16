@@ -1,7 +1,7 @@
 interface:
-  display_name: "CSL Task"
-  short_description: "Manage one canonical workspace task"
-  default_prompt: "Use $csl-task to create, resume, verify, or complete the owning task."
+  display_name: "Task Queue"
+  short_description: "Run ordered parent and child tasks"
+  default_prompt: "Use $task-queue to decompose, run, resume, or stop a multi-task outcome."
 
 compatibility:
   canonical_format: "agent-skills"

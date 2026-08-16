@@ -1,0 +1,25 @@
+{
+  "positive_concepts": {
+    "single_task_management": {
+      "weight": 1.0,
+      "phrases": ["task record", "resume", "cancel", "verify", "complete"]
+    }
+  },
+  "negative_concepts": {
+    "read_only": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["read-only answer", "do not change files", "explain only"]
+    },
+    "multi_task_queue": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["multiple tasks automatically", "parent and child tasks", "task queue"]
+    },
+    "trivial_mechanical_operation": {
+      "weight": 0.5,
+      "exclusive": true,
+      "phrases": ["rename this file", "trivial mechanical"]
+    }
+  }
+}

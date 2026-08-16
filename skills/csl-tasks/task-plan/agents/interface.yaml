@@ -1,7 +1,7 @@
 interface:
-  display_name: "CSL Task Plan"
+  display_name: "Task Plan"
   short_description: "Prepare a decisions-only task plan"
-  default_prompt: "Use $csl-task-plan to research and prepare an implementation-ready plan without editing the deliverable."
+  default_prompt: "Use $task-plan to research and prepare an implementation-ready plan without editing the deliverable."
 
 compatibility:
   canonical_format: "agent-skills"

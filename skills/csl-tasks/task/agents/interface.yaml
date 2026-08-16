@@ -1,7 +1,7 @@
 interface:
-  display_name: "CSL Task Auto"
-  short_description: "Run ordered parent and child tasks"
-  default_prompt: "Use $csl-task-auto to decompose, run, resume, or stop a multi-task outcome."
+  display_name: "Task"
+  short_description: "Manage one canonical workspace task"
+  default_prompt: "Use $task to create, resume, verify, or complete the owning task."
 
 compatibility:
   canonical_format: "agent-skills"

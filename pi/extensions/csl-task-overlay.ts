@@ -8,12 +8,12 @@
  * Refresh triggers:
  *   - `session_start`: restore focus, paint, and start a five-second timer.
  *   - `session_tree`: restore focus after branch navigation.
- *   - `/csl-tasks`: print the full workspace list grouped by status.
+ *   - `/tasks`: print the full workspace list grouped by status.
  *   - `session_shutdown`: stop the refresh timer.
  *
  * Headless (`ctx.hasUI === false`): no widget is registered.
  *
- * Format parsed (per `csl-task`):
+ * Format parsed (per `task`):
  *   `- [Title](tasks/slug.md) — Status (YYYY-MM-DD HH:MM)`
  * Status words (English canonical + legacy Chinese):
  *   Pending / In Progress / In Review / Completed / Blocked / Cancelled
@@ -127,7 +127,7 @@ function invalidateProgressCache(cwd: string): void {
 
 /**
  * Match a markdown checkbox line: `- [x] ...` or `- [ ] ...`. Used only inside a
- * `## Target` section, which the `csl-task` contract defines as
+ * `## Target` section, which the `task` contract defines as
  * the single checkbox list with stable IDs (T1, T2, ...).
  */
 const CHECKBOX = /^\s*-\s+\[([ xX])\]/;
@@ -350,12 +350,12 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	};
 
 	pi.registerTool({
-		name: "csl_task_focus",
-		label: "CSL Task Focus",
+		name: "task_focus",
+		label: "Task Focus",
 		description: "Associate this Pi session with one canonical workspace task.",
-		promptSnippet: "Focus this Pi session on a canonical CSL task.",
+		promptSnippet: "Focus this Pi session on a canonical task.",
 		promptGuidelines: [
-			"After csl-task, csl-task-plan, or csl-task-auto creates, resumes, reopens, or activates a canonical task for this session, call csl_task_focus with that task ID.",
+			"After task, task-plan, or task-queue creates, resumes, reopens, or activates a canonical task for this session, call task_focus with that task ID.",
 		],
 		parameters: {
 			type: "object",
@@ -400,7 +400,7 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 
 	pi.on("session_shutdown", stopRefreshTimer);
 
-	pi.registerCommand("csl-task-focus", {
+	pi.registerCommand("task-focus", {
 		description: "Focus this session on a task ID, or clear the current focus.",
 		handler: async (args, ctx) => {
 			const taskId = args.trim();
@@ -410,7 +410,7 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 				return;
 			}
 			if (!TASK_ID.test(taskId)) {
-				ctx.ui.notify("Usage: /csl-task-focus <task-id|clear>", "warning");
+				ctx.ui.notify("Usage: /task-focus <task-id|clear>", "warning");
 				return;
 			}
 			if (!loadTasks(ctx.cwd).some((row) => taskId === taskIdForRow(row))) {
@@ -422,7 +422,7 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 		},
 	});
 
-	pi.registerCommand("csl-tasks", {
+	pi.registerCommand("tasks", {
 		description: "Print workspace tasks grouped by status (from tasks/tasks.md).",
 		handler: async (_args, ctx) => {
 			const rows = loadTasks(ctx.cwd);
@@ -438,7 +438,7 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	});
 }
 
-/** Group rows by status for the `/csl-tasks` command output. */
+/** Group rows by status for the `/tasks` command output. */
 function formatGrouped(rows: TaskRow[], cwd: string): string[] {
 	const groups: Record<Status, TaskRow[]> = {
 		in_progress: [],

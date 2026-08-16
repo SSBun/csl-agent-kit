@@ -12,7 +12,7 @@ const STATE_DISPLAY = {
   cancelled: "Cancelled",
 };
 const DISPLAY_STATE = Object.fromEntries(Object.entries(STATE_DISPLAY).map(([key, value]) => [value, key]));
-const KINDS = new Set(["task", "plan", "auto"]);
+const KINDS = new Set(["task", "plan", "queue"]);
 const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const TIMESTAMP_PATTERN = "\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]) (?:[01]\\d|2[0-3]):[0-5]\\d";
 const STATUS_PATTERN = new RegExp(`^Status: (${Object.values(STATE_DISPLAY).join("|")}) \\((${TIMESTAMP_PATTERN})\\)$`, "m");
@@ -38,8 +38,9 @@ function assertId(id) {
   if (!ID_PATTERN.test(id || "")) throw new Error(`invalid task id: ${id}`);
 }
 
-function normalizeKind(kind) {
+function normalizeKind(kind, allowLegacyAuto = false) {
   const value = String(kind || "task").toLowerCase();
+  if (allowLegacyAuto && value === "auto") return "queue";
   if (!KINDS.has(value)) throw new Error(`invalid task kind: ${kind}`);
   return value;
 }
@@ -153,7 +154,7 @@ function readTask(workspace, id) {
 
 function parseTask(id, text, file) {
   const kindValue = fieldOf(text, "Kind");
-  const kind = kindValue ? normalizeKind(kindValue) : undefined;
+  const kind = kindValue ? normalizeKind(kindValue, true) : undefined;
   const parent = fieldOf(text, "Parent");
   return {
     id,
@@ -363,8 +364,8 @@ function linkChild(workspace, parentId, childId) {
   if (parentId === childId) throw new Error("a task cannot be its own child");
   const parent = readTask(workspace, parentId);
   const child = readTask(workspace, childId);
-  if (parent.kind !== "auto") throw new Error("parent must be an Auto task");
-  if (parent.status.state === "completed") throw new Error("reopen the Auto parent before changing its graph");
+  if (parent.kind !== "queue") throw new Error("parent must be a Queue task");
+  if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
   if (child.parent && child.parent !== parentId) throw new Error(`${childId} already belongs to ${child.parent}`);
 
   const seen = new Set();
@@ -388,7 +389,7 @@ function linkChild(workspace, parentId, childId) {
 
 function nextChild(workspace, parentId) {
   const parent = readTask(workspace, parentId);
-  if (parent.kind !== "auto") throw new Error("parent must be an Auto task");
+  if (parent.kind !== "queue") throw new Error("parent must be a Queue task");
   for (const child of parent.children) {
     const current = readTask(workspace, child.id);
     if (current.status.state !== "completed") return current;
@@ -408,8 +409,8 @@ function completeTask(workspace, id) {
   if (task.status.state === "in_review" && task.review[1] !== "Approved") throw new Error("In Review completion requires approval");
   if (!task.verification || task.verification[1] !== "Passed") throw new Error("completion requires passed verification evidence");
   if (section(task.text, "Block")) throw new Error("a blocked task cannot be completed");
-  if (task.kind === "auto") {
-    if (task.children.length === 0) throw new Error("an Auto task needs at least one child");
+  if (task.kind === "queue") {
+    if (task.children.length === 0) throw new Error("a Queue task needs at least one child");
     const unfinished = task.children.map(({ id: childId }) => readTask(workspace, childId)).find((child) => child.status.state !== "completed");
     if (unfinished) throw new Error(`unfinished child: ${unfinished.id}`);
   }

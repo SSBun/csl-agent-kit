@@ -5,7 +5,7 @@ When a gate matches, load and follow the matching skill SKILL.md before the next
 ORDER:
 1. Session start, resume, or compaction → $workspace-context.
 2. Before non-trivial work → $workspace-lessons.
-3. Before non-trivial work changes a deliverable → $csl-task, $csl-task-plan, or $csl-task-auto according to the requested execution mode.
+3. Before non-trivial work changes a deliverable → $task, $task-plan, or $task-queue according to the requested execution mode.
 4. After a user correction → $workspace-lessons before continuing.
 5. Before ending → $workspace-context if durable facts changed.
 
@@ -20,7 +20,7 @@ $workspace-lessons:
   AFTER CORRECTION: Follow the skill's update and permission rules.
   SKIP: Leave the file unchanged when no reusable prevention rule applies.
 
-$csl-task / $csl-task-plan / $csl-task-auto:
+$task / $task-plan / $task-queue:
   ACTION: Read the owning task first; select single-task execution, planning-only handoff, or ordered multi-task execution, then follow that skill before changing the deliverable.
-  KEEP CURRENT: Use the shared core to keep canonical state, evidence, parent-child links, completion gates, and the exact index entry current.
+  KEEP CURRENT: Use the shared core to keep canonical state, evidence, parent-child links, completion gates, and the exact index entry current. After creating, resuming, reopening, or activating a canonical task, call `task_focus` with its ID when the host provides that tool.
   SKIP: read-only answers, trivial mechanical operations, context/lesson maintenance.

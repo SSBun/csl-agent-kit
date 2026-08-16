@@ -25,8 +25,8 @@
 ### 3. Goal-Driven Task Management
 
 - Use `tasks/tasks.md` as a newest-first index and keep each canonical task record in `tasks/tasks/<task-slug>.md`; multiple tasks may be active at once.
-- Before non-trivial work that changes a deliverable, load `$csl-task` and follow its `SKILL.md` before execution. Do not wait until implementation is underway or finished, and do not wait for the user to request a task record.
-- Use `$csl-task-plan` for planning-only work and `$csl-task-auto` when the user wants multiple tasks managed and executed as an ordered parent-child workflow.
+- Before non-trivial work that changes a deliverable, load `$task` and follow its `SKILL.md` before execution. Do not wait until implementation is underway or finished, and do not wait for the user to request a task record.
+- Use `$task-plan` for planning-only work and `$task-queue` when the user wants multiple tasks managed and executed as an ordered parent-child workflow.
 - Create or update the owning task file and only its exact index entry; keep both current as scope, status, or results change. The task core owns status, evidence, parent-child links, completion gates, and index consistency.
 - Keep each index entry limited to the task title, current status, and relative task-file link. The task file is authoritative when the index and record disagree.
 - Keep completed task files as history and avoid changing unrelated task files or index entries. Read recent tasks first and search older entries only when relevant.

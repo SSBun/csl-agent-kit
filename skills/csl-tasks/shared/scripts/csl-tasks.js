@@ -7,7 +7,7 @@ const core = require("../lib/task-core.js");
 const HELP = `Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]
 
 Commands:
-  create <id> --title <title> --kind task|plan|auto --target "T1: ..." [--target ...]
+  create <id> --title <title> --kind task|plan|queue --target "T1: ..." [--target ...]
   list [--json]
   show <id> [--json]
   validate [id]
@@ -18,7 +18,7 @@ Commands:
   resume <id>
   reopen <id>
   link <parent-id> <child-id>
-  next <auto-id> [--json]
+  next <queue-id> [--json]
   result <id> <Tn> --evidence <text>
   review <id> <skipped|required|approved> --evidence <text>
   verify <id> <passed|failed> --evidence <text>
@@ -127,7 +127,7 @@ function run(argv, io = console) {
         core.linkChild(workspace, args[0], args[1]);
         break;
       case "next": {
-        if (args.length !== 1) throw new Error("next needs one Auto task id");
+        if (args.length !== 1) throw new Error("next needs one Queue task id");
         const task = core.nextChild(workspace, args[0]);
         if (!task) output = null;
         else if (!json) {

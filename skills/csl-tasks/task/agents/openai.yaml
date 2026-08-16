@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task"
+  short_description: "Manage one canonical workspace task"
+  default_prompt: "Use $task to create or update the owning task record and enforce its completion gate."

@@ -396,7 +396,7 @@ function selfTest() {
 - Scope: Task records
 - Paths: \`tasks/tasks.md\`, \`tasks/tasks/\`
 - Keywords: task, status
-- Authority: \`skills/csl-tasks/csl-task/SKILL.md\`
+- Authority: \`skills/csl-tasks/task/SKILL.md\`
 - Recheck: When the task contract changes.
 
 ### Purpose and Boundaries

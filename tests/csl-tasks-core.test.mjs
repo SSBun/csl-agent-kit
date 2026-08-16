@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -24,7 +24,10 @@ test("the shared CLI creates and validates a host-neutral workspace", (t) => {
   const root = workspace(t);
   execFileSync(process.execPath, [cli, "--workspace", root, "create", "demo", "--title", "Demo", "--kind", "task", "--target", "T1: Finish"], { stdio: "pipe" });
   const output = execFileSync(process.execPath, [cli, "--workspace", root, "validate"], { encoding: "utf8" });
+  const help = execFileSync(process.execPath, [cli, "--help"], { encoding: "utf8" });
   assert.deepEqual(JSON.parse(output), { valid: true });
+  assert.match(help, /--kind task\|plan\|queue/);
+  assert.doesNotMatch(help, /--kind task\|plan\|auto/);
 });
 
 test("creates a task and keeps the canonical record and newest-first index aligned", (t) => {
@@ -50,6 +53,23 @@ test("creates a task and keeps the canonical record and newest-first index align
   const index = readFileSync(path.join(root, "tasks", "tasks.md"), "utf8");
   assert.ok(index.indexOf("tasks/second-task.md") < index.indexOf("tasks/first-task.md"));
   assert.doesNotThrow(() => core.checkTaskIndex(root, "first-task"));
+});
+
+test("writes Queue records and reads legacy Auto parents without accepting new Auto records", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "parent", title: "Parent", kind: "queue", targets: ["T1: Integrate"] });
+  assert.match(body(root, "parent"), /^Kind: Queue$/m);
+  assert.throws(
+    () => core.createTask(root, { id: "old-name", title: "Old name", kind: "auto", targets: ["T1: Integrate"] }),
+    /invalid task kind: auto/,
+  );
+
+  writeFileSync(core.taskPath(root, "parent"), body(root, "parent").replace("Kind: Queue", "Kind: Auto"));
+  assert.equal(core.readTask(root, "parent").kind, "queue");
+  core.createTask(root, { id: "child", title: "Child", kind: "task", targets: ["T1: Finish"] });
+  core.linkChild(root, "parent", "child");
+  assert.equal(core.nextChild(root, "parent").id, "child");
+  assert.deepEqual(core.validateWorkspace(root), []);
 });
 
 test("cancel and resume are reversible state transitions", (t) => {
@@ -82,9 +102,9 @@ test("completion fails closed until targets, review, and verification have evide
   assert.doesNotThrow(() => core.checkTaskIndex(root, "demo"));
 });
 
-test("auto tasks keep reciprocal ordered children and resume at the first unfinished child", (t) => {
+test("queue tasks keep reciprocal ordered children and resume at the first unfinished child", (t) => {
   const root = workspace(t);
-  core.createTask(root, { id: "parent", title: "Parent", kind: "auto", targets: ["T1: Integrate children"] });
+  core.createTask(root, { id: "parent", title: "Parent", kind: "queue", targets: ["T1: Integrate children"] });
   core.createTask(root, { id: "child-a", title: "Child A", kind: "task", targets: ["T1: Finish A"] });
   core.createTask(root, { id: "child-b", title: "Child B", kind: "task", targets: ["T1: Finish B"] });
   core.linkChild(root, "parent", "child-a");
@@ -93,7 +113,7 @@ test("auto tasks keep reciprocal ordered children and resume at the first unfini
   assert.equal(core.nextChild(root, "parent").id, "child-a");
   assert.match(body(root, "child-a"), /^Parent: parent$/m);
   assert.match(body(root, "parent"), /1\. \[Child A\]\(child-a\.md\)[\s\S]*2\. \[Child B\]\(child-b\.md\)/);
-  assert.throws(() => core.linkChild(root, "child-a", "parent"), /Auto task/);
+  assert.throws(() => core.linkChild(root, "child-a", "parent"), /Queue task/);
 
   for (const id of ["child-a", "child-b"]) {
     core.resumeTask(root, id);
@@ -116,7 +136,7 @@ test("auto tasks keep reciprocal ordered children and resume at the first unfini
 test("a child can have only one parent", (t) => {
   const root = workspace(t);
   for (const id of ["parent-a", "parent-b"]) {
-    core.createTask(root, { id, title: id, kind: "auto", targets: ["T1: Integrate"] });
+    core.createTask(root, { id, title: id, kind: "queue", targets: ["T1: Integrate"] });
   }
   core.createTask(root, { id: "child", title: "Child", kind: "task", targets: ["T1: Finish"] });
   core.linkChild(root, "parent-a", "child");
@@ -133,9 +153,9 @@ test("blocked and review states require their lifecycle sections", (t) => {
   assert.doesNotThrow(() => core.setState(root, "demo", "in_review"));
 });
 
-test("a completed Auto parent must be reopened before its graph changes", (t) => {
+test("a completed Queue parent must be reopened before its graph changes", (t) => {
   const root = workspace(t);
-  core.createTask(root, { id: "parent", title: "Parent", kind: "auto", targets: ["T1: Integrate"] });
+  core.createTask(root, { id: "parent", title: "Parent", kind: "queue", targets: ["T1: Integrate"] });
   core.createTask(root, { id: "child-a", title: "Child A", kind: "task", targets: ["T1: Finish"] });
   core.linkChild(root, "parent", "child-a");
   for (const id of ["child-a", "parent"]) {

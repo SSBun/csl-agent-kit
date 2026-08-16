@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Queue"
+  short_description: "Run ordered parent and child tasks"
+  default_prompt: "Use $task-queue to manage a multi-task outcome through ordered canonical children and a parent integration gate."

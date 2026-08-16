@@ -2,7 +2,7 @@
   "positive_concepts": {
     "read_only_task_planning": {
       "weight": 1.0,
-      "phrases": ["implementation-ready plan", "plan before coding", "decisions-only handoff", "do not implement"]
+      "phrases": ["implementation-ready plan", "task plan", "requirements", "decisions-only handoff", "plan how"]
     }
   },
   "negative_concepts": {
@@ -11,10 +11,10 @@
       "exclusive": true,
       "phrases": ["implement now", "edit the deliverable", "finish the task"]
     },
-    "auto_execution": {
+    "queue_execution": {
       "weight": 0.5,
       "exclusive": true,
-      "phrases": ["run multiple tasks", "auto parent", "ordered children"]
+      "phrases": ["run multiple tasks", "queue parent", "ordered children"]
     }
   }
 }

@@ -279,8 +279,11 @@ test("persists session focus and keeps a completed task focused until changed or
     await handlers.get("session_start")({}, ctx);
     assert.match(widget.render(200)[0], /📋 Tasks/);
 
-    const focusTool = tools.get("csl_task_focus");
+    const focusTool = tools.get("task_focus");
+    assert.equal(tools.has("csl_task_focus"), false);
+    assert.match(focusTool.promptGuidelines[0], /task, task-plan, or task-queue/);
     assert.match(focusTool.promptGuidelines[0], /creates, resumes, reopens, or activates/);
+    assert.doesNotMatch(focusTool.promptGuidelines[0], /csl-task/);
     await focusTool.execute("call-1", { taskId: "demo" }, undefined, undefined, ctx);
     assert.deepEqual(entries.at(-1), {
       type: "custom",
@@ -306,15 +309,17 @@ test("persists session focus and keeps a completed task focused until changed or
       path.join(cwd, "tasks", "tasks", "demo.md"),
       "# Demo task\n\n## Target\n\n- [x] T1: Finish the task\n",
     );
-    await commands.get("csl-tasks").handler("", ctx);
+    await commands.get("tasks").handler("", ctx);
     assert.match(widget.render(200)[0], /📋 This Session/);
     assert.match(widget.render(200)[1], /✅ \(1\/1\) Demo task/);
 
-    await commands.get("csl-task-focus").handler("other", ctx);
+    await commands.get("task-focus").handler("other", ctx);
     assert.deepEqual(entries.at(-1).data, { taskId: "other" });
     assert.match(widget.render(200)[1], /⏳ Other task/);
 
-    await commands.get("csl-task-focus").handler("clear", ctx);
+    await commands.get("task-focus").handler("clear", ctx);
+    assert.equal(commands.has("csl-task-focus"), false);
+    assert.equal(commands.has("csl-tasks"), false);
     assert.deepEqual(entries.at(-1).data, { taskId: null });
     assert.match(widget.render(200)[0], /📋 Tasks/);
     assert.ok(widget.render(200).every((line) => !line.includes("This Session")));

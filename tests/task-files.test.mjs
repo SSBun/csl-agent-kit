@@ -191,7 +191,7 @@ test("default agent instructions explain workspace records and route work to wor
   const rules = readFileSync(path.join(root, "super-agent", "AGENTS.md"), "utf8");
   const expected = {
     "workspace-context": [path.join(workflowDir, "workspace-context"), "tasks/context.md"],
-    "csl-task": [path.join(cslTasksDir, "csl-task"), "tasks/tasks.md"],
+    "task": [path.join(cslTasksDir, "task"), "tasks/tasks.md"],
     "workspace-lessons": [path.join(workflowDir, "workspace-lessons"), "tasks/lessons.md"],
   };
 
@@ -204,9 +204,13 @@ test("default agent instructions explain workspace records and route work to wor
     assert.ok(rules.includes(ownedPath), `default instructions missing mechanism path: ${ownedPath}`);
   }
 
-  for (const name of ["csl-task", "csl-task-plan", "csl-task-auto"]) {
+  for (const name of ["task", "task-plan", "task-queue"]) {
     assert.ok(existsSync(path.join(cslTasksDir, name, "SKILL.md")), `missing ${name}`);
     assert.ok(rules.includes(`$${name}`), `default instructions missing route: ${name}`);
+  }
+  for (const name of ["csl-task", "csl-task-plan", "csl-task-auto"]) {
+    assert.equal(existsSync(path.join(cslTasksDir, name)), false, `legacy skill still exists: ${name}`);
+    assert.equal(rules.includes(`$${name}`), false, `legacy route still exists: ${name}`);
   }
   assert.equal(existsSync(path.join(workflowDir, "workspace-manage-task")), false);
   assert.equal(existsSync(path.join(workflowDir, "workspace-maintain-context")), false);
@@ -215,7 +219,7 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(rules.includes("$workspace-maintain-context"), false);
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
-  assert.match(rules, /load `\$csl-task` and follow its `SKILL\.md` before execution/);
+  assert.match(rules, /load `\$task` and follow its `SKILL\.md` before execution/);
   assert.match(rules, /load `\$workspace-lessons` and follow its `SKILL\.md` before continuing/);
   assert.equal(rules.includes("$workspace-capture-lessons"), false);
   assert.match(rules, /Do not wait for the user to request/);
@@ -237,7 +241,7 @@ test("injected workspace workflow gates define proactive execution order", () =>
   const order = [
     "$workspace-context.",
     "$workspace-lessons.",
-    "$csl-task, $csl-task-plan, or $csl-task-auto",
+    "$task, $task-plan, or $task-queue",
     "$workspace-lessons before continuing.",
     "$workspace-context if durable facts changed.",
   ];
@@ -254,6 +258,8 @@ test("injected workspace workflow gates define proactive execution order", () =>
   assert.match(gates, /Load Project Core before acting/);
   assert.match(gates, /query only relevant Context Packs/);
   assert.match(gates, /do not read the whole file indiscriminately/);
+  assert.match(gates, /call `task_focus` with its ID when the host provides that tool/);
+  assert.doesNotMatch(gates, /\$csl-task/);
   assert.equal(gates.includes("ask permission before modifying existing entries"), false);
 });
 
@@ -379,7 +385,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
 - Scope: Canonical task records and their index.
 - Paths: \`tasks/tasks.md\`, \`tasks/tasks/\`
 - Keywords: task, target, status
-- Authority: \`skills/csl-tasks/csl-task/SKILL.md\`
+- Authority: \`skills/csl-tasks/task/SKILL.md\`
 - Recheck: When the CSL Task contract changes.
 
 ### Purpose and Boundaries
@@ -413,7 +419,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   assert.equal(showResult.status, 0, showResult.stderr);
   const shown = JSON.parse(showResult.stdout);
   assert.equal(shown.schema, "csl-context.packs/v1");
-  assert.equal(shown.packs[0].authority, "`skills/csl-tasks/csl-task/SKILL.md`");
+  assert.equal(shown.packs[0].authority, "`skills/csl-tasks/task/SKILL.md`");
   assert.match(shown.packs[1].raw, /Its callers must preserve the adapter boundary/);
 
   const validationResult = run("validate");
@@ -477,7 +483,7 @@ test("current workspace Context has a valid Core plus formal and legacy Packs", 
 });
 
 test("CSL task contract keeps acceptance, evidence, and review gates explicit", () => {
-  const skillDir = path.join(cslTasksDir, "csl-task");
+  const skillDir = path.join(cslTasksDir, "task");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
 
   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
@@ -513,7 +519,7 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
 });
 
 test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {
-  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "csl-task", "evals", "task_ownership_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "task_ownership_cases.json"), "utf8"));
   const outcomes = new Set();
 
   for (const item of fixture.cases) {
@@ -537,7 +543,7 @@ test("workspace task ownership defaults independent and ambiguous outcomes to ne
 });
 
 test("workspace review-gate cases require an explicit user request", () => {
-  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "csl-task", "evals", "review_gate_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "review_gate_cases.json"), "utf8"));
   const outcomes = new Set();
 
   for (const item of fixture.cases) {

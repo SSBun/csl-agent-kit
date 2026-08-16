@@ -1,9 +1,9 @@
 ---
-name: csl-task
+name: task
 description: Create, resume, update, cancel, verify, and complete canonical workspace task records for non-trivial deliverable changes. Use before implementation that changes a deliverable, when continuing an existing task, or when the user asks to manage one task. Skip read-only answers and trivial mechanical operations with direct deterministic verification.
 ---
 
-# CSL Task
+# Task
 
 Manage one outcome through the host Agent. Use the host's existing file, shell, research, and subagent capabilities; never launch nested `codex exec`, `pi --print`, a worker daemon, or an unattended supervisor.
 
@@ -76,7 +76,7 @@ Add only while Blocked, with `Reason` and observable `Unblock when`. Add the sec
 1. Confirm every current Target has Result evidence.
 2. Run proportionate verification and record it as passed.
 3. Record `skipped` or an actual `approved` review gate.
-4. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, or unfinished Auto children.
+4. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, or unfinished Queue children.
 5. Run `check <id>` and `validate` before delivery.
 
 Do not retrofit untouched historical record bodies. All records share the new paths, while the stricter `Kind:` contract applies to new or reopened work.

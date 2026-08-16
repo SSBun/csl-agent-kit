@@ -15,9 +15,9 @@ test("registers aliases for nested skills", () => {
     "align",
     "archive",
     "code-review",
-    "csl-task",
-    "csl-task-auto",
-    "csl-task-plan",
+    "task",
+    "task-plan",
+    "task-queue",
     "domain-modeling",
     "grill-me",
     "grill-with-docs",
@@ -41,6 +41,9 @@ test("registers aliases for nested skills", () => {
   assert.equal(commands.has("deep-explore"), false);
   assert.equal(commands.has("same-page"), false);
   assert.equal(commands.has("workspace-workflow"), false);
+  assert.equal(commands.has("csl-task"), false);
+  assert.equal(commands.has("csl-task-plan"), false);
+  assert.equal(commands.has("csl-task-auto"), false);
   assert.equal(commands.has("csl-tasks"), false);
   assert.equal(commands.has("workspace-capture-lessons"), false);
   assert.equal(commands.has("workspace-manage-task"), false);
