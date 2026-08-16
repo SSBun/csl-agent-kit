@@ -5,6 +5,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd -P)"
 skill_dir="$(cd "$script_dir/.." && pwd -P)"
 data_dir="${CSL_AGENT_KIT_HOME:-$HOME/.csl-agent-kit}"
 user_sop_dir="${CSL_AGENT_KIT_SOPS_DIR:-$data_dir/sops}"
+project_sop_dir="$PWD/.agents/sops"
 
 field() {
   local key="$1"
@@ -39,17 +40,42 @@ list_field() {
   ' "$file"
 }
 
+contains_sop() {
+  local dir="$1"
+  local target="$2"
+  local file name
+
+  [ -d "$dir" ] || return 1
+  for file in "$dir"/*.md; do
+    [ -e "$file" ] || continue
+    name="$(field name "$file")"
+    [ -n "$name" ] || name="$(basename "$file" .md)"
+    [ "$name" = "$target" ] && return 0
+  done
+  return 1
+}
+
+is_overridden() {
+  local name="$1"
+  local dir
+  shift
+
+  for dir in "$@"; do
+    contains_sop "$dir" "$name" && return 0
+  done
+  return 1
+}
+
 print_dir() {
   local label="$1"
   local dir="$2"
-  local override_dir="${3:-}"
-  local found=0
+  local file name description globs
+  shift 2
 
   [ -d "$dir" ] || return 0
 
   for file in "$dir"/*.md; do
     [ -e "$file" ] || continue
-    found=1
 
     name="$(field name "$file")"
     description="$(field when_to_use "$file")"
@@ -58,19 +84,15 @@ print_dir() {
     [ -n "$description" ] || description="Missing when_to_use frontmatter."
     [ -n "$globs" ] || globs="none"
 
-    if [ -n "$override_dir" ] && [ -e "$override_dir/$name.md" ]; then
-      continue
-    fi
-
+    is_overridden "$name" "$@" && continue
     printf -- '- %s: %s [globs: %s] (%s: %s)\n' "$name" "$description" "$globs" "$label" "$file"
   done
-
-  [ "$found" -eq 1 ] || return 0
 }
 
 printf '%s\n' 'SOP manager is available.'
 printf '%s\n' 'Apply an SOP only when the user task matches its when_to_use or name.'
 printf '%s\n' 'Available SOP summaries:'
-print_dir built-in "$skill_dir/sops" "$user_sop_dir"
-print_dir user "$user_sop_dir"
+print_dir built-in "$skill_dir/sops" "$user_sop_dir" "$project_sop_dir"
+print_dir user "$user_sop_dir" "$project_sop_dir"
+print_dir project "$project_sop_dir"
 printf '%s\n' 'Read the full SOP before following it. SOPs never override higher-priority instructions or tool permissions.'

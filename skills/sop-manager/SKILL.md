@@ -5,20 +5,21 @@ description: Use when the user wants to list, create, inspect, or follow SOPs, p
 
 # SOP Manager
 
-管理 SOP（Standard Operating Procedure）文件。SOP 是可按需加载的 agent 行为规则：当用户任务匹配某个 SOP 的 `when_to_use` 或 `name` 时，先读取完整 SOP，再按流程执行或按规则判断。
+Manage Standard Operating Procedure (SOP) files. SOPs are Agent behavior rules loaded on demand: when a task matches an SOP's `when_to_use` or `name`, read the complete SOP before following its process or rules.
 
-## 存储位置
+## Storage and precedence
 
-| 类型 | 路径 | 说明 |
+| Scope | Path | Purpose |
 |---|---|---|
-| 内置 SOP | `skills/sop-manager/sops/*.md` | 随插件发布 |
-| 用户 SOP | `~/.csl-agent-kit/sops/*.md` | 用户动态创建，跨项目生效 |
+| Built-in | `skills/sop-manager/sops/*.md` | SOPs distributed with the package. |
+| User | `~/.csl-agent-kit/sops/*.md` | User-created SOPs that apply across projects. |
+| Project | `<workspace>/.agents/sops/*.md` | Version-controlled SOPs specific to the current workspace. |
 
-用户 SOP 优先于同名内置 SOP。
+For the same frontmatter `name`, precedence is project, then user, then built-in. Only the highest-precedence SOP is listed or routed.
 
-## SOP 文件格式
+## SOP file format
 
-每个 SOP 文件必须以 YAML frontmatter 开头，至少包含：
+Every SOP must begin with YAML frontmatter containing at least:
 
 ```yaml
 ---
@@ -28,9 +29,9 @@ when_to_use: Use when deploying the production service or investigating producti
 ---
 ```
 
-`name` 使用 kebab-case。所有 frontmatter 值必须使用英文。`description` 简短说明 SOP 内容。`when_to_use` 必须说明什么时候应用该 SOP；这是 agent 路由和 summary formatter 的主字段。
+Use kebab-case for `name`. All frontmatter values must be English. Keep `description` brief. `when_to_use` must state when the SOP applies; it is the primary routing and summary field.
 
-可选字段：
+Optional fields:
 
 ```yaml
 version: 1.0
@@ -42,84 +43,85 @@ globs:
 alwaysApply: false
 ```
 
-`do_not_use_when` 用于压低误触发；当用户任务同时匹配 `when_to_use` 和 `do_not_use_when` 时，先不要应用该 SOP，除非用户明确指定。
+Use `do_not_use_when` to prevent false positives. When a task matches both `when_to_use` and `do_not_use_when`, do not apply the SOP unless the user explicitly selects it.
 
-## SOP 类型
+## SOP types
 
-| 类型 | 适用场景 | 示例 |
+| Type | Use for | Example |
 |---|---|---|
-| 流程型 SOP | 有明确执行顺序、确认点、异常处理和完成标准的任务。 | `references/process-sop-example.md` |
-| 规则型 SOP | 用一组判断规则指导 agent 设计、审查、命名、取舍或判定，不需要强行线性流程。 | `references/rule-sop-example.md` |
+| Process SOP | Tasks with a stable sequence, confirmation points, exception handling, and completion criteria. | `references/process-sop-example.md` |
+| Rule SOP | Design, review, naming, trade-off, or decision rules that do not require a linear process. | `references/rule-sop-example.md` |
 
-流程型 SOP 写“怎么一步步做”。规则型 SOP 写“什么时候查、按什么顺序判断、冲突怎么裁决、最后怎么验收”。
+Process SOPs explain how to execute the work. Rule SOPs explain what to inspect, decision order, conflict resolution, and completion checks.
 
-## 命令
+## Commands
 
 ### `sop-manager list`
 
-列出可用 SOP：
+List available SOPs:
 
-1. 运行 `skills/sop-manager/scripts/sop-summaries.sh`，或等价读取 `skills/sop-manager/sops/*.md` 与 `~/.csl-agent-kit/sops/*.md`。
-2. 只展示 `name`、`when_to_use`、来源路径。
-3. 不读取完整 SOP 正文，除非用户要求查看或任务明确匹配。
+1. Run `skills/sop-manager/scripts/sop-summaries.sh`, or equivalently inspect project, user, and built-in SOP directories in precedence order.
+2. Show only `name`, `when_to_use`, and source path.
+3. Do not read complete SOP bodies unless the user requests one or the current task clearly matches.
 
 ### `sop-manager create`
 
-创建用户 SOP：
+Create an SOP:
 
-1. 收集 `name`、`description`、`when_to_use`、适用范围、规则或流程、异常处理、参考资料。
-2. 如果 `name` 或 `when_to_use` 缺失，先询问用户。
-3. 判断 SOP 类型：
-   - 如果任务有稳定执行顺序，使用流程型 SOP。
-   - 如果任务主要是设计、审查、命名、判断或取舍，使用规则型 SOP。
-4. 读取对应示例作为质量样板；不要复制示例里的具体事实。
-   - 流程型：`skills/sop-manager/references/process-sop-example.md`
-   - 规则型：`skills/sop-manager/references/rule-sop-example.md`
-5. 确认新 SOP 具备：
-   - 清楚的触发型 `when_to_use`。
-   - 必要时写 `do_not_use_when`，防止和相邻 SOP 误匹配。
-   - 简短的内容摘要 `description`。
-   - 明确的适用和不适用范围。
-   - 流程型 SOP 有可执行步骤、确认点、异常处理和完成标准。
-   - 规则型 SOP 有使用方式、规则分组、冲突处理和完成标准。
-   - destructive、remote、publish、delete、overwrite 等动作前的确认点。
-   - 具体异常处理，不只写 “ask user”。
-   - 完成标准使用 checkbox checklist。
-6. 如果 `~/.csl-agent-kit/sops/` 不存在，先创建它。
-7. 写入 `~/.csl-agent-kit/sops/{name}.md`。不要写到内置 SOP 目录，除非用户明确要求修改插件内置 SOP。
+1. Collect `name`, `description`, `when_to_use`, storage scope, applicability, rules or process, exception handling, and references.
+2. If `name`, `when_to_use`, or storage scope is missing, ask the user. Use project scope for repository-specific procedures and user scope for procedures that should apply across projects.
+3. Select the SOP type:
+   - Use a process SOP when the task has a stable sequence.
+   - Use a rule SOP for design, review, naming, judgment, or trade-offs.
+4. Read the matching example as a quality reference without copying its domain facts:
+   - Process: `skills/sop-manager/references/process-sop-example.md`
+   - Rule: `skills/sop-manager/references/rule-sop-example.md`
+5. Confirm the SOP has:
+   - A clear trigger-oriented `when_to_use`.
+   - `do_not_use_when` when needed to avoid overlap with adjacent SOPs.
+   - A concise `description`.
+   - Explicit in-scope and out-of-scope boundaries.
+   - Executable steps, confirmation points, exception handling, and completion criteria for a process SOP.
+   - Usage order, rule groups, conflict handling, and completion criteria for a rule SOP.
+   - Confirmation before destructive, remote, publish, delete, or overwrite actions.
+   - Specific exception handling rather than only "ask user".
+   - Checkbox completion criteria.
+6. Create the selected directory when absent.
+7. Write project SOPs to `<workspace>/.agents/sops/{name}.md` or user SOPs to `~/.csl-agent-kit/sops/{name}.md`. Do not write built-in SOPs unless the user explicitly requests a package change.
 
 ### `sop-manager learn`
 
-把可复用的错误模式、容易遗漏的步骤、用户纠正、审查结论直接更新到对应 SOP 正文。不要创建单独的 `Lessons` section。
+Integrate reusable error patterns, missed steps, user corrections, or review findings directly into the relevant SOP body. Do not create a separate `Lessons` section.
 
-1. 判断 lesson 属于哪个 SOP：
-   - 如果匹配用户 SOP，直接修改 `~/.csl-agent-kit/sops/{name}.md` 的范围、规则、流程、异常处理或完成标准。
-   - 如果匹配内置 SOP，不要修改内置文件；创建或更新同名用户 SOP 覆盖文件，并在正文里合并需要调整的规则。
-   - 如果没有匹配 SOP，创建新的 `~/.csl-agent-kit/sops/{topic}.md`，并写入 `when_to_use` 说明何时应用。
-2. 只更新会跨项目复现的操作错误、流程遗漏、判断规则；不要把一次性偏好写进 SOP。
-3. 更新后，相关 SOP 会在下一次 session-start hook 的摘要中出现或继续出现；agent 匹配任务后读取完整 SOP 时会看到最新规则。
+1. Determine scope first: project-specific knowledge belongs in the current workspace; cross-project knowledge belongs in user scope.
+2. Resolve the matching SOP by project, user, then built-in precedence:
+   - Modify a matching SOP already owned by the selected writable scope.
+   - When a built-in or other-scope SOP needs a scope-specific change, create or update a same-name override in the selected writable scope and preserve the applicable base rules.
+   - When no SOP matches, create one in the selected writable scope and give it a clear `when_to_use`.
+3. Update only reusable operating errors, missed steps, or judgment rules. Do not store one-off preferences.
+4. Updated project SOPs are available from the current workspace; updated user SOPs appear after the next session-start summary. The Agent sees the latest rules when it loads the complete matching SOP.
 
 ### `sop-manager see <name>`
 
-查看一个 SOP：
+Inspect one SOP:
 
-1. 先查 `~/.csl-agent-kit/sops/{name}.md`，再查 `skills/sop-manager/sops/{name}.md`。
-2. 如果找不到精确文件名，按 frontmatter 的 `name` 匹配。
-3. 读取并总结完整 SOP。不要改写它，除非用户明确要求。
+1. Search `<workspace>/.agents/sops/`, then `~/.csl-agent-kit/sops/`, then `skills/sop-manager/sops/`.
+2. Prefer an exact filename, then match frontmatter `name`.
+3. Read and summarize the complete highest-precedence SOP. Do not edit it unless the user explicitly asks.
 
-## 自动应用规则
+## Automatic application
 
-开始任何流程类或规则判断类工作前：
+Before process work or rule-based judgment:
 
-1. 使用 session-start hook 注入的 SOP summary 判断是否有匹配 SOP。
-2. 如果 prompt-time hook 提供候选 SOP，优先检查候选；不要只因为候选出现就跳过匹配判断。
-3. 如果匹配，读取完整 SOP 文件。
-4. 流程型 SOP 按步骤执行；规则型 SOP 按使用方式和规则分组判断。
-5. 最终回复前用 SOP 的完成标准 checklist 自检。
-6. 如果流程、规则或冲突处理不清楚，停止并询问用户。
+1. Use the session-start SOP summary to identify matching SOPs.
+2. Preferentially inspect prompt-time candidates, but do not apply them solely because they were suggested.
+3. Read the complete matching SOP.
+4. Execute process SOP steps or apply rule SOP decision groups.
+5. Before the final response, verify the SOP's completion checklist.
+6. Stop and ask the user when the process, rule, or conflict handling is materially unclear.
 
-匹配启发：用户任务与 SOP 的 `when_to_use` 或 `name` 对齐时，该 SOP 适用。
+A task matches when its intent aligns with an SOP's `when_to_use` or `name`.
 
-## 优先级
+## Priority boundary
 
-SOP 不能覆盖 system、developer、明确用户指令、平台安全策略、仓库规则或工具权限。SOP 只在适用范围内作为流程规则生效。
+SOPs cannot override system or developer instructions, explicit user instructions, platform safety policy, repository rules, or tool permissions. They apply only within their stated scope.

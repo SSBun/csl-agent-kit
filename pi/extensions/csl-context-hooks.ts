@@ -16,7 +16,7 @@ interface SopSummary {
 
 interface SopCandidateModule {
 	findCandidates(prompt: string, sops?: SopSummary[]): SopSummary[];
-	loadSops(): SopSummary[];
+	loadSops(options?: { workspace?: string }): SopSummary[];
 }
 
 interface TriggerPrompt {
@@ -266,9 +266,9 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	let toolReminderShown = false;
 	const pendingFileChanges = new Map<string, ChangedFile>();
 
-	const refresh = () => {
+	const refresh = (workspace?: string) => {
 		try {
-			sops = candidateModule.loadSops();
+			sops = candidateModule.loadSops({ workspace });
 		} catch {
 			sops = [];
 		}
@@ -310,19 +310,19 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		}
 	}
 
-	pi.on("session_start", async () => {
+	pi.on("session_start", async (_event, ctx) => {
 		pendingFileChanges.clear();
-		refresh();
+		refresh(ctx.cwd);
 	});
 
 	pi.on("session_compact", async (_event, ctx) => {
-		refresh();
+		refresh(ctx.cwd);
 		// after-compact: side-effect scripts only
 		triggerScripts("after-compact", ctx.cwd);
 	});
 
 	pi.on("before_agent_start", async (event, ctx) => {
-		refresh();
+		refresh(ctx.cwd);
 		try {
 			activeCandidates = candidateModule.findCandidates(event.prompt, sops);
 		} catch {

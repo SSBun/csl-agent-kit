@@ -43,6 +43,7 @@ git status --short --branch --untracked-files=all
 
 运行 `skills/sop-manager/scripts/sop-summaries.sh`，或等价读取：
 
+- `<workspace>/.agents/sops/*.md`
 - `~/.csl-agent-kit/sops/*.md`
 - `skills/sop-manager/sops/*.md`
 

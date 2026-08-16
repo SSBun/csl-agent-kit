@@ -62,12 +62,14 @@ function listMarkdown(dir) {
   }
 }
 
-function loadSops(userSopDir = resolveUserSopDir()) {
+function loadSops({ workspace = process.cwd(), userSopDir = resolveUserSopDir() } = {}) {
+  const projectSopDir = path.join(path.resolve(workspace), '.agents', 'sops');
   const builtIn = listMarkdown(path.join(repoSkillDir, 'sops')).map((file) => ({ file, source: 'built-in' }));
   const user = listMarkdown(userSopDir).map((file) => ({ file, source: 'user' }));
+  const project = listMarkdown(projectSopDir).map((file) => ({ file, source: 'project' }));
   const byName = new Map();
 
-  for (const item of [...builtIn, ...user]) {
+  for (const item of [...builtIn, ...user, ...project]) {
     try {
       const fm = parseFrontmatter(fs.readFileSync(item.file, 'utf8'));
       const name = typeof fm.name === 'string' && fm.name.trim()
