@@ -29,9 +29,9 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
 | workspace-context | `/csl:workspace-context` | `/workspace-context` | Load Project Core and task-relevant Context Packs, then maintain durable context. |
-| csl-task | `/csl:csl-task` | `/csl-task` | Manage one canonical task through evidence and completion. |
-| csl-task-plan | `/csl:csl-task-plan` | `/csl-task-plan` | Prepare a read-only, decisions-only implementation handoff. |
-| csl-task-auto | `/csl:csl-task-auto` | `/csl-task-auto` | Run ordered parent and child tasks with a final integration gate. |
+| task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
+| task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
+| task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
 | workspace-lessons | `/csl:workspace-lessons` | `/workspace-lessons` | Query, apply, and maintain reusable workspace lessons. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
 | triggerify | `/csl:triggerify` | `/triggerify` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 trigger。 |
@@ -42,7 +42,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-用户创建的 SOP 存放在 `<data-root>/sops/`；跨会话持久指令保存为 `<data-root>/triggerify/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/triggerify/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:workspace-workflow-gates` 默认启用并注入 task workflow 路由，用户可通过 Triggerify 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
 
 ## Canonical source and duplicates
 
@@ -203,7 +203,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-review`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：桥接 Triggerify 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
-- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度面板（状态 emoji + Target checkbox 进度），在编辑器上方显示；通过 `tool_call`/`tool_execution_end` 配对检测任务文件变更并自动刷新；提供 `/csl-tasks` 命令按状态分组打印完整列表。
+- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印完整列表。
 
 **启用/禁用扩展或技能：** 装完整包后，用 pi 原生命令精细控制：
 
@@ -284,7 +284,7 @@ csl-agent-kit install --all
 
 ```
 skills/                  # Shared skill source (all platforms)
-skills/csl-tasks/        # Cross-host task, planning, auto-execution, and shared state core
+skills/csl-tasks/        # Cross-host task, planning, queue execution, and shared state core
 skills/workspace-workflow/ # Context and lessons workflow skills
 skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
