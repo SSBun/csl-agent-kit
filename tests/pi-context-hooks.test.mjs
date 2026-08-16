@@ -142,11 +142,43 @@ test("rebuilds Pi Triggerify context before every agent turn", async () => {
     const first = await handlers.get("before_agent_start")({ prompt: "deploy frobnicator production", systemPrompt: "base prompt" }, context);
     assert.match(first.systemPrompt, /Prefer concise reports/);
     assert.match(first.systemPrompt, /deploy-production/);
+    assert.match(first.systemPrompt, /\$task, \$task-plan, or \$task-queue/);
+    assert.match(first.systemPrompt, /call `task_focus`/);
+    assert.doesNotMatch(first.systemPrompt, /\$csl-task/);
 
     writeSessionPrompt(root, "directive-output", "Show absolute paths.");
     const second = await handlers.get("before_agent_start")({ prompt: "show a path", systemPrompt: "base prompt" }, context);
     assert.match(second.systemPrompt, /Show absolute paths/);
     assert.doesNotMatch(second.systemPrompt, /Prefer concise reports/);
+  } finally {
+    if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previous;
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("loads project SOPs from the active Pi workspace", async () => {
+  const root = createFixture();
+  const workspace = join(root, "workspace");
+  const projectSops = join(workspace, ".agents", "sops");
+  mkdirSync(projectSops, { recursive: true });
+  writeFileSync(join(projectSops, "verify-project.md"), `---
+name: verify-project
+description: Verify this project.
+when_to_use: Use when verifying this project.
+---
+`);
+
+  const previous = process.env.CSL_AGENT_KIT_HOME;
+  process.env.CSL_AGENT_KIT_HOME = root;
+  const { api, handlers } = fakePi();
+  const context = fakeContext(workspace);
+  try {
+    cslContextHooks(api);
+    await handlers.get("session_start")({}, context);
+    const result = await handlers.get("before_agent_start")({ prompt: "verify this project", systemPrompt: "base prompt" }, context);
+    assert.match(result.systemPrompt, /verify-project/);
+    assert.match(result.systemPrompt, /\(project: .*\.agents\/sops\/verify-project\.md\)/);
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;

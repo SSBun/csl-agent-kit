@@ -12,6 +12,7 @@ const {
   loadInstallSelection,
   saveInstallSelection,
 } = require(cli);
+const { loadSops } = require(path.join(root, "skills", "sop-manager", "scripts", "sop-candidates.js"));
 
 function discoverProjectOwnedSkills(directory, relative = "skills") {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -154,18 +155,18 @@ test("root hook commands execute bundled resources from plugin root variables", 
   const directory = mkdtempSync(path.join(tmpdir(), "csl-hook-root-"));
   const pluginRoot = path.join(directory, "plugin");
   const claudePluginRoot = path.join(directory, "claude-plugin");
-  const hooks = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8"))
-    .hooks.SessionStart.flatMap((entry) => entry.hooks);
+  const hookManifest = JSON.parse(readFileSync(path.join(root, "hooks", "hooks.json"), "utf8")).hooks;
+  const hooks = hookManifest.SessionStart.flatMap((entry) => entry.hooks);
+  const postCompactHooks = hookManifest.PostCompact.flatMap((entry) => entry.hooks);
   const hook = hooks.find(({ command }) => command.includes("sop-summaries.sh")).command;
-  const gatesHook = hooks.find(({ command }) => command.includes("workspace-workflow-gates.md")).command;
+  assert.ok(hookManifest.SessionStart.some(({ matcher }) => matcher.split("|").includes("compact")));
+  assert.equal([...hooks, ...postCompactHooks].some(({ command }) => command.includes("workspace-workflow-gates.md")), false);
+  assert.ok(hooks.some(({ command }) => command.includes("skills/triggerify/scripts/triggerify.js")));
   try {
     for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
       const script = path.join(fakeRoot, "skills", "sop-manager", "scripts", "sop-summaries.sh");
-      const gates = path.join(fakeRoot, "super-agent", "workspace-workflow-gates.md");
       mkdirSync(path.dirname(script), { recursive: true });
-      mkdirSync(path.dirname(gates), { recursive: true });
       writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' '${output}'\n`);
-      writeFileSync(gates, `${output}-gates\n`);
       chmodSync(script, 0o755);
     }
 
@@ -175,12 +176,6 @@ test("root hook commands execute bundled resources from plugin root variables", 
     });
     assert.equal(pluginResult.status, 0, pluginResult.stderr);
     assert.equal(pluginResult.stdout.trim(), "plugin-root");
-    const pluginGates = spawnSync("/bin/sh", ["-c", gatesHook], {
-      encoding: "utf8",
-      env: { ...process.env, HOME: path.join(directory, "home"), PLUGIN_ROOT: pluginRoot, CLAUDE_PLUGIN_ROOT: claudePluginRoot },
-    });
-    assert.equal(pluginGates.status, 0, pluginGates.stderr);
-    assert.equal(pluginGates.stdout.trim(), "plugin-root-gates");
 
     const claudeResult = spawnSync("/bin/sh", ["-c", hook], {
       encoding: "utf8",
@@ -188,12 +183,50 @@ test("root hook commands execute bundled resources from plugin root variables", 
     });
     assert.equal(claudeResult.status, 0, claudeResult.stderr);
     assert.equal(claudeResult.stdout.trim(), "claude-plugin-root");
-    const claudeGates = spawnSync("/bin/sh", ["-c", gatesHook], {
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("project SOPs override user and built-in SOPs in routing and summaries", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-project-sops-"));
+  const workspace = path.join(directory, "workspace");
+  const userSops = path.join(directory, "user-sops");
+  const projectSops = path.join(workspace, ".agents", "sops");
+  const summaryScript = path.join(root, "skills", "sop-manager", "scripts", "sop-summaries.sh");
+  const sop = (name, whenToUse) => `---\nname: ${name}\ndescription: Test SOP.\nwhen_to_use: ${whenToUse}\n---\n`;
+
+  mkdirSync(userSops, { recursive: true });
+  mkdirSync(projectSops, { recursive: true });
+  writeFileSync(path.join(userSops, "user-code-style.md"), sop("code-style", "Use the user code style SOP."));
+  writeFileSync(path.join(userSops, "user-only.md"), sop("user-only", "Use the user-only SOP."));
+  writeFileSync(path.join(projectSops, "project-code-style.md"), sop("code-style", "Use the project code style SOP."));
+  writeFileSync(path.join(projectSops, "project-swift-api.md"), sop("swift-api-design", "Use the project Swift API SOP."));
+  writeFileSync(path.join(projectSops, "project-only.md"), sop("project-only", "Use the project-only SOP."));
+
+  try {
+    const loaded = loadSops({ workspace, userSopDir: userSops });
+    const byName = new Map(loaded.map((item) => [item.name, item]));
+    assert.equal(byName.get("code-style").source, "project");
+    assert.equal(byName.get("code-style").when_to_use, "Use the project code style SOP.");
+    assert.equal(byName.get("user-only").source, "user");
+    assert.equal(byName.get("swift-api-design").source, "project");
+    assert.equal(byName.get("swift-api-design").when_to_use, "Use the project Swift API SOP.");
+
+    const summary = spawnSync(summaryScript, [], {
+      cwd: workspace,
       encoding: "utf8",
-      env: { ...process.env, HOME: path.join(directory, "home"), PLUGIN_ROOT: "", CLAUDE_PLUGIN_ROOT: claudePluginRoot },
+      env: { ...process.env, CSL_AGENT_KIT_SOPS_DIR: userSops },
     });
-    assert.equal(claudeGates.status, 0, claudeGates.stderr);
-    assert.equal(claudeGates.stdout.trim(), "claude-plugin-root-gates");
+    assert.equal(summary.status, 0, summary.stderr);
+    const codeStyleLines = summary.stdout.split("\n").filter((line) => line.startsWith("- code-style:"));
+    assert.equal(codeStyleLines.length, 1);
+    assert.match(codeStyleLines[0], /project code style SOP.*\(project:/);
+    const swiftApiLines = summary.stdout.split("\n").filter((line) => line.startsWith("- swift-api-design:"));
+    assert.equal(swiftApiLines.length, 1);
+    assert.match(swiftApiLines[0], /project Swift API SOP.*\(project:/);
+    assert.match(summary.stdout, /- user-only:.*\(user:/);
+    assert.match(summary.stdout, /- project-only:.*\(project:/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
