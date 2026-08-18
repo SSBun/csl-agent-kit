@@ -45,6 +45,16 @@ alwaysApply: false
 
 Use `do_not_use_when` to prevent false positives. When a task matches both `when_to_use` and `do_not_use_when`, do not apply the SOP unless the user explicitly selects it.
 
+## Routing keywords
+
+Prompt-time candidate matching scores keywords derived automatically from `name`, `when_to_use`, and `globs` (penalized by `do_not_use_when`); there is no separate keyword field. When generating or updating any SOP, make its routing fields matchable:
+
+- Put concrete, distinctive terms in `name` and `when_to_use`: product or component names (e.g. `Kanshan`), specific techniques or formats (e.g. `green-screen`, `Glyph JSON`, `DMG`, `Sparkle appcast`), and stable tool or platform names.
+- Prefer terms a user would literally type when requesting the task; an exact `name` hit scores highest, hyphen-separated name words also match.
+- Do not rely on generic words (`use`, `when`, `project`, `file`, `build`, `用于`); they are stopwords or weak signals and are filtered or scored low.
+- Use `do_not_use_when` phrases that literally echo the adjacent SOP's distinctive terms, so the penalty fires on overlapping requests.
+- Keep `when_to_use` one sentence; list the distinctive terms naturally instead of stuffing a keyword list.
+
 ## SOP types
 
 | Type | Use for | Example |
@@ -77,7 +87,7 @@ Create an SOP:
    - Process: `skills/sop-manager/references/process-sop-example.md`
    - Rule: `skills/sop-manager/references/rule-sop-example.md`
 5. Confirm the SOP has:
-   - A clear trigger-oriented `when_to_use`.
+   - A clear trigger-oriented `when_to_use` containing the distinctive routing keywords above.
    - `do_not_use_when` when needed to avoid overlap with adjacent SOPs.
    - A concise `description`.
    - Explicit in-scope and out-of-scope boundaries.
@@ -98,7 +108,7 @@ Integrate reusable error patterns, missed steps, user corrections, or review fin
    - Modify a matching SOP already owned by the selected writable scope.
    - When a built-in or other-scope SOP needs a scope-specific change, create or update a same-name override in the selected writable scope and preserve the applicable base rules.
    - When no SOP matches, create one in the selected writable scope and give it a clear `when_to_use`.
-3. Update only reusable operating errors, missed steps, or judgment rules. Do not store one-off preferences.
+3. Update only reusable operating errors, missed steps, or judgment rules. Do not store one-off preferences. When an update changes when the SOP applies, regenerate its routing keywords accordingly.
 4. Updated project SOPs are available from the current workspace; updated user SOPs appear after the next session-start summary. The Agent sees the latest rules when it loads the complete matching SOP.
 
 ### `sop-manager see <name>`

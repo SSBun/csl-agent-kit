@@ -1,5 +1,7 @@
 # 任务索引
 
+- [引导 SOP 生成可匹配关键词](tasks/guide-sop-route-keywords.md) — Completed (2026-08-18 19:20)
+
 - [提交当前本地改动](tasks/commit-current-local-changes.md) — Completed (2026-08-16 21:09)
 
 - [支持项目级 SOP](tasks/support-project-level-sops.md) — Completed (2026-08-16 21:02)
