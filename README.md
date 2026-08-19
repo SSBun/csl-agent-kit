@@ -11,10 +11,9 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | release | `/csl:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
 | analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份含 Mermaid 架构/复杂流程图，且职责、功能模块与核心工作流均有源码证据的系统化持久报告。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
-| grill-me | `/csl:grill-me` | `/grill-me` | Stress-test a plan or design through relentless questioning. |
+| task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
 | code-review | `/csl:code-review` | `/code-review` | 审查代码变更中的正确性、安全、需求符合度、规范、测试与可维护性。 |
 | domain-modeling | `/csl:domain-modeling` | `/domain-modeling` | 建立领域术语、统一语言与架构决策。 |
-| grill-with-docs | `/csl:grill-with-docs` | `/grill-with-docs` | 深入澄清方案，并同步产出 ADR 与术语文档。 |
 | improve-codebase-architecture | `/csl:improve-codebase-architecture` | `/improve-codebase-architecture` | 扫描架构改进机会并生成可视化报告。 |
 | research | `/csl:research` | `/research` | 基于高可信来源调研并产出带引用的 Markdown。 |
 | resolving-merge-conflicts | `/csl:resolving-merge-conflicts` | `/resolving-merge-conflicts` | 按双方意图解决进行中的 merge 或 rebase 冲突。 |
@@ -48,7 +47,7 @@ Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
 This repository is the **canonical source** for CSL Agent Kit. Install via the [`csl-agent-kit` CLI](#csl-agent-kit-cli), [`npx skills`](#npx-skills-cursor-codex-and-other-agents), `pi install`, or each platform's plugin marketplace.
 
-If you also have same-named skills from other marketplaces or personal folders (e.g. `grill-me`, `create-app-icon`), remove or rename those copies to avoid the agent loading the wrong version. After installing CSL Agent Kit, prefer invoking skills from this plugin only.
+If you also have same-named skills from other marketplaces or personal folders (e.g. `create-app-icon`), remove or rename those copies to avoid the agent loading the wrong version. After installing CSL Agent Kit, prefer invoking skills from this plugin only.
 
 第三方导入技能位于 `skills/<来源分组>/<技能名>/`。每个含 `SKILL.md` 的第三方叶子目录都必须有 `.repository.json`，记录上游仓库 URL、上游相对路径、导入 ref 与 commit、许可证及上游状态。该文件描述上游基线；更新时必须先比较本地改写，不能直接覆盖。
 
@@ -142,7 +141,7 @@ npx skills add . --all -a cursor -g -y
 npx skills add SSBun/csl-agent-kit --list
 
 # Install by name
-npx skills add SSBun/csl-agent-kit --skill grill-me --skill release -a cursor -g -y
+npx skills add SSBun/csl-agent-kit --skill task-grill --skill release -a cursor -g -y
 ```
 
 **Other useful commands:**
@@ -150,7 +149,7 @@ npx skills add SSBun/csl-agent-kit --skill grill-me --skill release -a cursor -g
 ```bash
 npx skills list -g -a cursor          # list installed global skills
 npx skills update -g -y               # update installed skills
-npx skills remove grill-me -g -a cursor -y
+npx skills remove task-grill -g -a cursor -y
 ```
 
 Reload Cursor (`Developer: Reload Window`) after installing. Skills also appear under **Settings → Rules → Agent Decides**.

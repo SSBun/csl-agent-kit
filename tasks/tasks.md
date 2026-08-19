@@ -1,5 +1,9 @@
 # 任务索引
 
+- [Reorganize skills into dev/meta/domain subfolders](tasks/folder-reorganize-skills.md) — In Progress (2026-08-19 17:49)
+
+- [移除第三方 grill 封装并新增个人 task-grill 技能](tasks/remove-third-party-grills-add-task-grill.md) — Completed (2026-08-10)
+
 - [引导 SOP 生成可匹配关键词](tasks/guide-sop-route-keywords.md) — Completed (2026-08-18 19:20)
 
 - [提交当前本地改动](tasks/commit-current-local-changes.md) — Completed (2026-08-16 21:09)
