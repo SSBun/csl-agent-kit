@@ -78,13 +78,13 @@ const require = createRequire(import.meta.url);
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(baseDir, "..", "..");
 const candidateModule = require(
-	join(packageRoot, "skills", "sop-manager", "scripts", "sop-candidates.js"),
+	join(packageRoot, "skills", "meta", "sop-manager", "scripts", "sop-candidates.js"),
 ) as SopCandidateModule;
 const triggerify = require(
-	join(packageRoot, "skills", "triggerify", "scripts", "triggerify.js"),
+	join(packageRoot, "skills", "meta", "triggerify", "scripts", "triggerify.js"),
 ) as TriggerifyModule;
 const titleHook = require(
-	join(packageRoot, "skills", "triggerify", "scripts", "refresh-tab-title.js"),
+	join(packageRoot, "skills", "meta", "triggerify", "scripts", "refresh-tab-title.js"),
 ) as TitleHookModule;
 
 const MUTATING_TOOLS = new Set(["bash", "edit", "write", "apply_patch"]);

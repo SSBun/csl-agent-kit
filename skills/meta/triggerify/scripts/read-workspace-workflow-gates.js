@@ -4,7 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const file = path.join(__dirname, "..", "..", "..", "super-agent", "workspace-workflow-gates.md");
+const file = path.join(__dirname, "..", "..", "..", "..", "super-agent", "workspace-workflow-gates.md");
 
 try {
   process.stdout.write(fs.readFileSync(file, "utf8"));
