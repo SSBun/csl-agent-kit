@@ -12,7 +12,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份含 Mermaid 架构/复杂流程图，且职责、功能模块与核心工作流均有源码证据的系统化持久报告。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
-| code-review | `/csl:code-review` | `/code-review` | 审查代码变更中的正确性、安全、需求符合度、规范、测试与可维护性。 |
+| task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查。 |
 | domain-modeling | `/csl:domain-modeling` | `/domain-modeling` | 建立领域术语、统一语言与架构决策。 |
 | improve-codebase-architecture | `/csl:improve-codebase-architecture` | `/improve-codebase-architecture` | 扫描架构改进机会并生成可视化报告。 |
 | research | `/csl:research` | `/research` | 基于高可信来源调研并产出带引用的 Markdown。 |
@@ -199,10 +199,11 @@ The Pi package manifest in `package.json` exposes:
 
 - `skills/` as Pi skills, available as `/skill:<name>`.
 - `pi/extensions/` as Pi-specific extensions.
-- `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/code-review`、`/brainstorming` 等 Cursor/Codex 风格别名。
+- `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/task-review`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：桥接 Triggerify 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
-- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印完整列表。
+- `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
+- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
 
 **启用/禁用扩展或技能：** 装完整包后，用 pi 原生命令精细控制：
 
@@ -212,6 +213,25 @@ pi config -l       # 项目级：覆盖全局设置（写入 .pi/settings.json�
 ```
 
 TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无需手动编辑 `settings.json`。
+
+模型与 thinking level 预设写在 `~/.pi/agent/presets.json`：
+
+```json
+{
+  "flash-max": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "thinkingLevel": "max"
+  },
+  "sol-xhigh": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-sol",
+    "thinkingLevel": "xhigh"
+  }
+}
+```
+
+在 Pi 中执行 `/preset list` 查看当前预设，执行 `/preset` 交互选择，或直接执行 `/preset flash-max`、`/preset sol-xhigh`。配置文件每次执行时重新读取，修改后无需 `/reload`。
 
 Fast Mode usage:
 
