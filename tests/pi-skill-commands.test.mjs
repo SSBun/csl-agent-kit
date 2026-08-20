@@ -40,6 +40,7 @@ test("registers aliases for nested skills", () => {
   assert.equal(commands.has("code-review"), false);
   assert.equal(commands.has("code-reviewer"), false);
   assert.equal(commands.has("deep-explore"), false);
+  assert.equal(commands.has("analyze-project"), false);
   assert.equal(commands.has("same-page"), false);
   assert.equal(commands.has("workspace-workflow"), false);
   assert.equal(commands.has("csl-task"), false);

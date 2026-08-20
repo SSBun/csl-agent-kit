@@ -129,11 +129,14 @@ test("Claude plugin exports every project-owned leaf skill", () => {
   assert.deepEqual([...manifest.skills].sort(), expected);
 });
 
-test("does not ship the retired deep-explore skill", () => {
+test("does not ship retired skills", () => {
   const manifest = JSON.parse(readFileSync(path.join(root, ".claude-plugin", "plugin.json"), "utf8"));
 
   assert.equal(existsSync(path.join(root, "skills", "deep-explore")), false);
   assert.equal(manifest.skills.includes("./skills/deep-explore"), false);
+  assert.equal(existsSync(path.join(root, "skills", "dev", "analyze-project")), false);
+  assert.equal(existsSync(path.join(root, "deprecated", "analyze-project", "SKILL.md")), true);
+  assert.equal(manifest.skills.includes("./skills/dev/analyze-project"), false);
 });
 
 test("ships task-review as the only ordinary review skill", () => {
