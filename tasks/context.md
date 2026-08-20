@@ -26,8 +26,8 @@
 - Scope: Workspace Context loading, task-relevant retrieval, source-backed maintenance, and default lifecycle consumers.
 - Paths: `tasks/context.md`, `skills/workspace-workflow/workspace-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/csl-tasks/task/SKILL.md`, `tests/task-files.test.mjs`
 - Keywords: workspace context, project core, context pack, task fingerprint, dispatch, authority
-- Authority: `skills/workspace-workflow/workspace-context/SKILL.md`, `skills/workspace-workflow/workspace-context/scripts/context.js`, `tests/task-files.test.mjs`
-- Recheck: When the Context schema, query lifecycle, write permissions, or default consumer wording changes.
+- Authority: `skills/workspace-workflow/workspace-context/SKILL.md`, `skills/workspace-workflow/workspace-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/csl-tasks/task/SKILL.md`, `tests/task-files.test.mjs`
+- Recheck: When the Context schema, task activation order, query lifecycle, write permissions, or default consumer wording changes.
 
 ### Purpose and Boundaries
 - Workspace Context 让新 Agent 无需重复宽泛 repository exploration、repo-map 或架构分析即可形成正确项目模型；它不取代任务直接相关源码、测试和 Authority 验证。
@@ -38,10 +38,10 @@
 - `scripts/context.js` 只读解析 Core、正式 Packs 和 legacy bullets，提供 `core/index/show/validate/--self-test`；Agent 负责 Task Fingerprint、语义匹配、Authority 验证与写入判断。
 
 ### Relationships
-- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、concrete-task Pack query 和 completion maintenance；`task` 消费已加载的 Core 与 task-relevant Packs，不无差别读取整份 Context。
+- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、canonical task activation、user-facing Task Target confirmation、concrete-task Pack query 和 completion maintenance；`task` 先消费 Core 完成最小任务归属查询、激活与确认，再消费 task-relevant Packs，不无差别读取整份 Context。
 
 ### Workflows
-- Session start、resume 或 compaction 先加载 Core；具体任务形成 Task Fingerprint 后运行 index 并通常批量 show 一至三个 Packs；重要依赖前验证 Authority，结束前维护变化内容并 validate。
+- Session start、resume 或 compaction 先加载 Core；具体非平凡 outcome 先创建、恢复或重新打开 owning task 并聚焦 Session，再声明一个含可观察完成条件的 user-facing Task Target 并等待显式确认；确认后才形成 Task Fingerprint、运行 index 并通常批量 show 一至三个 Packs；重要依赖前验证 Authority，结束前维护变化内容并 validate。
 
 ### Decision and Verification Boundaries
 - Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，任何 Project Core 持久变更都必须先展示精确 diff 并取得用户确认。
@@ -96,10 +96,10 @@
 - 任务面板以 `<ctx.cwd>/tasks/tasks.md` 和任务正文作为工作区共享状态与 Target 进度来源，不修改任务 Markdown；每个 session 的 focused task 只写入该 Pi session 的 `csl-task-focus` custom entry。
 
 ### Structure
-- `session_start` 与 `session_tree` 从当前 branch 的最新 focus entry 恢复关联；`task_focus` 工具通过 prompt guidance 供 Agent 在创建、恢复、重开或激活 canonical task 后自动关联，`/task-focus <task-id|clear>` 提供手动切换或清除，`/tasks` 打印完整工作区列表。
+- `session_start` 与 `session_tree` 从当前 branch 的最新 focus entry 恢复关联；`task_focus` 工具通过 prompt guidance 供 Agent 在创建、恢复、重开或激活 canonical task 后自动关联，`/task-focus <task-id|clear>` 提供手动切换或清除，`/tasks` 按索引顺序截取最近 20 个任务后分状态打印。
 - 有有效关联时，TUI 把该任务单列于 `This Session`，其余近期任务列于 `Workspace`；无关联或失效关联回退普通共享列表。已完成任务保持关联，直到被替换或清除。
 - TUI 对非空任务只注册一次自定义 Component，每 5 秒清除当前工作区进度缓存、重读任务并原位更新；空列表注销组件，重复启动释放旧 timer，`session_shutdown` 最终清理。
-- 支持 OSC 8 的 TUI 将 canonical `tasks/<task-slug>.md` 标题链接到对应绝对文件 URL；不支持 hyperlink 的终端保持纯文本。RPC 忽略 session 分组并保持可序列化纯字符串数组，headless 不注册 widget。
+- 支持 OSC 8 的 TUI 在任务 widget 与 `/tasks` 通知中将 canonical `tasks/<task-slug>.md` 标题链接到对应绝对文件 URL；不支持 hyperlink 的终端及非 canonical 路径保持纯文本。RPC 忽略 session 分组并保持可序列化纯字符串数组，headless 不注册 widget。
 
 ### Decision and Verification Boundaries
 - 只有符合 `tasks/[a-z0-9-]+.md` 的 canonical index path 才能被关联或生成文件链接；`pathToFileURL` 负责绝对路径和特殊字符编码。
@@ -110,31 +110,35 @@
 - Paths: `skills/csl-tasks/task/`, `skills/csl-tasks/task-plan/`, `skills/csl-tasks/task-queue/`, `skills/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
 - Keywords: task, task-plan, task-queue, canonical task, queue parent, Kind Queue, legacy Auto
 - Authority: `skills/csl-tasks/task/SKILL.md`, `skills/csl-tasks/task-plan/SKILL.md`, `skills/csl-tasks/task-queue/SKILL.md`, `skills/csl-tasks/shared/lib/task-core.js`
-- Recheck: 当公开 skill identity、task record schema、状态转换、父子图或完成门禁变化时复核。
+- Recheck: 当公开 skill identity、task activation timing、task record schema、状态转换、父子图或完成门禁变化时复核。
 
 ### Purpose and Boundaries
-- `task` 管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
+- `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
 
 ### Structure
 - 三个 workflow 共享 `shared/lib/task-core.js` 与 `shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
+### Workflows
+- 一旦请求形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session，再声明一个含可观察完成条件的 user-facing Task Target 并等待显式确认；确认前只允许保持该任务一致所需的 lifecycle writes，确认后才进行实质讨论、澄清、探索、调研、规划、委派或实施。一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可跳过。
+
 ### Decision and Verification Boundaries
+- User-facing Task Target 是 task 激活后的会话确认门，不替代 canonical task record 的 `Target` section。
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；内部集合目录与共享 CLI 文件名保持稳定。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
 ## CTX-triggerify — Triggerify runtime and built-in hooks
 - Scope: Triggerify V1 rule storage, host-neutral execution, inner hook policy, and host lifecycle adapters.
-- Paths: `skills/triggerify/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/triggerify.test.js`, `tests/pi-context-hooks.test.mjs`
+- Paths: `skills/meta/triggerify/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/triggerify.test.js`, `tests/pi-context-hooks.test.mjs`
 - Keywords: triggerify, inner hook, session-start, inject-output, workspace workflow gates, compaction, host adapter
-- Authority: `skills/triggerify/scripts/triggerify.js`, `skills/triggerify/scripts/lib/store.js`, `skills/triggerify/scripts/lib/runtime.js`, `hooks/hooks.json`
+- Authority: `skills/meta/triggerify/scripts/triggerify.js`, `skills/meta/triggerify/scripts/lib/store.js`, `skills/meta/triggerify/scripts/lib/runtime.js`, `hooks/hooks.json`
 - Recheck: 当 Triggerify rule schema、inner hook override、宿主 capability 或 session/compaction lifecycle mapping 变化时复核。
 
 ### Purpose and Boundaries
-- `skills/triggerify/scripts/triggerify.js` 是稳定 facade；rule、store、runtime、CLI 与 native hook 模块分别负责 V1 语义、存储、执行和宿主适配，外部 adapter 通过 `createEvent()` 与 `runEvent()` 接入。
+- `skills/meta/triggerify/scripts/triggerify.js` 是稳定 facade；rule、store、runtime、CLI 与 native hook 模块分别负责 V1 语义、存储、执行和宿主适配，外部 adapter 通过 `createEvent()` 与 `runEvent()` 接入。
 
 ### Structure
-- `skills/triggerify/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/triggerify/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
+- `skills/meta/triggerify/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/triggerify/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
 - `inner:workspace-workflow-gates` 在 `session-start` 运行 bundled script 并注入 `super-agent/workspace-workflow-gates.md`，使 task workflow 路由不依赖用户替换默认 Super Agent。
 
 ### Relationships
@@ -145,17 +149,17 @@
 
 ## CTX-sop-manager — Project, user, and built-in SOP routing
 - Scope: SOP discovery, writable ownership, same-name precedence, session summaries, prompt candidates, and Pi workspace loading.
-- Paths: `skills/sop-manager/`, `skills/release/SKILL.md`, `pi/extensions/csl-context-hooks.ts`, `tests/cli-install-output.test.js`, `tests/pi-context-hooks.test.mjs`
+- Paths: `skills/meta/sop-manager/`, `skills/dev/release/SKILL.md`, `pi/extensions/csl-context-hooks.ts`, `tests/cli-install-output.test.js`, `tests/pi-context-hooks.test.mjs`
 - Keywords: SOP, project SOP, user SOP, built-in SOP, .agents/sops, precedence, candidates
-- Authority: `skills/sop-manager/SKILL.md`, `skills/sop-manager/scripts/sop-summaries.sh`, `skills/sop-manager/scripts/sop-candidates.js`
+- Authority: `skills/meta/sop-manager/SKILL.md`, `skills/meta/sop-manager/scripts/sop-summaries.sh`, `skills/meta/sop-manager/scripts/sop-candidates.js`
 - Recheck: 当 SOP 存储层级、workspace 根边界、同名覆盖顺序或宿主 context 注入方式变化时复核。
 
 ### Purpose and Boundaries
 - SOP Manager 统一发现项目、用户和内置 SOP；同一 frontmatter `name` 只暴露最高优先级版本，顺序固定为项目级、用户级、内置级。
 
 ### Structure
-- 项目级 SOP 位于当前 workspace 的 `.agents/sops/` 并可随仓库版本控制；用户级 SOP 位于 `~/.csl-agent-kit/sops/` 并跨项目生效；内置 SOP 位于 `skills/sop-manager/sops/` 并随包分发。
-- `skills/sop-manager/sops/code-style.md` 是跨语言内置代码风格 SOP；它按语言读取 `skills/sop-manager/references/code-style/`，Swift 参考为 `swift-style.md`。
+- 项目级 SOP 位于当前 workspace 的 `.agents/sops/` 并可随仓库版本控制；用户级 SOP 位于 `~/.csl-agent-kit/sops/` 并跨项目生效；内置 SOP 位于 `skills/meta/sop-manager/sops/` 并随包分发。
+- `skills/meta/sop-manager/sops/code-style.md` 是跨语言内置代码风格 SOP；它按语言读取 `skills/meta/sop-manager/references/code-style/`，Swift 参考为 `swift-style.md`。
 
 ### Relationships
 - Native hooks 通过 `sop-summaries.sh` 从当前工作目录生成 session summary，并通过 `sop-candidates.js` 做 prompt-time 路由；Pi adapter 必须把 `ctx.cwd` 显式传给同一候选模块。
@@ -169,7 +173,7 @@
 - `csl-agent-kit install` treats the integration multiselect as sufficient authorization and does not ask a second external-CLI confirmation.
 - Triggerify's distributed `SKILL.md` is written in English, treats its bundled CLI as the accepted-behavior authority, and does not use the project RFC as runtime guidance.
 - `skills/workspace-workflow/workspace-lessons/` 以 `tasks/lessons.md` 为唯一权威规则集：Agent 在 Entry、Change 与 Completion Gates 负责语义召回、冲突处理和 Check，`scripts/lessons.js` 仅负责只读解析、索引、按 ID 查询与 schema 校验；所有持久 Add/Update/Merge/Replace/Delete 都必须先展示精确变更并取得确认，legacy records 渐进兼容且不缓存已选 IDs。权威契约与回归入口为该 skill 的 `SKILL.md`、查询脚本、`evals/query_cases.json`、共享 `evals/lessons_trigger_cases.json` 和 `tests/task-files.test.mjs`。
-- `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/triggerify/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/triggerify.test.js`。
+- `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/meta/triggerify/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/triggerify.test.js`。
 - `pi/extensions/csl-context-hooks.ts` 是 Triggerify 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/triggerify/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 trigger Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `triggerify show` 为准。权威入口是该脚本与 `skills/triggerify/SKILL.md`。
