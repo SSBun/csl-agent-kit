@@ -136,19 +136,27 @@ test("does not ship the retired deep-explore skill", () => {
   assert.equal(manifest.skills.includes("./skills/deep-explore"), false);
 });
 
-test("ships one canonical merged code-review skill", () => {
-  const skillDir = path.join(root, "skills", "code-review");
+test("ships task-review as the only ordinary review skill", () => {
+  const skillDir = path.join(root, "skills", "dev", "task-review");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
   const contract = JSON.parse(readFileSync(path.join(skillDir, "evals", "contract_cases.json"), "utf8"));
-  const findingContract = contract.cases.find(({ id }) => id === "finding-contract");
+  const findingContract = contract.cases.find(({ id }) => id === "confirmed-finding");
 
+  assert.equal(existsSync(path.join(root, "skills", "dev", "code-review")), false);
   assert.equal(existsSync(path.join(root, "skills", "code-reviewer")), false);
   assert.equal(existsSync(path.join(root, "skills", "mattpocock", "code-review")), false);
-  assert.match(skill, /^name: code-review$/m);
-  for (const lens of ["Correctness", "security", "Spec", "Standards", "Tests", "Maintainability"]) {
+  assert.match(skill, /^name: task-review$/m);
+  for (const lens of ["Code", "Documents and designs", "Configuration and assets", "No-file results"]) {
     assert.ok(skill.includes(lens), `missing ${lens} review lens`);
   }
-  assert.deepEqual(findingContract.expect.required_fields, ["lens", "file:line", "impact", "evidence", "fix"]);
+  assert.deepEqual(findingContract.expect.required_fields, [
+    "severity",
+    "location",
+    "issue",
+    "evidence",
+    "impact",
+    "suggested next step",
+  ]);
 });
 
 test("root hook commands execute bundled resources from plugin root variables", () => {

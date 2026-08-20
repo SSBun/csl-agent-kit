@@ -1,0 +1,35 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Use task-review to review the current focused task.",
+    "Review task replace-cache-layer and only give me feedback.",
+    "Review this pull request for bugs, security issues, and missing tests.",
+    "Use task-review to inspect the current diff.",
+    "Review this architecture proposal once and list concrete issues.",
+    "Review the result of this research task; it did not change any files.",
+    "Check whether this completed task's Result and evidence satisfy its Target.",
+    "审查当前任务的结果，只给反馈，不要修改。",
+    "检查这个 PR 的正确性、安全性和测试缺口。",
+    "审查这个没有文件改动的任务结论和证据。"
+  ],
+  "should_not_trigger": [
+    "Audit the entire codebase architecture and produce a remediation roadmap.",
+    "Run a security audit across the whole service.",
+    "Implement the feature described in issue 42.",
+    "Fix the failing tests and make CI pass.",
+    "Proofread this PRD and improve the wording.",
+    "Summarize this RFC for the team.",
+    "Run an adversarial review with a Reviewer and Editor until approval.",
+    "Address the findings from the previous task review.",
+    "Run the test suite before marking the task complete.",
+    "Explain how this unfamiliar repository is structured."
+  ],
+  "near_neighbor": [
+    "Have two independent agents approve my implementation before completion.",
+    "Audit only the authentication subsystem for security vulnerabilities.",
+    "Give me a quick map of files involved in this bug.",
+    "Compare the implementation with the spec, then fix every mismatch.",
+    "Rewrite this design document based on your feedback.",
+    "Ask adversarial questions about my implementation plan."
+  ]
+}

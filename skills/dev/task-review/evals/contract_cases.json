@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "explicit-entry",
+      "given": "risk, task state, or another workflow suggests review but the user did not request it",
+      "expect": {
+        "review_starts": false,
+        "inferred_from_risk": false
+      }
+    },
+    {
+      "id": "target-resolution",
+      "given": "the user requests review with several possible target sources",
+      "expect": {
+        "priority": [
+          "user-named canonical task",
+          "focused or owning canonical task",
+          "direct artifact or result",
+          "PR/MR, diff, or fixed point"
+        ],
+        "any_task_state_allowed": true
+      }
+    },
+    {
+      "id": "review-packet",
+      "given": "a target is resolved",
+      "expect": {
+        "includes": [
+          "request and criteria",
+          "task Target, Result, and Verification when applicable",
+          "actual artifact or result",
+          "relevant diff",
+          "applicable rules or spec",
+          "observed checks and limitations"
+        ],
+        "excludes": [
+          "author defense",
+          "preferred conclusion",
+          "proposed Reviewer answer"
+        ]
+      }
+    },
+    {
+      "id": "single-reviewer",
+      "given": "the host can launch a fresh-context subagent",
+      "expect": {
+        "reviewer_count": 1,
+        "reviewer_is_read_only": true,
+        "reviewer_may_run_non_destructive_checks": true,
+        "editor_used": false,
+        "re_review_used": false
+      }
+    },
+    {
+      "id": "fallback",
+      "given": "a subagent is unavailable or fails",
+      "expect": {
+        "inline_review_runs": true,
+        "required_disclosure": "Review mode: non-independent self-review",
+        "dispatch_metadata_table": false
+      }
+    },
+    {
+      "id": "artifact-lenses",
+      "given": "review targets may contain code, other artifacts, or no file changes",
+      "expect": {
+        "code_lens": true,
+        "document_design_configuration_asset_lens": true,
+        "no_file_result_evidence_lens": true,
+        "unrelated_repository_audit": false
+      }
+    },
+    {
+      "id": "confirmed-finding",
+      "given": "a demonstrated Critical Finding or Concern is reported",
+      "expect": {
+        "required_fields": [
+          "severity",
+          "location",
+          "issue",
+          "evidence",
+          "impact",
+          "suggested next step"
+        ]
+      }
+    },
+    {
+      "id": "unverified-risk",
+      "given": "material evidence is missing",
+      "expect": {
+        "reported_separately_from_confirmed_findings": true,
+        "missing_evidence_named": true,
+        "uncertain_consequence_named": true
+      }
+    },
+    {
+      "id": "feedback-only",
+      "given": "the review pass ends",
+      "expect": {
+        "files_modified": false,
+        "task_state_modified": false,
+        "report_created": false,
+        "remediation_started": false,
+        "approval_language_used": false
+      }
+    },
+    {
+      "id": "no-findings",
+      "given": "no problem is demonstrated",
+      "expect": {
+        "explicit_no_findings": true,
+        "review_mode_reported": true,
+        "material_unverified_risks_reported": true,
+        "checks_actually_run_reported": true,
+        "feedback_invented": false
+      }
+    }
+  ]
+}

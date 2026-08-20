@@ -14,7 +14,7 @@ test("registers aliases for nested skills", () => {
   const selectedNames = [
     "align",
     "archive",
-    "code-review",
+    "task-review",
     "task",
     "task-plan",
     "task-queue",
@@ -37,6 +37,7 @@ test("registers aliases for nested skills", () => {
   for (const name of selectedNames) assert.ok(commands.has(name), `missing /${name}`);
   assert.equal(commands.has("integrate-third-skills"), false);
   assert.equal(commands.has("mattpocock"), false);
+  assert.equal(commands.has("code-review"), false);
   assert.equal(commands.has("code-reviewer"), false);
   assert.equal(commands.has("deep-explore"), false);
   assert.equal(commands.has("same-page"), false);

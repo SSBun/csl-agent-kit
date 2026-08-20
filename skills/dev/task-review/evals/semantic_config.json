@@ -1,33 +1,37 @@
 {
   "fallback_positive_concepts": [
-    "code_change_review"
+    "explicit_one_pass_review"
   ],
   "positive_concepts": {
-    "code_change_review": {
+    "explicit_one_pass_review": {
       "weight": 0.8,
       "phrases": [
-        "/code-review",
-        "code review",
+        "/task-review",
+        "task review",
+        "review task",
+        "review this task",
+        "review the current task",
+        "completed task",
+        "result and evidence satisfy",
         "review this pull request",
         "review this pr",
         "review this merge request",
-        "check this gitlab merge request",
         "review the current diff",
         "review my changes",
-        "review changes since",
-        "review this branch",
-        "staged changes",
-        "unstaged changes",
-        "review my staged and unstaged code changes",
-        "bugs and security issues",
-        "regressions and missing tests",
-        "coding standards",
-        "代码审查",
-        "审查这个 pr",
+        "review this document",
+        "review this design",
+        "review this architecture proposal",
+        "review this result",
+        "review the result",
+        "review the task result",
+        "review the evidence",
+        "审查当前任务",
+        "审查任务结果",
+        "审查这个没有文件改动",
+        "没有文件改动的任务",
         "检查这个 pr",
         "审查当前 diff",
-        "审查当前分支的代码变更",
-        "审查代码变更"
+        "只给反馈"
       ]
     }
   },
@@ -54,32 +58,34 @@
         "make ci pass",
         "address the findings",
         "then fix every mismatch",
+        "rewrite based on feedback",
         "实现功能",
         "修复测试"
       ]
     },
-    "non_code_artifact": {
+    "proofreading_or_summary": {
       "weight": 0.7,
       "exclusive": true,
       "phrases": [
-        "review this prd",
-        "review this rfc",
-        "architecture proposal",
+        "proofread",
         "improve the wording",
         "summarize this rfc",
-        "审查这份 prd"
+        "summarize this document",
+        "润色",
+        "总结"
       ]
     },
-    "independent_approval": {
-      "weight": 0.75,
+    "adversarial_approval": {
+      "weight": 0.8,
       "exclusive": true,
       "phrases": [
         "adversarial review",
-        "independent reviewer",
         "reviewer and editor",
-        "two independent agents",
+        "two-agent review",
         "until approval",
-        "独立 reviewer"
+        "block completion",
+        "独立批准",
+        "对抗式审查"
       ]
     }
   }
