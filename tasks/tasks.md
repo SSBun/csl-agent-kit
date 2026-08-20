@@ -1,6 +1,6 @@
 # 任务索引
 
-- [Reorganize skills into dev/meta/domain subfolders](tasks/folder-reorganize-skills.md) — In Progress (2026-08-19 17:49)
+- [Reorganize skills into dev/meta/domain subfolders](tasks/folder-reorganize-skills.md) — Completed (2026-08-19 17:51)
 
 - [移除第三方 grill 封装并新增个人 task-grill 技能](tasks/remove-third-party-grills-add-task-grill.md) — Completed (2026-08-10)
 
