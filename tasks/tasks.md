@@ -1,6 +1,26 @@
 # 任务索引
 
+- [按关注点拆分提交全部本地改动](tasks/commit-all-local-changes-by-concern.md) — Completed (2026-08-20 17:33)
+
+- [移除 Pi Task Target 确认界面](tasks/remove-pi-task-target-confirmation-ui.md) — Completed (2026-08-20 17:22)
+
+- [研究 Lesson 记录的权威格式](tasks/research-lesson-recording-formats.md) — In Progress (2026-08-20 17:05)
+
+- [扁平化 Meta 任务技能目录](tasks/flatten-csl-tasks-into-meta.md) — Completed (2026-08-20 17:21)
+
+- [退役 analyze-project 并统一 tldr 能力](tasks/retire-analyze-and-unify-tldr.md) — Completed (2026-08-20 17:16)
+
 - [默认迁移旧版 Workspace Context](tasks/auto-migrate-invalid-workspace-context.md) — Completed (2026-08-20 17:08)
+
+- [设计 analyze-project 技能退役方案](tasks/deprecate-analyze-project-skill.md) — Completed (2026-08-20 17:08)
+
+- [诊断 Project Core 持续无效提示](tasks/diagnose-invalid-project-core-report.md) — Completed (2026-08-20 16:36)
+
+- [添加 Task Target 自动确认魔法词](tasks/add-task-target-magic-word.md) — Completed (2026-08-20 16:34)
+
+- [添加 Pi Task Target 确认界面](tasks/add-pi-task-target-confirmation-ui.md) — Completed (2026-08-20 16:24)
+
+- [设计 tldr 与 explore 技能合并方案](tasks/merge-tldr-explore-skills.md) — Completed (2026-08-20 17:15)
 
 - [按关注点分组提交当前本地改动](tasks/commit-current-changes-by-concern.md) — Completed (2026-08-20 15:56)
 
@@ -24,7 +44,7 @@
 
 - [将 simple-rules 迁移为 agent-rules](tasks/rename-simple-rules-to-agent-rules.md) — Completed (2026-08-20 11:18)
 
-- [添加任务目标确认规则](tasks/add-task-target-confirmation-rule.md) — Completed (2026-08-20 15:19)
+- [添加任务目标确认规则](tasks/add-task-target-confirmation-rule.md) — Completed (2026-08-20 16:02)
 
 - [修复 Pi Context Hooks 模块路径](tasks/fix-pi-context-hooks-module-paths.md) — Completed (2026-08-20 10:58)
 
