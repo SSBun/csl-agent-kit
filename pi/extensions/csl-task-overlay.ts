@@ -8,7 +8,7 @@
  * Refresh triggers:
  *   - `session_start`: restore focus, paint, and start a five-second timer.
  *   - `session_tree`: restore focus after branch navigation.
- *   - `/tasks`: print the full workspace list grouped by status.
+ *   - `/tasks`: print the 20 most recent workspace tasks grouped by status.
  *   - `session_shutdown`: stop the refresh timer.
  *
  * Headless (`ctx.hasUI === false`): no widget is registered.
@@ -73,6 +73,8 @@ const GLYPH: Record<Status, string> = {
 
 /** How many recent tasks the widget shows. `tasks/tasks.md` is newest-first. */
 const RECENT_LIMIT = 6;
+/** How many recent tasks `/tasks` prints before grouping by status. */
+const TASKS_COMMAND_LIMIT = 20;
 
 /** Match `- [Title](path) — Status (...)`. Captures path for progress lookup. */
 const INDEX_LINE = /^\s*-\s+\[(.+?)\]\(([^)]+)\)\s*[—-]\s*(.+?)\s*$/;
@@ -198,6 +200,12 @@ function taskIdForRow(row: TaskRow): string | undefined {
 	return CANONICAL_TASK_PATH.exec(row.path)?.[1];
 }
 
+function renderTaskTitle(row: TaskRow, cwd: string, linkTitles: boolean): string {
+	return linkTitles && taskIdForRow(row)
+		? hyperlink(row.title, pathToFileURL(join(cwd, "tasks", row.path)).href)
+		: row.title;
+}
+
 /** Add progress, sort active-first, and format one tree section. */
 function renderTaskLines(rows: TaskRow[], cwd: string, linkTitles: boolean): string[] {
 	const visible = rows
@@ -208,10 +216,7 @@ function renderTaskLines(rows: TaskRow[], cwd: string, linkTitles: boolean): str
 	return visible.map((row, index) => {
 		const prefix = index === visible.length - 1 ? "└─" : "├─";
 		const tail = row.progress ? ` (${row.progress})` : "";
-		const title = linkTitles && taskIdForRow(row)
-			? hyperlink(row.title, pathToFileURL(join(cwd, "tasks", row.path)).href)
-			: row.title;
-		return `${prefix} ${GLYPH[row.status]}${tail} ${title}`;
+		return `${prefix} ${GLYPH[row.status]}${tail} ${renderTaskTitle(row, cwd, linkTitles)}`;
 	});
 }
 
@@ -423,14 +428,14 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	});
 
 	pi.registerCommand("tasks", {
-		description: "Print workspace tasks grouped by status (from tasks/tasks.md).",
+		description: "Print the 20 most recent workspace tasks grouped by status.",
 		handler: async (_args, ctx) => {
-			const rows = loadTasks(ctx.cwd);
+			const rows = loadTasks(ctx.cwd).slice(0, TASKS_COMMAND_LIMIT);
 			if (rows.length === 0) {
 				ctx.ui.notify("No tasks in tasks/tasks.md.", "info");
 				return;
 			}
-			const lines = formatGrouped(rows, ctx.cwd);
+			const lines = formatGrouped(rows, ctx.cwd, ctx.mode === "tui" && getCapabilities().hyperlinks);
 			ctx.ui.notify(lines.join("\n"), "info");
 			// Also refresh the widget so the printed list and overlay stay in sync.
 			refresh(ctx as RefreshCtx, refreshState);
@@ -438,8 +443,8 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	});
 }
 
-/** Group rows by status for the `/tasks` command output. */
-function formatGrouped(rows: TaskRow[], cwd: string): string[] {
+/** Group the already-limited rows for the `/tasks` command output. */
+function formatGrouped(rows: TaskRow[], cwd: string, linkTitles = false): string[] {
 	const groups: Record<Status, TaskRow[]> = {
 		in_progress: [],
 		in_review: [],
@@ -474,14 +479,14 @@ function formatGrouped(rows: TaskRow[], cwd: string): string[] {
 		for (const row of group) {
 			const progress = loadProgress(cwd, row.path);
 			const tail = progress ? ` (${progress})` : "";
-			out.push(`  ${GLYPH[status]}${tail} ${row.title}`);
+			out.push(`  ${GLYPH[status]}${tail} ${renderTaskTitle(row, cwd, linkTitles)}`);
 		}
 	}
 	return out;
 }
 
 // ponytail: no test framework — one runnable self-check that fails if parsing
-// or overflow drifts. Run with: node --import jiti pi/extensions/csl-task-overlay.ts --check
+// or overflow drifts. Run with: node pi/extensions/csl-task-overlay.ts --check
 if (process.argv.includes("--check")) {
 	const check = () => {
 		const sample = [
@@ -524,7 +529,17 @@ if (process.argv.includes("--check")) {
 		}));
 		const manyRendered = renderRows(many, "/nonexistent-cwd");
 		assert(manyRendered.length === RECENT_LIMIT + 1, `recent should cap at ${RECENT_LIMIT} rows + heading, got ${manyRendered.length}`);
-		console.log(`OK — parsed ${rows.length}, rendered ${rendered.length}; recent-capped render ${manyRendered.length}`);
+		const commandRows = many.slice(0, TASKS_COMMAND_LIMIT);
+		const commandRendered = formatGrouped(commandRows, "/nonexistent-cwd");
+		assert(commandRendered.some((line) => line.includes("t19")), "task 20 should remain visible");
+		assert(!commandRendered.some((line) => line.includes("t20")), "task 21 should be hidden");
+		const linkedCommand = formatGrouped(commandRows, "/workspace root", true);
+		const taskUrl = pathToFileURL(join("/workspace root", "tasks", "tasks/t0.md")).href;
+		assert(linkedCommand.some((line) => line.includes(`\x1b]8;;${taskUrl}\x1b\\t0`)), "canonical title should link to its file URL");
+		assert(!commandRendered.some((line) => line.includes("\x1b]8;;")), "plain fallback should not contain OSC 8");
+		const nonCanonical = formatGrouped([{ title: "other", path: "other.md", status: "pending" }], "/workspace root", true);
+		assert(!nonCanonical.some((line) => line.includes("\x1b]8;;")), "non-canonical title should remain plain");
+		console.log(`OK — parsed ${rows.length}; widget ${manyRendered.length}; command capped at ${TASKS_COMMAND_LIMIT}; links verified`);
 	};
 	check();
 }
