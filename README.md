@@ -9,7 +9,6 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Generate an AI-image-generator prompt for an app icon. |
 | archive | `/csl:archive` | `/archive` | 将当前 Pi Session 中指定范围的 User 与 Agent 可见文本逐字保存到 `tasks/conversations/`。 |
 | release | `/csl:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
-| analyze-project | `/csl:analyze-project` | `/analyze-project` | 为项目或组件生成一份含 Mermaid 架构/复杂流程图，且职责、功能模块与核心工作流均有源码证据的系统化持久报告。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
 | task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查。 |
@@ -37,7 +36,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | align | `/csl:align` | `/align` | Re-explain prior messages with evidence and confidence levels. |
-| tldr | `/csl:tldr` | `/tldr` | 为任意输入生成一屏内、忠实且面向全貌的 overview。 |
+| tldr | `/csl:tldr` | `/tldr` | 按请求中的明确标准生成简略概览或带来源的深入会话报告。 |
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
@@ -303,7 +302,8 @@ csl-agent-kit install --all
 
 ```
 skills/                  # Shared skill source (all platforms)
-skills/meta/csl-tasks/        # Cross-host task, planning, queue execution, and shared state core
+skills/meta/{task,task-plan,task-queue}/ # Cross-host task workflow skills
+skills/meta/csl-tasks/shared/           # Shared task-state core
 skills/meta/workspace-workflow/ # Context and lessons workflow skills
 skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
