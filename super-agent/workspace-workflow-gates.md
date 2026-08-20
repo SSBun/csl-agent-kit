@@ -11,10 +11,10 @@ ORDER:
 6. Before ending → $workspace-context if durable facts changed.
 
 $workspace-context:
-  SESSION: Load Project Core before acting at session start, resume, or compaction.
+  SESSION: Load Project Core before acting at session start, resume, or compaction; when an existing Context is pre-v1 or its Core is invalid, run the skill's Default Migration before proceeding.
   TASK: After the owning canonical task is active and its user-facing Task Target is explicitly confirmed, form a Task Fingerprint, query only relevant Context Packs, and verify task-direct Authority; do not read the whole file indiscriminately.
-  END: Maintain changed Packs and validate; follow the skill's confirmation gate for Project Core.
-  SKIP: Never skip initial Core loading; skip Pack retrieval when there is no concrete task and skip the final write when no durable fact changed.
+  END: Maintain changed Packs and validate; follow the skill's write-permission rules for Project Core.
+  SKIP: Never skip initial Core loading or required Default Migration; skip Pack retrieval when there is no concrete task and skip the final write when no durable fact changed.
 
 $workspace-lessons:
   ACTION: After the owning task is active and its Task Target is confirmed, read relevant rules before substantive preparation or execution and apply every matching Rule and Check.

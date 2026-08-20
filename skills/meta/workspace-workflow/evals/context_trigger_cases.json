@@ -4,6 +4,7 @@
     "At session start, load the Project Core before acting.",
     "After resume, restore the dispatch-ready workspace context before continuing.",
     "After compaction, reload Project Core and the task-relevant Context Packs.",
+    "Migrate this existing legacy tasks/context.md into a valid Project Core and Context Packs before continuing.",
     "Query tasks/context.md for the packs relevant to this concrete task.",
     "Update tasks/context.md with the newly confirmed repository convention."
   ],

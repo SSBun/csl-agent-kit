@@ -1,6 +1,6 @@
 ---
 name: workspace-context
-description: Load and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Load Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, and cached live values.
+description: Load, automatically migrate, and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, when an existing Context has a missing or invalid Project Core, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Load or recover Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, and cached live values.
 ---
 
 # Maintain Workspace Context
@@ -11,7 +11,7 @@ Use `tasks/context.md` to give a newly dispatched Agent the project model needed
 
 Context accelerates orientation; it does not replace reading task-direct source and tests. Treat linked source, schema, configuration, ADR, SOP, rule, or formal document as authoritative. Verify task-relevant Authority before an important decision, and let Authority override stale Context.
 
-Routine context loading and maintenance do not create a task record.
+When an existing Context predates this schema or has no valid Project Core, recover it in place by default before task dispatch. Routine context loading, migration, and maintenance do not create a task record.
 
 ## Data Model
 
@@ -89,9 +89,10 @@ At session start, after resume, or after compaction:
 
 1. Treat the session-start directory as the workspace root.
 2. Run `core` before acting.
-3. Use Core to form the initial project vocabulary and system model.
+3. If an existing Context has no valid Core or uses a pre-v1 structure, perform Default Migration, rerun `core`, and use the recovered Core.
+4. Use Core to form the initial project vocabulary and system model.
 
-Do not read the whole Context file for orientation.
+Outside Default Migration, do not read the whole Context file for orientation.
 
 ### Task Gate
 
@@ -158,8 +159,9 @@ Context states the durable fact and decision effect; the other carrier owns enfo
 ## Authority and Writes
 
 - For an ordinary Pack, source-backed Add, Update, or Delete may happen automatically within the owning task. Preserve the pre-write file, make the smallest change, then run `validate`.
-- Every persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation first.
-- Stop and ask before a source conflict, user-owned business judgment, unverified fact, or batch migration.
+- Default Migration of the current workspace's existing pre-v1 or invalid Context is pre-authorized and runs without a separate confirmation.
+- Every other persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation first.
+- Stop and ask before a source conflict, user-owned business judgment, unverified fact, or migration of another workspace.
 - If validation fails, restore the pre-write content and report the diagnostics.
 - Rewrite current truth in place. Do not append history or retain superseded tombstones unless an old state still constrains compatibility.
 - Do not create a global periodic audit or individual Context owner; the work that changes a fact owns its maintenance.
@@ -190,15 +192,27 @@ At that event, choose exactly one outcome:
 
 Do not substitute calendar review dates for these events.
 
+## Default Migration
+
+When `core` fails because an existing `tasks/context.md` has no valid Project Core or uses a pre-v1 structure, migrate the current workspace before disclosing degradation:
+
+1. Preserve the exact pre-write file.
+2. Read the complete legacy file and only the minimum authoritative project sources needed to establish a confirmed Core. Never add generic filler merely to satisfy the parser.
+3. Add or repair the four required Core sections. Convert source-backed, Context-eligible legacy conclusions into formal `CTX-*` Packs when their semantic boundary and Authority are clear.
+4. Never delete or rewrite unresolved legacy content during automatic migration; keep its original text in place for later routing. Never scan or migrate sibling workspaces.
+5. Write the migration, then run both `core` and `validate` against the same file.
+6. On success, continue without asking for confirmation or reporting a degradation. On insufficient evidence, source conflict, or failed validation, restore the exact pre-write content and disclose the concrete diagnostics.
+
 ## Legacy Migration
 
 Existing top-level bullets under `Components`, `Relationships`, and `Decisions and Conventions` remain readable as scan-local `legacy-<content-hash>` Packs. The CLI never writes those IDs back.
 
-Do not bulk-migrate legacy content. When work materially touches a component, merge only its relevant legacy bullets into one formal `CTX-*` Pack, remove the migrated originals, and validate. Verify legacy content against its Authority before relying on it.
+Outside Default Migration, do not bulk-migrate legacy content. When work materially touches a component, merge only its relevant legacy bullets into one formal `CTX-*` Pack, remove the migrated originals, and validate. Verify legacy content against its Authority before relying on it.
 
 ## Degradation and Failure
 
-- Missing `tasks/context.md`, invalid Project Core, or no trusted relevant Packs means Context is unavailable for dispatch. Disclose that state and fall back to ordinary exploration; do not pretend the project model is complete.
+- Missing `tasks/context.md`, an existing Core that Default Migration cannot safely recover, or no trusted relevant Packs means Context is unavailable for dispatch. Disclose that state and fall back to ordinary exploration; do not pretend the project model is complete.
+- Do not disclose an existing legacy or invalid Core before attempting Default Migration.
 - If the CLI is unavailable or fails, disclose the degradation and manually perform the same Core, metadata, and selected-Pack scan.
 - Never auto-apply a duplicated ID or a relevant malformed Pack.
 - If Authority conflicts with Context, Authority wins; update the affected ordinary Pack in the same task or request confirmation for Core.

@@ -33,12 +33,22 @@
     },
     {
       "id": "project-core-change",
-      "event": "Current work would persistently change Project Core.",
+      "event": "A valid Project Core would be persistently changed outside Default Migration.",
       "expected_action": "ShowDiffAndConfirm"
     },
     {
-      "id": "missing-or-invalid-core",
-      "event": "The Context file is missing or Project Core fails validation.",
+      "id": "existing-legacy-or-invalid-core",
+      "event": "An existing tasks/context.md uses a pre-v1 structure or has no valid Project Core.",
+      "expected_action": "MigrateThenLoadCore"
+    },
+    {
+      "id": "default-migration-failed",
+      "event": "Default Migration lacks authoritative evidence, finds a source conflict, or fails validation.",
+      "expected_action": "RestoreAndDisclose"
+    },
+    {
+      "id": "missing-context",
+      "event": "The workspace has no tasks/context.md to migrate.",
       "expected_action": "DiscloseAndExplore"
     },
     {

@@ -35,17 +35,17 @@
 ### Structure
 - `tasks/context.md` 是单一 canonical 文件，由始终加载的 Project Core 与任务按需选择的完整 Context Packs 组成；不生成持久 index、cache 或 selected-ID state。
 - Project Core 固定包含 Purpose、Global Vocabulary、System Map 与 Global Invariants；正式 Pack 使用稳定 `CTX-*` ID、Scope/Paths/Keywords/Authority/Recheck metadata 和非空适用正文 sections。
-- `scripts/context.js` 只读解析 Core、正式 Packs 和 legacy bullets，提供 `core/index/show/validate/--self-test`；Agent 负责 Task Fingerprint、语义匹配、Authority 验证与写入判断。
+- `scripts/context.js` 只读解析 Core、正式 Packs 和 legacy bullets，提供 `core/index/show/validate/--self-test`；Agent 负责 Task Fingerprint、语义匹配、Authority 验证、写入判断，以及当前工作区已有旧版或无效 Context 的默认迁移。
 
 ### Relationships
-- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、canonical task activation、user-facing Task Target confirmation、concrete-task Pack query 和 completion maintenance；`task` 先消费 Core 完成最小任务归属查询、激活与确认，再消费 task-relevant Packs，不无差别读取整份 Context。
+- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、现有旧版或无效 Context 的默认迁移、canonical task activation、user-facing Task Target confirmation、concrete-task Pack query 和 completion maintenance；`task` 先消费有效 Core 完成最小任务归属查询、激活与确认，再消费 task-relevant Packs，不无差别读取整份 Context。
 
 ### Workflows
-- Session start、resume 或 compaction 先加载 Core；具体非平凡 outcome 先创建、恢复或重新打开 owning task 并聚焦 Session，再声明一个含可观察完成条件的 user-facing Task Target 并等待显式确认；确认后才形成 Task Fingerprint、运行 index 并通常批量 show 一至三个 Packs；重要依赖前验证 Authority，结束前维护变化内容并 validate。
+- Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活、Task Target 确认与相关 Pack 查询。
 
 ### Decision and Verification Boundaries
-- Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，任何 Project Core 持久变更都必须先展示精确 diff 并取得用户确认。
-- 缺失或无效 Core、无可信相关 Packs、相关 malformed/duplicate Pack 必须披露并回退普通探索；CLI self-test、实际 Context validation 和 `tests/task-files.test.mjs` 共同验证格式与消费者。
+- Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，当前工作区已有旧版或无效 Context 的默认迁移已预授权，其他 Project Core 持久变更仍须先展示精确 diff 并取得用户确认。
+- 缺失 Context、无法安全完成默认迁移、无可信相关 Packs、相关 malformed/duplicate Pack 必须披露并回退普通探索；迁移不得编造占位事实、删除未解决旧内容或扫描其他工作区，CLI self-test、实际 Context validation 和 `tests/task-files.test.mjs` 共同验证格式与消费者。
 
 ## CTX-third-party-skills — Third-party skill integration and discovery
 - Scope: 共享与第三方 skill 的项目内整合、来源元数据、递归发现和 Pi 特定命令接入边界。

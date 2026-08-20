@@ -216,6 +216,7 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(existsSync(path.join(workflowDir, "workspace-maintain-context")), false);
 
   assert.match(rules, /load `\$workspace-context` and use it to load Project Core before acting/);
+  assert.match(rules, /let the skill migrate the current workspace by default before proceeding/);
   assert.equal(rules.includes("$workspace-maintain-context"), false);
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
@@ -264,6 +265,7 @@ test("injected workspace workflow gates define proactive execution order", () =>
   assert.match(gates, /load and follow the matching skill SKILL\.md before the next action/);
   assert.match(gates, /This file selects the workflow; each skill owns its current execution contract/);
   assert.match(gates, /Load Project Core before acting/);
+  assert.match(gates, /run the skill's Default Migration before proceeding/);
   assert.match(gates, /query only relevant Context Packs/);
   assert.match(gates, /do not read the whole file indiscriminately/);
   assert.match(gates, /before substantive discussion, clarification, exploration, research, planning, delegation, or implementation/);
@@ -277,7 +279,7 @@ test("injected workspace workflow gates define proactive execution order", () =>
 test("workspace context contract supports dispatch-ready retrieval and durable admission", () => {
   const skill = readFileSync(path.join(workflowDir, "workspace-context", "SKILL.md"), "utf8");
 
-  for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Legacy Migration", "Degradation and Failure", "Maintainer Validation"]) {
+  for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Default Migration", "Legacy Migration", "Degradation and Failure", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing context section: ${section}`);
   }
 
@@ -301,15 +303,19 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   assert.match(skill, /Never cache a mutable current value/);
   assert.match(skill, /A stable lookup does not qualify by itself/);
   assert.match(skill, /Exclude an obvious version or configuration pointer/);
-  assert.match(skill, /Every persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation/);
+  assert.match(skill, /Default Migration of the current workspace's existing pre-v1 or invalid Context is pre-authorized/);
+  assert.match(skill, /Every other persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation/);
   assert.match(skill, /source-backed Add, Update, or Delete may happen automatically/);
   assert.match(skill, /If validation fails, restore the pre-write content/);
   assert.match(skill, /the current task ends/);
   assert.match(skill, /the related module next changes materially/);
   assert.match(skill, /evidence, source, assumption, or Authority becomes invalid/);
-  assert.match(skill, /Do not bulk-migrate legacy content/);
+  assert.match(skill, /Outside Default Migration, do not bulk-migrate legacy content/);
   assert.match(skill, /legacy-<content-hash>/);
-  assert.match(skill, /Missing `tasks\/context\.md`, invalid Project Core, or no trusted relevant Packs/);
+  assert.match(skill, /Never delete or rewrite unresolved legacy content during automatic migration/);
+  assert.match(skill, /run both `core` and `validate` against the same file/);
+  assert.match(skill, /Do not disclose an existing legacy or invalid Core before attempting Default Migration/);
+  assert.match(skill, /Missing `tasks\/context\.md`, an existing Core that Default Migration cannot safely recover/);
   assert.match(skill, /The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget`/);
 });
 
@@ -363,7 +369,9 @@ test("workspace context query cases cover session, task, write, and failure gate
   assert.equal(actions["ordinary-follow-up"], "ReuseSelectedPacks");
   assert.equal(actions["durable-pack-change"], "MaintainPackThenValidate");
   assert.equal(actions["project-core-change"], "ShowDiffAndConfirm");
-  assert.equal(actions["missing-or-invalid-core"], "DiscloseAndExplore");
+  assert.equal(actions["existing-legacy-or-invalid-core"], "MigrateThenLoadCore");
+  assert.equal(actions["default-migration-failed"], "RestoreAndDisclose");
+  assert.equal(actions["missing-context"], "DiscloseAndExplore");
   assert.equal(actions["duplicate-relevant-id"], "DoNotApply");
 });
 

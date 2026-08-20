@@ -1,5 +1,7 @@
 # 任务索引
 
+- [默认迁移旧版 Workspace Context](tasks/auto-migrate-invalid-workspace-context.md) — Completed (2026-08-20 17:08)
+
 - [按关注点分组提交当前本地改动](tasks/commit-current-changes-by-concern.md) — Completed (2026-08-20 15:56)
 
 - [编写 Ponytail 插件详细报告与技能中文翻译](tasks/document-ponytail-plugin.md) — Completed (2026-08-20 15:21)
