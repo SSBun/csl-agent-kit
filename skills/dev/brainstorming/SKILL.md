@@ -36,8 +36,10 @@ Do **not** use for bug fixes, typo edits, or changes with an already-approved sp
 ## After the Design
 
 **Documentation:**
-- Before writing any file under `docs/plans/`, ask for confirmation unless the user explicitly requested a document artifact such as a design doc, plan file, or written spec.
-- If confirmed or explicitly requested, write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
+- Do not create a standalone plan file by default. Create one only when the user requests a document artifact or the validated design needs a durable handoff for later implementation.
+- Before writing any file under `tasks/plans/`, ask for confirmation unless the user explicitly requested a document artifact such as a design doc, plan file, or written spec.
+- If confirmed or explicitly requested, write the validated design to `tasks/plans/YYYY-MM-DD-<topic>-design.md`.
+- If an existing canonical task record at `tasks/tasks/<task-slug>.md` directly relates to the plan, add a relative Markdown reference such as `../plans/YYYY-MM-DD-<topic>-design.md` to that record's `Plan` section, then follow the task workflow's sync and check requirements. Do not create a task record solely to hold this reference.
 - Use clear, concise prose (no dependency on external writing skills)
 
 **Implementation (only if user asks to continue):**
