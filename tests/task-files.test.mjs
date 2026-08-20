@@ -222,12 +222,24 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
   assert.match(rules, /load `\$task` and follow its `SKILL\.md` to create, resume, or reopen the owning record before substantive discussion/);
-  assert.match(rules, /state one concise user-facing `Task Target` that names the intended outcome and observable completion condition/);
-  assert.match(rules, /wait for explicit confirmation before substantive preparation or execution/);
+  assert.match(rules, /state one concise user-facing line in the exact format `\*\*Task Target:\*\* <target>`/);
+  assert.match(rules, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+  assert.match(rules, /skip the textual confirmation/);
+  assert.match(rules, /wait for explicit textual confirmation before substantive preparation or execution/);
+  assert.doesNotMatch(rules, /task_target_confirm/);
   assert.match(rules, /Skip task records only for simple factual answers, open-ended conversation without a concrete outcome/);
 
+  for (const name of ["task", "task-plan", "task-queue"]) {
+    const skill = readFileSync(path.join(cslTasksDir, name, "SKILL.md"), "utf8");
+    assert.match(skill, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+    assert.match(skill, /skip the textual confirmation/);
+    assert.match(skill, /does not resolve ambiguity or bypass any other required confirmation/);
+    assert.match(skill, /state one line in the exact format `\*\*Task Target:\*\*/);
+    assert.match(skill, /explicit textual confirmation/);
+    assert.doesNotMatch(skill, /task_target_confirm/);
+  }
   const taskSkill = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
-  assert.match(taskSkill, /state one concise user-facing `Task Target`/);
+  assert.match(taskSkill, /exact format `\*\*Task Target:\*\* <intended outcome and observable completion condition>`/);
   assert.match(taskSkill, /This conversational gate does not replace the canonical `Target` section/);
   assert.match(rules, /load `\$workspace-lessons` and follow its `SKILL\.md` before continuing/);
   assert.equal(rules.includes("$workspace-capture-lessons"), false);
@@ -250,7 +262,7 @@ test("injected workspace workflow gates define proactive execution order", () =>
   const order = [
     "$workspace-context Project Core.",
     "$task, $task-plan, or $task-queue activation.",
-    "present one concise user-facing Task Target and wait for explicit confirmation.",
+    "present one concise user-facing Task Target in text and wait for explicit confirmation.",
     "task-relevant $workspace-context Packs and $workspace-lessons.",
     "$workspace-lessons before continuing.",
     "$workspace-context if durable facts changed.",
@@ -270,7 +282,11 @@ test("injected workspace workflow gates define proactive execution order", () =>
   assert.match(gates, /query only relevant Context Packs/);
   assert.match(gates, /do not read the whole file indiscriminately/);
   assert.match(gates, /before substantive discussion, clarification, exploration, research, planning, delegation, or implementation/);
-  assert.match(gates, /CONFIRM: With the task active, state one concise user-facing `Task Target`/);
+  assert.match(gates, /CONFIRM: With the task active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+  assert.match(gates, /skip the textual confirmation/);
+  assert.match(gates, /state one concise user-facing line in the exact format `\*\*Task Target:\*\* <target>`/);
+  assert.match(gates, /wait for explicit textual confirmation/);
+  assert.doesNotMatch(gates, /task_target_confirm/);
   assert.match(gates, /Before confirmation, allow only task lifecycle writes/);
   assert.match(gates, /call `task_focus` with its ID when the host provides that tool/);
   assert.doesNotMatch(gates, /\$csl-task/);

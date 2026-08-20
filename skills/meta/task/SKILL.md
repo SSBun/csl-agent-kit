@@ -1,6 +1,6 @@
 ---
 name: task
-description: Create, resume, update, cancel, verify, and complete a canonical workspace task for one concrete non-trivial outcome. Use as soon as that outcome is identified, then present a concise Task Target and wait for explicit confirmation before substantive preparation or execution. Skip simple factual answers, open-ended conversation without a concrete outcome, and trivial deterministic operations.
+description: Create, resume, update, cancel, verify, and complete a canonical workspace task for one concrete non-trivial outcome. Use as soon as that outcome is identified, then confirm a concise Task Target before substantive work unless the originating request ends with the one-request `TASK_GO` marker. Skip simple factual answers, open-ended conversation without a concrete outcome, and trivial deterministic operations.
 ---
 
 # Task
@@ -31,7 +31,7 @@ Manage one outcome through the host Agent. Use the host's existing file, shell, 
    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
 3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing. After creation, resume, or reopen, call the host's task-focus mechanism when available.
-4. With the owning task active, state one concise user-facing `Task Target` that names the intended outcome and observable completion condition, then stop and wait for explicit confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work. This conversational gate does not replace the canonical `Target` section.
+4. With the owning task active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`. If so, treat it as explicit Task Target confirmation for this request, exclude the marker from the requested outcome, skip the textual confirmation, and continue to step 5. This authorization is one-request only and does not resolve ambiguity or bypass any other required confirmation. Otherwise, state one line in the exact format `**Task Target:** <intended outcome and observable completion condition>`, then stop and wait for explicit textual confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work. This conversational gate does not replace the canonical `Target` section.
 5. After confirmation, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
 6. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
 

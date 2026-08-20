@@ -281,6 +281,7 @@ test("persists session focus and keeps a completed task focused until changed or
 
     const focusTool = tools.get("task_focus");
     assert.equal(tools.has("csl_task_focus"), false);
+    assert.equal(tools.has("task_target_confirm"), false);
     assert.match(focusTool.promptGuidelines[0], /task, task-plan, or task-queue/);
     assert.match(focusTool.promptGuidelines[0], /creates, resumes, reopens, or activates/);
     assert.doesNotMatch(focusTool.promptGuidelines[0], /csl-task/);

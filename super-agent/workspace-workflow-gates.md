@@ -5,7 +5,7 @@ When a gate matches, load and follow the matching skill SKILL.md before the next
 ORDER:
 1. Session start, resume, or compaction → $workspace-context Project Core.
 2. Once a concrete non-trivial outcome is identified → $task, $task-plan, or $task-queue activation.
-3. After task activation → present one concise user-facing Task Target and wait for explicit confirmation.
+3. After task activation → present one concise user-facing Task Target in text and wait for explicit confirmation.
 4. After confirmation and before substantive work → task-relevant $workspace-context Packs and $workspace-lessons.
 5. After a user correction → $workspace-lessons before continuing.
 6. Before ending → $workspace-context if durable facts changed.
@@ -23,6 +23,6 @@ $workspace-lessons:
 
 $task / $task-plan / $task-queue:
   ACTION: Select single-task execution, planning-only handoff, or ordered multi-task execution from the request. Read only the recent index and plausible owning records needed to avoid duplicate ownership, then create, resume, or reopen the canonical task before substantive discussion, clarification, exploration, research, planning, delegation, or implementation.
-  CONFIRM: With the task active, state one concise user-facing `Task Target` naming the intended outcome and observable completion condition, then wait for explicit confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work.
+  CONFIRM: With the task active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`. If so, treat it as one-request Task Target confirmation, exclude the marker from the requested outcome, skip the textual confirmation, and continue; it does not resolve ambiguity or bypass any other required confirmation. Otherwise, state one concise user-facing line in the exact format `**Task Target:** <target>` naming the intended outcome and observable completion condition, then wait for explicit textual confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work.
   KEEP CURRENT: Use the shared core to keep canonical state, evidence, parent-child links, completion gates, and the exact index entry current. After creating, resuming, reopening, or activating a canonical task, call `task_focus` with its ID when the host provides that tool.
   SKIP: simple factual answers, open-ended conversation without a concrete outcome, trivial deterministic mechanical operations, context maintenance, and lesson maintenance.
