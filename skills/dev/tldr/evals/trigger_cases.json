@@ -4,34 +4,36 @@
     "/tldr https://example.com/spec",
     "Give me the TL;DR of this document.",
     "Provide a quick overview of dependency injection.",
-    "Give me a concise overview of this project so I understand the big picture.",
-    "Summarize this RFC as a one-screen overview.",
-    "Give me a brief overview of the folder I passed in.",
+    "Summarize this entire repository so I understand the big picture.",
+    "Explore WebAssembly in depth and give me a detailed report in chat.",
+    "Read this URL and explain it comprehensively with sources.",
+    "Give me the key facts, explain how it works, place it in context, and include complete sources.",
+    "Analyze this project in chat so I understand what it is and how it works.",
+    "Give me a quick but comprehensive overview of this proposal.",
     "Summarize the current conversation at a high level.",
-    "Help me quickly understand what this remote page is about.",
-    "用 tldr 概览这个链接。",
-    "给我一个当前话题的简短概览。",
-    "用一屏内容让我快速了解这个项目的全貌。"
+    "用 tldr 简要概览这个链接。",
+    "深入探索这个主题，并给出完整来源。",
+    "详细解释这个组件的关键事实、工作机制和领域背景。"
   ],
   "should_not_trigger": [
-    "Research this topic comprehensively using primary sources and save a detailed report.",
-    "Perform a full repository analysis with functional modules and complete working flows.",
+    "Research this topic in the background and save the report as Markdown in the repository.",
+    "Gather the API documentation and write a durable research note for later implementation.",
     "Review this pull request for bugs, security issues, and regressions.",
+    "Audit the architecture and recommend improvements.",
     "Create a repo map with a project glossary and trace callers and callees.",
     "Teach me this framework as a step-by-step multi-lesson course.",
     "Write an implementation plan for adding OAuth.",
     "Implement this feature and run the tests.",
-    "Audit the architecture and recommend improvements.",
-    "深度研究这个主题并生成完整报告。",
+    "Compare these libraries and recommend which one to adopt.",
+    "在后台研究这个主题并把 Markdown 报告写入仓库。",
     "审查这次代码变更并修复发现的问题。",
     "为这个仓库生成项目术语表并追踪调用关系。"
   ],
   "near_neighbor": [
-    "Summarize every section of this book in detail.",
-    "Orient me to this repository before I change one function, including key files and domain terminology.",
-    "Explain this project architecture and recommend a better design.",
+    "What is dependency injection?",
     "Extract all action items from this meeting transcript.",
-    "Compare these three libraries and tell me which one to choose.",
-    "Turn this article into a detailed tutorial."
+    "Translate this article into Chinese.",
+    "Turn these commits into release notes.",
+    "List every exported symbol in this package."
   ]
 }

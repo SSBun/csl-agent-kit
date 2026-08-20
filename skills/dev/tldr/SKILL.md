@@ -1,46 +1,52 @@
 ---
 name: tldr
-description: Provides a concise, faithful overview of any supplied target—or the current conversation topic when no target is supplied. Use when the user asks for a TL;DR, quick overview, or concise big-picture summary. Do not use for deep research, review, tutorials, recommendations, or exhaustive analysis.
+description: Provides brief or detailed, source-backed in-chat understanding of any target. Use for TL;DRs, quick overviews, exploration, in-depth explanations, or detailed reports. Do not use for background or durable-file research, reviews, audits, recommendations, tutorials, plans, implementation, or repository mapping.
 ---
 
 # TLDR
 
-Give the user a reliable big-picture understanding of a target in roughly one screen. Treat topics, conversations, projects, links, files, code, and other content as examples, not as a closed input taxonomy.
+Select a brief overview or detailed chat report only from the criteria below.
 
-## Workflow
+## Route
 
-1. Resolve the target.
-   - Use the user's explicit target when provided.
-   - Otherwise use the current topic segment, beginning at the latest material task or topic change visible in the conversation.
-   - Ask one focused question only when a material ambiguity prevents a faithful overview.
-2. Gather only enough information to understand the target.
-   - Use the host's existing conversation, file, Git, and web capabilities as needed.
-   - For a named topic, start with existing knowledge and retrieve only what is needed for current or uncertain facts.
-   - For a large target, prefer authoritative summaries, manifests, entry points, and directly relevant material over exhaustive scanning.
-   - Stop once the target's identity, purpose, important structure, and material context are clear.
-3. Build the overview around the target's own shape. Select only the useful dimensions, such as purpose, main aspects, relationships, workflow, current state, decisions, or constraints. These are reasoning prompts, not required headings.
-4. Write a concise, faithful overview. Separate supported facts from uncertainty and omit unsupported inference.
+Route background, delegated, or repository-file research to `research`; glossary, change-map, or caller-based orientation to `repo-map`; and review, audit, advice, tutorials, plans, implementation, or remediation to the matching capability.
+
+Use the explicit target, otherwise the current topic segment. Ask one question only when target ambiguity blocks a faithful response.
+
+## Select the Mode
+
+Count cues only when they describe the requested response, not quoted text, source content, or a target name.
+
+- **Brief:** `TL;DR`, `brief`, `quick`, `concise`, `one-screen`, `high-level`; Chinese: `简短`, `简要`, `快速`, `简洁`, `一屏`, `高层概览`.
+- **Detailed:** `explore`, `deep`, `in-depth`, `detailed`, `comprehensive`, `thorough`, `full report`, `analyze`; Chinese: `探索`, `深入`, `详细`, `全面`, `彻底`, `完整报告`, `分析`.
+- Also select detailed when the user explicitly requests at least three of: key facts; mechanism or structure; domain context; limitations or open questions; complete sources.
+- If both match, ask only: “Do you want a brief or detailed response?” Do not choose. If neither matches, use brief.
+
+A bare `/tldr` is not a brief cue. Target type, size, length, complexity, and Agent judgment never affect the mode.
+
+## Gather
+
+- Brief: retrieve only enough for identity, purpose, important structure, and material context.
+- Detailed: read a URL target first; prefer primary sources for topics and authoritative, directly relevant files for projects.
+- Never turn project understanding into a durable report, exhaustive inventory, audit, or implementation plan.
+- Separate facts from inference. Disclose conflicts, uncertainty, inaccessible material, and partial coverage.
 
 ## Output
 
-- Start with `**TL;DR:**` followed by one to three sentences that establish the whole.
-- Add the fewest bullets needed to make the structure clear, normally no more than five.
-- Keep the default response to roughly one screen; simple targets may be much shorter.
-- Prioritize structure and relationships over isolated details.
-- Match the user's language while preserving code identifiers, commands, paths, and proper names.
-- Include concise source links when retrieval supports the overview, and state the coverage when only part of the target was accessible.
-- Respond in chat by default. Write a file only when the user explicitly requests persistence.
-- Do not append generic offers for more help.
+### Brief
 
-## Boundaries and Failure
+- Start with `**TL;DR:**` and one to three sentences establishing the whole.
+- Add the fewest useful bullets, normally no more than five.
+- Keep it to roughly one screen; prioritize structure and relationships.
 
-- Do not turn the overview into deep research, a review, recommendations, a tutorial, or exhaustive project analysis.
-- Do not add actions, risks, conclusions, or advice that the source does not support.
-- If the target is empty, missing, or inaccessible, say so instead of inventing an overview.
-- If a remote source requires authentication or blocks access, state that its body was not read; do not present search snippets as the source itself.
-- If sources conflict or a current fact cannot be verified, disclose the conflict or uncertainty rather than silently choosing.
-- For an oversized target, use the smallest representative authoritative scope and state that scope.
+### Detailed
 
-## Validation
+- Start with `**TL;DR:**`; the first substantive sentence defines the target and states what it does.
+- Then use, when applicable and in order: `Key facts`, `How it works / Structure`, `Context`, `Open questions / Limitations`, `Sources`.
+- Before limitations, cover definition, purpose, mechanism, and implementation as supported by sources.
+- Omit a body section only when irrelevant. Always include `Sources`, listing every consulted URL, file, or reference and what it provided.
+- Keep it dense and bounded; detailed does not mean exhaustive.
 
-Keep `evals/trigger_cases.json` and `evals/semantic_config.json` aligned with the routing boundary after description changes.
+Match the user's language while preserving identifiers, commands, paths, and names. Respond in chat unless a requested file remains within this boundary. Do not append generic offers.
+
+Keep `evals/trigger_cases.json` and `evals/semantic_config.json` aligned with routing and mode selection.

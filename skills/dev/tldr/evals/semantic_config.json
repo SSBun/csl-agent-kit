@@ -1,28 +1,56 @@
 {
   "fallback_positive_concepts": [
-    "concise_overview"
+    "overview_or_exploration"
   ],
   "positive_concepts": {
-    "concise_overview": {
+    "overview_or_exploration": {
       "weight": 0.8,
       "phrases": [
         "/tldr",
         "tl;dr",
-        "tldr",
         "quick overview",
         "concise overview",
         "brief overview",
         "one-screen overview",
-        "big-picture summary",
+        "high-level summary",
         "at a high level",
-        "quickly understand",
+        "big-picture summary",
+        "big picture",
+        "explore this",
+        "explore in depth",
+        "in-depth explanation",
+        "detailed report",
+        "full report",
+        "comprehensive explanation",
+        "comprehensive overview",
+        "comprehensively with sources",
+        "analyze this topic",
+        "analyze this project",
+        "complete sources",
         "简短概览",
         "快速概览",
         "一屏概览",
-        "用一屏内容",
-        "整体摘要",
-        "快速了解",
-        "快速了解全貌"
+        "高层概览",
+        "深入探索",
+        "详细解释",
+        "全面分析",
+        "完整报告"
+      ]
+    },
+    "requested_report_dimensions": {
+      "weight": 0.35,
+      "phrases": [
+        "key facts",
+        "how it works",
+        "mechanism and structure",
+        "domain context",
+        "limitations and open questions",
+        "complete sources",
+        "关键事实",
+        "工作机制",
+        "领域背景",
+        "限制和开放问题",
+        "完整来源"
       ]
     },
     "current_context": {
@@ -38,42 +66,54 @@
     }
   },
   "negative_concepts": {
-    "deep_or_exhaustive_work": {
-      "weight": 0.7,
+    "durable_or_background_research": {
+      "weight": 0.8,
       "exclusive": true,
       "phrases": [
-        "deep research",
-        "comprehensive research",
-        "full repository analysis",
-        "analyze the entire repository",
-        "exhaustive analysis",
-        "audit",
-        "完整研究",
-        "深度研究",
-        "完整分析",
-        "审计"
+        "research in the background",
+        "delegate the research",
+        "save the research report",
+        "write a durable research note",
+        "write the report to the repository",
+        "后台研究",
+        "委派研究",
+        "保存研究报告",
+        "写入仓库"
       ]
     },
-    "review_teach_or_implement": {
-      "weight": 0.7,
+    "review_audit_or_recommendation": {
+      "weight": 0.8,
       "exclusive": true,
       "phrases": [
         "review this pull request",
         "code review",
+        "audit the architecture",
+        "recommend improvements",
+        "recommend which",
+        "代码审查",
+        "审计架构",
+        "推荐改进",
+        "推荐选择"
+      ]
+    },
+    "tutorial_plan_or_implementation": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
         "step-by-step tutorial",
         "multi-lesson course",
         "implementation plan",
         "implement this",
         "fix this bug",
-        "代码审查",
         "分步教程",
+        "课程",
         "实施计划",
         "实现这个功能",
         "修复这个错误"
       ]
     },
     "structured_repo_mapping": {
-      "weight": 0.65,
+      "weight": 0.7,
       "exclusive": true,
       "phrases": [
         "repo map",
