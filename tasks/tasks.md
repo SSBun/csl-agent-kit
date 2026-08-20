@@ -1,5 +1,31 @@
 # 任务索引
 
+- [按关注点分组提交当前本地改动](tasks/commit-current-changes-by-concern.md) — Completed (2026-08-20 15:56)
+
+- [编写 Ponytail 插件详细报告与技能中文翻译](tasks/document-ponytail-plugin.md) — Completed (2026-08-20 15:21)
+
+- [卸载 pi-goal-list-loop-audit](tasks/remove-pi-goal-list-loop-audit.md) — Completed (2026-08-20 14:57)
+
+- [让 /tasks 任务记录可点击](tasks/make-tasks-command-links-clickable.md) — Completed (2026-08-20 15:03)
+
+- [限制 /tasks 只显示最近 20 个任务](tasks/limit-tasks-command-to-20.md) — Completed (2026-08-20 14:50)
+
+- [在任务准备阶段开始前建立任务记录](tasks/task-record-before-preparation.md) — Completed (2026-08-20 15:01)
+
+- [添加 glm5.2 模型预设](tasks/add-glm5-2-model-preset.md) — Completed (2026-08-20 14:40)
+
+- [用 task-review 替换 code-review](tasks/replace-code-review-with-task-review.md) — Completed (2026-08-20 14:42)
+
+- [添加 Pi 模型与思考等级预设](tasks/add-pi-model-thinking-presets.md) — Completed (2026-08-20 14:31)
+
+- [调整 brainstorming 计划文件存储与任务关联](tasks/update-brainstorming-plan-storage.md) — Completed (2026-08-20 11:22)
+
+- [将 simple-rules 迁移为 agent-rules](tasks/rename-simple-rules-to-agent-rules.md) — Completed (2026-08-20 11:18)
+
+- [添加任务目标确认规则](tasks/add-task-target-confirmation-rule.md) — Completed (2026-08-20 15:19)
+
+- [修复 Pi Context Hooks 模块路径](tasks/fix-pi-context-hooks-module-paths.md) — Completed (2026-08-20 10:58)
+
 - [Reorganize skills into dev/meta/domain subfolders](tasks/folder-reorganize-skills.md) — Completed (2026-08-19 17:51)
 
 - [移除第三方 grill 封装并新增个人 task-grill 技能](tasks/remove-third-party-grills-add-task-grill.md) — Completed (2026-08-10)
