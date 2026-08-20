@@ -61,6 +61,6 @@
     "./skills/domain/figma-describe",
     "./skills/dev/align",
     "./skills/dev/tldr",
-    "./skills/meta/simple-rules"
+    "./skills/meta/agent-rules"
   ]
 }

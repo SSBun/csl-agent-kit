@@ -526,7 +526,7 @@ test("inject-output is validated as boolean and rejected on inject-prompt", () =
   assert.deepEqual(onInject.errors.map((error) => error.code), ["inject-output-unexpected"]);
 });
 
-test("inner scope ships a read-only simple-rules hook that injects non-empty files", () => {
+test("inner scope ships a read-only agent-rules hook that injects canonical and legacy files", () => {
   const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-inner-"));
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = data;
@@ -534,16 +534,25 @@ test("inner scope ships a read-only simple-rules hook that injects non-empty fil
     // empty: no prompt
     let payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
     let result = triggerify.runEvent(payload, { host: "pi", workspace: data });
-    const empty = result.prompts.find((prompt) => prompt.id === "inner:simple-rules");
+    const empty = result.prompts.find((prompt) => prompt.id === "inner:agent-rules");
     assert.equal(empty, undefined);
 
-    // non-empty: injected
-    fs.writeFileSync(path.join(data, "simple-rules.md"), "- rule one\n- rule two\n");
+    // legacy file: injected through the canonical hook
+    const legacyFile = path.join(data, "simple-rules.md");
+    fs.writeFileSync(legacyFile, "- legacy rule\n");
     payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
     result = triggerify.runEvent(payload, { host: "pi", workspace: data });
-    const prompt = result.prompts.find((item) => item.id === "inner:simple-rules");
-    assert.ok(prompt, "expected inner:simple-rules prompt");
-    assert.match(prompt.content, /^## Simple Rules\n/);
+    let prompt = result.prompts.find((item) => item.id === "inner:agent-rules");
+    assert.match(prompt.content, /- legacy rule/);
+    fs.rmSync(legacyFile);
+
+    // canonical file: injected
+    fs.writeFileSync(path.join(data, "agent-rules.md"), "- rule one\n- rule two\n");
+    payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
+    result = triggerify.runEvent(payload, { host: "pi", workspace: data });
+    prompt = result.prompts.find((item) => item.id === "inner:agent-rules");
+    assert.ok(prompt, "expected inner:agent-rules prompt");
+    assert.match(prompt.content, /^## Agent Rules\n/);
     assert.match(prompt.content, /- rule one/);
     assert.match(prompt.content, /- rule two/);
   } finally {
@@ -597,24 +606,24 @@ test("inner hooks default enabled and persist user disable/enable state", { conc
   const io = { log: (line) => output.push(line), error: (line) => errors.push(line) };
 
   try {
-    assert.equal(triggerify.runCli(["show", "inner:simple-rules", "--host", "pi", "--json"], io), 0);
+    assert.equal(triggerify.runCli(["show", "inner:agent-rules", "--host", "pi", "--json"], io), 0);
     let status = JSON.parse(output.pop());
     assert.equal(status.default, "enabled");
     assert.equal(status.override, "none");
     assert.equal(status.configured, "enabled");
     assert.equal(status.effective, "active");
 
-    assert.equal(triggerify.runCli(["disable", "inner:simple-rules"], io), 0);
+    assert.equal(triggerify.runCli(["disable", "inner:agent-rules"], io), 0);
     const configFile = path.join(data, "triggerify", "config.json");
     assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")), {
       schema: "triggerify.config/v1",
-      disabledHooks: ["inner:simple-rules"],
+      disabledHooks: ["inner:agent-rules"],
     });
     assert.equal(fs.statSync(configFile).mode & 0o777, 0o600);
 
     assert.equal(triggerify.runCli(["list", "--scope", "inner", "--host", "pi", "--json"], io), 0);
     const inner = JSON.parse(output.pop());
-    status = inner.find((item) => item.id === "inner:simple-rules");
+    status = inner.find((item) => item.id === "inner:agent-rules");
     assert.equal(status.override, "disabled");
     assert.equal(status.configured, "disabled");
     assert.equal(status.effective, "inactive");
@@ -624,24 +633,24 @@ test("inner hooks default enabled and persist user disable/enable state", { conc
     assert.equal(titleStatus.validation, "valid");
     assert.equal(titleStatus.effective, "active");
 
-    fs.writeFileSync(path.join(data, "simple-rules.md"), "- enabled again\n");
+    fs.writeFileSync(path.join(data, "agent-rules.md"), "- enabled again\n");
     let payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
-    assert.equal(triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:simple-rules"), false);
+    assert.equal(triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:agent-rules"), false);
 
-    assert.equal(triggerify.runCli(["enable", "inner:simple-rules"], io), 0);
+    assert.equal(triggerify.runCli(["enable", "inner:agent-rules"], io), 0);
     assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")).disabledHooks, []);
     payload = triggerify.createEvent({ event: "session-start", host: "pi", workspace: data });
-    assert.equal(triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:simple-rules"), true);
+    assert.equal(triggerify.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:agent-rules"), true);
 
     const hookSettings = { "inner:refresh-tab-title": { model: "openai-codex/gpt-5.4-mini" } };
     fs.writeFileSync(configFile, `${JSON.stringify({ schema: "triggerify.config/v1", disabledHooks: [], hookSettings })}\n`);
-    assert.equal(triggerify.runCli(["disable", "inner:simple-rules"], io), 0);
+    assert.equal(triggerify.runCli(["disable", "inner:agent-rules"], io), 0);
     assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")).hookSettings, hookSettings);
     assert.deepEqual(
       triggerifyStore.discover("inner", data).find((entry) => entry.id === "inner:refresh-tab-title").hookConfig,
       hookSettings["inner:refresh-tab-title"],
     );
-    assert.equal(triggerify.runCli(["enable", "inner:simple-rules"], io), 0);
+    assert.equal(triggerify.runCli(["enable", "inner:agent-rules"], io), 0);
     assert.deepEqual(JSON.parse(fs.readFileSync(configFile, "utf8")).hookSettings, hookSettings);
 
     const hooks = path.join(data, "triggerify", "hooks");
@@ -651,15 +660,15 @@ test("inner hooks default enabled and persist user disable/enable state", { conc
     const invalid = triggerify.runEvent(payload, { host: "pi", workspace: data });
     assert.ok(invalid.prompts.some((item) => item.id === "global:global"));
     assert.ok(invalid.diagnostics.includes("inner:config-invalid"));
-    assert.equal(invalid.prompts.some((item) => item.id === "inner:simple-rules"), false);
+    assert.equal(invalid.prompts.some((item) => item.id === "inner:agent-rules"), false);
 
-    assert.equal(triggerify.runCli(["show", "inner:simple-rules", "--host", "pi", "--json"], io), 1);
+    assert.equal(triggerify.runCli(["show", "inner:agent-rules", "--host", "pi", "--json"], io), 1);
     status = JSON.parse(output.pop());
     assert.equal(status.override, "invalid");
     assert.equal(status.configured, "unavailable");
     assert.equal(status.effective, "inactive");
     assert.ok(status.reasons.includes("inner-config-invalid"));
-    assert.equal(triggerify.runCli(["disable", "inner:simple-rules"], io), 2);
+    assert.equal(triggerify.runCli(["disable", "inner:agent-rules"], io), 2);
     assert.ok(errors.pop().includes("invalid inner hook config"));
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
@@ -778,8 +787,8 @@ test("CLI keeps inner hook source immutable", () => {
   const io = { log() {}, error: (message) => errors.push(message) };
   const cases = [
     ["create", "x", "--event", "session-start", "--action", "inject-prompt", "--scope", "inner"],
-    ["update", "inner:simple-rules", "--description", "x"],
-    ["delete", "inner:simple-rules"],
+    ["update", "inner:agent-rules", "--description", "x"],
+    ["delete", "inner:agent-rules"],
   ];
   for (const argv of cases) {
     errors.length = 0;

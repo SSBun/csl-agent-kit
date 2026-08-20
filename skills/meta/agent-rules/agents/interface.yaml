@@ -1,7 +1,7 @@
 interface:
-  display_name: "Simple Rules"
-  short_description: "记录持久全局规则到 ~/.csl-agent-kit/simple-rules.md，在每次会话开始注入"
-  default_prompt: "Use $simple-rules to add, edit, list, or remove a persistent rule or convention in ~/.csl-agent-kit/simple-rules.md."
+  display_name: "Agent Rules"
+  short_description: "Persist global agent rules in ~/.csl-agent-kit/agent-rules.md for session-start injection"
+  default_prompt: "Use $agent-rules to add, edit, list, or remove a persistent rule or convention in ~/.csl-agent-kit/agent-rules.md."
 
 compatibility:
   canonical_format: "agent-skills"
