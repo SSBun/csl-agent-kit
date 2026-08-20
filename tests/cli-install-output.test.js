@@ -161,7 +161,7 @@ test("root hook commands execute bundled resources from plugin root variables", 
   const hook = hooks.find(({ command }) => command.includes("sop-summaries.sh")).command;
   assert.ok(hookManifest.SessionStart.some(({ matcher }) => matcher.split("|").includes("compact")));
   assert.equal([...hooks, ...postCompactHooks].some(({ command }) => command.includes("workspace-workflow-gates.md")), false);
-  assert.ok(hooks.some(({ command }) => command.includes("skills/triggerify/scripts/triggerify.js")));
+  assert.ok(hooks.some(({ command }) => command.includes("skills/meta/triggerify/scripts/triggerify.js")));
   try {
     for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
       const script = path.join(fakeRoot, "skills", "sop-manager", "scripts", "sop-summaries.sh");

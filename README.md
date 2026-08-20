@@ -283,8 +283,8 @@ csl-agent-kit install --all
 
 ```
 skills/                  # Shared skill source (all platforms)
-skills/csl-tasks/        # Cross-host task, planning, queue execution, and shared state core
-skills/workspace-workflow/ # Context and lessons workflow skills
+skills/meta/csl-tasks/        # Cross-host task, planning, queue execution, and shared state core
+skills/meta/workspace-workflow/ # Context and lessons workflow skills
 skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest

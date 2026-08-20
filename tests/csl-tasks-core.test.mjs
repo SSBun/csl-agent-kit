@@ -7,8 +7,8 @@ import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 
 const require = createRequire(import.meta.url);
-const core = require("../skills/csl-tasks/shared/lib/task-core.js");
-const cli = path.resolve("skills/csl-tasks/shared/scripts/csl-tasks.js");
+const core = require("../skills/meta/csl-tasks/shared/lib/task-core.js");
+const cli = path.resolve("skills/meta/csl-tasks/shared/scripts/csl-tasks.js");
 
 function workspace(t) {
   const root = mkdtempSync(path.join(os.tmpdir(), "csl-tasks-"));

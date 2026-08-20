@@ -385,7 +385,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
 - Scope: Canonical task records and their index.
 - Paths: \`tasks/tasks.md\`, \`tasks/tasks/\`
 - Keywords: task, target, status
-- Authority: \`skills/csl-tasks/task/SKILL.md\`
+- Authority: \`skills/meta/csl-tasks/task/SKILL.md\`
 - Recheck: When the CSL Task contract changes.
 
 ### Purpose and Boundaries
@@ -419,7 +419,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   assert.equal(showResult.status, 0, showResult.stderr);
   const shown = JSON.parse(showResult.stdout);
   assert.equal(shown.schema, "csl-context.packs/v1");
-  assert.equal(shown.packs[0].authority, "`skills/csl-tasks/task/SKILL.md`");
+  assert.equal(shown.packs[0].authority, "`skills/meta/csl-tasks/task/SKILL.md`");
   assert.match(shown.packs[1].raw, /Its callers must preserve the adapter boundary/);
 
   const validationResult = run("validate");

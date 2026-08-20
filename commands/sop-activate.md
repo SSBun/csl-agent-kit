@@ -10,7 +10,7 @@ Activate a built-in SOP so it loads as a native Claude Code rule. **Claude Code 
 List all built-in SOPs:
 
 ```bash
-ls "${CLAUDE_PLUGIN_ROOT}/skills/sop-manager/sops/" 2>/dev/null
+ls "${CLAUDE_PLUGIN_ROOT}/skills/meta/sop-manager/sops/" 2>/dev/null
 ```
 
 Also check for custom SOPs already activated:
@@ -72,7 +72,7 @@ Use `AskUserQuestion` to confirm the glob or let the user type a custom one.
 Read the source SOP:
 
 ```bash
-cat "${CLAUDE_PLUGIN_ROOT}/skills/sop-manager/sops/{selected}.md"
+cat "${CLAUDE_PLUGIN_ROOT}/skills/meta/sop-manager/sops/{selected}.md"
 ```
 
 Then write to the destination with activation frontmatter prepended/replaced.

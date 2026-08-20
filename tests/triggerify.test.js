@@ -7,13 +7,13 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
-const triggerify = require("../skills/triggerify/scripts/triggerify.js");
-const triggerifyRuntime = require("../skills/triggerify/scripts/lib/runtime.js");
-const triggerifyStore = require("../skills/triggerify/scripts/lib/store.js");
-const titleHook = require("../skills/triggerify/scripts/refresh-tab-title.js");
-const ruleValidator = require("../skills/triggerify/scripts/validate-rules.js");
-const codexProtocol = require("../skills/triggerify/references/codex-protocol.json");
-const sessionStartProtocols = require("../skills/triggerify/references/session-start-protocols.json");
+const triggerify = require("../skills/meta/triggerify/scripts/triggerify.js");
+const triggerifyRuntime = require("../skills/meta/triggerify/scripts/lib/runtime.js");
+const triggerifyStore = require("../skills/meta/triggerify/scripts/lib/store.js");
+const titleHook = require("../skills/meta/triggerify/scripts/refresh-tab-title.js");
+const ruleValidator = require("../skills/meta/triggerify/scripts/validate-rules.js");
+const codexProtocol = require("../skills/meta/triggerify/references/codex-protocol.json");
+const sessionStartProtocols = require("../skills/meta/triggerify/references/session-start-protocols.json");
 
 test("implements V1 three-valued collection and glob semantics", () => {
   const condition = {
@@ -712,7 +712,7 @@ process.stdout.write(JSON.stringify({
 
 test("title hook publishes a manual refresh failure result", () => {
   const data = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-title-result-"));
-  const script = path.join(__dirname, "../skills/triggerify/scripts/refresh-tab-title.js");
+  const script = path.join(__dirname, "../skills/meta/triggerify/scripts/refresh-tab-title.js");
   const requestId = "manual-request";
   try {
     const result = spawnSync(process.execPath, [script], {

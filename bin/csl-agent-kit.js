@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
-const triggerify = require("../skills/triggerify/scripts/triggerify.js");
+const triggerify = require("../skills/meta/triggerify/scripts/triggerify.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
