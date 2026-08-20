@@ -7,7 +7,7 @@ description: Decompose and run a multi-task outcome as one Queue parent with ord
 
 Coordinate multiple canonical tasks through the current host Agent. This is host-native interactive execution: use the host's existing tools and subagents, never nested `codex exec`, `pi --print`, `pi-worker-*`, a daemon, watchdog, or unattended supervisor.
 
-Resolve the collection root as the parent of this skill directory. Use `node <collection-root>/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
+Resolve the collection root as the parent of this skill directory. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
 
 ## Build the Task Graph
 

@@ -140,7 +140,7 @@ test("does not ship retired skills", () => {
 });
 
 test("ships task-review as the only ordinary review skill", () => {
-  const skillDir = path.join(root, "skills", "dev", "task-review");
+  const skillDir = path.join(root, "skills", "meta", "task-review");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
   const contract = JSON.parse(readFileSync(path.join(skillDir, "evals", "contract_cases.json"), "utf8"));
   const findingContract = contract.cases.find(({ id }) => id === "confirmed-finding");

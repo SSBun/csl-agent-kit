@@ -11,7 +11,7 @@ Manage one outcome through the host Agent. Use the host's existing file, shell, 
 
 - `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
 - `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
-- Resolve the collection root as the parent of this skill directory, then use `node <collection-root>/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
+- Resolve the collection root as the parent of this skill directory, then use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
 - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, or Block, run `sync <id>` and `check <id>`.
 - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
 

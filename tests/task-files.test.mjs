@@ -11,9 +11,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const taskDir = path.join(root, "tasks", "tasks");
 const reportDir = path.join(root, "reports", "adversarial-review");
 const workflowDir = path.join(root, "skills", "workspace-workflow");
-const cslTasksDir = path.join(root, "skills", "csl-tasks");
+const cslTasksDir = path.join(root, "skills", "meta");
+const cslTasksSharedDir = path.join(cslTasksDir, "csl-tasks", "shared");
 const require = createRequire(import.meta.url);
-const { checkTaskIndex } = require(path.join(cslTasksDir, "shared", "lib", "task-core.js"));
+const { checkTaskIndex } = require(path.join(cslTasksSharedDir, "lib", "task-core.js"));
 
 function readMarkdown(dir) {
   return new Map(readdirSync(dir)
@@ -404,7 +405,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
 - Scope: Canonical task records and their index.
 - Paths: \`tasks/tasks.md\`, \`tasks/tasks/\`
 - Keywords: task, target, status
-- Authority: \`skills/meta/csl-tasks/task/SKILL.md\`
+- Authority: \`skills/meta/task/SKILL.md\`
 - Recheck: When the CSL Task contract changes.
 
 ### Purpose and Boundaries
@@ -438,7 +439,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   assert.equal(showResult.status, 0, showResult.stderr);
   const shown = JSON.parse(showResult.stdout);
   assert.equal(shown.schema, "csl-context.packs/v1");
-  assert.equal(shown.packs[0].authority, "`skills/meta/csl-tasks/task/SKILL.md`");
+  assert.equal(shown.packs[0].authority, "`skills/meta/task/SKILL.md`");
   assert.match(shown.packs[1].raw, /Its callers must preserve the adapter boundary/);
 
   const validationResult = run("validate");
@@ -534,7 +535,7 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
     assert.ok(skill.includes(status), `missing task status: ${status}`);
   }
   assert.deepEqual(readdirSync(skillDir).sort(), ["SKILL.md", "agents", "evals"]);
-  assert.deepEqual(readdirSync(path.join(cslTasksDir, "shared")).sort(), ["lib", "scripts"]);
+  assert.deepEqual(readdirSync(cslTasksSharedDir).sort(), ["lib", "scripts"]);
 });
 
 test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {

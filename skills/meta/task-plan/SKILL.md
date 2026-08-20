@@ -7,7 +7,7 @@ description: Research and prepare an implementation-ready canonical task plan wi
 
 Produce an implementation-ready task record while keeping the requested deliverable read-only. Writing `tasks/tasks.md` and its canonical task record is allowed; product code, documents, configuration, and other requested deliverables are not.
 
-Use the host Agent's existing read, search, research, shell, and subagent capabilities. Never invoke nested Codex/Pi CLIs or build a host adapter. Resolve the collection root as the parent of this skill directory and use `node <collection-root>/shared/scripts/csl-tasks.js --workspace <workspace> ...` for task persistence.
+Use the host Agent's existing read, search, research, shell, and subagent capabilities. Never invoke nested Codex/Pi CLIs or build a host adapter. Resolve the collection root as the parent of this skill directory and use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for task persistence.
 
 ## Workflow
 
