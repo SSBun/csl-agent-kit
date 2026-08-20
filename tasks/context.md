@@ -7,26 +7,26 @@
 
 ### Global Vocabulary
 - Skill package 是以 `SKILL.md` 为运行时契约的可发现能力；共享包位于 `skills/`，项目专用包位于 `.agents/skills/`。
-- Project Core 是 session start、resume 与 compaction 时始终加载的项目级最小模型；Context Pack 是具体任务按需检索的完整组件或工作流模型；权威契约为 `skills/workspace-workflow/workspace-context/SKILL.md`。
-- Canonical task 是 `tasks/tasks/<task-slug>.md` 中的权威任务记录，`tasks/tasks.md` 仅是 newest-first 导航索引；权威实现为 `skills/csl-tasks/shared/lib/task-core.js`。
+- Project Core 是 session start、resume 与 compaction 时始终加载的项目级最小模型；Context Pack 是具体任务按需检索的完整组件或工作流模型；权威契约为 `skills/meta/workspace-workflow/workspace-context/SKILL.md`。
+- Canonical task 是 `tasks/tasks/<task-slug>.md` 中的权威任务记录，`tasks/tasks.md` 仅是 newest-first 导航索引；权威实现为 `skills/meta/csl-tasks/shared/lib/task-core.js`。
 
 ### System Map
 - `super-agent/` 提供跨宿主默认 Agent rules 与 workspace lifecycle dispatcher。
-- `skills/` 提供可分发 skills；`skills/csl-tasks/` 管理任务生命周期，`skills/workspace-workflow/` 管理 Context 与 Lessons。
+- `skills/` 提供可分发 skills；`skills/meta/task/`、`skills/meta/task-plan/` 与 `skills/meta/task-queue/` 管理任务生命周期，`skills/meta/workspace-workflow/` 管理 Context 与 Lessons。
 - `pi/extensions/` 提供 Pi 宿主集成；`bin/`、`scripts/` 与各宿主 manifest 负责安装、发现和分发。
 - `tasks/` 保存 workspace-local Context、Lessons、canonical task records 与任务产出的 reports。
 
 ### Global Invariants
 - Skill package 的 `SKILL.md`、runtime references、prompts、templates 与 eval-facing prose 使用英文；用户回答和生成报告使用用户语言；权威约定记录在本文件的 Decisions and Conventions。
-- Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/workspace-workflow/workspace-context/SKILL.md`。
+- Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/meta/workspace-workflow/workspace-context/SKILL.md`。
 - Context 用于跳过宽泛项目探索，不取代任务直接相关源码、测试和 Authority 验证；Authority 与 Context 冲突时以 Authority 为准。
-- 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `super-agent/AGENTS.md` 与 `skills/csl-tasks/task/SKILL.md`。
+- 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `super-agent/AGENTS.md` 与 `skills/meta/task/SKILL.md`。
 
 ## CTX-workspace-context — Workspace Context dispatch and maintenance
 - Scope: Workspace Context loading, task-relevant retrieval, source-backed maintenance, and default lifecycle consumers.
-- Paths: `tasks/context.md`, `skills/workspace-workflow/workspace-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/csl-tasks/task/SKILL.md`, `tests/task-files.test.mjs`
+- Paths: `tasks/context.md`, `skills/meta/workspace-workflow/workspace-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `tests/task-files.test.mjs`
 - Keywords: workspace context, project core, context pack, task fingerprint, dispatch, authority
-- Authority: `skills/workspace-workflow/workspace-context/SKILL.md`, `skills/workspace-workflow/workspace-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/csl-tasks/task/SKILL.md`, `tests/task-files.test.mjs`
+- Authority: `skills/meta/workspace-workflow/workspace-context/SKILL.md`, `skills/meta/workspace-workflow/workspace-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `tests/task-files.test.mjs`
 - Recheck: When the Context schema, task activation order, query lifecycle, write permissions, or default consumer wording changes.
 
 ### Purpose and Boundaries
@@ -67,24 +67,6 @@
 - `third-party-skills.js status` 按来源与 ref 复用临时上游检出并比较导入 commit；`diff` 区分导入后的上游变化与当前上游相对本地副本的差异，只有 `--patch` 输出逐行补丁。
 - 导入、更新或移除第三方 skill 时使用项目内整合流程，并同步验证来源元数据、共享发现、当前 manifests、README、测试与发布包内容。
 
-## CTX-analyze-project — Systematic source analysis reports
-- Scope: `analyze-project` 的路由、系统化单报告与图表合同、证据覆盖门、安全发布与 fresh-session 验证边界。
-- Paths: `skills/analyze-project/`, `skills/repo-map/`, `docs/analysis/analyze-project-v2-prd.md`, `docs/analysis/analyze-project-v2-learn-prd.md`, `reports/analyze-project-evals/`
-- Keywords: analyze-project, systematic report, project map, component map, functional modules, architecture diagram, workflow diagram, core working flows, active report
-- Authority: `skills/analyze-project/SKILL.md`, `skills/analyze-project/references/report-contract.md`, `skills/analyze-project/evals/contract_cases.json`
-- Recheck: 报告结构、图表/系统覆盖门、active path、安全发布语义或 fresh-session 验收方式变化时复核。
-
-### Purpose and Boundaries
-- `analyze-project` 针对唯一 Git project、目录组件或文件组件生成一份持久、源码可证的系统化当前状态报告；快速入口定位和轻量 glossary 属于 `repo-map`，单一细节问答、审计、代码审查、实施计划与通用课程分别路由到相邻能力。
-
-### Structure
-- 产品没有 question-answer 或 Learn 分支；`develop` 仅是无行为差异的兼容 alias。project、directory、file 分别写入 `docs/analysis/project-map.md`、`docs/analysis/components/dir/<relative-dir>/map.md` 和 `docs/analysis/components/file/<relative-file>.md`；旧 `docs/analysis/learning/**` 只作历史归档。
-- 报告以 Metadata、Scope Summary、可选 Domain Glossary、Functional Module Map、Core Working Flows 和可选 Cross-flow Invariants 组织；模块按功能职责而非目录划分，系统覆盖主要价值但不穷举内部 inventory。每份报告必须有一张功能架构图；涉及多模块顺序、异步/外部边界、关键分支或状态迁移的复杂流程各有一张对应图，简单流程不强制。
-
-### Decision and Verification Boundaries
-- 所有项目事实必须有就近源码证据组：使用独立 Markdown bullet list，每项只包含一个 inline-code `path#symbol`、`path#key` 或 line anchor；锚点不得追加在正文尾部或放入表格。项目报告覆盖解释主要产品价值所需的最高层职责与核心流程，组件报告只覆盖内部、直接邻居和参与流程。所有必需视觉都使用 Mermaid flowchart、sequence 或 state code fence，不再生成 ASCII 图；有本地 validator 时必须验证，无 validator 时保留 Mermaid 并人工检查语法，已有 validator 经有限修复仍失败则不发布。build/test、项目执行、安装、网络和外部 mutation 需要明确授权。
-- active report 通过 Node 标准库 owned sibling temp 加 `link`/获准且旧 bytes 未变时 `rename` 发布；失败时不直接覆盖。`evals/contract_cases.json` 是声明式人工核对输入，实际输出价值以禁用 ambient skill 的 fresh-context 子 Agent 在真实项目生成并由父 Agent检查的报告为证据；旧 need-contract eval 仅是历史记录。
-
 ## CTX-pi-task-overlay — Pi task overlay rendering
 - Scope: Pi task widget parsing, session focus persistence, progress rendering, refresh lifecycle, mode boundaries, and clickable task titles.
 - Paths: `pi/extensions/csl-task-overlay.ts`, `tests/pi-task-overlay.test.mjs`, `tasks/tasks.md`, `tasks/tasks/`
@@ -106,25 +88,27 @@
 - `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
 
 ## CTX-task-workflows — Canonical task workflows
-- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、状态证据与完成门禁。
-- Paths: `skills/csl-tasks/task/`, `skills/csl-tasks/task-plan/`, `skills/csl-tasks/task-queue/`, `skills/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
-- Keywords: task, task-plan, task-queue, canonical task, queue parent, Kind Queue, legacy Auto
-- Authority: `skills/csl-tasks/task/SKILL.md`, `skills/csl-tasks/task-plan/SKILL.md`, `skills/csl-tasks/task-queue/SKILL.md`, `skills/csl-tasks/shared/lib/task-core.js`
-- Recheck: 当公开 skill identity、task activation timing、task record schema、状态转换、父子图或完成门禁变化时复核。
+- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、Task Target 确认、状态证据与完成门禁。
+- Paths: `skills/meta/task/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
+- Keywords: task, task-plan, task-queue, canonical task, Task Target, textual confirmation, queue parent, Kind Queue, legacy Auto
+- Authority: `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
+- Recheck: 当公开 skill identity、task activation timing、Task Target 确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
 ### Purpose and Boundaries
 - `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
 
 ### Structure
-- 三个 workflow 共享 `shared/lib/task-core.js` 与 `shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
+- 三个 workflow 直接位于 `skills/meta/`，共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
+- Core 将 `Status: <state> (<YYYY-MM-DD HH:MM>)` 投影到 canonical record，并在 `tasks/tasks.md` 维护对应的标题、状态与 `tasks/<task-slug>.md` 链接；record 在索引不一致时仍是权威。
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 一旦请求形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session，再声明一个含可观察完成条件的 user-facing Task Target 并等待显式确认；确认前只允许保持该任务一致所需的 lifecycle writes，确认后才进行实质讨论、澄清、探索、调研、规划、委派或实施。一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可跳过。
+- 一旦请求形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session，再准备一个含可观察完成条件的 user-facing Task Target。原始顶层用户请求以区分大小写的独立末行 `TASK_GO` 结尾时，该标记只授权本次 Task Target 并跳过文本确认，不消除歧义或其他必要确认；否则展示准确的 `**Task Target:** <target>` 文本并等待明确回复。确认前只允许保持该任务一致所需的 lifecycle writes，确认后才进行实质讨论、澄清、探索、调研、规划、委派或实施。一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可跳过。
 
 ### Decision and Verification Boundaries
-- User-facing Task Target 是 task 激活后的会话确认门，不替代 canonical task record 的 `Target` section。
-- 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；内部集合目录与共享 CLI 文件名保持稳定。
+- User-facing Task Target 是 task 激活后的会话确认门，不替代 canonical task record 的 `Target` section；`TASK_GO` 与文本回复是该门的两种互斥授权路径，不得重复确认。
+- 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。
+- 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；三个 skill package 直接位于 `skills/meta/`，共享 core 保持在 `skills/meta/csl-tasks/shared/`。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
 ## CTX-triggerify — Triggerify runtime and built-in hooks
@@ -195,9 +179,7 @@
 ## Decisions and Conventions
 
 - Skill packages use English for `SKILL.md`, runtime references, prompts, templates, and eval-facing prose; generated reports and user responses still follow the user's language. A task that modifies one skill does not bulk-translate unrelated existing packages unless the user explicitly requests a repository-wide migration — authoritative source: user confirmation on 2026-08-07; review when that language convention changes.
-- 新的用户请求只要形成可独立验收的 outcome，就默认创建新的 canonical task；只有请求直接修正、补全或重新验证旧任务的同一 outcome，且不处理会让旧 Target/Result 失真时，才复用或重开旧任务。同一组件、文件、主题或实现重叠不足以建立 ownership，无法确定时创建新任务。权威来源为 `skills/csl-tasks/task/SKILL.md` 与其 `evals/task_ownership_cases.json`。
 - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
-- 新任务由 CSL Tasks core 投影 `Status: <state> (<YYYY-MM-DD HH:MM>)` 到 canonical record，并在 `tasks/tasks.md` 使用 `- [<title>](tasks/<task-slug>.md) — <state> (<YYYY-MM-DD HH:MM>)`；状态、证据、父子关系和完成门禁通过共享 CLI 更新，canonical task 仍是索引不一致时的权威。旧正文无需批量改写，但所有 records 已统一迁入 `tasks/tasks/`。权威来源为 `skills/csl-tasks/task/SKILL.md`、`shared/lib/task-core.js` 和 `pi/extensions/csl-task-overlay.ts`。
 - 可分发默认 `AGENTS.md` 保留稳定的通用原则与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证；只有用户明确要求 `$adversarial-review`、双 Agent Reviewer–Editor 循环或独立 Reviewer 批准时才进入独立审查，风险、复杂度、验证缺口、其他规则或工作流都不会自动触发，未明确要求时记录 `Skipped` 并在常规验证通过后直接完成。
 - `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。
 - `adversarial-review` 的 `BLOCKER` 必须同时说明被违反的要求或原则、可观察证据、不处理的实际风险与 `Required Outcome`；缺少任一项时不得作为阻塞性 Finding，应降级为 `QUESTION`、`NOTE` 或省略。`Suggested Remedy` 不能代替这四项成立条件。
@@ -212,4 +194,3 @@
 - `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
 - 默认 agent 规则不规定 plan mode 或 subagent 策略；agent 可以按任务需要自行使用这些能力。d
 - `super-agent/` 纳入 npm 发布白名单，包含默认 `AGENTS.md` 与 workspace lifecycle dispatcher；它是运行时规则资产目录，不是 skill。
-- README 当前列出 31 个可分发技能；第三方源码导入不等同于安装到 `~/.agents/skills`，除非用户明确要求执行安装器。`integrate-third-skills` 是本仓库本地流程，不计入这个数量。
