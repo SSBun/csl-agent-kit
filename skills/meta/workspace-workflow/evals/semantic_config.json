@@ -16,8 +16,11 @@
       "phrases": [
         "tasks/tasks.md",
         "task record",
-        "non-trivial work",
-        "changes a deliverable",
+        "concrete non-trivial outcome",
+        "before substantive discussion",
+        "before research",
+        "Task Target",
+        "explicit confirmation",
         "adversarial review"
       ]
     },
@@ -35,13 +38,14 @@
     }
   },
   "negative_concepts": {
-    "read_only_or_trivial": {
+    "no_concrete_task_or_trivial": {
       "weight": 0.5,
       "exclusive": true,
       "phrases": [
-        "read-only answer",
-        "trivial mechanical operation",
-        "do not change files"
+        "simple factual answer",
+        "open-ended conversation",
+        "no concrete outcome",
+        "trivial mechanical operation"
       ]
     },
     "ordinary_preference": {

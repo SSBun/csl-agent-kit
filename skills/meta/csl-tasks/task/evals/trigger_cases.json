@@ -2,12 +2,16 @@
   "recommended_threshold": 0.5,
   "should_trigger": [
     "Create the canonical task record before implementing this feature.",
+    "Research this concrete non-trivial outcome and create its task record before research.",
+    "Before substantive discussion, create the task record for this specific outcome.",
+    "Activate this concrete task, state its Task Target, and wait for explicit confirmation before research.",
     "Resume the existing task and finish its remaining targets.",
     "Cancel this task for now; I may continue it later.",
     "Verify and complete the current workspace task."
   ],
   "should_not_trigger": [
-    "Explain this code without changing files.",
+    "Answer this simple factual question.",
+    "Brainstorm freely without choosing a concrete outcome.",
     "Plan this feature but do not implement it.",
     "Run these five tasks automatically in order.",
     "Rename this file and verify the destination exists."

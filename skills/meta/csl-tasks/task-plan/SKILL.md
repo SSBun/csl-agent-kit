@@ -11,12 +11,13 @@ Use the host Agent's existing read, search, research, shell, and subagent capabi
 
 ## Workflow
 
-1. Read workspace context, relevant lessons, the task index, and directly relevant sources.
-2. Identify the intended outcome, observable acceptance conditions, exclusions, constraints, and verification boundary.
-3. Research facts that the workspace or authoritative sources can answer. Ask one focused question only when a user-owned decision truly blocks a correct plan; do not ask for implementation facts you can inspect.
-4. Create a Pending plan record with `create <id> --title <title> --kind plan` and one `--target "Tn: ..."` per delivery condition.
-5. Add only the substantive sections below, then run `sync <id>` and `check <id>`.
-6. Return a decisions-only handoff: final decisions, material constraints, unresolved user decisions, and the canonical record path. Do not include the interview transcript or private reasoning.
+1. Load Project Core, then read only the newest task index entries and plausible candidate owning records needed to avoid duplicate ownership.
+2. As soon as the request establishes a concrete planning outcome, create a Pending plan record with `create <id> --title <title> --kind plan` and initial observable `--target "Tn: ..."` conditions supported by the request. Call the host's task-focus mechanism when available. If no honest Target can yet be stated, ask one focused question and create the record immediately after the answer.
+3. With the plan record active, state one concise user-facing `Task Target` naming the intended plan outcome and observable completion condition, then stop and wait for explicit confirmation. Before confirmation, allow only task lifecycle writes needed to create, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work.
+4. After confirmation, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then identify the final acceptance conditions, exclusions, constraints, and verification boundary.
+5. Research facts that the workspace or authoritative sources can answer. Ask one focused question only when a user-owned decision truly blocks a correct plan; do not ask for implementation facts you can inspect.
+6. Refine the record's Target, Decisions, Scope, and Plan, then run `sync <id>` and `check <id>`.
+7. Return a decisions-only handoff: final decisions, material constraints, unresolved user decisions, and the canonical record path. Do not include the interview transcript or private reasoning.
 
 ## Plan Record
 

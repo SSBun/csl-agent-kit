@@ -11,19 +11,21 @@ Resolve the collection root as the parent of this skill directory. Use `node <co
 
 ## Build the Task Graph
 
-1. Read context, relevant lessons, the task index, and directly relevant sources.
-2. Clarify only user-owned decisions that block a correct decomposition.
-3. Create one Queue parent with integration-level Targets:
+1. Load Project Core, then read only the newest task index entries and plausible candidate owning records needed to avoid duplicate ownership.
+2. As soon as the request establishes a concrete multi-task outcome, create or resume one Queue parent with an initial integration Target:
    `create <parent-id> --title <title> --kind queue --target "T1: <integrated outcome>"`.
-4. Create a child only for an independently acceptable or independently blocked outcome. Each child has its own observable Targets and complete `task` lifecycle.
-5. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents and cycles, and preserves order.
-6. Add the parent's current Scope and Plan, then `sync` and `check` every touched record.
+   Resume the parent and call the host's task-focus mechanism when available. If no honest integration Target can yet be stated, ask one focused question and create the parent immediately after the answer.
+3. With the parent active, state one concise user-facing `Task Target` naming the integrated outcome and observable completion condition, then stop and wait for explicit confirmation. Before confirmation, allow only parent task lifecycle writes needed to create, resume, focus, sync, and check the record; do not inspect task-direct sources, decompose the graph, run other mutating commands, or delegate work.
+4. After confirmation, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
+5. Refine the parent's integration Targets and create a child only for an independently acceptable or independently blocked outcome. Each child has its own observable Targets and complete `task` lifecycle.
+6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents and cycles, and preserves order.
+7. Add the parent's current Scope and Plan, then `sync` and `check` every touched record.
 
 Do not duplicate a child's Target, Plan, Result, or status in the parent. The parent Plan links or names children and states dependencies only.
 
 ## Sequential Execution
 
-1. Resume the parent.
+1. Confirm the parent is In Progress.
 2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
 3. Resume and execute that child under the full `task` workflow, including Result, review, verification, completion, and index check.
 4. Run `next` again only after the current child completes.

@@ -16,7 +16,7 @@
 
 - Use the session-start directory as the workspace root and keep `tasks/context.md` there as the canonical dispatch-ready project model. Save only confirmed, durable facts a later Agent would otherwise need broad repository exploration or architecture analysis to recover.
 - At session start, after resume or compaction, load `$workspace-context` and use it to load Project Core before acting. Do not wait for the user to request context loading.
-- After understanding a concrete task, use the skill to query only the relevant Context Packs, normally one to three; do not indiscriminately read the whole Context file. Context guides orientation, but task-direct source and tests remain authoritative.
+- After activating the owning canonical task and receiving explicit confirmation of its user-facing `Task Target`, use the skill to query only the relevant Context Packs, normally one to three; do not indiscriminately read the whole Context file. Context guides orientation, but task-direct source and tests remain authoritative.
 - Before ending when durable facts changed, load the skill and follow its Pack maintenance, validation, and Project Core confirmation rules. Do not save task progress or history, lessons, speculation, secrets, global preferences, or cached live values.
 - If Context is missing, invalid, untrusted, or conflicts with Authority, disclose the degradation and investigate normally; ask a focused question only when evidence cannot resolve a user-owned fact. Routine context maintenance needs no task record.
 
@@ -25,20 +25,21 @@
 ### 3. Goal-Driven Task Management
 
 - Use `tasks/tasks.md` as a newest-first index and keep each canonical task record in `tasks/tasks/<task-slug>.md`; multiple tasks may be active at once.
-- Before non-trivial work that changes a deliverable, load `$task` and follow its `SKILL.md` before execution. Do not wait until implementation is underway or finished, and do not wait for the user to request a task record.
+- As soon as a request establishes a concrete, non-trivial, independently acceptable outcome, load `$task` and follow its `SKILL.md` to create, resume, or reopen the owning record before substantive discussion, requirements clarification, repository exploration, research, planning, delegation, or implementation. Do not wait for work to begin or for the user to request a task record.
+- With the owning task active, state one concise user-facing `Task Target` that names the intended outcome and observable completion condition, then wait for explicit confirmation before substantive preparation or execution. Before confirmation, permit only task lifecycle writes needed to create, resume, reopen, focus, sync, and check that record.
 - Use `$task-plan` for planning-only work and `$task-queue` when the user wants multiple tasks managed and executed as an ordered parent-child workflow.
 - Create or update the owning task file and only its exact index entry; keep both current as scope, status, or results change. The task core owns status, evidence, parent-child links, completion gates, and index consistency.
 - Keep each index entry limited to the task title, current status, and relative task-file link. The task file is authoritative when the index and record disagree.
 - Keep completed task files as history and avoid changing unrelated task files or index entries. Read recent tasks first and search older entries only when relevant.
-- Skip task records for read-only answers, trivial mechanical operations, and routine context or lesson maintenance.
+- Skip task records only for simple factual answers, open-ended conversation without a concrete outcome, trivial deterministic mechanical operations, and routine context or lesson maintenance.
 
 ---
 
 ### 4. Self-Improvement Loop
 
 - Treat `tasks/lessons.md` as a compact, current set of durable rules that prevent repeated agent mistakes, not a task diary or project knowledge base.
-- Before non-trivial work and after a user correction, load `$workspace-lessons` and follow its `SKILL.md` before continuing. Do not wait for the user to request lesson review.
-- Before work, review only the lessons relevant to the current workspace and task, then apply every matching Rule and Check.
+- After activating the owning task and receiving explicit `Task Target` confirmation, but before substantive preparation or execution, load `$workspace-lessons` and follow its `SKILL.md`; also load it after a user correction before continuing. Do not wait for the user to request lesson review.
+- With the task active and confirmed, review only the lessons relevant to the current workspace and outcome, then apply every matching Rule and Check.
 - After a correction, inspect related lessons and use the skill's update and permission rules to add, refine, merge, replace, remove, or leave them unchanged.
 - Keep project facts in `tasks/context.md` and task history in `tasks/tasks/`; put only reusable prevention rules in lessons.
 

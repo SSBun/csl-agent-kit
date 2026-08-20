@@ -1,6 +1,6 @@
 ---
 name: task
-description: Create, resume, update, cancel, verify, and complete canonical workspace task records for non-trivial deliverable changes. Use before implementation that changes a deliverable, when continuing an existing task, or when the user asks to manage one task. Skip read-only answers and trivial mechanical operations with direct deterministic verification.
+description: Create, resume, update, cancel, verify, and complete a canonical workspace task for one concrete non-trivial outcome. Use as soon as that outcome is identified, then present a concise Task Target and wait for explicit confirmation before substantive preparation or execution. Skip simple factual answers, open-ended conversation without a concrete outcome, and trivial deterministic operations.
 ---
 
 # Task
@@ -17,21 +17,23 @@ Manage one outcome through the host Agent. Use the host's existing file, shell, 
 
 ## Activation and Ownership
 
-- Create a new record before non-trivial work that changes a deliverable.
+- Create, resume, or reopen the owning record as soon as the request establishes a concrete, non-trivial, independently acceptable outcome.
+- Activate it before substantive discussion, requirements clarification, repository exploration, research, planning, delegation, or implementation. Before activation, allow only Project Core loading and the minimal index and candidate-record lookup needed to resolve ownership.
 - Start a new task for every independently acceptable user outcome.
 - Reopen an existing task only when the request directly corrects, completes, or re-verifies the same outcome and leaving its Target or Result unchanged would be misleading.
 - Component, file, topic, or implementation overlap alone does not establish ownership. Create a new task when ownership is ambiguous.
-- Skip records for read-only answers, trivial deterministic file operations, context maintenance, and lesson maintenance.
+- Skip records only for simple factual answers, open-ended conversation without a concrete outcome, trivial deterministic file operations, context maintenance, and lesson maintenance.
 
 ## Start or Resume
 
-1. Use `$workspace-context` to load Project Core and task-relevant Context Packs without reading all of `tasks/context.md`; then read relevant lessons, the newest index entries, and any candidate owning record.
+1. Load Project Core, then read only the newest index entries and plausible candidate owning records needed to resolve ownership. Do not query task-relevant Context Packs, inspect task-direct sources, or begin substantive discussion yet.
 2. For a new task, choose a lowercase kebab-case ID and run:
    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
-   Repeat `--target` for additional conditions.
-3. Add only substantive sections needed now, then `sync` and `check`.
-4. Run `resume <id>` to move Pending, Blocked, or Cancelled work to In Progress. `resume` removes a stale Block section.
-5. Use `reopen <id>` only for the same completed outcome; add the next Target ID and revise the Plan before continuing.
+   Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
+3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing. After creation, resume, or reopen, call the host's task-focus mechanism when available.
+4. With the owning task active, state one concise user-facing `Task Target` that names the intended outcome and observable completion condition, then stop and wait for explicit confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work. This conversational gate does not replace the canonical `Target` section.
+5. After confirmation, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
+6. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
 
 ## Record Contract
 

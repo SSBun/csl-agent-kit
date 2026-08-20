@@ -2,7 +2,7 @@
   "positive_concepts": {
     "multi_task_execution": {
       "weight": 1.0,
-      "phrases": ["multiple tasks", "several tasks", "parent and child tasks", "execute them automatically", "task queue", "Queue task", "integration gate"]
+      "phrases": ["multiple tasks", "several tasks", "multi-task outcome", "before researching and decomposing", "parent and child tasks", "execute them automatically", "task queue", "Queue task", "integration gate"]
     }
   },
   "negative_concepts": {

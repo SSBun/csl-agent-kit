@@ -2,14 +2,16 @@
   "recommended_threshold": 0.5,
   "should_trigger": [
     "Create the task record in tasks/tasks.md before implementing this feature.",
-    "This non-trivial work changes a deliverable, so track its scope and status.",
+    "Research this concrete non-trivial outcome and track it before reading task-direct sources.",
+    "Before substantive discussion, create the task record for this specific non-trivial outcome.",
+    "After task activation, state its Task Target and wait for explicit confirmation before research.",
     "Update the owning task record with the new target and checklist.",
     "Record the result and hand the completed artifact to adversarial review."
   ],
   "should_not_trigger": [
-    "Give me a read-only answer and do not change files.",
+    "Answer this simple factual question.",
+    "Discuss possibilities without selecting a concrete outcome.",
     "Perform this trivial mechanical operation.",
-    "Explain the trade-offs without editing anything.",
     "I prefer concise answers."
   ],
   "near_neighbor": [

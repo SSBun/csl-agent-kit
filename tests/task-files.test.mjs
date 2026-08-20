@@ -219,7 +219,14 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(rules.includes("$workspace-maintain-context"), false);
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
-  assert.match(rules, /load `\$task` and follow its `SKILL\.md` before execution/);
+  assert.match(rules, /load `\$task` and follow its `SKILL\.md` to create, resume, or reopen the owning record before substantive discussion/);
+  assert.match(rules, /state one concise user-facing `Task Target` that names the intended outcome and observable completion condition/);
+  assert.match(rules, /wait for explicit confirmation before substantive preparation or execution/);
+  assert.match(rules, /Skip task records only for simple factual answers, open-ended conversation without a concrete outcome/);
+
+  const taskSkill = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
+  assert.match(taskSkill, /state one concise user-facing `Task Target`/);
+  assert.match(taskSkill, /This conversational gate does not replace the canonical `Target` section/);
   assert.match(rules, /load `\$workspace-lessons` and follow its `SKILL\.md` before continuing/);
   assert.equal(rules.includes("$workspace-capture-lessons"), false);
   assert.match(rules, /Do not wait for the user to request/);
@@ -239,9 +246,10 @@ test("default agent instructions explain workspace records and route work to wor
 test("injected workspace workflow gates define proactive execution order", () => {
   const gates = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
   const order = [
-    "$workspace-context.",
-    "$workspace-lessons.",
-    "$task, $task-plan, or $task-queue",
+    "$workspace-context Project Core.",
+    "$task, $task-plan, or $task-queue activation.",
+    "present one concise user-facing Task Target and wait for explicit confirmation.",
+    "task-relevant $workspace-context Packs and $workspace-lessons.",
     "$workspace-lessons before continuing.",
     "$workspace-context if durable facts changed.",
   ];
@@ -258,6 +266,9 @@ test("injected workspace workflow gates define proactive execution order", () =>
   assert.match(gates, /Load Project Core before acting/);
   assert.match(gates, /query only relevant Context Packs/);
   assert.match(gates, /do not read the whole file indiscriminately/);
+  assert.match(gates, /before substantive discussion, clarification, exploration, research, planning, delegation, or implementation/);
+  assert.match(gates, /CONFIRM: With the task active, state one concise user-facing `Task Target`/);
+  assert.match(gates, /Before confirmation, allow only task lifecycle writes/);
   assert.match(gates, /call `task_focus` with its ID when the host provides that tool/);
   assert.doesNotMatch(gates, /\$csl-task/);
   assert.equal(gates.includes("ask permission before modifying existing entries"), false);

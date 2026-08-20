@@ -2,14 +2,14 @@
   "positive_concepts": {
     "single_task_management": {
       "weight": 1.0,
-      "phrases": ["task record", "resume", "cancel", "verify", "complete"]
+      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "explicit confirmation", "resume", "cancel", "verify", "complete"]
     }
   },
   "negative_concepts": {
-    "read_only": {
+    "no_concrete_task": {
       "weight": 0.5,
       "exclusive": true,
-      "phrases": ["read-only answer", "do not change files", "explain only"]
+      "phrases": ["simple factual answer", "open-ended conversation", "no concrete outcome"]
     },
     "multi_task_queue": {
       "weight": 0.5,

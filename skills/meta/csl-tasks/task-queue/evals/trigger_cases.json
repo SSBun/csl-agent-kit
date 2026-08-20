@@ -1,6 +1,7 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
+    "Create the Queue parent, state its Task Target, and wait for explicit confirmation before researching and decomposing.",
     "Split this outcome into several tasks and execute them automatically in order.",
     "Deploy and manage these multiple tasks under one parent.",
     "Resume the Queue task from its first unfinished child.",

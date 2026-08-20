@@ -101,11 +101,17 @@
   - 核心判断、步骤、状态迁移、异常处理和完成条件可从主 `SKILL.md` 完整获得。
   - Yao 超限只作为已知审计结果记录，不作为 workflow skill 的完成阻塞项。
 
-## 2026-07-23 先建任务记录再动手做非平凡改动
+## L-20260820-task-before-preparation — 先建立任务记录再进行实质准备
 
-- **Trigger:** 用户测试 triggerify skill 时要求加一个 hook，我直接实现了 hook 却没按 AGENTS.md 的 workspace workflow 先创建任务记录。
-- **Rule:** 凡是改变交付物的非平凡工作（创建 skill、hook、脚本、规则、配置等持久产物），在动手实现前必须先用 `$task` 建立 `tasks/tasks/<task-slug>.md` 并更新 `tasks/tasks.md` 索引；不要等工作做完才补。只读回答和琐碎机械操作可跳过。
-- **Why:** 任务记录是强制生命周期关卡，不是事后归档；跳过它会让进度不可追溯，也无法在改动前明确 Target 和验收边界。
+### Trigger
+- 用户请求或对话已形成一个具体、非平凡且可独立验收的目标。
+
+### Rule
+- 在针对该目标进行实质讨论、需求澄清、仓库探索、调研、规划、委派或实施前，先创建、恢复或重新打开 owning canonical task；此前只允许加载 Project Core，以及为确认任务归属而进行最小范围的索引和候选记录查询。
+- 一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可以跳过任务记录。
+
+### Check
+- 对每个具体非平凡目标，首次读取任务直接相关来源、调研、委派或修改交付物前，canonical task 已存在且当前 Session 已聚焦；跳过场景符合上述边界。
 
 ## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection
 

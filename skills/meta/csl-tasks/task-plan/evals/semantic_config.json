@@ -2,7 +2,7 @@
   "positive_concepts": {
     "read_only_task_planning": {
       "weight": 1.0,
-      "phrases": ["implementation-ready plan", "task plan", "requirements", "decisions-only handoff", "plan how"]
+      "phrases": ["implementation-ready plan", "task plan", "planning outcome", "before research", "requirements", "decisions-only handoff", "plan how"]
     }
   },
   "negative_concepts": {
