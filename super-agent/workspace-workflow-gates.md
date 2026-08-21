@@ -1,11 +1,11 @@
 WORKSPACE WORKFLOW — proactive lifecycle dispatcher.
 
-When a gate matches, load and follow the matching skill SKILL.md before the next action. Do not wait for the user to name the skill. This file selects the workflow; each skill owns its current execution contract.
+When a gate matches, load and follow the matching skill SKILL.md before the next action. Do not wait for the user to name the skill. This file selects the workflow; the selected skill owns its workflow-specific contract and loads the shared Task Target alignment contract when required.
 
 ORDER:
 1. Session start, resume, or compaction → $workspace-context Project Core.
 2. Once a concrete non-trivial outcome is identified → $task, $task-plan, or $task-queue activation.
-3. After task activation → present one concise user-facing Task Target in text and wait for explicit confirmation.
+3. After task activation → apply the selected task-family skill's shared Task Target Alignment Protocol and obtain confirmation.
 4. After confirmation and before substantive work → task-relevant $workspace-context Packs and $workspace-lessons.
 5. After a user correction → $workspace-lessons before continuing.
 6. Before ending → $workspace-context if durable facts changed.
@@ -22,7 +22,7 @@ $workspace-lessons:
   SKIP: Leave the file unchanged when no reusable prevention rule applies.
 
 $task / $task-plan / $task-queue:
-  ACTION: Select single-task execution, planning-only handoff, or ordered multi-task execution from the request. Read only the recent index and plausible owning records needed to avoid duplicate ownership, then create, resume, or reopen the canonical task before substantive discussion, clarification, exploration, research, planning, delegation, or implementation.
-  CONFIRM: With the task active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`. If so, treat it as one-request Task Target confirmation, exclude the marker from the requested outcome, skip the textual confirmation, and continue; it does not resolve ambiguity or bypass any other required confirmation. Otherwise, state one concise user-facing line in the exact format `**Task Target:** <target>` naming the intended outcome and observable completion condition, then wait for explicit textual confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work.
+  ACTION: Select single-task execution, planning-only handoff, or ordered multi-task execution from the request. Read only the recent index and plausible owning records needed to avoid duplicate ownership, then create, resume, or reopen the canonical task before substantive discussion, exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. If no honest observable Target can yet be stated, ask one focused question and activate the record as soon as the answer establishes the outcome.
+  ALIGN: With the task active, apply the selected skill's required shared Task Target Alignment Protocol. Before confirmation, permit only the focused user-owned clarification needed to form an honest Target and the lifecycle writes named by that skill; do not inspect task-direct sources, research, plan, decompose a Queue, edit the requested deliverable, run unrelated mutating commands, or delegate work. Continue only after the protocol confirms the current Target.
   KEEP CURRENT: Use the shared core to keep canonical state, evidence, parent-child links, completion gates, and the exact index entry current. After creating, resuming, reopening, or activating a canonical task, call `task_focus` with its ID when the host provides that tool.
   SKIP: simple factual answers, open-ended conversation without a concrete outcome, trivial deterministic mechanical operations, context maintenance, and lesson maintenance.

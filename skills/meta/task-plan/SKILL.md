@@ -7,14 +7,20 @@ description: Research and prepare an implementation-ready canonical task plan wi
 
 Produce an implementation-ready task record while keeping the requested deliverable read-only. Writing `tasks/tasks.md` and its canonical task record is allowed; product code, documents, configuration, and other requested deliverables are not.
 
-Use the host Agent's existing read, search, research, shell, and subagent capabilities. Never invoke nested Codex/Pi CLIs or build a host adapter. Resolve the collection root as the parent of this skill directory and use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for task persistence.
+Use the host Agent's existing read, search, research, shell, and subagent capabilities. Never invoke nested Codex/Pi CLIs or build a host adapter.
+
+## Required Runtime Protocol
+
+Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+
+This skill owns planning-task activation, the planning-handoff Target meaning, permitted lifecycle writes, and the post-confirmation planning workflow. The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for task persistence.
 
 ## Workflow
 
 1. Load Project Core, then read only the newest task index entries and plausible candidate owning records needed to avoid duplicate ownership.
 2. As soon as the request establishes a concrete planning outcome, create a Pending plan record with `create <id> --title <title> --kind plan` and initial observable `--target "Tn: ..."` conditions supported by the request. Call the host's task-focus mechanism when available. If no honest Target can yet be stated, ask one focused question and create the record immediately after the answer.
-3. With the plan record active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`. If so, treat it as explicit Task Target confirmation for this request, exclude the marker from the requested outcome, skip the textual confirmation, and continue to step 4. This authorization is one-request only and does not resolve ambiguity or bypass any other required confirmation. Otherwise, state one line in the exact format `**Task Target:** <intended plan outcome and observable completion condition>`, then stop and wait for explicit textual confirmation. Before confirmation, allow only task lifecycle writes needed to create, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work.
-4. After confirmation, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then identify the final acceptance conditions, exclusions, constraints, and verification boundary.
+3. Apply the shared Task Target Alignment Protocol to the active plan record. For this workflow, the conversational Target means the intended planning outcome and observable condition for an implementation-ready handoff; before confirmation, the permitted lifecycle writes are create, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive planning; only the protocol's focused target-forming clarification may occur within it.
+4. After the protocol confirms the current Target, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then identify the final acceptance conditions, exclusions, constraints, and verification boundary.
 5. Research facts that the workspace or authoritative sources can answer. Ask one focused question only when a user-owned decision truly blocks a correct plan; do not ask for implementation facts you can inspect.
 6. Refine the record's Target, Decisions, Scope, and Plan, then run `sync <id>` and `check <id>`.
 7. Return a decisions-only handoff: final decisions, material constraints, unresolved user decisions, and the canonical record path. Do not include the interview transcript or private reasoning.

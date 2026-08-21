@@ -222,25 +222,53 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
   assert.match(rules, /load `\$task` and follow its `SKILL\.md` to create, resume, or reopen the owning record before substantive discussion/);
-  assert.match(rules, /state one concise user-facing line in the exact format `\*\*Task Target:\*\* <target>`/);
-  assert.match(rules, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
-  assert.match(rules, /skip the textual confirmation/);
-  assert.match(rules, /wait for explicit textual confirmation before substantive preparation or execution/);
+  assert.match(rules, /apply the selected task-family skill's required shared Task Target Alignment Protocol/);
+  assert.match(rules, /focused user-owned clarification needed to form an honest commitment/);
+  assert.match(rules, /Continue to substantive preparation or execution only after confirmation/);
+  assert.doesNotMatch(rules, /TASK_GO/);
+  assert.doesNotMatch(rules, /`\*\*Task Target:\*\* <target>`/);
   assert.doesNotMatch(rules, /task_target_confirm/);
   assert.match(rules, /Skip task records only for simple factual answers, open-ended conversation without a concrete outcome/);
 
+  const alignmentProtocolPath = path.join(cslTasksSharedDir, "protocols", "task-target-alignment.md");
+  assert.ok(existsSync(alignmentProtocolPath), "missing shared Task Target alignment protocol");
+  const alignmentProtocol = readFileSync(alignmentProtocolPath, "utf8");
+  assert.doesNotMatch(alignmentProtocol, /^---/);
+  assert.match(alignmentProtocol, /sole detailed authority for Task Target readiness, presentation, confirmation, and realignment/);
+  assert.match(alignmentProtocol, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+  assert.match(alignmentProtocol, /^   \*\*Task Target\*\*$/m);
+  assert.match(alignmentProtocol, /^   - \*\*Outcome:\*\*/m);
+  assert.match(alignmentProtocol, /^   - \*\*Done when:\*\*/m);
+  assert.match(alignmentProtocol, /^   - \*\*Boundaries:\*\*/m);
+  assert.match(alignmentProtocol, /Confirm this target, or state what should change/);
+  assert.match(alignmentProtocol, /Keep the title exactly `\*\*Task Target\*\*`/);
+  assert.match(alignmentProtocol, /Localize the `Outcome`, `Done when`, and `Boundaries` labels/);
+  assert.match(alignmentProtocol, /`Outcome` and `Done when` are required/);
+  assert.match(alignmentProtocol, /Include the entire `Boundaries` item only when omitting a material scope boundary could cause misunderstanding/);
+  assert.match(alignmentProtocol, /Render it without a code fence, implementation method, file list, command sequence, internal plan, or checkbox/);
+  assert.doesNotMatch(alignmentProtocol, /`\*\*Task Target:\*\* <intended outcome and observable completion condition>`/);
+  assert.match(alignmentProtocol, /This focused clarification forms the commitment/);
+  assert.match(alignmentProtocol, /revises the Target instead of confirming it/);
+  assert.match(alignmentProtocol, /pause and realign before continuing/);
+  assert.match(alignmentProtocol, /does not replace the canonical record's `Target` section/);
+  assert.doesNotMatch(alignmentProtocol, /task_target_confirm/);
+
   for (const name of ["task", "task-plan", "task-queue"]) {
     const skill = readFileSync(path.join(cslTasksDir, name, "SKILL.md"), "utf8");
-    assert.match(skill, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
-    assert.match(skill, /skip the textual confirmation/);
-    assert.match(skill, /does not resolve ambiguity or bypass any other required confirmation/);
-    assert.match(skill, /state one line in the exact format `\*\*Task Target:\*\*/);
-    assert.match(skill, /explicit textual confirmation/);
+    assert.ok(skill.includes("csl-tasks/shared/protocols/task-target-alignment.md"), `${name} missing shared protocol reference`);
+    assert.match(skill, /Before forming, presenting, or accepting a Task Target, read/);
+    assert.match(skill, /stop before substantive work and report the missing runtime dependency/);
+    assert.match(skill, /The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics/);
+    assert.doesNotMatch(skill, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+    assert.doesNotMatch(skill, /state one line in the exact format `\*\*Task Target:\*\*/);
     assert.doesNotMatch(skill, /task_target_confirm/);
   }
   const taskSkill = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
-  assert.match(taskSkill, /exact format `\*\*Task Target:\*\* <intended outcome and observable completion condition>`/);
-  assert.match(taskSkill, /This conversational gate does not replace the canonical `Target` section/);
+  const planSkill = readFileSync(path.join(cslTasksDir, "task-plan", "SKILL.md"), "utf8");
+  const queueSkill = readFileSync(path.join(cslTasksDir, "task-queue", "SKILL.md"), "utf8");
+  assert.match(taskSkill, /single-outcome Target meaning/);
+  assert.match(planSkill, /planning-handoff Target meaning/);
+  assert.match(queueSkill, /integration Target meaning/);
   assert.match(rules, /load `\$workspace-lessons` and follow its `SKILL\.md` before continuing/);
   assert.equal(rules.includes("$workspace-capture-lessons"), false);
   assert.match(rules, /Do not wait for the user to request/);
@@ -262,7 +290,7 @@ test("injected workspace workflow gates define proactive execution order", () =>
   const order = [
     "$workspace-context Project Core.",
     "$task, $task-plan, or $task-queue activation.",
-    "present one concise user-facing Task Target in text and wait for explicit confirmation.",
+    "apply the selected task-family skill's shared Task Target Alignment Protocol and obtain confirmation.",
     "task-relevant $workspace-context Packs and $workspace-lessons.",
     "$workspace-lessons before continuing.",
     "$workspace-context if durable facts changed.",
@@ -276,18 +304,18 @@ test("injected workspace workflow gates define proactive execution order", () =>
   }
 
   assert.match(gates, /load and follow the matching skill SKILL\.md before the next action/);
-  assert.match(gates, /This file selects the workflow; each skill owns its current execution contract/);
+  assert.match(gates, /the selected skill owns its workflow-specific contract and loads the shared Task Target alignment contract/);
   assert.match(gates, /Load Project Core before acting/);
   assert.match(gates, /run the skill's Default Migration before proceeding/);
   assert.match(gates, /query only relevant Context Packs/);
   assert.match(gates, /do not read the whole file indiscriminately/);
-  assert.match(gates, /before substantive discussion, clarification, exploration, research, planning, delegation, or implementation/);
-  assert.match(gates, /CONFIRM: With the task active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
-  assert.match(gates, /skip the textual confirmation/);
-  assert.match(gates, /state one concise user-facing line in the exact format `\*\*Task Target:\*\* <target>`/);
-  assert.match(gates, /wait for explicit textual confirmation/);
+  assert.match(gates, /before substantive discussion, exploration, research, planning, delegation, implementation, or any focused target-forming clarification/);
+  assert.match(gates, /ALIGN: With the task active, apply the selected skill's required shared Task Target Alignment Protocol/);
+  assert.match(gates, /focused user-owned clarification needed to form an honest Target/);
+  assert.match(gates, /Continue only after the protocol confirms the current Target/);
+  assert.doesNotMatch(gates, /TASK_GO/);
+  assert.doesNotMatch(gates, /`\*\*Task Target:\*\* <target>`/);
   assert.doesNotMatch(gates, /task_target_confirm/);
-  assert.match(gates, /Before confirmation, allow only task lifecycle writes/);
   assert.match(gates, /call `task_focus` with its ID when the host provides that tool/);
   assert.doesNotMatch(gates, /\$csl-task/);
   assert.equal(gates.includes("ask permission before modifying existing entries"), false);

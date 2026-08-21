@@ -7,7 +7,11 @@ description: Decompose and run a multi-task outcome as one Queue parent with ord
 
 Coordinate multiple canonical tasks through the current host Agent. This is host-native interactive execution: use the host's existing tools and subagents, never nested `codex exec`, `pi --print`, `pi-worker-*`, a daemon, watchdog, or unattended supervisor.
 
-Resolve the collection root as the parent of this skill directory. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
+## Required Runtime Protocol
+
+Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+
+This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-confirmation Queue workflow. The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
 
 ## Build the Task Graph
 
@@ -15,8 +19,8 @@ Resolve the collection root as the parent of this skill directory. Use `node <co
 2. As soon as the request establishes a concrete multi-task outcome, create or resume one Queue parent with an initial integration Target:
    `create <parent-id> --title <title> --kind queue --target "T1: <integrated outcome>"`.
    Resume the parent and call the host's task-focus mechanism when available. If no honest integration Target can yet be stated, ask one focused question and create the parent immediately after the answer.
-3. With the parent active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`. If so, treat it as explicit Task Target confirmation for this request, exclude the marker from the requested outcome, skip the textual confirmation, and continue to step 4. This authorization is one-request only and does not resolve ambiguity or bypass any other required confirmation. Otherwise, state one line in the exact format `**Task Target:** <integrated outcome and observable completion condition>`, then stop and wait for explicit textual confirmation. Before confirmation, allow only parent task lifecycle writes needed to create, resume, focus, sync, and check the record; do not inspect task-direct sources, decompose the graph, run other mutating commands, or delegate work.
-4. After confirmation, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
+3. Apply the shared Task Target Alignment Protocol to the active parent. For this workflow, the conversational Target means the parent integration outcome and observable completion condition; before confirmation, the permitted lifecycle writes are create, resume, focus, sync, and check. The gate follows activation and precedes task-direct source inspection, graph decomposition, or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
+4. After the protocol confirms the current Target, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
 5. Refine the parent's integration Targets and create a child only for an independently acceptable or independently blocked outcome. Each child has its own observable Targets and complete `task` lifecycle.
 6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents and cycles, and preserves order.
 7. Add the parent's current Scope and Plan, then `sync` and `check` every touched record.

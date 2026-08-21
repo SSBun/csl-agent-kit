@@ -575,8 +575,9 @@ test("inner workspace workflow gates inject final task guidance on supported ses
       assert.ok(prompt, `expected workspace gates for ${host}`);
       assert.match(prompt.content, /\$task, \$task-plan, or \$task-queue/);
       assert.match(prompt.content, /call `task_focus`/);
-      assert.match(prompt.content, /`\*\*Task Target:\*\* <target>`/);
-      assert.match(prompt.content, /TASK_GO/);
+      assert.match(prompt.content, /shared Task Target Alignment Protocol/);
+      assert.match(prompt.content, /focused user-owned clarification needed to form an honest Target/);
+      assert.doesNotMatch(prompt.content, /TASK_GO/);
       assert.doesNotMatch(prompt.content, /task_target_confirm/);
       assert.doesNotMatch(prompt.content, /\$csl-task/);
     }

@@ -2,7 +2,7 @@
   "positive_concepts": {
     "single_task_management": {
       "weight": 1.0,
-      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "explicit confirmation", "resume", "cancel", "verify", "complete"]
+      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "shared Task Target Alignment Protocol", "focused target-forming clarification", "confirmation", "resume", "cancel", "verify", "complete"]
     }
   },
   "negative_concepts": {

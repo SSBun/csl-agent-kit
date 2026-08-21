@@ -7,18 +7,24 @@ description: Create, resume, update, cancel, verify, and complete a canonical wo
 
 Manage one outcome through the host Agent. Use the host's existing file, shell, research, and subagent capabilities; never launch nested `codex exec`, `pi --print`, a worker daemon, or an unattended supervisor.
 
+## Required Runtime Protocol
+
+Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+
+This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-confirmation task workflow. The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics.
+
 ## Storage and Core
 
 - `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
 - `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
-- Resolve the collection root as the parent of this skill directory, then use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
+- Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
 - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, or Block, run `sync <id>` and `check <id>`.
 - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
 
 ## Activation and Ownership
 
 - Create, resume, or reopen the owning record as soon as the request establishes a concrete, non-trivial, independently acceptable outcome.
-- Activate it before substantive discussion, requirements clarification, repository exploration, research, planning, delegation, or implementation. Before activation, allow only Project Core loading and the minimal index and candidate-record lookup needed to resolve ownership.
+- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
 - Start a new task for every independently acceptable user outcome.
 - Reopen an existing task only when the request directly corrects, completes, or re-verifies the same outcome and leaving its Target or Result unchanged would be misleading.
 - Component, file, topic, or implementation overlap alone does not establish ownership. Create a new task when ownership is ambiguous.
@@ -31,8 +37,8 @@ Manage one outcome through the host Agent. Use the host's existing file, shell, 
    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
 3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing. After creation, resume, or reopen, call the host's task-focus mechanism when available.
-4. With the owning task active, first check whether the originating top-level user request's final non-empty line is exactly the case-sensitive marker `TASK_GO`. If so, treat it as explicit Task Target confirmation for this request, exclude the marker from the requested outcome, skip the textual confirmation, and continue to step 5. This authorization is one-request only and does not resolve ambiguity or bypass any other required confirmation. Otherwise, state one line in the exact format `**Task Target:** <intended outcome and observable completion condition>`, then stop and wait for explicit textual confirmation. Before confirmation, allow only task lifecycle writes needed to create, resume, reopen, focus, sync, and check the record; do not inspect task-direct sources, edit the requested deliverable, run other mutating commands, or delegate work. This conversational gate does not replace the canonical `Target` section.
-5. After confirmation, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
+4. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before confirmation, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
+5. After the protocol confirms the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
 6. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
 
 ## Record Contract
