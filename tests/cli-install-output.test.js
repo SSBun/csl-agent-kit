@@ -34,6 +34,21 @@ function run(args, env = {}) {
   });
 }
 
+test("legacy install wrapper returns control and preserves CLI status when sourced", () => {
+  const wrapper = path.join(root, "scripts", "install.sh");
+  const result = spawnSync("bash", [
+    "--noprofile",
+    "--norc",
+    "-c",
+    '. "$1" --yes --dry-run --json >/dev/null 2>&1; success=$?; . "$1" --definitely-invalid >/dev/null 2>&1; failure=$?; printf "alive success=%s failure=%s" "$success" "$failure"',
+    "bash",
+    wrapper,
+  ], { cwd: root, encoding: "utf8" });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "alive success=0 failure=2");
+});
+
 function stripAnsi(text) {
   return text.replace(/\u001b\[[0-9;]*m/g, "");
 }
