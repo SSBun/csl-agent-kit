@@ -1,4 +1,0 @@
-interface:
-  display_name: "Workspace Lessons"
-  short_description: "Apply reusable preventive lessons"
-  default_prompt: "Use $workspace-lessons to apply relevant preventive controls or process this reusable correction."

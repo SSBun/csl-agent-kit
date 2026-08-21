@@ -3,20 +3,20 @@ WORKSPACE WORKFLOW — proactive lifecycle dispatcher.
 When a gate matches, load and follow the matching skill SKILL.md before the next action. Do not wait for the user to name the skill. This file selects the workflow; the selected skill owns its workflow-specific contract and loads the shared Task Target alignment contract when required.
 
 ORDER:
-1. Session start, resume, or compaction → $workspace-context Project Core.
+1. Session start, resume, or compaction → $task-context Project Core.
 2. Once a concrete non-trivial outcome is identified → $task, $task-plan, or $task-queue activation.
 3. After task activation → apply the selected task-family skill's shared Task Target Alignment Protocol and obtain confirmation.
-4. After confirmation and before substantive work → task-relevant $workspace-context Packs and $workspace-lessons.
-5. After a user correction → $workspace-lessons before continuing.
-6. Before ending → $workspace-context if durable facts changed.
+4. After confirmation and before substantive work → task-relevant $task-context Packs and $task-lessons.
+5. After a user correction → $task-lessons before continuing.
+6. Before ending → $task-context if durable facts changed.
 
-$workspace-context:
+$task-context:
   SESSION: Load Project Core before acting at session start, resume, or compaction; when an existing Context is pre-v1 or its Core is invalid, run the skill's Default Migration before proceeding.
   TASK: After the owning canonical task is active and its user-facing Task Target is explicitly confirmed, form a Task Fingerprint, query only relevant Context Packs, and verify task-direct Authority; do not read the whole file indiscriminately.
   END: Maintain changed Packs and validate; follow the skill's write-permission rules for Project Core.
   SKIP: Never skip initial Core loading or required Default Migration; skip Pack retrieval when there is no concrete task and skip the final write when no durable fact changed.
 
-$workspace-lessons:
+$task-lessons:
   ACTION: After the owning task is active and its Task Target is confirmed, read relevant rules before substantive preparation or execution and apply every matching Rule and Check.
   AFTER CORRECTION: Follow the skill's update and permission rules.
   SKIP: Leave the file unchanged when no reusable prevention rule applies.

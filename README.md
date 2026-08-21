@@ -26,11 +26,11 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
 | test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
-| workspace-context | `/csl:workspace-context` | `/workspace-context` | Load or recover Project Core, query task-relevant Context Packs, then maintain durable context. |
+| task-context | `/csl:task-context` | `/task-context` | Load or recover Project Core, query task-relevant Context Packs, then maintain durable context. |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
-| workspace-lessons | `/csl:workspace-lessons` | `/workspace-lessons` | Query, apply, and maintain reusable workspace lessons. |
+| task-lessons | `/csl:task-lessons` | `/task-lessons` | Query, apply, and maintain reusable workspace lessons. |
 | sop-manager | `/csl:sop-manager` | `/sop-manager` | List, create, inspect, and apply SOP documents. |
 | triggerify | `/csl:triggerify` | `/triggerify` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 trigger。 |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
@@ -304,7 +304,8 @@ csl-agent-kit install --all
 skills/                  # Shared skill source (all platforms)
 skills/meta/{task,task-plan,task-queue}/ # Cross-host task workflow skills
 skills/meta/csl-tasks/shared/           # Shared task-state core
-skills/meta/workspace-workflow/ # Context and lessons workflow skills
+skills/{task-context,task-lessons}/     # Context and lessons workflow skills
+skills/meta/workspace-workflow/evals/   # Shared cross-workflow routing eval suite
 skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest

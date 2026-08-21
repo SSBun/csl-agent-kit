@@ -1,5 +1,5 @@
 ---
-name: workspace-context
+name: task-context
 description: Load, automatically migrate, and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, when an existing Context has a missing or invalid Project Core, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Load or recover Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, and cached live values.
 ---
 
@@ -219,6 +219,6 @@ Outside Default Migration, do not bulk-migrate legacy content. When work materia
 
 ## Maintainer Validation
 
-Keep the CLI contract, focused tests, `evals/query_cases.json`, `evals/context_value_cases.json`, and `../evals/context_trigger_cases.json` aligned. Run the script self-test, actual Context validation, focused task tests, applicable routing evaluation, OpenAI validation, Yao validation, resource-boundary check, and `git diff --check`.
+Keep the CLI contract, focused tests, `evals/query_cases.json`, `evals/context_value_cases.json`, and `evals/trigger_cases.json` aligned. Run the script self-test, actual Context validation, focused task tests, applicable routing evaluation, OpenAI validation, Yao validation, resource-boundary check, and `git diff --check`.
 
 The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget` against its 1000-token initial-load budget. Syntax, frontmatter, governance, tests, routing, script trust, and every other check remain blocking. Never delete, distort, or split core workflow guidance merely to satisfy the initial-load budget.

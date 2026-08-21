@@ -1,5 +1,18 @@
 # Lessons
 
+## L-20260821-skill-rename-consumers — Skill 移动或重命名时解析全部消费者
+
+### Trigger
+- 删除、弃用、移动或重命名一个 Skill、目录或 slash alias。
+
+### Rule
+- 在同一改动中搜索并清理当前 README、manifest、安装枚举、规则、Context Authority、路径构造器和测试消费者中的旧名称或旧路径；历史任务记录保持不变。
+- 逐个解析共享根目录变量、相对路径与生成式消费者到实际文件，不能只搜索完整旧字符串；已有替代 Skill 时只暴露 canonical 名称。
+
+### Check
+- 搜索旧名称和旧路径后只剩有意保留的历史、迁移记录或负向拒绝断言。
+- 每个当前消费者解析出的 canonical 路径实际存在，旧路径不存在；获准运行时，相关发现、命令、安装与路径消费者测试通过。
+
 ## 2026-08-07 Skill packages use English
 
 - **Trigger:**
@@ -78,17 +91,6 @@
 - **Check:**
   - 生成文本不超过产品规定的 Unicode 码点上限，且不含模型元标签。
   - commit、push、test、retry、continue 等纯操作样例不会覆盖现有标签。
-
-## 2026-07-27 删除 Skill 时同步清理发现契约
-
-- **Trigger:**
-  - 删除、弃用或重命名一个 skill 或其 slash alias。
-- **Rule:**
-  - 在同一改动中搜索并清理当前 README、manifest、安装枚举和测试期望清单中的旧名称；历史任务记录保持不变。
-  - 已有替代 skill 时，发现与命令测试只断言当前 canonical 名称。
-- **Check:**
-  - 搜索旧名称后只剩有意保留的历史或迁移记录。
-  - 相关 skill 发现、命令注册与安装清单测试通过。
 
 ## 2026-07-23 Workflow skill 完整性优先于 Yao token 预算
 

@@ -1,5 +1,5 @@
 ---
-name: workspace-lessons
+name: task-lessons
 description: Query and apply relevant `tasks/lessons.md` preventive controls when entering substantive work, restoring an interrupted thread, materially changing an active request, or receiving a user correction, and maintain reusable correction lessons with explicit write approval. Use to retrieve, apply, add, merge, refine, replace, or remove workspace lessons. Do not use for ordinary preferences, one-off request details, execution status, durable repository facts, or secrets.
 ---
 
@@ -133,6 +133,6 @@ A selected legacy record without `Check` requires a temporary observable Check t
 
 ## Maintainer Validation
 
-Keep the query contract, focused tests, `evals/query_cases.json`, and `../evals/lessons_trigger_cases.json` aligned after changes. Run the script self-test, focused task contract tests, applicable routing evaluation, OpenAI validation, Yao validation, resource-boundary check, and `git diff --check`.
+Keep the query contract, focused tests, `evals/query_cases.json`, and `evals/trigger_cases.json` aligned after changes. Run the script self-test, focused task contract tests, applicable routing evaluation, OpenAI validation, Yao validation, resource-boundary check, and `git diff --check`.
 
 The only acceptable non-blocking Yao failure is the workflow skill's 1000-token initial-load budget. Syntax, frontmatter, governance, tests, routing, script trust, and every other resource-boundary check remain blocking. Do not remove or distort core workflow guidance merely to satisfy that token budget.

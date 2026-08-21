@@ -29,8 +29,8 @@ test("registers aliases for nested skills", () => {
     "tdd",
     "teach",
     "tldr",
-    "workspace-lessons",
-    "workspace-context",
+    "task-lessons",
+    "task-context",
     "writing-great-skills",
   ];
 
@@ -48,8 +48,10 @@ test("registers aliases for nested skills", () => {
   assert.equal(commands.has("csl-task-auto"), false);
   assert.equal(commands.has("csl-tasks"), false);
   assert.equal(commands.has("workspace-capture-lessons"), false);
+  assert.equal(commands.has("workspace-lessons"), false);
   assert.equal(commands.has("workspace-manage-task"), false);
   assert.equal(commands.has("workspace-maintain-context"), false);
+  assert.equal(commands.has("workspace-context"), false);
   assert.match(commands.get("grilling").description, /Alias for \/skill:grilling/);
 });
 

@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const taskDir = path.join(root, "tasks", "tasks");
 const reportDir = path.join(root, "reports", "adversarial-review");
-const workflowDir = path.join(root, "skills", "workspace-workflow");
+const skillsDir = path.join(root, "skills");
 const cslTasksDir = path.join(root, "skills", "meta");
 const cslTasksSharedDir = path.join(cslTasksDir, "csl-tasks", "shared");
 const require = createRequire(import.meta.url);
@@ -191,9 +191,9 @@ test("cross-linked task and report slugs fail validation", () => {
 test("default agent instructions explain workspace records and route work to workflow skills", () => {
   const rules = readFileSync(path.join(root, "super-agent", "AGENTS.md"), "utf8");
   const expected = {
-    "workspace-context": [path.join(workflowDir, "workspace-context"), "tasks/context.md"],
+    "task-context": [path.join(skillsDir, "task-context"), "tasks/context.md"],
     "task": [path.join(cslTasksDir, "task"), "tasks/tasks.md"],
-    "workspace-lessons": [path.join(workflowDir, "workspace-lessons"), "tasks/lessons.md"],
+    "task-lessons": [path.join(skillsDir, "task-lessons"), "tasks/lessons.md"],
   };
 
   for (const [name, [skillDir, ownedPath]] of Object.entries(expected)) {
@@ -213,12 +213,15 @@ test("default agent instructions explain workspace records and route work to wor
     assert.equal(existsSync(path.join(cslTasksDir, name)), false, `legacy skill still exists: ${name}`);
     assert.equal(rules.includes(`$${name}`), false, `legacy route still exists: ${name}`);
   }
-  assert.equal(existsSync(path.join(workflowDir, "workspace-manage-task")), false);
-  assert.equal(existsSync(path.join(workflowDir, "workspace-maintain-context")), false);
+  assert.equal(existsSync(path.join(skillsDir, "workspace-manage-task")), false);
+  assert.equal(existsSync(path.join(skillsDir, "workspace-maintain-context")), false);
+  assert.equal(existsSync(path.join(skillsDir, "workspace-context")), false);
+  assert.equal(existsSync(path.join(skillsDir, "workspace-lessons")), false);
 
-  assert.match(rules, /load `\$workspace-context` and use it to load Project Core before acting/);
+  assert.match(rules, /load `\$task-context` and use it to load Project Core before acting/);
   assert.match(rules, /let the skill migrate the current workspace by default before proceeding/);
   assert.equal(rules.includes("$workspace-maintain-context"), false);
+  assert.equal(rules.includes("$workspace-context"), false);
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
   assert.match(rules, /load `\$task` and follow its `SKILL\.md` to create, resume, or reopen the owning record before substantive discussion/);
@@ -269,8 +272,9 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(taskSkill, /single-outcome Target meaning/);
   assert.match(planSkill, /planning-handoff Target meaning/);
   assert.match(queueSkill, /integration Target meaning/);
-  assert.match(rules, /load `\$workspace-lessons` and follow its `SKILL\.md` before continuing/);
+  assert.match(rules, /load `\$task-lessons` and follow its `SKILL\.md` before continuing/);
   assert.equal(rules.includes("$workspace-capture-lessons"), false);
+  assert.equal(rules.includes("$workspace-lessons"), false);
   assert.match(rules, /Do not wait for the user to request/);
   assert.match(rules, /Use an independent review workflow only when the user explicitly requests/);
   assert.equal(rules.includes("applicable task requirement"), false);
@@ -288,12 +292,12 @@ test("default agent instructions explain workspace records and route work to wor
 test("injected workspace workflow gates define proactive execution order", () => {
   const gates = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
   const order = [
-    "$workspace-context Project Core.",
+    "$task-context Project Core.",
     "$task, $task-plan, or $task-queue activation.",
     "apply the selected task-family skill's shared Task Target Alignment Protocol and obtain confirmation.",
-    "task-relevant $workspace-context Packs and $workspace-lessons.",
-    "$workspace-lessons before continuing.",
-    "$workspace-context if durable facts changed.",
+    "task-relevant $task-context Packs and $task-lessons.",
+    "$task-lessons before continuing.",
+    "$task-context if durable facts changed.",
   ];
 
   let previous = -1;
@@ -322,7 +326,7 @@ test("injected workspace workflow gates define proactive execution order", () =>
 });
 
 test("workspace context contract supports dispatch-ready retrieval and durable admission", () => {
-  const skill = readFileSync(path.join(workflowDir, "workspace-context", "SKILL.md"), "utf8");
+  const skill = readFileSync(path.join(skillsDir, "task-context", "SKILL.md"), "utf8");
 
   for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Default Migration", "Legacy Migration", "Degradation and Failure", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing context section: ${section}`);
@@ -365,7 +369,7 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
 });
 
 test("workspace context value cases enforce admission and temporary exits", () => {
-  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-context", "evals", "context_value_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(skillsDir, "task-context", "evals", "context_value_cases.json"), "utf8"));
   const requiredExits = new Set(["task-end", "next-module-change", "evidence-invalid"]);
   const outcomes = new Set();
 
@@ -404,7 +408,7 @@ test("workspace context value cases enforce admission and temporary exits", () =
 });
 
 test("workspace context query cases cover session, task, write, and failure gates", () => {
-  const fixture = JSON.parse(readFileSync(path.join(workflowDir, "workspace-context", "evals", "query_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(skillsDir, "task-context", "evals", "query_cases.json"), "utf8"));
   assert.equal(fixture.schema, "csl-context.query-cases/v1");
   const actions = Object.fromEntries(fixture.cases.map((item) => [item.id, item.expected_action]));
   assert.equal(actions["session-start"], "LoadCore");
@@ -424,7 +428,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   const workspace = mkdtempSync(path.join(os.tmpdir(), "context-query-"));
   const contextDir = path.join(workspace, "tasks");
   const contextFile = path.join(contextDir, "context.md");
-  const script = path.join(workflowDir, "workspace-context", "scripts", "context.js");
+  const script = path.join(skillsDir, "task-context", "scripts", "context.js");
   mkdirSync(contextDir, { recursive: true });
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
 
@@ -532,7 +536,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
 });
 
 test("current workspace Context has a valid Core plus formal and legacy Packs", () => {
-  const script = path.join(workflowDir, "workspace-context", "scripts", "context.js");
+  const script = path.join(skillsDir, "task-context", "scripts", "context.js");
   const result = spawnSync(process.execPath, [script, "--workspace", root, "validate"], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const validation = JSON.parse(result.stdout);
@@ -542,7 +546,7 @@ test("current workspace Context has a valid Core plus formal and legacy Packs", 
   const indexResult = spawnSync(process.execPath, [script, "--workspace", root, "index"], { encoding: "utf8" });
   assert.equal(indexResult.status, 0, indexResult.stderr);
   const packs = JSON.parse(indexResult.stdout).packs;
-  assert.ok(packs.some(({ id, format }) => id === "CTX-workspace-context" && format === "v1"));
+  assert.ok(packs.some(({ id, format }) => id === "CTX-task-context" && format === "v1"));
   assert.ok(packs.some(({ format }) => format === "legacy"));
 });
 
@@ -627,7 +631,7 @@ test("workspace review-gate cases require an explicit user request", () => {
 });
 
 test("workspace lesson contract queries before work and confirms every persistent write", () => {
-  const skillDir = path.join(workflowDir, "workspace-lessons");
+  const skillDir = path.join(skillsDir, "task-lessons");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
   const queryCases = JSON.parse(readFileSync(path.join(skillDir, "evals", "query_cases.json"), "utf8"));
 
@@ -675,7 +679,7 @@ test("workspace lesson CLI indexes v1 and legacy records and rejects malformed v
   const workspace = mkdtempSync(path.join(os.tmpdir(), "lessons-query-"));
   const lessonsDir = path.join(workspace, "tasks");
   const lessonsFile = path.join(lessonsDir, "lessons.md");
-  const script = path.join(workflowDir, "workspace-lessons", "scripts", "lessons.js");
+  const script = path.join(skillsDir, "task-lessons", "scripts", "lessons.js");
   mkdirSync(lessonsDir, { recursive: true });
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
 
