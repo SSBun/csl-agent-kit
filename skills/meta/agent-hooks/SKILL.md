@@ -1,23 +1,23 @@
 ---
-name: triggerify
-description: Create, inspect, update, enable, disable, delete, and audit persistent Triggerify rules that inject prompts or run scripts at supported hook timings. Use for cross-session user directives, reusable changed-file or command matching, runtime guards, hook-like automation, or trigger inventory and management for Codex, Claude Code, or Pi. A bare preference without an explicit request for future-session persistence does not trigger this skill.
+name: agent-hooks
+description: Create, inspect, update, enable, disable, delete, and audit persistent Agent Hooks rules that inject prompts or run scripts at supported hook timings. Use for cross-session user directives, reusable changed-file or command matching, runtime guards, hook-like automation, or trigger inventory and management for Codex, Claude Code, or Pi. A bare preference without an explicit request for future-session persistence does not trigger this skill.
 ---
 
-# Triggerify
+# Agent Hooks
 
 Use the bundled CLI as the validation and status authority.
 
-Run `node scripts/triggerify.js <command> --help` before unfamiliar operations. Never hand-edit managed rules or use project RFCs as runtime guidance.
+Run `node scripts/agent-hooks.js <command> --help` before unfamiliar operations. Never hand-edit managed rules or use project RFCs as runtime guidance.
 
 Validate proposed rule files with `node scripts/validate-rules.js [--scope global|project] <file.md>...` before passing them to `update --from`. Treat this as frontmatter and V1 rule validation; use `show` for stored script readiness and effective host status.
 
 ## Boundaries
 
-- Use global rules for runtime execution; project rules remain metadata-only.
-- Inner scope (`inner:*`) ships hooks with the triggerify skill (e.g. `inner:agent-rules` and `inner:workspace-workflow-gates`). Hook source is read-only: do not create, update, or delete it through the CLI. All inner hooks default enabled; `enable`/`disable` persists user choices in `$CSL_AGENT_KIT_HOME/triggerify/config.json` (default `~/.csl-agent-kit/triggerify/config.json`). Optional `hookSettings` are keyed by qualified inner ID; runtime passes only the matching object to that script as JSON in `TRIGGERIFY_HOOK_CONFIG`.
+- Use global rules for runtime execution; project rules remain metadata-only. Global rules and scripts live under `$CSL_AGENT_KIT_HOME/hooks/` (default `~/.csl-agent-kit/hooks/`); project rules and scripts live under `<workspace>/.agents/hooks/`.
+- Inner scope (`inner:*`) ships hooks with the agent-hooks skill (e.g. `inner:agent-rules` and `inner:workspace-workflow-gates`). Hook source is read-only: do not create, update, or delete it through the CLI. All inner hooks default enabled; `enable`/`disable` persists user choices in `$CSL_AGENT_KIT_HOME/hooks/config.json` (default `~/.csl-agent-kit/hooks/config.json`). Optional `hookSettings` are keyed by qualified inner ID; runtime passes only the matching object to that script as JSON in `AGENT_HOOKS_HOOK_CONFIG`.
 - Codex is the reference host: all events support inject/script (and block where the protocol allows). Claude Code shares Codex's hook protocol and is now supported at parity.
 - Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result); script runs as a best-effort side effect on all supported events. A `run-script` rule with `inject-output: true` additionally surfaces the script stdout as an injected prompt on inject-capable events. Block and permission/subagent events are not physically realizable on Pi and remain unsupported.
-- Use Triggerify for persistent automation, direct commands for one-time work, and native Git hooks for Git enforcement.
+- Use Agent Hooks for persistent automation, direct commands for one-time work, and native Git hooks for Git enforcement.
 
 ## Workflow
 

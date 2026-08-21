@@ -28,7 +28,9 @@
     "figma-describe",
     "brainstorming",
     "align",
-    "sop-manager",
+    "agent-rules",
+    "agent-hooks",
+    "agent-sops",
     "task-grill",
     "beautiful-mermaid"
   ],

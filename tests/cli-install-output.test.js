@@ -12,7 +12,7 @@ const {
   loadInstallSelection,
   saveInstallSelection,
 } = require(cli);
-const { loadSops } = require(path.join(root, "skills", "sop-manager", "scripts", "sop-candidates.js"));
+const { loadSops } = require(path.join(root, "skills", "meta", "agent-sops", "scripts", "sop-candidates.js"));
 
 function discoverProjectOwnedSkills(directory, relative = "skills") {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -88,6 +88,7 @@ test("default install output streams colorful details and summarizes integration
   assert.equal(plain.includes(`↳ codex plugin marketplace add ${root} --json (dry run)`), true);
   assert.match(plain, /✓ Codex plugin\s+8 commands planned/);
   assert.doesNotMatch(plain, /Cursor local plugin/);
+  assert.doesNotMatch(plain, /Default agent instructions/);
   assert.doesNotMatch(plain, /Codex skills symlinks/);
   assert.doesNotMatch(plain, /Repo-local \.agents\/skills links/);
   assert.doesNotMatch(plain, /\.agents\/skills\/analyze-project/);
@@ -247,10 +248,10 @@ test("root hook commands execute bundled resources from plugin root variables", 
   const hook = hooks.find(({ command }) => command.includes("sop-summaries.sh")).command;
   assert.ok(hookManifest.SessionStart.some(({ matcher }) => matcher.split("|").includes("compact")));
   assert.equal([...hooks, ...postCompactHooks].some(({ command }) => command.includes("workspace-workflow-gates.md")), false);
-  assert.ok(hooks.some(({ command }) => command.includes("skills/meta/triggerify/scripts/triggerify.js")));
+  assert.ok(hooks.some(({ command }) => command.includes("skills/meta/agent-hooks/scripts/agent-hooks.js")));
   try {
     for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
-      const script = path.join(fakeRoot, "skills", "sop-manager", "scripts", "sop-summaries.sh");
+      const script = path.join(fakeRoot, "skills", "meta", "agent-sops", "scripts", "sop-summaries.sh");
       mkdirSync(path.dirname(script), { recursive: true });
       writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' '${output}'\n`);
       chmodSync(script, 0o755);
@@ -279,7 +280,7 @@ test("project SOPs override user and built-in SOPs in routing and summaries", ()
   const workspace = path.join(directory, "workspace");
   const userSops = path.join(directory, "user-sops");
   const projectSops = path.join(workspace, ".agents", "sops");
-  const summaryScript = path.join(root, "skills", "sop-manager", "scripts", "sop-summaries.sh");
+  const summaryScript = path.join(root, "skills", "meta", "agent-sops", "scripts", "sop-summaries.sh");
   const sop = (name, whenToUse) => `---\nname: ${name}\ndescription: Test SOP.\nwhen_to_use: ${whenToUse}\n---\n`;
 
   mkdirSync(userSops, { recursive: true });
@@ -390,17 +391,17 @@ test("JSON output remains valid and color-free when --color is passed", () => {
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
   assert.equal(payload.ok, true);
-  assert.deepEqual(payload.results.map((item) => item.target), ["codex-plugin", "super-agent"]);
+  assert.deepEqual(payload.results.map((item) => item.target), ["codex-plugin"]);
   assert.doesNotMatch(result.stdout, /\u001b\[/);
 });
 
-test("interactive checklist reuses the last confirmed selection", () => {
+test("interactive checklist reuses remembered selections except opt-in super-agent", () => {
   const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
   const selectionFile = path.join(dataDir, "install-selection.json");
   try {
-    saveInstallSelection(["codex-plugin", "pi"], selectionFile);
+    saveInstallSelection(["codex-plugin", "pi", "super-agent"], selectionFile);
 
-    assert.deepEqual(loadInstallSelection(selectionFile), ["codex-plugin", "pi"]);
+    assert.deepEqual(loadInstallSelection(selectionFile), ["codex-plugin", "pi", "super-agent"]);
     assert.deepEqual(
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
@@ -423,7 +424,7 @@ test("invalid saved selection falls back to the Codex default checklist", () => 
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
         .map((choice) => choice.value),
-      ["codex-plugin", "super-agent"],
+      ["codex-plugin"],
     );
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
@@ -461,7 +462,7 @@ test("an obsolete repo-local saved selection falls back to the Codex defaults", 
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
         .map((choice) => choice.value),
-      ["codex-plugin", "super-agent"],
+      ["codex-plugin"],
     );
   } finally {
     rmSync(dataDir, { recursive: true, force: true });

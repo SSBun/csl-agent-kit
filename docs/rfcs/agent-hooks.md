@@ -1,4 +1,4 @@
-# RFC: Triggerify 事件驱动自动化机制
+# RFC: Agent Hooks 事件驱动自动化机制
 
 - 状态：Accepted
 - 日期：2026-07-22
@@ -8,18 +8,18 @@
 
 ## 1. 摘要
 
-Triggerify 是 CSL Agent Kit 的事件驱动自动化机制。用户通过 Markdown Trigger，在指定 Agent 生命周期事件中执行且仅执行一个动作：
+Agent Hooks 是 CSL Agent Kit 的事件驱动自动化机制。用户通过 Markdown Trigger，在指定 Agent 生命周期事件中执行且仅执行一个动作：
 
 - 向下一次相关模型请求注入一次性 Prompt。
 - 运行一个受约束的本地可执行脚本。
 - 当宿主、事件和动作组合支持阻止时，根据脚本结果拒绝当前操作。
 
-Triggerify 将宿主原生事件转换为统一事件 payload，以结构化条件 AST 判断规则是否匹配，再由宿主适配器把动作结果映射回原生协议。
+Agent Hooks 将宿主原生事件转换为统一事件 payload，以结构化条件 AST 判断规则是否匹配，再由宿主适配器把动作结果映射回原生协议。
 
 ```text
 宿主原生事件
     -> 宿主适配器
-    -> Triggerify 标准事件 payload
+    -> Agent Hooks 标准事件 payload
     -> scope 与 trust gate
     -> 规则校验和三值条件求值
     -> inject-prompt 或 run-script
@@ -27,13 +27,13 @@ Triggerify 将宿主原生事件转换为统一事件 payload，以结构化条�
     -> 宿主原生响应
 ```
 
-十个标准事件只是 Triggerify 的词汇表，不代表所有宿主都支持每个事件、动作、字段或阻止能力。支持性必须由 `host x event x action` capability matrix 决定。
+十个标准事件只是 Agent Hooks 的词汇表，不代表所有宿主都支持每个事件、动作、字段或阻止能力。支持性必须由 `host x event x action` capability matrix 决定。
 
 ## 2. 背景与动机
 
 静态规则文件可以提前向 Agent 提供长期指令，但无法按生命周期事件执行条件化动作。原生 Hook 可以确定性地执行脚本或注入上下文，但各宿主的事件名称、payload 和结果协议不同，用户还需要手写复杂配置。
 
-Triggerify 解决以下问题：
+Agent Hooks 解决以下问题：
 
 1. 用统一 Markdown 文件描述触发时机、条件和动作。
 2. 让 Skill 根据自然语言创建和维护 Trigger。
@@ -41,11 +41,11 @@ Triggerify 解决以下问题：
 4. 在宿主不支持某种能力时明确报告，而不是静默失效。
 5. 为自锁和错误规则提供不经过 Agent Hook 的恢复入口。
 
-Triggerify 与其他机制的职责边界：
+Agent Hooks 与其他机制的职责边界：
 
 | 机制 | 职责 |
 |---|---|
-| Triggerify | 注入跨会话持久指令，或在 Agent 生命周期事件中执行自动化动作 |
+| Agent Hooks | 注入跨会话持久指令，或在 Agent 生命周期事件中执行自动化动作 |
 | Git hooks / CI | 提供仓库级最终约束 |
 | 宿主权限和 sandbox | 决定工具或命令是否获准执行 |
 
@@ -55,7 +55,7 @@ Triggerify 与其他机制的职责边界：
 
 ## 4. 目标
 
-- 使用 `Triggerify` 作为 Skill 和机制名称。
+- 使用 `Agent Hooks` 作为 Skill 和机制名称。
 - Codex 为第一优先宿主，Claude Code 为第二优先，Pi 为第三优先。
 - 使用统一事件名称和统一 payload 隔离宿主差异。
 - 支持用户全局规则和项目级规则。
@@ -78,7 +78,7 @@ Triggerify 与其他机制的职责边界：
 - V1 不重写工具参数，不自动批准权限，不提供远程规则市场。
 - V1 不支持 Cursor 或 Windows。
 - V1 不自动删除关联脚本。
-- V1 不保证与 Triggerify 之外的原生 Hook 具有确定执行顺序。
+- V1 不保证与 Agent Hooks 之外的原生 Hook 具有确定执行顺序。
 
 ## 6. 标准事件
 
@@ -101,7 +101,7 @@ stop
 
 下表描述映射候选，不等于能力保证。每个适配器发布前必须用当前官方协议和 golden payload 固定实际 capability matrix。
 
-| Triggerify | Codex | Claude Code | Pi | 初始映射质量 |
+| Agent Hooks | Codex | Claude Code | Pi | 初始映射质量 |
 |---|---|---|---|---|
 | `session-start` | `SessionStart` | `SessionStart` | `session_start` | exact / exact / exact |
 | `prompt-submit` | `UserPromptSubmit` | `UserPromptSubmit` | `input` 或 `before_agent_start` 组合 | exact / exact / partial |
@@ -123,7 +123,7 @@ stop
 | 字段 | 含义 |
 |---|---|
 | `observed` | 能否可靠观测事件 |
-| `can_inject_prompt` | 能否满足 Triggerify 的一次性注入语义 |
+| `can_inject_prompt` | 能否满足 Agent Hooks 的一次性注入语义 |
 | `can_run_script` | 能否在该时机运行脚本 |
 | `can_block` | 脚本返回 `2` 时能否阻止当前原生操作 |
 | `provides_changed_files` | 能否可靠提供文件变化 |
@@ -137,10 +137,10 @@ stop
 ### 7.1 全局规则
 
 ```text
-~/.csl-agent-kit/triggerify/
-├── hooks/
-│   ├── load-global-context.md
-│   └── check-before-commit.md
+~/.csl-agent-kit/hooks/
+├── load-global-context.md
+├── check-before-commit.md
+├── config.json
 └── scripts/
     └── check-before-commit.sh
 ```
@@ -148,10 +148,9 @@ stop
 ### 7.2 项目规则
 
 ```text
-<workspace>/.csl-agent-kit/triggerify/
-├── hooks/
-│   ├── format-and-lint-swift.local.md
-│   └── check-before-commit.md
+<workspace>/.agents/hooks/
+├── format-and-lint-swift.local.md
+├── check-before-commit.md
 └── scripts/
     ├── format-and-lint-swift.local.sh
     └── check-before-commit.sh
@@ -169,7 +168,7 @@ stop
 - 文件名描述行为，不编码事件、动作或优先级。
 - 项目 `create` 默认生成 `.local.*`。
 - 只有用户明确要求 shared 时才生成可提交文件。
-- 创建项目私有文件时，管理层必须幂等维护 `.gitignore` 中的 Triggerify local patterns，不改写无关条目。
+- 创建项目私有文件时，管理层必须幂等维护 `.gitignore` 中的 Agent Hooks local patterns，不改写无关条目。
 - Prompt 直接使用 Hook Markdown 正文，V1 不创建 `prompts/` 目录。
 - 单脚本保持扁平；真正需要多个文件时可以使用 `scripts/<name>/` 子目录。
 
@@ -214,7 +213,7 @@ project scope = unsupported
 
 管理 CLI 是显式控制面。它可以列出项目文件名和 trust 状态；只有用户显式 `show` 或修改某条规则时才读取相应内容，并且永远不因此执行 Prompt 或脚本。
 
-Triggerify 不建立独立的隐式 trust 数据库。适配器无法复用或证明宿主 trust 时，项目 scope 保持 unsupported，而不是自行推断。
+Agent Hooks 不建立独立的隐式 trust 数据库。适配器无法复用或证明宿主 trust 时，项目 scope 保持 unsupported，而不是自行推断。
 
 ## 9. Hook 文件格式
 
@@ -222,7 +221,7 @@ Triggerify 不建立独立的隐式 trust 数据库。适配器无法复用或�
 
 | 字段 | 必需 | 说明 |
 |---|---:|---|
-| `schema` | 是 | 固定为 `triggerify/v1` |
+| `schema` | 是 | 固定为 `agent-hooks/v1` |
 | `event` | 是 | 十个标准事件之一 |
 | `action` | 是 | `inject-prompt` 或 `run-script` |
 | `description` | 否 | 单行、非空、最多 160 字符；用于 `list` 和 `show` 展示 |
@@ -238,7 +237,7 @@ Triggerify 不建立独立的隐式 trust 数据库。适配器无法复用或�
 
 ```markdown
 ---
-schema: triggerify/v1
+schema: agent-hooks/v1
 event: session-start
 action: inject-prompt
 description: 在会话开始时注入持久指令。
@@ -254,7 +253,7 @@ enabled: true
 
 ```markdown
 ---
-schema: triggerify/v1
+schema: agent-hooks/v1
 event: before-tool
 action: run-script
 enabled: true
@@ -276,10 +275,10 @@ when:
 一次注入必须满足：
 
 1. 保持原始用户消息和原生事件数据不变。
-2. 作为独立、带 Triggerify 来源标识的附加上下文进入下一次相关模型请求。
+2. 作为独立、带 Agent Hooks 来源标识的附加上下文进入下一次相关模型请求。
 3. 只影响该次模型请求，消费后清除。
 4. 不持久修改 system prompt。
-5. 不重新产生 `prompt-submit`，不递归触发 Triggerify。
+5. 不重新产生 `prompt-submit`，不递归触发 Agent Hooks。
 6. 不声明高于 system、developer、managed policy 或用户指令的优先级。
 
 宿主或事件无法提供上述最小保证时，`can_inject_prompt=false`，对应规则 support 为 unsupported。
@@ -314,12 +313,14 @@ spawn(canonicalScriptPath, [], {
 运行时应该继承宿主环境以保留 `PATH`、Git 和 Swift 工具链，并增加：
 
 ```text
-TRIGGERIFY_ROOT
-TRIGGERIFY_SCOPE
-TRIGGERIFY_HOOK_ID
-TRIGGERIFY_WORKSPACE
-TRIGGERIFY_HOST
-TRIGGERIFY_EVENT
+AGENT_HOOKS_ROOT
+AGENT_HOOKS_SCOPE
+AGENT_HOOKS_HOOK_ID
+AGENT_HOOKS_WORKSPACE
+AGENT_HOOKS_HOST
+AGENT_HOOKS_EVENT
+AGENT_HOOKS_HOOK_CONFIG
+AGENT_HOOKS_HOOK_INPUT
 ```
 
 运行时禁止默认记录完整环境、Prompt、工具输入、工具输出或原始 payload。
@@ -330,7 +331,7 @@ TRIGGERIFY_EVENT
 
 | 结果 | 行为 |
 |---:|---|
-| `0` | 动作成功，Triggerify 不提出阻止 |
+| `0` | 动作成功，Agent Hooks 不提出阻止 |
 | `2` 且 `can_block=true` | 阻止当前宿主操作 |
 | `2` 且 `can_block=false` | 协议错误，不回滚，显示诊断 |
 | 其他非零 | Runtime error，默认 fail-open |
@@ -338,7 +339,7 @@ TRIGGERIFY_EVENT
 
 补充规则：
 
-- `permission-request` 中的 `0` 仅表示 Triggerify 不拒绝，宿主继续原有审批；绝不表示自动批准。
+- `permission-request` 中的 `0` 仅表示 Agent Hooks 不拒绝，宿主继续原有审批；绝不表示自动批准。
 - `after-tool`、`after-compact` 等 post-event 返回 `2` 是协议错误，不能声称撤销已经发生的行为。
 - V1 不提供 `on-error: block`。需要 fail-closed 的约束必须由 Git hooks、CI 或其他确定性机制承担。
 - `run-script` 的 stdout/stderr 只作为有界诊断，不转换成动态 Prompt；动态上下文应使用独立 `inject-prompt` 规则。
@@ -349,7 +350,7 @@ TRIGGERIFY_EVENT
 
 ```json
 {
-  "schema": "triggerify.event/v1",
+  "schema": "agent-hooks.event/v1",
   "event": "after-tool",
   "host": {
     "name": "codex",
@@ -413,7 +414,7 @@ renamed
 
 路径必须相对 canonical workspace，使用 `/` 分隔，不包含未解析的 `.` 或 `..`。Rename 应提供 `previous_path`。
 
-Triggerify 不通过每次工具调用前后扫描整个 Git workspace 来填充此字段。任意 shell、MCP 或自定义工具造成的变化无法可靠识别时使用 `null`。需要完整状态检查时由脚本查询 Git 或文件系统。
+Agent Hooks 不通过每次工具调用前后扫描整个 Git workspace 来填充此字段。任意 shell、MCP 或自定义工具造成的变化无法可靠识别时使用 `null`。需要完整状态检查时由脚本查询 Git 或文件系统。
 
 ### 13.2 `native`
 
@@ -435,7 +436,7 @@ Frontmatter 使用严格 YAML 1.2 Core Schema。
 V1 schema 固定为：
 
 ```yaml
-schema: triggerify/v1
+schema: agent-hooks/v1
 ```
 
 ## 15. 条件 AST
@@ -551,7 +552,7 @@ V1 只支持：
 
 ## 17. Schema 版本策略
 
-`triggerify/v1` 发布后冻结：
+`agent-hooks/v1` 发布后冻结：
 
 - AST 节点和操作符集合。
 - 三值与空集合语义。
@@ -560,7 +561,7 @@ V1 只支持：
 - Payload 字段类型。
 - 脚本退出协议。
 
-未来增加 `any`、`not`、`every`、`none`、`count` 或其他操作符必须使用新 schema，例如 `triggerify/v2`。运行时可以同时支持多个 schema，V1 规则无需迁移。
+未来增加 `any`、`not`、`every`、`none`、`count` 或其他操作符必须使用新 schema，例如 `agent-hooks/v2`。运行时可以同时支持多个 schema，V1 规则无需迁移。
 
 ## 18. 加载、排序与短路
 
@@ -575,20 +576,20 @@ scope 内按 logical ID 的 UTF-8 字节序排序，禁止 locale-sensitive 排�
 
 - 条件为 `false` 或 `unknown` 时跳过。
 - Runtime error 默认 fail-open，继续下一条。
-- 首个有效 block 立即停止剩余 Triggerify 规则。
+- 首个有效 block 立即停止剩余 Agent Hooks 规则。
 - 已发生的脚本副作用不回滚。
 - block 前已经累计但尚未消费的 Prompt 块丢弃。
 - 不同事件和并发工具调用彼此独立。
 - V1 不提供 `priority`。
 
-Triggerify 只保证内部顺序，不保证与其他原生 Hook 的相对顺序。
+Agent Hooks 只保证内部顺序，不保证与其他原生 Hook 的相对顺序。
 
 ## 19. 管理 Skill 与恢复 CLI
 
 Skill 入口：
 
 ```text
-$csl-agent-kit:triggerify
+$agent-hooks
 ```
 
 V1 操作：
@@ -607,16 +608,16 @@ delete
 
 ### 19.1 独立控制面
 
-错误 `before-tool` 规则可能阻止 Agent 使用 shell 或文件工具，Skill 不能作为唯一恢复路径。现有 CLI 必须增加不经过 Triggerify 事件数据面的子命令：
+错误 `before-tool` 规则可能阻止 Agent 使用 shell 或文件工具，Skill 不能作为唯一恢复路径。现有 CLI 必须增加不经过 Agent Hooks 事件数据面的子命令：
 
 ```bash
-csl-agent-kit triggerify list
-csl-agent-kit triggerify disable project:broken-rule
+csl-agent-kit agent-hooks list
+csl-agent-kit agent-hooks disable project:broken-rule
 ```
 
 外部终端调用 CLI 时：
 
-- 不触发 Triggerify。
+- 不触发 Agent Hooks。
 - 不执行任何规则、脚本或 Prompt。
 - 可以列出并禁用 invalid、unsupported 或自锁规则。
 - Skill 应复用相同管理核心。
@@ -692,9 +693,9 @@ Invalid rule：
 - 诊断必须限制大小，并避免回显完整敏感字段。
 - Regex 和条件树必须有深度、节点数、pattern 长度和求值预算。
 - Prompt 注入不能覆盖更高优先级指令，也不能递归触发。
-- Triggerify 继承宿主 sandbox，不宣称提供额外隔离。
+- Agent Hooks 继承宿主 sandbox，不宣称提供额外隔离。
 - `before-tool` 的 commit 检查只是 Agent 内提前反馈，最终约束应复用 Git `pre-commit` 或 CI。
-- Runtime error 默认 fail-open，因此 Triggerify V1 不是安全强制边界。
+- Runtime error 默认 fail-open，因此 Agent Hooks V1 不是安全强制边界。
 
 ## 22. 示例
 
@@ -702,7 +703,7 @@ Invalid rule：
 
 ```markdown
 ---
-schema: triggerify/v1
+schema: agent-hooks/v1
 event: after-tool
 action: run-script
 enabled: true
@@ -729,7 +730,7 @@ when:
 
 ```markdown
 ---
-schema: triggerify/v1
+schema: agent-hooks/v1
 event: before-tool
 action: run-script
 enabled: true
@@ -751,7 +752,7 @@ when:
 
 ```markdown
 ---
-schema: triggerify/v1
+schema: agent-hooks/v1
 event: session-start
 action: inject-prompt
 enabled: true
@@ -827,11 +828,11 @@ enabled: true
 
 ### 25.1 直接移植 Hookify
 
-拒绝。Hookify 的字段和动作与 Claude 工具协议耦合，条件主要是隐式 AND，也不能覆盖 Triggerify 的脚本、trust、跨宿主和管理需求。
+拒绝。Hookify 的字段和动作与 Claude 工具协议耦合，条件主要是隐式 AND，也不能覆盖 Agent Hooks 的脚本、trust、跨宿主和管理需求。
 
 ### 25.2 CEL
 
-CEL 无副作用、非图灵完备且适合结构化数据，但会增加表达式 parser 和运行时依赖，简单规则也更难生成和解释。Triggerify 使用 YAML AST，并保持脚本作为复杂逻辑逃生口。
+CEL 无副作用、非图灵完备且适合结构化数据，但会增加表达式 parser 和运行时依赖，简单规则也更难生成和解释。Agent Hooks 使用 YAML AST，并保持脚本作为复杂逻辑逃生口。
 
 ### 25.3 Rego / OPA
 
@@ -874,4 +875,4 @@ CEL 无副作用、非图灵完备且适合结构化数据，但会增加表达�
 
 对抗讨论先由 Synthesizer 形成草案，再由 Challenger 给出 `NEEDS REVISION`，指出事件同名不等于能力一致、动态项目规则可能绕过宿主 trust、退出码不能跨事件统一解释、`changed_files` 需要区分 unknown 与 empty、管理操作存在自锁等问题。
 
-修订稿吸收这些问题后，Synthesizer 最终裁决为 `SUFFICIENT`。本 RFC 因此接受为 Triggerify V1 的设计基线；开始实现前仍需按 Phase 3 对当前 Codex 官方行为生成 capability matrix 和 golden fixtures。
+修订稿吸收这些问题后，Synthesizer 最终裁决为 `SUFFICIENT`。本 RFC 因此接受为 Agent Hooks V1 的设计基线；开始实现前仍需按 Phase 3 对当前 Codex 官方行为生成 capability matrix 和 golden fixtures。

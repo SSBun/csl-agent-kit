@@ -38,10 +38,10 @@
     "csl-agent-kit": "bin/csl-agent-kit.js"
   },
   "scripts": {
-    "test": "npm run test:cli && npm run test:triggerify && npm run test:tasks && npm run test:archive",
+    "test": "npm run test:cli && npm run test:agent-hooks && npm run test:tasks && npm run test:archive",
     "test:all": "npm test && npm run test:pi",
     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
-    "test:triggerify": "node --test tests/triggerify.test.js",
+    "test:agent-hooks": "node --test tests/agent-hooks.test.js",
     "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs",
     "test:archive": "node --test tests/archive-session.test.mjs",
     "test:pi": "node tests/run-pi-tests.js",

@@ -29,7 +29,9 @@
     "figma-describe",
     "brainstorming",
     "align",
-    "sop-manager",
+    "agent-rules",
+    "agent-hooks",
+    "agent-sops",
     "task-grill",
     "beautiful-mermaid"
   ],
@@ -54,12 +56,12 @@
     "./skills/meta/task-plan",
     "./skills/meta/task-queue",
     "./skills/task-lessons",
-    "./skills/meta/sop-manager",
-    "./skills/meta/triggerify",
+    "./skills/meta/agent-rules",
+    "./skills/meta/agent-hooks",
+    "./skills/meta/agent-sops",
     "./skills/dev/brainstorming",
     "./skills/domain/figma-describe",
     "./skills/dev/align",
-    "./skills/dev/tldr",
-    "./skills/meta/agent-rules"
+    "./skills/dev/tldr"
   ]
 }

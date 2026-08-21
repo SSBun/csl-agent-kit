@@ -1,7 +1,7 @@
 interface:
-  display_name: "SOP Manager"
+  display_name: "Agent SOPs"
   short_description: "Manage project, user, and built-in SOPs"
-  default_prompt: "Use $sop-manager to list, create, inspect, or apply the relevant SOP."
+  default_prompt: "Use $agent-sops to list, create, inspect, or apply the relevant SOP."
 
 compatibility:
   canonical_format: "agent-skills"

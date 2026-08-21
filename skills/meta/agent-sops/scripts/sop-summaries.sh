@@ -89,7 +89,7 @@ print_dir() {
   done
 }
 
-printf '%s\n' 'SOP manager is available.'
+printf '%s\n' 'Agent SOPs is available.'
 printf '%s\n' 'Apply an SOP only when the user task matches its when_to_use or name.'
 printf '%s\n' 'Available SOP summaries:'
 print_dir built-in "$skill_dir/sops" "$user_sop_dir" "$project_sop_dir"

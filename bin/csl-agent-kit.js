@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
-const triggerify = require("../skills/meta/triggerify/scripts/triggerify.js");
+const agentHooks = require("../skills/meta/agent-hooks/scripts/agent-hooks.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -44,7 +44,7 @@ const targets = {
   "super-agent": {
     title: "Default agent instructions",
     description: "Symlink super-agent/AGENTS.md into each agent client's global config.",
-    default: true,
+    default: false,
     external: false,
     run: installSuperAgent,
   },
@@ -53,8 +53,8 @@ const targets = {
 async function main() {
   const [command = "help", ...args] = process.argv.slice(2);
 
-  if (command === "triggerify") {
-    process.exit(triggerify.runCli(args));
+  if (command === "agent-hooks") {
+    process.exit(agentHooks.runCli(args));
   }
 
   if (command === "install") {
@@ -184,6 +184,7 @@ function buildInstallChoices(savedSelection) {
   const selected = new Set(savedSelection || Object.entries(targets)
     .filter(([, spec]) => spec.default)
     .map(([name]) => name));
+  selected.delete("super-agent");
   return Object.entries(targets).map(([name, spec]) => ({
     title: spec.title,
     description: spec.description,
@@ -576,11 +577,11 @@ function flatten(value) {
 }
 
 function printHelp() {
-  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit triggerify <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit triggerify help\" for details.`);
+  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit agent-hooks <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit agent-hooks help\" for details.`);
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Exclude the super-agent target from default selection.\n  --force             Force instruction relinking (already default for super-agent).\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show detailed progress (already the default).\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Compatibility no-op; super-agent is opt-in.\n  --force             Force instruction relinking (already default for super-agent).\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show detailed progress (already the default).\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
 }
 
 function die(message) {

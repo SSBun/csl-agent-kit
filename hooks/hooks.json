@@ -6,15 +6,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/meta/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/meta/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/meta/agent-sops/scripts/sop-summaries.sh\" ]; then \"$root/skills/meta/agent-sops/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"Agent SOPs is available. Use agent-sops list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Loading CSL SOP routing"
           },
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify session triggers"
+            "statusMessage": "Running Agent Hooks session triggers"
           }
         ]
       }
@@ -25,15 +25,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/meta/sop-manager/scripts/sop-summaries.sh\" ]; then \"$root/skills/meta/sop-manager/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"SOP manager is available. Use sop-manager list/create/see when the user asks for SOPs.\"; fi'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/meta/agent-sops/scripts/sop-summaries.sh\" ]; then \"$root/skills/meta/agent-sops/scripts/sop-summaries.sh\"; else printf \"%s\\n\" \"Agent SOPs is available. Use agent-sops list/create/see when the user asks for SOPs.\"; fi'",
             "timeout": 10,
             "statusMessage": "Reloading CSL SOP routing"
           },
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify post-compact triggers"
+            "statusMessage": "Running Agent Hooks post-compact triggers"
           }
         ]
       }
@@ -43,15 +43,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/meta/sop-manager/scripts/sop-candidates.js\" ]; then \"$root/skills/meta/sop-manager/scripts/sop-candidates.js\"; fi'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; if [ -z \"$root\" ]; then root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; fi; if [ -x \"$root/skills/meta/agent-sops/scripts/sop-candidates.js\" ]; then \"$root/skills/meta/agent-sops/scripts/sop-candidates.js\"; fi'",
             "timeout": 5,
             "statusMessage": "Checking SOP candidates"
           },
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify prompt triggers"
+            "statusMessage": "Running Agent Hooks prompt triggers"
           }
         ]
       }
@@ -72,9 +72,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify before-tool triggers"
+            "statusMessage": "Running Agent Hooks before-tool triggers"
           }
         ]
       }
@@ -95,9 +95,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify after-tool triggers"
+            "statusMessage": "Running Agent Hooks after-tool triggers"
           }
         ]
       }
@@ -107,9 +107,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify permission triggers"
+            "statusMessage": "Running Agent Hooks permission triggers"
           }
         ]
       }
@@ -120,9 +120,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify pre-compact triggers"
+            "statusMessage": "Running Agent Hooks pre-compact triggers"
           }
         ]
       }
@@ -132,9 +132,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify subagent-start triggers"
+            "statusMessage": "Running Agent Hooks subagent-start triggers"
           }
         ]
       }
@@ -144,9 +144,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify subagent-stop triggers"
+            "statusMessage": "Running Agent Hooks subagent-stop triggers"
           }
         ]
       }
@@ -156,9 +156,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/triggerify/scripts/triggerify.js\" dispatch'",
+            "command": "sh -c 'root=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}\"; exec node \"$root/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
             "timeout": 65,
-            "statusMessage": "Running Triggerify stop triggers"
+            "statusMessage": "Running Agent Hooks stop triggers"
           }
         ]
       }

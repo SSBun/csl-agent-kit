@@ -63,7 +63,7 @@ function cleanContext(value) {
 
 function hookInputFromEnv(env = process.env) {
   try {
-    const input = JSON.parse(env.TRIGGERIFY_HOOK_INPUT || "{}");
+    const input = JSON.parse(env.AGENT_HOOKS_HOOK_INPUT || "{}");
     return input && typeof input === "object" && !Array.isArray(input) ? input : {};
   } catch {
     return {};
@@ -81,7 +81,7 @@ function requestIdFromEnv(env = process.env) {
 
 function modelFromConfig(env = process.env) {
   try {
-    const model = JSON.parse(env.TRIGGERIFY_HOOK_CONFIG || "{}").model;
+    const model = JSON.parse(env.AGENT_HOOKS_HOOK_CONFIG || "{}").model;
     return typeof model === "string"
       && model.length <= 200
       && /^[A-Za-z0-9][A-Za-z0-9._-]*\/[A-Za-z0-9][A-Za-z0-9._:/-]*$/.test(model)
@@ -210,8 +210,8 @@ function isolatedEnv() {
     "PI_SESSION_FILE",
     "PI_SESSION_ID",
     "PI_SUBAGENT_PARENT_SESSION",
-    "TRIGGERIFY_HOOK_CONFIG",
-    "TRIGGERIFY_HOOK_INPUT",
+    "AGENT_HOOKS_HOOK_CONFIG",
+    "AGENT_HOOKS_HOOK_INPUT",
   ]) delete env[key];
   return env;
 }
@@ -240,7 +240,7 @@ function generateModelTitle(context, model = modelFromConfig()) {
 
 function tabTitleDir() {
   const root = process.env.CSL_AGENT_KIT_HOME || path.join(os.homedir(), ".csl-agent-kit");
-  const dir = path.join(root, "triggerify", ".tab-title");
+  const dir = path.join(root, "hooks", ".tab-title");
   fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
   return dir;
 }
@@ -435,7 +435,7 @@ function startWorker(payload, workspace) {
   }
   if (published !== true) return fail("state-write-failed");
 
-  const inputFile = path.join(os.tmpdir(), `triggerify-title-${process.pid}-${crypto.randomBytes(8).toString("hex")}.json`);
+  const inputFile = path.join(os.tmpdir(), `agent-hooks-title-${process.pid}-${crypto.randomBytes(8).toString("hex")}.json`);
   let descriptor;
   try {
     fs.writeFileSync(inputFile, JSON.stringify({ prompt, sessionContext, workspace, tty, state, token, requestId }), { mode: 0o600, flag: "wx" });
@@ -475,13 +475,13 @@ function selfTest() {
   assert.equal(buildTitle({}, "/tmp/app", "\u001b]0;owned\u0007"), null);
   assert.ok(Array.from(cleanModelTitle("界".repeat(100))).length <= MAX_TITLE);
   assert.equal(/[\u0000-\u001f\u007f-\u009f]/.test(buildTitle({}, "/tmp/app", "safe")), false);
-  assert.equal(contextFromEnv({ TRIGGERIFY_HOOK_INPUT: '{"sessionContext":"User: Build auth\\n\\nAssistant: Working"}' }), "User: Build auth\n\nAssistant: Working");
-  assert.equal(contextFromEnv({ TRIGGERIFY_HOOK_INPUT: "invalid" }), "");
-  assert.equal(modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: '{"model":"openai-codex/gpt-5.4-mini"}' }), "openai-codex/gpt-5.4-mini");
-  assert.equal(modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: '{"model":"bad model"}' }), DEFAULT_MODEL);
-  assert.equal(modelFromConfig({ TRIGGERIFY_HOOK_CONFIG: "invalid" }), DEFAULT_MODEL);
+  assert.equal(contextFromEnv({ AGENT_HOOKS_HOOK_INPUT: '{"sessionContext":"User: Build auth\\n\\nAssistant: Working"}' }), "User: Build auth\n\nAssistant: Working");
+  assert.equal(contextFromEnv({ AGENT_HOOKS_HOOK_INPUT: "invalid" }), "");
+  assert.equal(modelFromConfig({ AGENT_HOOKS_HOOK_CONFIG: '{"model":"openai-codex/gpt-5.4-mini"}' }), "openai-codex/gpt-5.4-mini");
+  assert.equal(modelFromConfig({ AGENT_HOOKS_HOOK_CONFIG: '{"model":"bad model"}' }), DEFAULT_MODEL);
+  assert.equal(modelFromConfig({ AGENT_HOOKS_HOOK_CONFIG: "invalid" }), DEFAULT_MODEL);
 
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "triggerify-title-test-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "agent-hooks-title-test-"));
   const previousHome = process.env.CSL_AGENT_KIT_HOME;
   try {
     const state = path.join(dir, "token");
@@ -516,7 +516,7 @@ function selfTest() {
     assert.equal(fs.existsSync(path.join(tabTitleDir(), "ttys000.lock")), false);
 
     // Simulate a held lock: pre-create the lock dir inside tabTitleDir
-    const ttyDir = path.join(dir, "triggerify", ".tab-title");
+    const ttyDir = path.join(dir, "hooks", ".tab-title");
     fs.mkdirSync(path.join(ttyDir, "ttys001.lock"));
     assert.equal(withTtyLock("/dev/ttys001", () => "should-not-run"), undefined);
 
@@ -569,7 +569,7 @@ if (require.main === module) {
   } else {
     try {
       const payload = JSON.parse(fs.readFileSync(0, "utf8"));
-      startWorker(payload, process.env.TRIGGERIFY_WORKSPACE || process.cwd());
+      startWorker(payload, process.env.AGENT_HOOKS_WORKSPACE || process.cwd());
     } catch {
       // Title refresh is cosmetic and must never interrupt the agent.
     }

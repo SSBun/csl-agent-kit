@@ -4,13 +4,13 @@
     "claude-code": {
       "source": "https://code.claude.com/docs/en/hooks",
       "native_event": "SessionStart",
-      "triggerify_event": "session-start",
+      "agent_hooks_event": "session-start",
       "capability": { "inject": true, "script": true, "block": false }
     },
     "pi": {
       "source": "https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md",
       "native_event": "before_agent_start",
-      "triggerify_event": "session-start",
+      "agent_hooks_event": "session-start",
       "capability": { "inject": true, "script": true, "block": false },
       "note": "Inject via before_agent_start systemPrompt rewrite; script via runEvent side effects in csl-context-hooks extension. Block is not physically possible on Pi."
     }

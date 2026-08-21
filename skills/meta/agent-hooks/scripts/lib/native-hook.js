@@ -67,9 +67,9 @@ function dispatch(input = fs.readFileSync(0, "utf8"), env = process.env, io = pr
     const payload = normalizePayload(native, host, event, workspace);
     const result = runEvent(payload, { host, workspace });
     const diagnostics = dedupeDiagnostics(payload, result.diagnostics);
-    if (diagnostics.length > 0) io.stderr.write(`Triggerify: ${diagnostics.join(", ")}\n`);
+    if (diagnostics.length > 0) io.stderr.write(`Agent Hooks: ${diagnostics.join(", ")}\n`);
     if (result.blocked) {
-      const reason = bounded(result.reason) || "Blocked by Triggerify";
+      const reason = bounded(result.reason) || "Blocked by Agent Hooks";
       if (native.hook_event_name === "PermissionRequest") {
         io.stdout.write(`${JSON.stringify({ hookSpecificOutput: { hookEventName: "PermissionRequest", decision: { behavior: "deny", message: reason } } })}\n`);
         return 0;
@@ -82,12 +82,12 @@ function dispatch(input = fs.readFileSync(0, "utf8"), env = process.env, io = pr
       return 2;
     }
     if (result.prompts.length > 0) {
-      const context = result.prompts.map((prompt) => `[Triggerify ${prompt.id}]\n${prompt.content}`).join("\n\n");
+      const context = result.prompts.map((prompt) => `[Agent Hooks ${prompt.id}]\n${prompt.content}`).join("\n\n");
       io.stdout.write(`${JSON.stringify({ hookSpecificOutput: { hookEventName: native.hook_event_name, additionalContext: context } })}\n`);
     } else if (["Stop", "SubagentStop"].includes(native.hook_event_name)) io.stdout.write("{}\n");
     return 0;
   } catch (error) {
-    io.stderr.write(`Triggerify runtime error (fail-open): ${bounded(error.message)}\n`);
+    io.stderr.write(`Agent Hooks runtime error (fail-open): ${bounded(error.message)}\n`);
     return 0;
   }
 }
@@ -97,7 +97,7 @@ function dedupeDiagnostics(payload, diagnostics) {
   if (unique.length === 0 || !payload.session.id) return unique;
   try {
     const digest = crypto.createHash("sha256").update(String(payload.session.id)).digest("hex");
-    const file = path.join(dataRoot(), "triggerify", ".diagnostics", `${digest}.json`);
+    const file = path.join(dataRoot(), "hooks", ".diagnostics", `${digest}.json`);
     let seen = [];
     try { seen = JSON.parse(fs.readFileSync(file, "utf8")); } catch {}
     const fresh = unique.filter((item) => !seen.includes(item));

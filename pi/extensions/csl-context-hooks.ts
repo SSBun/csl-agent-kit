@@ -43,7 +43,7 @@ interface TitleHookModule {
 	titleResultFile(requestId: string): string;
 }
 
-interface TriggerifyModule {
+interface AgentHooksModule {
 	createEvent(input: {
 		event: string;
 		host: string;
@@ -60,7 +60,7 @@ interface TriggerifyModule {
 	): { prompts: TriggerPrompt[]; diagnostics: string[]; blocked: boolean };
 }
 
-interface TriggerifyRuleEntry {
+interface AgentHooksRuleEntry {
 	id: string;
 	rule: {
 		event: string;
@@ -78,13 +78,13 @@ const require = createRequire(import.meta.url);
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(baseDir, "..", "..");
 const candidateModule = require(
-	join(packageRoot, "skills", "meta", "sop-manager", "scripts", "sop-candidates.js"),
+	join(packageRoot, "skills", "meta", "agent-sops", "scripts", "sop-candidates.js"),
 ) as SopCandidateModule;
-const triggerify = require(
-	join(packageRoot, "skills", "meta", "triggerify", "scripts", "triggerify.js"),
-) as TriggerifyModule;
+const agentHooks = require(
+	join(packageRoot, "skills", "meta", "agent-hooks", "scripts", "agent-hooks.js"),
+) as AgentHooksModule;
 const titleHook = require(
-	join(packageRoot, "skills", "meta", "triggerify", "scripts", "refresh-tab-title.js"),
+	join(packageRoot, "skills", "meta", "agent-hooks", "scripts", "refresh-tab-title.js"),
 ) as TitleHookModule;
 
 const MUTATING_TOOLS = new Set(["bash", "edit", "write", "apply_patch"]);
@@ -111,7 +111,7 @@ function toolCategory(toolName: string | null): string | null {
 }
 
 /**
- * Build a Triggerify event payload for a Pi hook event.
+ * Build an Agent Hooks event payload for a Pi hook event.
  * Mirrors native-hook.js normalizePayload, adapted for Pi's event shapes.
  */
 function buildPayload(
@@ -132,7 +132,7 @@ function buildPayload(
 	const prompt = event === "prompt-submit" || event === "session-start" ? (context.prompt ?? null) : null;
 	const compact =
 		event === "before-compact" || event === "after-compact" ? { trigger: context.compactTrigger ?? null } : null;
-	return triggerify.createEvent({
+	return agentHooks.createEvent({
 		event,
 		host: "pi",
 		workspace,
@@ -207,10 +207,10 @@ function pendingFileChange(
 }
 
 /**
- * Join Triggerify inject-prompt outputs into a labelled context block.
+ * Join Agent Hooks inject-prompt outputs into a labelled context block.
  */
 function formatPrompts(prompts: TriggerPrompt[]): string {
-	return prompts.map((prompt) => `[Triggerify ${prompt.id}]\n${prompt.content}`).join("\n\n");
+	return prompts.map((prompt) => `[Agent Hooks ${prompt.id}]\n${prompt.content}`).join("\n\n");
 }
 
 interface TitleRefreshResult {
@@ -275,7 +275,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	};
 
 	/**
-	 * Run Triggerify for `event` and return the prompts to inject.
+	 * Run Agent Hooks for `event` and return the prompts to inject.
 	 * Fail open: any runtime error yields no prompts (Pi keeps running).
 	 */
 	function triggerPrompts(
@@ -286,7 +286,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	): TriggerPrompt[] {
 		try {
 			const payload = buildPayload(event, workspace, context);
-			const result = triggerify.runEvent(payload, { host: "pi", workspace, hookInputs });
+			const result = agentHooks.runEvent(payload, { host: "pi", workspace, hookInputs });
 			return result.prompts;
 		} catch {
 			return [];
@@ -294,7 +294,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	}
 
 	/**
-	 * Run Triggerify run-script rules for `event`. Best-effort: scripts execute
+	 * Run Agent Hooks run-script rules for `event`. Best-effort: scripts execute
 	 * via spawnSync with the same env contract as native-hook.js, but their
 	 * stdout is not surfaced to the model on Pi (no inject channel for these
 	 * events). Use this for side-effect scripts (notifications, indexing).
@@ -304,7 +304,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 			const payload = buildPayload(event, workspace, context);
 			// runEvent already executes scripts; we call it purely for its
 			// side effects here. Diagnostics are ignored on Pi.
-			triggerify.runEvent(payload, { host: "pi", workspace });
+			agentHooks.runEvent(payload, { host: "pi", workspace });
 		} catch {
 			// fail open
 		}
@@ -395,7 +395,7 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 			changedFiles = !event.isError && pendingChange ? [pendingChange] : [];
 		}
 
-		// after-tool inject: rewrite tool_result content with Triggerify prompts.
+		// after-tool inject: rewrite tool_result content with Agent Hooks prompts.
 		const prompts = triggerPrompts("after-tool", ctx.cwd, {
 			toolName: event.toolName,
 			toolCommand: input.command,
@@ -452,8 +452,8 @@ export function formatTriggerContext(
 	const sections = ["## CSL Agent Kit User Context"];
 	if (triggerPrompts.length > 0) {
 		sections.push(
-			"### Triggerify session prompts",
-			...triggerPrompts.map((prompt) => `[Triggerify ${prompt.id}]\n${prompt.content}`),
+			"### Agent Hooks session prompts",
+			...triggerPrompts.map((prompt) => `[Agent Hooks ${prompt.id}]\n${prompt.content}`),
 		);
 	}
 

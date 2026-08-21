@@ -13,6 +13,7 @@ const {
   discover,
   isWithin,
   scopeRoot,
+  scriptsRoot,
 } = require("./store.js");
 
 const CODEX_CAPABILITIES = {
@@ -72,7 +73,7 @@ function createEvent({
   nativePayload = {},
 }) {
   return {
-    schema: "triggerify.event/v1",
+    schema: "agent-hooks.event/v1",
     event,
     host: { name: host, version: null },
     workspace: { root: workspace, trusted: null },
@@ -147,7 +148,7 @@ function runEvent(payload, options = {}) {
     const innerEntries = discover("inner", workspace, true, deadline);
     entries = [...globalEntries, ...innerEntries];
   } catch (error) {
-    if (error.code === "TRIGGERIFY_BUDGET") {
+    if (error.code === "AGENT_HOOKS_BUDGET") {
       return { prompts, diagnostics: [`${discoveringScope}:${error.reason}`], blocked: false };
     }
     throw error;
@@ -210,10 +211,10 @@ function runEvent(payload, options = {}) {
 }
 
 function executeScript(entry, payload, workspace, remaining, hookInput = {}) {
-  const scripts = fs.realpathSync(path.join(scopeRoot(entry.scope, workspace), "scripts"));
+  const scripts = fs.realpathSync(scriptsRoot(entry.scope, workspace));
   const executable = fs.realpathSync(path.join(scripts, entry.rule.script));
   if (!isWithin(scripts, executable)) return { status: 1, stderr: "script-escape" };
-  const payloadFile = path.join(os.tmpdir(), `triggerify-${process.pid}-${crypto.randomBytes(12).toString("hex")}.json`);
+  const payloadFile = path.join(os.tmpdir(), `agent-hooks-${process.pid}-${crypto.randomBytes(12).toString("hex")}.json`);
   let payloadDescriptor;
   let payloadPath = payloadFile;
   let result;
@@ -226,14 +227,14 @@ function executeScript(entry, payload, workspace, remaining, hookInput = {}) {
       cwd: canonicalWorkspace(workspace),
       env: {
         ...process.env,
-        TRIGGERIFY_ROOT: scopeRoot(entry.scope, workspace),
-        TRIGGERIFY_SCOPE: entry.scope,
-        TRIGGERIFY_HOOK_ID: entry.id,
-        TRIGGERIFY_WORKSPACE: canonicalWorkspace(workspace),
-        TRIGGERIFY_HOST: payload.host.name,
-        TRIGGERIFY_EVENT: payload.event,
-        TRIGGERIFY_HOOK_CONFIG: JSON.stringify(entry.hookConfig || {}),
-        TRIGGERIFY_HOOK_INPUT: JSON.stringify(hookInput || {}),
+        AGENT_HOOKS_ROOT: scopeRoot(entry.scope, workspace),
+        AGENT_HOOKS_SCOPE: entry.scope,
+        AGENT_HOOKS_HOOK_ID: entry.id,
+        AGENT_HOOKS_WORKSPACE: canonicalWorkspace(workspace),
+        AGENT_HOOKS_HOST: payload.host.name,
+        AGENT_HOOKS_EVENT: payload.event,
+        AGENT_HOOKS_HOOK_CONFIG: JSON.stringify(entry.hookConfig || {}),
+        AGENT_HOOKS_HOOK_INPUT: JSON.stringify(hookInput || {}),
       },
       stdio: [payloadDescriptor, "pipe", "pipe"],
       encoding: "utf8",

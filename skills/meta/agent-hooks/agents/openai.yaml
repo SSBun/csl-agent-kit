@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Hooks"
+  short_description: "管理跨会话持久指令及事件驱动的 Prompt 与脚本触发规则"
+  default_prompt: "Use $agent-hooks to manage a persistent directive or an event-driven prompt or script rule."

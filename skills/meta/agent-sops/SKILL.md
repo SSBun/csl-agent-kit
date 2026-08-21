@@ -1,9 +1,9 @@
 ---
-name: sop-manager
+name: agent-sops
 description: Use when the user wants to list, create, inspect, or follow SOPs, procedures, playbooks, runbooks, workflow rules, or process documents. Also use when the user mentions "SOP", "procedure", "playbook", "runbook", "process doc", or "per our SOP".
 ---
 
-# SOP Manager
+# Agent SOPs
 
 Manage Standard Operating Procedure (SOP) files. SOPs are Agent behavior rules loaded on demand: when a task matches an SOP's `when_to_use` or `name`, read the complete SOP before following its process or rules.
 
@@ -11,7 +11,7 @@ Manage Standard Operating Procedure (SOP) files. SOPs are Agent behavior rules l
 
 | Scope | Path | Purpose |
 |---|---|---|
-| Built-in | `skills/sop-manager/sops/*.md` | SOPs distributed with the package. |
+| Built-in | `skills/meta/agent-sops/sops/*.md` | SOPs distributed with the package. |
 | User | `~/.csl-agent-kit/sops/*.md` | User-created SOPs that apply across projects. |
 | Project | `<workspace>/.agents/sops/*.md` | Version-controlled SOPs specific to the current workspace. |
 
@@ -66,15 +66,15 @@ Process SOPs explain how to execute the work. Rule SOPs explain what to inspect,
 
 ## Commands
 
-### `sop-manager list`
+### `agent-sops list`
 
 List available SOPs:
 
-1. Run `skills/sop-manager/scripts/sop-summaries.sh`, or equivalently inspect project, user, and built-in SOP directories in precedence order.
+1. Run `skills/meta/agent-sops/scripts/sop-summaries.sh`, or equivalently inspect project, user, and built-in SOP directories in precedence order.
 2. Show only `name`, `when_to_use`, and source path.
 3. Do not read complete SOP bodies unless the user requests one or the current task clearly matches.
 
-### `sop-manager create`
+### `agent-sops create`
 
 Create an SOP:
 
@@ -84,8 +84,8 @@ Create an SOP:
    - Use a process SOP when the task has a stable sequence.
    - Use a rule SOP for design, review, naming, judgment, or trade-offs.
 4. Read the matching example as a quality reference without copying its domain facts:
-   - Process: `skills/sop-manager/references/process-sop-example.md`
-   - Rule: `skills/sop-manager/references/rule-sop-example.md`
+   - Process: `skills/meta/agent-sops/references/process-sop-example.md`
+   - Rule: `skills/meta/agent-sops/references/rule-sop-example.md`
 5. Confirm the SOP has:
    - A clear trigger-oriented `when_to_use` containing the distinctive routing keywords above.
    - `do_not_use_when` when needed to avoid overlap with adjacent SOPs.
@@ -99,7 +99,7 @@ Create an SOP:
 6. Create the selected directory when absent.
 7. Write project SOPs to `<workspace>/.agents/sops/{name}.md` or user SOPs to `~/.csl-agent-kit/sops/{name}.md`. Do not write built-in SOPs unless the user explicitly requests a package change.
 
-### `sop-manager learn`
+### `agent-sops learn`
 
 Integrate reusable error patterns, missed steps, user corrections, or review findings directly into the relevant SOP body. Do not create a separate `Lessons` section.
 
@@ -111,11 +111,11 @@ Integrate reusable error patterns, missed steps, user corrections, or review fin
 3. Update only reusable operating errors, missed steps, or judgment rules. Do not store one-off preferences. When an update changes when the SOP applies, regenerate its routing keywords accordingly.
 4. Updated project SOPs are available from the current workspace; updated user SOPs appear after the next session-start summary. The Agent sees the latest rules when it loads the complete matching SOP.
 
-### `sop-manager see <name>`
+### `agent-sops see <name>`
 
 Inspect one SOP:
 
-1. Search `<workspace>/.agents/sops/`, then `~/.csl-agent-kit/sops/`, then `skills/sop-manager/sops/`.
+1. Search `<workspace>/.agents/sops/`, then `~/.csl-agent-kit/sops/`, then `skills/meta/agent-sops/sops/`.
 2. Prefer an exact filename, then match frontmatter `name`.
 3. Read and summarize the complete highest-precedence SOP. Do not edit it unless the user explicitly asks.
 

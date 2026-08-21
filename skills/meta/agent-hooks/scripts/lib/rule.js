@@ -25,7 +25,7 @@ const MAX_CONDITION_NODES = 256;
 const MAX_PATTERN_LENGTH = 1024;
 const MAX_REGEX_INPUT = 4096;
 const REGEX_TIMEOUT = 100;
-const DISABLED_SENTINEL = "<!-- triggerify:disabled -->\n";
+const DISABLED_SENTINEL = "<!-- agent-hooks:disabled -->\n";
 
 function parseMarkdown(content, file = "<memory>", scope = "global") {
   if (content.startsWith(DISABLED_SENTINEL)) {
@@ -75,7 +75,7 @@ function validateRule(rule, body, scope, file) {
   for (const field of Object.keys(rule)) {
     if (!FIELDS.has(field)) errors.push(issue("unknown-field", `${file}: unknown field '${field}'`));
   }
-  if (rule.schema !== "triggerify/v1") errors.push(issue("schema-unsupported", `${file}: schema must be triggerify/v1`));
+  if (rule.schema !== "agent-hooks/v1") errors.push(issue("schema-unsupported", `${file}: schema must be agent-hooks/v1`));
   if (!EVENTS.has(rule.event)) errors.push(issue("event-invalid", `${file}: unsupported event '${rule.event}'`));
   if (!ACTIONS.has(rule.action)) errors.push(issue("action-invalid", `${file}: unsupported action '${rule.action}'`));
   if (rule.description !== undefined) {

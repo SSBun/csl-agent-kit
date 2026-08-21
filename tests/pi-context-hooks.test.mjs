@@ -26,18 +26,18 @@ when_to_use: Use when deploying frobnicator production services.
 }
 
 function writeSessionPrompt(root, name, body) {
-  const hooks = join(root, "triggerify", "hooks");
+  const hooks = join(root, "hooks");
   mkdirSync(hooks, { recursive: true });
-  writeFileSync(join(hooks, `${name}.md`), `---\nschema: triggerify/v1\nevent: session-start\naction: inject-prompt\nenabled: true\n---\n${body}\n`);
+  writeFileSync(join(hooks, `${name}.md`), `---\nschema: agent-hooks/v1\nevent: session-start\naction: inject-prompt\nenabled: true\n---\n${body}\n`);
 }
 
 function writeCaptureRule(root) {
-  const hooks = join(root, "triggerify", "hooks");
-  const scripts = join(root, "triggerify", "scripts");
+  const hooks = join(root, "hooks");
+  const scripts = join(root, "hooks", "scripts");
   mkdirSync(hooks, { recursive: true });
   mkdirSync(scripts, { recursive: true });
   writeFileSync(join(hooks, "capture.md"), `---
-schema: triggerify/v1
+schema: agent-hooks/v1
 event: after-tool
 action: run-script
 enabled: true
@@ -47,7 +47,7 @@ script: capture.js
   writeFileSync(join(scripts, "capture.js"), `#!/usr/bin/env node
 const fs = require("node:fs");
 const payload = fs.readFileSync(0, "utf8");
-fs.appendFileSync(process.env.TRIGGERIFY_CAPTURE_PATH, payload);
+fs.appendFileSync(process.env.AGENT_HOOKS_CAPTURE_PATH, payload);
 `, { mode: 0o700 });
 }
 
@@ -116,17 +116,17 @@ test("builds bounded recent title context from user and assistant text only", ()
   assert.doesNotMatch(context, /old-start|secret\.txt|private tool output|Tool:/);
 });
 
-test("formats Triggerify session prompts into Pi context", () => {
+test("formats Agent Hooks session prompts into Pi context", () => {
   const context = formatTriggerContext(
     [{ id: "global:directive-output", content: "Prefer concise reports." }],
     [],
     [],
   );
-  assert.match(context, /Triggerify global:directive-output/);
+  assert.match(context, /Agent Hooks global:directive-output/);
   assert.match(context, /Prefer concise reports/);
 });
 
-test("rebuilds Pi Triggerify context before every agent turn", async () => {
+test("rebuilds Pi Agent Hooks context before every agent turn", async () => {
   const root = createFixture();
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
@@ -142,9 +142,10 @@ test("rebuilds Pi Triggerify context before every agent turn", async () => {
     const first = await handlers.get("before_agent_start")({ prompt: "deploy frobnicator production", systemPrompt: "base prompt" }, context);
     assert.match(first.systemPrompt, /Prefer concise reports/);
     assert.match(first.systemPrompt, /deploy-production/);
-    assert.match(first.systemPrompt, /\$task, \$task-plan, or \$task-queue/);
-    assert.match(first.systemPrompt, /call `task_focus`/);
-    assert.doesNotMatch(first.systemPrompt, /\$csl-task/);
+    assert.match(first.systemPrompt, /CSL AGENT KIT CONTRACT ACTIVE/);
+    assert.match(first.systemPrompt, /align a concise Task Target with the user/);
+    assert.match(first.systemPrompt, /apply every relevant Lesson/);
+    assert.doesNotMatch(first.systemPrompt, /Task Target Alignment Protocol/);
 
     writeSessionPrompt(root, "directive-output", "Show absolute paths.");
     const second = await handlers.get("before_agent_start")({ prompt: "show a path", systemPrompt: "base prompt" }, context);
@@ -186,7 +187,7 @@ when_to_use: Use when verifying this project.
   }
 });
 
-test("maps Pi file tool results to Triggerify changed_files", async () => {
+test("maps Pi file tool results to Agent Hooks changed_files", async () => {
   const root = createFixture();
   const workspace = join(root, "workspace");
   const capture = join(root, "captured.jsonl");
@@ -198,9 +199,9 @@ test("maps Pi file tool results to Triggerify changed_files", async () => {
   writeCaptureRule(root);
 
   const previousHome = process.env.CSL_AGENT_KIT_HOME;
-  const previousCapture = process.env.TRIGGERIFY_CAPTURE_PATH;
+  const previousCapture = process.env.AGENT_HOOKS_CAPTURE_PATH;
   process.env.CSL_AGENT_KIT_HOME = root;
-  process.env.TRIGGERIFY_CAPTURE_PATH = capture;
+  process.env.AGENT_HOOKS_CAPTURE_PATH = capture;
   const { api, handlers } = fakePi();
   const context = fakeContext(workspace);
 
@@ -231,8 +232,8 @@ test("maps Pi file tool results to Triggerify changed_files", async () => {
   } finally {
     if (previousHome === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previousHome;
-    if (previousCapture === undefined) delete process.env.TRIGGERIFY_CAPTURE_PATH;
-    else process.env.TRIGGERIFY_CAPTURE_PATH = previousCapture;
+    if (previousCapture === undefined) delete process.env.AGENT_HOOKS_CAPTURE_PATH;
+    else process.env.AGENT_HOOKS_CAPTURE_PATH = previousCapture;
     rmSync(root, { recursive: true, force: true });
   }
 });

@@ -15,7 +15,7 @@ const {
   inspectScript,
   readEntry,
   resolveEntry,
-  scopeRoot,
+  ruleRoot,
   setEntryEnabled,
   setInnerHookEnabled,
   writeAtomic,
@@ -46,14 +46,14 @@ function runCli(args, io = console) {
   try {
     const [command = "help", ...rest] = args;
     const options = parseOptions(rest);
-    if (command === "help" || options.help) return printTriggerifyHelp(io);
+    if (command === "help" || options.help) return printAgentHooksHelp(io);
     if (command === "list") return listCommand(options, io);
     if (command === "show") return showCommand(options, io);
     if (command === "create") return createCommand(options, io);
     if (command === "update") return updateCommand(options, io);
     if (command === "enable" || command === "disable") return toggleCommand(command, options, io);
     if (command === "delete") return deleteCommand(options, io);
-    throw new Error(`Unknown triggerify command: ${command}`);
+    throw new Error(`Unknown agent-hooks command: ${command}`);
   } catch (error) {
     io.error(`Error: ${error.message}`);
     return 2;
@@ -90,7 +90,7 @@ function createCommand(options, io) {
   if (!["global", "project"].includes(scope)) throw new Error("--scope must be global or project (inner is read-only)");
   const workspace = options.workspace || process.cwd();
   const local = scope === "project" && !options.shared;
-  const file = path.join(scopeRoot(scope, workspace), "hooks", `${name}${local ? ".local" : ""}.md`);
+  const file = path.join(ruleRoot(scope, workspace), `${name}${local ? ".local" : ""}.md`);
   if (fs.existsSync(file)) throw new Error(`${scope}:${name} already exists`);
   const rule = buildRule(options);
   const parsed = parseMarkdown(serialize(rule), file, scope);
@@ -159,7 +159,7 @@ function toggleCommand(command, options, io) {
 }
 
 function deleteCommand(options, io) {
-  if (options.positional[0]?.startsWith("inner:")) throw new Error("inner scope is read-only; inner hooks ship with the triggerify skill");
+  if (options.positional[0]?.startsWith("inner:")) throw new Error("inner scope is read-only; inner hooks ship with the agent-hooks skill");
   const entry = resolveEntry(requiredId(options), options.workspace);
   fs.unlinkSync(entry.path);
   io.log(`Deleted ${entry.id}; referenced scripts were preserved.`);
@@ -177,7 +177,7 @@ function requiredId(options) {
 function buildRule(options) {
   const action = options.action;
   const rule = {
-    schema: "triggerify/v1",
+    schema: "agent-hooks/v1",
     event: options.event,
     action,
     enabled: true,
@@ -211,8 +211,8 @@ function formatStatus(item) {
   ].join("\n");
 }
 
-function printTriggerifyHelp(io) {
-  io.log(`Usage:\n  csl-agent-kit triggerify list [--scope all|global|inner|project] [--json]\n  csl-agent-kit triggerify show <qualified-id> [--json]\n  csl-agent-kit triggerify create <name> --event <event> --action <action> [options]\n  csl-agent-kit triggerify update <qualified-id> [options]\n  csl-agent-kit triggerify update <qualified-id> --from <file>\n  csl-agent-kit triggerify enable|disable|delete <qualified-id>\n\nCommon options:\n  --workspace <path>    Project workspace (default: cwd)\n  --host <name>         Capability view (default: codex)\n  --scope <scope>       all, global, inner, or project\n  --shared              Create a shared project rule\n  --description <text> One-line description, up to ${MAX_DESCRIPTION} characters\n  --clear-description  Remove an existing description during update\n  --body <text>         Prompt body\n  --body-file <path>    Read prompt body from a file\n  --script <path>       Script relative to the scope scripts root\n  --timeout <seconds>   Script timeout, 1-${MAX_TIMEOUT}\n  --when-json <json>    V1 condition AST as JSON\n  --from <file>         Replace an invalid rule with a validated definition\n`);
+function printAgentHooksHelp(io) {
+  io.log(`Usage:\n  csl-agent-kit agent-hooks list [--scope all|global|inner|project] [--json]\n  csl-agent-kit agent-hooks show <qualified-id> [--json]\n  csl-agent-kit agent-hooks create <name> --event <event> --action <action> [options]\n  csl-agent-kit agent-hooks update <qualified-id> [options]\n  csl-agent-kit agent-hooks update <qualified-id> --from <file>\n  csl-agent-kit agent-hooks enable|disable|delete <qualified-id>\n\nCommon options:\n  --workspace <path>    Project workspace (default: cwd)\n  --host <name>         Capability view (default: codex)\n  --scope <scope>       all, global, inner, or project\n  --shared              Create a shared project rule\n  --description <text> One-line description, up to ${MAX_DESCRIPTION} characters\n  --clear-description  Remove an existing description during update\n  --body <text>         Prompt body\n  --body-file <path>    Read prompt body from a file\n  --script <path>       Script relative to the scope scripts root\n  --timeout <seconds>   Script timeout, 1-${MAX_TIMEOUT}\n  --when-json <json>    V1 condition AST as JSON\n  --from <file>         Replace an invalid rule with a validated definition\n`);
   return 0;
 }
 

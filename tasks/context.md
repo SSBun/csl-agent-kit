@@ -38,7 +38,7 @@
 - `scripts/context.js` 只读解析 Core、正式 Packs 和 legacy bullets，提供 `core/index/show/validate/--self-test`；Agent 负责 Task Fingerprint、语义匹配、Authority 验证、写入判断，以及当前工作区已有旧版或无效 Context 的默认迁移。
 
 ### Relationships
-- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、现有旧版或无效 Context 的默认迁移、canonical task activation、Task Target alignment、concrete-task Pack query 和 completion maintenance；所选 task-family skill 在激活后加载共享 Task Target 协议，只允许形成诚实承诺所需的聚焦澄清，确认后才消费 task-relevant Packs，不无差别读取整份 Context。
+- `super-agent/AGENTS.md` 保留显式安装时的完整默认规则；自动注入的 `super-agent/workspace-workflow-gates.md` 改为稳定的行为契约，要求 session 边界恢复 Context、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
 - Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活；共享协议允许必要的 user-owned Target 澄清并完成确认，之后才检索相关 Packs。
@@ -112,39 +112,41 @@
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
-## CTX-triggerify — Triggerify runtime and built-in hooks
-- Scope: Triggerify V1 rule storage, host-neutral execution, inner hook policy, and host lifecycle adapters.
-- Paths: `skills/meta/triggerify/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/triggerify.test.js`, `tests/pi-context-hooks.test.mjs`
-- Keywords: triggerify, inner hook, session-start, inject-output, workspace workflow gates, compaction, host adapter
-- Authority: `skills/meta/triggerify/scripts/triggerify.js`, `skills/meta/triggerify/scripts/lib/store.js`, `skills/meta/triggerify/scripts/lib/runtime.js`, `hooks/hooks.json`
-- Recheck: 当 Triggerify rule schema、inner hook override、宿主 capability 或 session/compaction lifecycle mapping 变化时复核。
+## CTX-agent-hooks — Agent Hooks runtime and built-in hooks
+- Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, data migration, and host lifecycle adapters.
+- Paths: `skills/meta/agent-hooks/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/agent-hooks.test.js`, `tests/pi-context-hooks.test.mjs`
+- Keywords: agent hooks, inner hook, session-start, inject-output, workspace workflow gates, compaction, host adapter
+- Authority: `skills/meta/agent-hooks/scripts/agent-hooks.js`, `skills/meta/agent-hooks/scripts/lib/store.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `hooks/hooks.json`
+- Recheck: 当 Agent Hooks rule schema、存储路径、inner hook override、宿主 capability 或 session/compaction lifecycle mapping 变化时复核。
 
 ### Purpose and Boundaries
-- `skills/meta/triggerify/scripts/triggerify.js` 是稳定 facade；rule、store、runtime、CLI 与 native hook 模块分别负责 V1 语义、存储、执行和宿主适配，外部 adapter 通过 `createEvent()` 与 `runEvent()` 接入。
+- `skills/meta/agent-hooks/scripts/agent-hooks.js` 是稳定 facade；rule、store、runtime、CLI 与 native hook 模块分别负责 V1 语义、存储、执行和宿主适配，外部 adapter 通过 `createEvent()` 与 `runEvent()` 接入。
 
 ### Structure
-- `skills/meta/triggerify/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/triggerify/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
-- `inner:workspace-workflow-gates` 在 `session-start` 运行 bundled script 并注入 `super-agent/workspace-workflow-gates.md`，使 task workflow 路由不依赖用户替换默认 Super Agent。
+- 用户规则、配置和脚本位于 `<data-root>/hooks/`，项目规则和脚本位于 `<workspace>/.agents/hooks/`；旧 Triggerify 用户级与项目级根目录只作为一次性迁移输入，成功迁移后不再读取。
+- `skills/meta/agent-hooks/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/hooks/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
+- Hook 规则、配置、事件与脚本环境协议分别使用 `agent-hooks/v1`、`agent-hooks.config/v1`、`agent-hooks.event/v1` 与 `AGENT_HOOKS_*`。
+- `inner:workspace-workflow-gates` 在 `session-start` 运行 bundled script 并注入 `super-agent/workspace-workflow-gates.md` 的自包含行为契约，使目标对齐、Context、Lessons、最小与手术式执行及验证边界不依赖用户替换默认 Super Agent。
 
 ### Relationships
-- `hooks/hooks.json` 的 SessionStart dispatcher 处理 startup、resume 与 compact 来源，Pi adapter 在每次 `before_agent_start` 重建 session prompts；同一 workflow gates 不再由 manifest 直接 `cat`，避免重复注入。
+- `hooks/hooks.json` 的 SessionStart dispatcher 处理 startup、resume 与 compact 来源，Pi adapter 在每次 `before_agent_start` 重建 session prompts；同一 Contract prompt 不再由 manifest 直接 `cat`，避免重复注入。
 
 ### Decision and Verification Boundaries
-- Codex、Claude Code 与 Pi 支持该 session prompt；Cursor 在宿主传递 injected context 前保持 unsupported。`tests/triggerify.test.js` 与 `tests/pi-context-hooks.test.mjs` 验证默认启用、用户禁用、最终 task 名称和压缩后重建边界。
+- Codex、Claude Code 与 Pi 支持该 session prompt；Cursor 在宿主传递 injected context 前保持 unsupported。`tests/agent-hooks.test.js` 与 `tests/pi-context-hooks.test.mjs` 验证迁移、默认启用、用户禁用、最终 task 名称和压缩后重建边界。
 
-## CTX-sop-manager — Project, user, and built-in SOP routing
+## CTX-agent-sops — Project, user, and built-in SOP routing
 - Scope: SOP discovery, writable ownership, same-name precedence, session summaries, prompt candidates, and Pi workspace loading.
-- Paths: `skills/meta/sop-manager/`, `skills/dev/release/SKILL.md`, `pi/extensions/csl-context-hooks.ts`, `tests/cli-install-output.test.js`, `tests/pi-context-hooks.test.mjs`
-- Keywords: SOP, project SOP, user SOP, built-in SOP, .agents/sops, precedence, candidates
-- Authority: `skills/meta/sop-manager/SKILL.md`, `skills/meta/sop-manager/scripts/sop-summaries.sh`, `skills/meta/sop-manager/scripts/sop-candidates.js`
+- Paths: `skills/meta/agent-sops/`, `skills/dev/release/SKILL.md`, `pi/extensions/csl-context-hooks.ts`, `tests/cli-install-output.test.js`, `tests/pi-context-hooks.test.mjs`
+- Keywords: agent sops, project SOP, user SOP, built-in SOP, .agents/sops, precedence, candidates
+- Authority: `skills/meta/agent-sops/SKILL.md`, `skills/meta/agent-sops/scripts/sop-summaries.sh`, `skills/meta/agent-sops/scripts/sop-candidates.js`
 - Recheck: 当 SOP 存储层级、workspace 根边界、同名覆盖顺序或宿主 context 注入方式变化时复核。
 
 ### Purpose and Boundaries
-- SOP Manager 统一发现项目、用户和内置 SOP；同一 frontmatter `name` 只暴露最高优先级版本，顺序固定为项目级、用户级、内置级。
+- Agent SOPs 统一发现项目、用户和内置 SOP；同一 frontmatter `name` 只暴露最高优先级版本，顺序固定为项目级、用户级、内置级。
 
 ### Structure
-- 项目级 SOP 位于当前 workspace 的 `.agents/sops/` 并可随仓库版本控制；用户级 SOP 位于 `~/.csl-agent-kit/sops/` 并跨项目生效；内置 SOP 位于 `skills/meta/sop-manager/sops/` 并随包分发。
-- `skills/meta/sop-manager/sops/code-style.md` 是跨语言内置代码风格 SOP；它按语言读取 `skills/meta/sop-manager/references/code-style/`，Swift 参考为 `swift-style.md`。
+- 项目级 SOP 位于当前 workspace 的 `.agents/sops/` 并可随仓库版本控制；用户级 SOP 位于 `~/.csl-agent-kit/sops/` 并跨项目生效；内置 SOP 位于 `skills/meta/agent-sops/sops/` 并随包分发。
+- `skills/meta/agent-sops/sops/code-style.md` 是跨语言内置代码风格 SOP；它按语言读取 `skills/meta/agent-sops/references/code-style/`，Swift 参考为 `swift-style.md`。
 
 ### Relationships
 - Native hooks 通过 `sop-summaries.sh` 从当前工作目录生成 session summary，并通过 `sop-candidates.js` 做 prompt-time 路由；Pi adapter 必须把 `ctx.cwd` 显式传给同一候选模块。
@@ -174,27 +176,42 @@
 - `scripts/lessons.js` 只负责确定性只读解析、索引、按 ID 查询与 schema 校验；Agent 负责语义匹配、载体选择、冲突处理、Rule 应用和 Check 证据。Legacy records 渐进兼容，已选 IDs 不持久缓存。
 - 聚焦契约与回归入口为主 Skill、查询脚本、`evals/query_cases.json`、`evals/trigger_cases.json` 和 `tests/task-files.test.mjs`。
 
+## CTX-install — Installer target selection and workflow delivery
+- Scope: `csl-agent-kit install` 的默认、已保存与显式目标选择，以及 `super-agent` 指令文件安装和内置 Agent Hooks 行为契约注入边界。
+- Paths: `bin/csl-agent-kit.js`, `README.md`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/agent-hooks/`, `tests/cli-install-output.test.js`
+- Keywords: install, default targets, saved selection, super-agent, Default agent instructions, Agent Hooks, Cursor
+- Authority: `bin/csl-agent-kit.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `skills/meta/agent-hooks/scripts/read-workspace-workflow-gates.js`, `tests/cli-install-output.test.js`
+- Recheck: 当 install target 的 `default` 标记、selection persistence、Agent instruction targets 或 Agent Hooks host capabilities 变化时复核。
+
+### Purpose and Boundaries
+- 新安装或无有效已保存选择时，默认 checklist 与 `--yes` 只选择 `codex-plugin`；除 `super-agent` 外，已保存 checklist 选择仍代表用户先前确认，显式 `--target` 与 `--all` 继续按用户选择执行。
+- `super-agent` 每次交互运行都必须主动选择，已保存选择不自动预选；`--no-super-agent` 为兼容 no-op，不新增第二次外部命令确认。
+
+### Relationships
+- 显式安装 `super-agent` 时，安装器把 `super-agent/AGENTS.md` 链接到 Codex、Claude Code、Pi 与通用 Agent 的全局指令路径；普通文件先备份，既有 symlink 重置，dry-run 不写入。
+- Codex、Claude Code 与 Pi 通过默认启用的 `inner:workspace-workflow-gates` 获得自包含的 CSL Agent Kit 行为契约，不依赖替换用户默认指令文件；Cursor 在宿主支持 injected context 前保持 unsupported，默认安装不提供文件替换回退。
+
+### Decision and Verification Boundaries
+- 交互 multiselect 的提交已构成安装授权，不再追加通用确认；默认边界以 `buildInstallChoices(null)` 与 `install --yes --json` 验证，显式 `super-agent` 行为以隔离 HOME 验证，宿主注入能力以 `agent-hooks show inner:workspace-workflow-gates --host <host>` 验证。
+
 ## Components
 
-- `csl-agent-kit install` treats the integration multiselect as sufficient authorization and does not ask a second external-CLI confirmation.
-- Triggerify's distributed `SKILL.md` is written in English, treats its bundled CLI as the accepted-behavior authority, and does not use the project RFC as runtime guidance.
-- `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/meta/triggerify/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/triggerify.test.js`。
-- `pi/extensions/csl-context-hooks.ts` 是 Triggerify 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
+- Agent Hooks 的分发 `SKILL.md` 使用英文，以 bundled CLI 作为 accepted-behavior authority，不把项目 RFC 当作 runtime guidance。
+- `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/meta/agent-hooks/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/agent-hooks.test.js`。
+- `pi/extensions/csl-context-hooks.ts` 是 Agent Hooks 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
-- `skills/triggerify/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 trigger Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `triggerify show` 为准。权威入口是该脚本与 `skills/triggerify/SKILL.md`。
+- `skills/meta/agent-hooks/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 Hook Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `agent-hooks show` 为准。权威入口是该脚本与 `skills/meta/agent-hooks/SKILL.md`。
 
 - `skills/deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；路由依据是明确的迭代或全面多视角意图，不以裸角色名作为足够证据，普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。Agent 默认先内部批量处理全部相关主题与可见议题；循环不设硬轮次上限，但 `CONTINUE` 必须对应实质性开放 D-ID 与具体下一轮变化，且只有所有实质性 D-ID 关闭并复查所有固定 T-ID 后才可 `SUFFICIENT`。Pi 分发元数据必须查询 `pi-agent` 的 effective model，不得仅凭 `PI_MODEL` 推断；无 Challenger 时流程不能运行，INLINE-FALLBACK 则可在明确 `ISOLATION: simulated` caveat 下达到 `SUFFICIENT`；Synthesizer 的量化结论必须附可复现测量证据。每次交付只把面向用户的最终结果保存到当前工作区 `tasks/thinking/YYYY-MM-DD-<topic-slug>.md`，文件冲突时递增后缀，且不保存角色交换、私有推理、state packet 或 ledger。权威契约与复核入口为该 skill 的 `SKILL.md`、角色契约、共享 subagent dispatch reference 和 `evals/`。
-- `super-agent/AGENTS.md` 是可分发的默认 agent 规则（语言协议 + 工程原则 + workspace 路由）；`csl-agent-kit install` 默认将它软链接到 `~/.codex/AGENTS.md`、`~/.claude/CLAUDE.md`、`~/.pi/agent/AGENTS.md`、`~/.agents/AGENTS.md`，并将 super-agent 目标视为 authoritative：现有软链接默认重置，普通文件先备份再替换，dry-run 不写入。
 - `~/.agents/skills` 是 Codex 官方的 USER 级技能发现目录，也可作为多个 agent 共用的技能安装目录；按用户要求当前为空，`~/.agents/.skill-lock.json` 的技能映射也为空。未来从 `mattpocock/skills` 选择的技能应整合到 CSL Agent Kit，而非重新安装到该全局目录。
 - `~/Desktop/test/skills` 是 `mattpocock/skills` 的本地参考仓库；技能按 `engineering`、`productivity`、`misc`、`personal`、`in-progress`、`deprecated` 分桶。
 
 ## Relationships
 
-- 全局 Triggerify 规则 `global:notify-todo-changed` 在 Pi 上通过 `edit` / `write` 的标准 `changed_files` 识别 `tasks/tasks/*.md` 变更，在 Codex 上保留 `apply_patch` header fallback；脚本规范化真实路径并限制在 workspace 的真实 `tasks/tasks` 目录后，使用 `terminal-notifier` 发送可点击的 macOS 通知。权威来源为 `~/.csl-agent-kit/triggerify/hooks/notify-todo-changed.md` 与 `~/.csl-agent-kit/triggerify/scripts/notify-todo-changed.js`。
-- Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Triggerify `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。
-- 用户跨会话持久指令以单条全局 Triggerify `session-start` / `inject-prompt` 规则存放在 `<data-root>/triggerify/hooks/`；Codex 与 Claude Code 通过 `SessionStart` dispatcher 注入，Pi 在每次 `before_agent_start` 重新加载。规则不按用户 prompt 关键词匹配。
-- `csl-agent-kit install` 在没有已确认选择时默认预选 `codex-skills` 和 `codex-plugin`；交互式已确认目标保存在 `/Users/caishilin/.csl-agent-kit/install-selection.json`，下次 checklist 会以其为预选项。
-- hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；持久指令通过 Triggerify `SessionStart` 规则注入。Pi 在 `before_agent_start` 重建 Triggerify session prompts 与 SOP context。
+- 全局 Agent Hooks 规则 `global:notify-todo-changed` 在 Pi 上通过 `edit` / `write` 的标准 `changed_files` 识别 `tasks/tasks/*.md` 变更，在 Codex 上保留 `apply_patch` header fallback；脚本规范化真实路径并限制在 workspace 的真实 `tasks/tasks` 目录后，使用 `terminal-notifier` 发送可点击的 macOS 通知。权威来源为 `~/.csl-agent-kit/hooks/notify-todo-changed.md` 与 `~/.csl-agent-kit/hooks/scripts/notify-todo-changed.js`。
+- Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Agent Hooks `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。
+- 用户跨会话持久指令以单条全局 Agent Hooks `session-start` / `inject-prompt` 规则存放在 `<data-root>/hooks/`；Codex 与 Claude Code 通过 `SessionStart` dispatcher 注入，Pi 在每次 `before_agent_start` 重新加载。规则不按用户 prompt 关键词匹配。
+- hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；持久指令通过 Agent Hooks `SessionStart` 规则注入。Pi 在 `before_agent_start` 重建 Agent Hooks session prompts 与 SOP context。
 - 持久指令只在用户明确要求跨会话保存时创建，每条使用独立的 `global:directive-<subject>` 规则并保留高优先级指令和当前请求优先的边界；个人化内容不进入可分发的 `super-agent/AGENTS.md`。
 
 ## Decisions and Conventions
@@ -212,6 +229,6 @@
 - `adversarial-review` 在循环运行中只通过 Agent handoff 传递完整 finding ledger，不写中间报告或同步 task 状态；仅在审查结束或暂停时写一次 `reports/adversarial-review/<task-slug>.md`。最终文件只包含每个实质 finding 的讨论结果和一项最终决定，其中 `Reviewer position` 与 `Editor response` 用嵌套列表逐条展示核心观点；报告不含总体结论、主题清单、验证章节、Reviewer/轮次/fingerprint/round history 等技术附录。已有 owning task 时只追加最终决定和报告链接，不能为承载报告单独创建 task。
 - 每次 adversarial-review pass 都必须覆盖固定的完整 scope：Reviewer 一次性报告当前可见的全部 `BLOCKER`、`QUESTION` 与 `NOTE`，并在复审中逐项说明全部既有 finding ID 已解决或未解决，不得故意分轮释放；Editor 一次性回答和处理整轮全部条目后才能请求普通复审。后续新 finding 必须指出使其此前不可行动的新 artifact、diff、证据或其他原因；需要用户决定时保持 `BLOCKED`，多个方案进入 Decision Consensus Gate，否则直接询问用户，不得用普通复审绕过决定。
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
-- `skills/sop-manager/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
+- `skills/meta/agent-sops/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
 - 默认 agent 规则不规定 plan mode 或 subagent 策略；agent 可以按任务需要自行使用这些能力。d
 - `super-agent/` 纳入 npm 发布白名单，包含默认 `AGENTS.md` 与 workspace lifecycle dispatcher；它是运行时规则资产目录，不是 skill。

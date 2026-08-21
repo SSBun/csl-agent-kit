@@ -289,40 +289,38 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(reviewSkill.includes("applicable requirement mandates"), false);
 });
 
-test("injected workspace workflow gates define proactive execution order", () => {
-  const gates = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
+test("injected CSL Agent Kit contract defines behavior without runtime mechanics", () => {
+  const contract = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
   const order = [
-    "$task-context Project Core.",
-    "$task, $task-plan, or $task-queue activation.",
-    "apply the selected task-family skill's shared Task Target Alignment Protocol and obtain confirmation.",
-    "task-relevant $task-context Packs and $task-lessons.",
-    "$task-lessons before continuing.",
-    "$task-context if durable facts changed.",
+    "1. **Orient**",
+    "2. **Align**",
+    "3. **Prepare**",
+    "4. **Execute**",
+    "5. **Verify**",
   ];
 
   let previous = -1;
   for (const step of order) {
-    const current = gates.indexOf(step, previous + 1);
-    assert.ok(current > previous, `missing or out-of-order lifecycle step: ${step}`);
+    const current = contract.indexOf(step, previous + 1);
+    assert.ok(current > previous, `missing or out-of-order behavior step: ${step}`);
     previous = current;
   }
 
-  assert.match(gates, /load and follow the matching skill SKILL\.md before the next action/);
-  assert.match(gates, /the selected skill owns its workflow-specific contract and loads the shared Task Target alignment contract/);
-  assert.match(gates, /Load Project Core before acting/);
-  assert.match(gates, /run the skill's Default Migration before proceeding/);
-  assert.match(gates, /query only relevant Context Packs/);
-  assert.match(gates, /do not read the whole file indiscriminately/);
-  assert.match(gates, /before substantive discussion, exploration, research, planning, delegation, implementation, or any focused target-forming clarification/);
-  assert.match(gates, /ALIGN: With the task active, apply the selected skill's required shared Task Target Alignment Protocol/);
-  assert.match(gates, /focused user-owned clarification needed to form an honest Target/);
-  assert.match(gates, /Continue only after the protocol confirms the current Target/);
-  assert.doesNotMatch(gates, /TASK_GO/);
-  assert.doesNotMatch(gates, /`\*\*Task Target:\*\* <target>`/);
-  assert.doesNotMatch(gates, /task_target_confirm/);
-  assert.match(gates, /call `task_focus` with its ID when the host provides that tool/);
-  assert.doesNotMatch(gates, /\$csl-task/);
-  assert.equal(gates.includes("ask permission before modifying existing entries"), false);
+  assert.match(contract, /^CSL AGENT KIT CONTRACT ACTIVE/);
+  assert.match(contract, /never requires replacing or rewriting `AGENTS\.md`/);
+  assert.match(contract, /Existing user rules and the current explicit request take precedence/);
+  assert.match(contract, /Once a request establishes a concrete, non-trivial outcome, align a concise Task Target/);
+  assert.match(contract, /At session start, resume, or compaction, recover the workspace Context before acting/);
+  assert.match(contract, /Before substantive work, apply every relevant Lesson/);
+  assert.match(contract, /Implement the minimum solution that fully satisfies the confirmed outcome/);
+  assert.match(contract, /Touch only what the confirmed outcome requires/);
+  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it/);
+  assert.match(contract, /The Contract stays behavioral and stable\. Skills retain operational detail\./);
+  assert.doesNotMatch(contract, /\$(?:task|task-plan|task-queue|task-context|task-lessons)/);
+  assert.doesNotMatch(contract, /Task Target Alignment Protocol/);
+  assert.doesNotMatch(contract, /task_focus/);
+  assert.doesNotMatch(contract, /tasks\/tasks/);
+  assert.doesNotMatch(contract, /SKILL\.md/);
 });
 
 test("workspace context contract supports dispatch-ready retrieval and durable admission", () => {

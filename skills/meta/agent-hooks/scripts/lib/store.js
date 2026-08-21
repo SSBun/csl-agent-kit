@@ -13,7 +13,20 @@ const {
 
 const MAX_RULES = 256;
 const MAX_RULE_FILE = 256 * 1024;
-const INNER_CONFIG_SCHEMA = "triggerify.config/v1";
+const INNER_CONFIG_SCHEMA = "agent-hooks.config/v1";
+const LEGACY_PROTOCOL_REPLACEMENTS = [
+  ["triggerify.config/v1", "agent-hooks.config/v1"],
+  ["triggerify.event/v1", "agent-hooks.event/v1"],
+  ["triggerify/v1", "agent-hooks/v1"],
+  ["<!-- triggerify:disabled -->", "<!-- agent-hooks:disabled -->"],
+  ["TRIGGERIFY_", "AGENT_HOOKS_"],
+  ["csl-agent-kit triggerify", "csl-agent-kit agent-hooks"],
+  ["$triggerify", "$agent-hooks"],
+  ["Triggerify ", "Agent Hooks "],
+  ["triggerify-", "agent-hooks-"],
+  ["\"triggerify\"", "\"hooks\""],
+  ["'triggerify'", "'hooks'"],
+];
 
 function innerRoot() {
   return path.join(__dirname, "..", "..");
@@ -23,8 +36,17 @@ function dataRoot() {
   return process.env.CSL_AGENT_KIT_HOME || path.join(os.homedir(), ".csl-agent-kit");
 }
 
+function globalRoot() {
+  return path.join(dataRoot(), "hooks");
+}
+
+function projectRoot(workspace = process.cwd()) {
+  return path.join(canonicalWorkspace(workspace), ".agents", "hooks");
+}
+
 function innerConfigPath() {
-  return path.join(dataRoot(), "triggerify", "config.json");
+  migrateLegacyScope("global");
+  return path.join(globalRoot(), "config.json");
 }
 
 function isPlainObject(value) {
@@ -75,9 +97,87 @@ function canonicalWorkspace(value = process.cwd()) {
 
 function scopeRoot(scope, workspace = process.cwd()) {
   if (scope === "inner") return innerRoot();
-  return scope === "global"
+  migrateLegacyScope(scope, workspace);
+  return scope === "global" ? globalRoot() : projectRoot(workspace);
+}
+
+function ruleRoot(scope, workspace = process.cwd()) {
+  return scope === "inner" ? path.join(innerRoot(), "hooks") : scopeRoot(scope, workspace);
+}
+
+function scriptsRoot(scope, workspace = process.cwd()) {
+  return path.join(scopeRoot(scope, workspace), "scripts");
+}
+
+function migrateLegacyScope(scope, workspace = process.cwd()) {
+  if (!["global", "project"].includes(scope)) return false;
+  const legacy = scope === "global"
     ? path.join(dataRoot(), "triggerify")
     : path.join(canonicalWorkspace(workspace), ".csl-agent-kit", "triggerify");
+  if (!fs.existsSync(legacy)) return false;
+  const legacyStat = fs.lstatSync(legacy);
+  if (legacyStat.isSymbolicLink() || !legacyStat.isDirectory()) {
+    throw new Error(`cannot migrate Agent Hooks: ${legacy} must be a directory, not a symlink`);
+  }
+
+  const target = scope === "global" ? globalRoot() : projectRoot(workspace);
+  if (fs.existsSync(target)) {
+    const targetStat = fs.lstatSync(target);
+    if (targetStat.isSymbolicLink() || !targetStat.isDirectory()) {
+      throw new Error(`cannot migrate Agent Hooks: ${target} must be a directory, not a symlink`);
+    }
+    if (fs.readdirSync(target).length > 0) {
+      throw new Error(`cannot migrate Agent Hooks: both ${legacy} and ${target} contain data`);
+    }
+  }
+
+  const staging = path.join(path.dirname(target), `.hooks.migrate-${process.pid}-${Date.now()}`);
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.cpSync(legacy, staging, { recursive: true, preserveTimestamps: true, errorOnExist: true });
+  try {
+    flattenLegacyHooks(staging);
+    migrateProtocolFiles(staging);
+    if (fs.existsSync(target)) fs.rmdirSync(target);
+    fs.renameSync(staging, target);
+    fs.rmSync(legacy, { recursive: true, force: true });
+    if (scope === "project") {
+      ensureLocalIgnore(workspace);
+      const legacyParent = path.dirname(legacy);
+      if (fs.existsSync(legacyParent) && fs.readdirSync(legacyParent).length === 0) fs.rmdirSync(legacyParent);
+    }
+    return true;
+  } catch (error) {
+    fs.rmSync(staging, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+function flattenLegacyHooks(root) {
+  const nested = path.join(root, "hooks");
+  if (!fs.existsSync(nested)) return;
+  const stat = fs.lstatSync(nested);
+  if (stat.isSymbolicLink() || !stat.isDirectory()) throw new Error(`cannot migrate Agent Hooks: ${nested} must be a directory`);
+  for (const name of fs.readdirSync(nested)) {
+    const target = path.join(root, name);
+    if (fs.existsSync(target)) throw new Error(`cannot migrate Agent Hooks: duplicate ${target}`);
+    fs.renameSync(path.join(nested, name), target);
+  }
+  fs.rmdirSync(nested);
+}
+
+function migrateProtocolFiles(root) {
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    const file = path.join(root, entry.name);
+    if (entry.isDirectory()) migrateProtocolFiles(file);
+    else if (entry.isFile() && /\.(?:c?js|mjs|json|md|sh|ts)$/.test(entry.name)) {
+      const content = fs.readFileSync(file, "utf8");
+      const migrated = LEGACY_PROTOCOL_REPLACEMENTS.reduce(
+        (value, [before, after]) => value.split(before).join(after),
+        content,
+      );
+      if (migrated !== content) fs.writeFileSync(file, migrated);
+    }
+  }
 }
 
 function compareUtf8(left, right) {
@@ -85,8 +185,7 @@ function compareUtf8(left, right) {
 }
 
 function discover(scope, workspace = process.cwd(), read = true, deadline = Infinity) {
-  const root = scopeRoot(scope, workspace);
-  const hooks = path.join(root, "hooks");
+  const hooks = ruleRoot(scope, workspace);
   let files = [];
   try {
     files = fs.readdirSync(hooks).filter((file) => file.endsWith(".md")).sort(compareUtf8);
@@ -138,7 +237,7 @@ function readEntry(entry, workspace = process.cwd(), deadline = Infinity) {
 }
 
 function inspectScript(entry, rule, workspace) {
-  const scripts = path.join(scopeRoot(entry.scope, workspace), "scripts");
+  const scripts = scriptsRoot(entry.scope, workspace);
   let scriptsReal;
   let targetReal;
   try {
@@ -188,13 +287,21 @@ function ensureLocalIgnore(workspace) {
     if (error.code !== "ENOENT") throw error;
   }
   const entries = [
+    ".agents/hooks/*.local.md",
+    ".agents/hooks/scripts/*.local.*",
+  ];
+  const legacy = new Set([
     ".csl-agent-kit/triggerify/hooks/*.local.md",
     ".csl-agent-kit/triggerify/scripts/*.local.*",
-  ];
-  const missing = entries.filter((entry) => !content.split(/\r?\n/).includes(entry));
-  if (missing.length === 0) return;
-  const prefix = content && !content.endsWith("\n") ? "\n" : "";
-  writeAtomic(file, `${content}${prefix}${missing.join("\n")}\n`, mode);
+  ]);
+  const lines = content.split(/\r?\n/).filter((line) => !legacy.has(line));
+  let updated = lines.join("\n");
+  const missing = entries.filter((entry) => !lines.includes(entry));
+  if (missing.length > 0) {
+    const prefix = updated && !updated.endsWith("\n") ? "\n" : "";
+    updated = `${updated}${prefix}${missing.join("\n")}\n`;
+  }
+  if (updated !== content) writeAtomic(file, updated, mode);
 }
 
 function resolveEntry(id, workspace = process.cwd()) {
@@ -240,7 +347,7 @@ function isWithin(root, candidate) {
 
 function budgetError(reason) {
   const error = new Error(reason);
-  error.code = "TRIGGERIFY_BUDGET";
+  error.code = "AGENT_HOOKS_BUDGET";
   error.reason = reason;
   return error;
 }
@@ -253,9 +360,12 @@ module.exports = {
   ensureLocalIgnore,
   inspectScript,
   isWithin,
+  migrateLegacyScope,
   readEntry,
   resolveEntry,
+  ruleRoot,
   scopeRoot,
+  scriptsRoot,
   setEntryEnabled,
   setInnerHookEnabled,
   writeAtomic,

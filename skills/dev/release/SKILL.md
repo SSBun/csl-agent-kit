@@ -41,11 +41,11 @@ git status --short --branch --untracked-files=all
 
 ### 2. Discover Concrete Release SOPs
 
-运行 `skills/sop-manager/scripts/sop-summaries.sh`，或等价读取：
+运行 `skills/meta/agent-sops/scripts/sop-summaries.sh`，或等价读取：
 
 - `<workspace>/.agents/sops/*.md`
 - `~/.csl-agent-kit/sops/*.md`
-- `skills/sop-manager/sops/*.md`
+- `skills/meta/agent-sops/sops/*.md`
 
 只考虑真实存在、且 `name` 或 `description` 明确指向 release、publish、upload、notarize、package publishing 或 installer publishing 的具体 SOP。
 
@@ -55,7 +55,7 @@ git status --short --branch --untracked-files=all
 
 - 如果只有一个匹配发布 SOP，读取它的完整内容。
 - 如果多个 SOP 匹配，列出候选项并让用户选择。
-- 如果没有匹配 SOP，停止，并建议先用 `sop-manager create` 创建具体发布 SOP。
+- 如果没有匹配 SOP，停止，并建议先用 `agent-sops create` 创建具体发布 SOP。
 
 ### 4. Confirm Before Remote Actions
 

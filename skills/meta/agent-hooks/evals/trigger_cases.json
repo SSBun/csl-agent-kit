@@ -2,7 +2,7 @@
   "recommended_threshold": 0.45,
   "should_trigger": [
     "Create a trigger that formats changed Swift files.",
-    "List all Triggerify hooks and show which ones are active.",
+    "List all Agent Hooks rules and show which ones are active.",
     "Disable project:check-before-commit.",
     "删除这个 trigger，但保留它引用的脚本。",
     "在 session-start 时注入这段 prompt。",

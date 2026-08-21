@@ -7,7 +7,7 @@
     "trigger_rule": {
       "weight": 0.6,
       "phrases": [
-        "triggerify",
+        "agent-hooks",
         "trigger",
         "project:",
         "event hook",

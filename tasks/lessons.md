@@ -133,11 +133,11 @@
 - **Trigger:**
   - 设计或维护跨会话持续有效的用户指令。
 - **Rule:**
-  - 每条指令保存为全局 Triggerify `session-start` / `inject-prompt` 规则。
+  - 每条指令保存为全局 Agent Hooks `session-start` / `inject-prompt` 规则。
   - 不得按用户 prompt 关键词匹配持久指令。
   - 规则正文必须保留高优先级指令和当前请求优先的边界。
 - **Check:**
-  - `triggerify show` 显示规则有效。
+  - `agent-hooks show` 显示规则有效。
   - Codex、Claude Code、Pi 的会话入口均能注入内容；Cursor 保持 unsupported/inactive，直到宿主能把注入内容传给模型。
 
 ## 2026-07-21 任务状态使用英文词汇
@@ -317,13 +317,13 @@
 ## 2026-06-18 SOP Lessons Scope
 
 - **Trigger:** 用户说 SOP 用来记录标准操作和容易犯错行为，不是在问当前仓库 `tasks/lessons.md`。
-  - **Rule:** 把可跨项目复用的错误模式设计为 `sop-manager learn`，写入相关 `~/.csl-agent-kit/sops/*.md` 或内置 SOP 的 companion lesson SOP。
+  - **Rule:** 把可跨项目复用的错误模式设计为 `agent-sops learn`，写入相关 `~/.csl-agent-kit/sops/*.md` 或内置 SOP 的 companion lesson SOP。
   - **Why:** 只回答当前项目 lesson 文件会错过用户要的跨项目、跨 agent 复用目标。
 
 ## 2026-06-25 User-Defined SOP Ownership
 
 - **Trigger:** 用户要求扩展动态用户 SOP，或已有 `~/.csl-agent-kit/sops/{name}.md` 且没有明确要求发布为插件内置 SOP。
-  - **Rule:** 不要把用户 SOP 复制到 `skills/sop-manager/sops/`；内置目录只放通用路由或确认为插件自带的 SOP，具体可变流程留在 `~/.csl-agent-kit/sops/`。
+  - **Rule:** 不要把用户 SOP 复制到 `skills/meta/agent-sops/sops/`；内置目录只放通用路由或确认为插件自带的 SOP，具体可变流程留在 `~/.csl-agent-kit/sops/`。
   - **Why:** 内置副本会让用户看不清 SOP 的真实来源，也会让动态用户 SOP 的更新和分发边界变复杂。
 
 ## 2026-06-25 Repo Map Glossary
