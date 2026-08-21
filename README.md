@@ -113,7 +113,7 @@ csl-agent-kit install --all --verbose
 csl-agent-kit install --all --json
 ```
 
-The default output is a concise, colored integration summary. Add `--verbose` (`-v`) to show every symlink path and external command. Use `--no-color` or `NO_COLOR=1` to disable colors; `--color` explicitly enables them. JSON output always stays color-free. `super-agent` 默认重置现有 Agent instruction symlink；普通文件会先备份再替换，无需额外传入 `--force`。 The legacy `./scripts/install.sh` entry is a thin wrapper around this npm CLI and forwards the same options.
+The default human-readable output streams colored details for every integration, symlink, and external command. `--verbose` (`-v`) remains accepted with the same behavior. Use `--no-color` or `NO_COLOR=1` to disable colors; `--color` explicitly enables them. JSON output always stays color-free. `super-agent` 默认重置现有 Agent instruction symlink；普通文件会先备份再替换，无需额外传入 `--force`。 The legacy `./scripts/install.sh` entry is a thin wrapper around this npm CLI and forwards the same options.
 
 ### npx skills (Cursor, Codex, and other agents)
 

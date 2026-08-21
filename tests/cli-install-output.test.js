@@ -1,5 +1,5 @@
 const assert = require("node:assert/strict");
-const { spawnSync } = require("node:child_process");
+const { spawn, spawnSync } = require("node:child_process");
 const { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, symlinkSync, writeFileSync } = require("node:fs");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
@@ -59,6 +59,14 @@ function createFakeCodex(directory) {
   mkdirSync(bin, { recursive: true });
   writeFileSync(executable, `#!/bin/sh
 if [ "$1" = "--version" ]; then exit 0; fi
+if [ "$WAIT_FOR_PROGRESS" = "1" ] && [ "$1" = "plugin" ] && [ "$2" = "marketplace" ] && [ "$3" = "add" ]; then
+  attempts=0
+  while [ ! -f "$PROGRESS_RELEASE" ] && [ "$attempts" -lt 5 ]; do
+    sleep 1
+    attempts=$((attempts + 1))
+  done
+  [ -f "$PROGRESS_RELEASE" ] || exit 8
+fi
 if [ "$FAIL_PLUGIN_ADD" = "1" ] && [ "$1" = "plugin" ] && [ "$2" = "add" ]; then
   echo "plugin add failed" >&2
   exit 9
@@ -69,18 +77,19 @@ exit 0
   return bin;
 }
 
-test("default install output is colorful and summarizes integrations without path noise", () => {
+test("default install output streams colorful details and summarizes integrations", () => {
   const result = run(["install", "--yes", "--dry-run"], { NO_COLOR: undefined });
 
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /\u001b\[32m✓\u001b\[0m/);
   assert.match(stripAnsi(result.stdout), /CSL Agent Kit · install preview/);
   const plain = stripAnsi(result.stdout);
+  assert.match(plain, /→ Codex plugin/);
+  assert.equal(plain.includes(`↳ codex plugin marketplace add ${root} --json (dry run)`), true);
   assert.match(plain, /✓ Codex plugin\s+8 commands planned/);
   assert.doesNotMatch(plain, /Cursor local plugin/);
   assert.doesNotMatch(plain, /Codex skills symlinks/);
   assert.doesNotMatch(plain, /Repo-local \.agents\/skills links/);
-  assert.doesNotMatch(plain, /\/Users\//);
   assert.doesNotMatch(plain, /\.agents\/skills\/analyze-project/);
 });
 
@@ -115,6 +124,57 @@ test("verbose install output includes underlying paths", () => {
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /Codex plugin/);
     assert.match(result.stdout, /remove .*\.agents\/skills\/analyze-project → .*skills\/analyze-project \(dry run\)/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("default install output reaches the caller before a command finishes", async () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-install-progress-"));
+  const home = path.join(directory, "home");
+  const release = path.join(directory, "release");
+  const fakeBin = createFakeCodex(directory);
+  mkdirSync(home, { recursive: true });
+
+  const child = spawn(process.execPath, [
+    cli,
+    "install",
+    "--target",
+    "codex-plugin",
+    "--no-color",
+  ], {
+    cwd: root,
+    env: {
+      ...process.env,
+      HOME: home,
+      PATH: `${fakeBin}${path.delimiter}${process.env.PATH || ""}`,
+      PROGRESS_RELEASE: release,
+      WAIT_FOR_PROGRESS: "1",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  let stdout = "";
+  let stderr = "";
+  let released = false;
+  child.stdout.on("data", (chunk) => {
+    stdout += chunk;
+    if (!released && stdout.includes(`↳ codex plugin marketplace add ${root} --json`)) {
+      released = true;
+      writeFileSync(release, "");
+    }
+  });
+  child.stderr.on("data", (chunk) => {
+    stderr += chunk;
+  });
+
+  try {
+    const status = await new Promise((resolve, reject) => {
+      child.on("error", reject);
+      child.on("close", resolve);
+    });
+    assert.equal(status, 0, stderr);
+    assert.equal(released, true, stdout);
+    assert.match(stdout, /Done · 1\/1 integrations ready/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

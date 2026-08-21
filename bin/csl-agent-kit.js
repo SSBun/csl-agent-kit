@@ -60,6 +60,9 @@ async function main() {
   if (command === "install") {
     const options = parseInstallArgs(args);
     const selected = await resolveInstallTargets(options);
+    if (options.verbose && !options.json) {
+      printInstallHeading(options, options.dryRun ? "install preview" : "installing");
+    }
     const results = installTargets(selected, options);
     if (options.json) {
       console.log(JSON.stringify({ ok: results.every((item) => item.ok), results }, null, 2));
@@ -80,7 +83,7 @@ function parseInstallArgs(args) {
     force: false,
     json: false,
     noSuperAgent: false,
-    verbose: false,
+    verbose: true,
     yes: false,
     targets: [],
   };
@@ -231,12 +234,16 @@ function validateTargets(selected) {
 
 function installTargets(selected, options) {
   const results = [];
+  const colors = options.verbose && !options.json ? createColors(options.colorMode) : null;
   for (const name of selected) {
     const spec = targets[name];
+    if (colors) console.log(`${colors.cyan("→")} ${colors.bold(spec.title)}`);
     try {
       const changes = spec.run(options);
+      if (colors) printChangeDetails(flatten(changes).filter((change) => change.action !== "command"), colors);
       results.push({ target: name, ok: true, changes });
     } catch (error) {
+      if (colors) console.log(colors.red(`    ✗ ${error.message}`));
       results.push({ target: name, ok: false, error: error.message });
     }
   }
@@ -458,17 +465,20 @@ function isSymlink(target) {
 
 function runCommands(commands, options) {
   const changes = [];
+  const colors = options.verbose && !options.json ? createColors(options.colorMode) : null;
   for (const [cmd, args, allowFailure] of commands) {
     const rendered = [cmd, ...args].join(" ");
+    const change = { action: "command", command: rendered, ...(options.dryRun ? { dryRun: true } : {}) };
+    if (colors) printChangeDetails([change], colors);
     if (options.dryRun) {
-      changes.push({ action: "command", command: rendered, dryRun: true });
+      changes.push(change);
       continue;
     }
     const result = spawnSync(cmd, args, { cwd: repoRoot, encoding: "utf8" });
     if (result.status !== 0 && !allowFailure) {
       throw new Error(`${rendered} failed: ${result.stderr || result.stdout || `exit ${result.status}`}`.trim());
     }
-    changes.push({ action: "command", command: rendered, status: result.status });
+    changes.push({ ...change, status: result.status });
   }
   return changes;
 }
@@ -485,8 +495,9 @@ function home() {
 function printResults(results, options) {
   const colors = createColors(options.colorMode);
   const titleWidth = Math.max(...results.map((result) => targets[result.target].title.length));
-  const phase = options.dryRun ? "install preview" : "install complete";
-  console.log(`\n${colors.bold(colors.cyan("CSL Agent Kit"))} ${colors.dim("·")} ${colors.cyan(phase)}\n`);
+  if (!options.verbose) {
+    printInstallHeading(options, options.dryRun ? "install preview" : "install complete");
+  }
 
   for (const result of results) {
     const title = targets[result.target].title.padEnd(titleWidth);
@@ -497,13 +508,17 @@ function printResults(results, options) {
 
     const changes = flatten(result.changes);
     console.log(`${colors.green("✓")} ${colors.bold(title)}  ${colors.green(summarizeChanges(changes, options.dryRun))}`);
-    if (options.verbose) printChangeDetails(changes, colors);
   }
 
   const succeeded = results.filter((result) => result.ok).length;
   const failed = results.length - succeeded;
   const completion = `${failed === 0 ? "Done" : "Finished with errors"} · ${succeeded}/${results.length} integrations ready${failed ? ` · ${failed} failed` : ""}`;
   console.log(`\n${failed === 0 ? colors.green(completion) : colors.red(completion)}\n`);
+}
+
+function printInstallHeading(options, phase) {
+  const colors = createColors(options.colorMode);
+  console.log(`\n${colors.bold(colors.cyan("CSL Agent Kit"))} ${colors.dim("·")} ${colors.cyan(phase)}\n`);
 }
 
 function summarizeChanges(changes, dryRun) {
@@ -565,7 +580,7 @@ function printHelp() {
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Exclude the super-agent target from default selection.\n  --force             Force instruction relinking (already default for super-agent).\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show underlying paths and commands.\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Exclude the super-agent target from default selection.\n  --force             Force instruction relinking (already default for super-agent).\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show detailed progress (already the default).\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
 }
 
 function die(message) {
