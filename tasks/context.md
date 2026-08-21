@@ -7,26 +7,26 @@
 
 ### Global Vocabulary
 - Skill package 是以 `SKILL.md` 为运行时契约的可发现能力；共享包位于 `skills/`，项目专用包位于 `.agents/skills/`。
-- Project Core 是 session start、resume 与 compaction 时始终加载的项目级最小模型；Context Pack 是具体任务按需检索的完整组件或工作流模型；权威契约为 `skills/meta/workspace-workflow/workspace-context/SKILL.md`。
+- Project Core 是 session start、resume 与 compaction 时始终加载的项目级最小模型；Context Pack 是具体任务按需检索的完整组件或工作流模型；权威契约为 `skills/task-context/SKILL.md`。
 - Canonical task 是 `tasks/tasks/<task-slug>.md` 中的权威任务记录，`tasks/tasks.md` 仅是 newest-first 导航索引；权威实现为 `skills/meta/csl-tasks/shared/lib/task-core.js`。
 
 ### System Map
 - `super-agent/` 提供跨宿主默认 Agent rules 与 workspace lifecycle dispatcher。
-- `skills/` 提供可分发 skills；`skills/meta/task/`、`skills/meta/task-plan/` 与 `skills/meta/task-queue/` 管理任务生命周期，`skills/meta/workspace-workflow/` 管理 Context 与 Lessons。
+- `skills/` 提供可分发 skills；`skills/meta/task/`、`skills/meta/task-plan/` 与 `skills/meta/task-queue/` 管理任务生命周期，`skills/task-context/` 与 `skills/task-lessons/` 管理 Context 与 Lessons。
 - `pi/extensions/` 提供 Pi 宿主集成；`bin/`、`scripts/` 与各宿主 manifest 负责安装、发现和分发。
 - `tasks/` 保存 workspace-local Context、Lessons、canonical task records 与任务产出的 reports。
 
 ### Global Invariants
 - Skill package 的 `SKILL.md`、runtime references、prompts、templates 与 eval-facing prose 使用英文；用户回答和生成报告使用用户语言；权威约定记录在本文件的 Decisions and Conventions。
-- Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/meta/workspace-workflow/workspace-context/SKILL.md`。
+- Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/task-context/SKILL.md`。
 - Context 用于跳过宽泛项目探索，不取代任务直接相关源码、测试和 Authority 验证；Authority 与 Context 冲突时以 Authority 为准。
 - 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `super-agent/AGENTS.md` 与 `skills/meta/task/SKILL.md`。
 
-## CTX-workspace-context — Workspace Context dispatch and maintenance
+## CTX-task-context — Workspace Context dispatch and maintenance
 - Scope: Workspace Context loading, task-relevant retrieval, source-backed maintenance, and default lifecycle consumers.
-- Paths: `tasks/context.md`, `skills/meta/workspace-workflow/workspace-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `tests/task-files.test.mjs`
-- Keywords: workspace context, project core, context pack, task fingerprint, dispatch, authority
-- Authority: `skills/meta/workspace-workflow/workspace-context/SKILL.md`, `skills/meta/workspace-workflow/workspace-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `tests/task-files.test.mjs`
+- Paths: `tasks/context.md`, `skills/task-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
+- Keywords: task context, workspace context, project core, context pack, task fingerprint, dispatch, authority
+- Authority: `skills/task-context/SKILL.md`, `skills/task-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
 - Recheck: When the Context schema, task activation order, query lifecycle, write permissions, or default consumer wording changes.
 
 ### Purpose and Boundaries
@@ -38,10 +38,10 @@
 - `scripts/context.js` 只读解析 Core、正式 Packs 和 legacy bullets，提供 `core/index/show/validate/--self-test`；Agent 负责 Task Fingerprint、语义匹配、Authority 验证、写入判断，以及当前工作区已有旧版或无效 Context 的默认迁移。
 
 ### Relationships
-- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、现有旧版或无效 Context 的默认迁移、canonical task activation、user-facing Task Target confirmation、concrete-task Pack query 和 completion maintenance；`task` 先消费有效 Core 完成最小任务归属查询、激活与确认，再消费 task-relevant Packs，不无差别读取整份 Context。
+- `super-agent/AGENTS.md` 与 `super-agent/workspace-workflow-gates.md` 触发 session Core loading、现有旧版或无效 Context 的默认迁移、canonical task activation、Task Target alignment、concrete-task Pack query 和 completion maintenance；所选 task-family skill 在激活后加载共享 Task Target 协议，只允许形成诚实承诺所需的聚焦澄清，确认后才消费 task-relevant Packs，不无差别读取整份 Context。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活、Task Target 确认与相关 Pack 查询。
+- Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活；共享协议允许必要的 user-owned Target 澄清并完成确认，之后才检索相关 Packs。
 
 ### Decision and Verification Boundaries
 - Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，当前工作区已有旧版或无效 Context 的默认迁移已预授权，其他 Project Core 持久变更仍须先展示精确 diff 并取得用户确认。
@@ -91,24 +91,25 @@
 - Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、Task Target 确认、状态证据与完成门禁。
 - Paths: `skills/meta/task/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
 - Keywords: task, task-plan, task-queue, canonical task, Task Target, textual confirmation, queue parent, Kind Queue, legacy Auto
-- Authority: `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
+- Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
 - Recheck: 当公开 skill identity、task activation timing、Task Target 确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
 ### Purpose and Boundaries
 - `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
 
 ### Structure
-- 三个 workflow 直接位于 `skills/meta/`，共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
+- 三个 workflow 直接位于 `skills/meta/`，进入或在上下文丢失后恢复时均须读取 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`；该普通 Markdown runtime contract 是 readiness、澄清、确认、修订与重新对齐的唯一详细 Authority，不参与 skill discovery。
+- 三个 workflow 共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不持久化会话确认，也不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
 - Core 将 `Status: <state> (<YYYY-MM-DD HH:MM>)` 投影到 canonical record，并在 `tasks/tasks.md` 维护对应的标题、状态与 `tasks/<task-slug>.md` 链接；record 在索引不一致时仍是权威。
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 一旦请求形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session，再准备一个含可观察完成条件的 user-facing Task Target。原始顶层用户请求以区分大小写的独立末行 `TASK_GO` 结尾时，该标记只授权本次 Task Target 并跳过文本确认，不消除歧义或其他必要确认；否则展示准确的 `**Task Target:** <target>` 文本并等待明确回复。确认前只允许保持该任务一致所需的 lifecycle writes，确认后才进行实质讨论、澄清、探索、调研、规划、委派或实施。一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可跳过。
+- 一旦请求形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session；若尚不能诚实陈述 outcome，则先问一个聚焦问题并在答案形成结果时激活。激活后共享协议只允许解决 user-owned Target 歧义所必需的澄清与 workflow 指定的 lifecycle writes，禁止任务直接来源调查和实质准备。Target ready 后，精确末行 `TASK_GO` 只授权本次门禁且不消除歧义；否则展示固定 `Task Target` 标题、按用户语言本地化的必填 Outcome 与 Done when、以及仅在存在实质范围歧义时出现的 Boundaries，再等待明确回复。确认后才加载 task-relevant Context、Lessons 与任务直接来源。一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可跳过。
 
 ### Decision and Verification Boundaries
-- User-facing Task Target 是 task 激活后的会话确认门，不替代 canonical task record 的 `Target` section；`TASK_GO` 与文本回复是该门的两种互斥授权路径，不得重复确认。
+- User-facing Task Target 是 task 激活后的会话承诺门，不替代 canonical task record 的 `Target` section，也不产生持久 confirmation 字段；展示不包含实现方法、文件、命令、内部计划或 checkbox。文本回复与 `TASK_GO` 是互斥授权路径，用户修改结果或发现造成结果、完成条件、边界、副作用或 user-owned trade-off 实质变化时必须更新 record 并重新对齐。
 - 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。
-- 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；三个 skill package 直接位于 `skills/meta/`，共享 core 保持在 `skills/meta/csl-tasks/shared/`。
+- 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
 ## CTX-triggerify — Triggerify runtime and built-in hooks
@@ -152,11 +153,31 @@
 ### Decision and Verification Boundaries
 - `tests/cli-install-output.test.js` 同时验证摘要与候选路由的项目 > 用户 > 内置覆盖；`tests/pi-context-hooks.test.mjs` 验证 Pi 从活跃 workspace 注入项目 SOP。
 
+## CTX-task-lessons — Workspace preventive lessons
+- Scope: Workspace-local preventive Lesson admission, trigger-first retrieval, application, confirmed maintenance, and legacy compatibility.
+- Paths: `tasks/lessons.md`, `skills/task-lessons/`, `skills/task-lessons/evals/trigger_cases.json`, `tests/task-files.test.mjs`
+- Keywords: task lessons, workspace lessons, prevention, recurrence, Trigger, Rule, Check, correction, mechanical control
+- Authority: `skills/task-lessons/SKILL.md`, `skills/task-lessons/scripts/lessons.js`, `skills/task-lessons/evals/query_cases.json`
+- Recheck: 当 Lesson schema、准入与载体边界、Entry/Change/Completion Gates、持久写入确认或 legacy 解析行为变化时复核。
+
+### Purpose and Boundaries
+- `tasks/lessons.md` 只保存当前有效、可复用且仍需 Agent 判断的最后一公里防复发控制；能由 source、schema、types、tests、lint、CI 或强制 workflow 完全阻止的错误优先在更强载体中消除。
+
+### Structure
+- 新增或实质更新的记录固定使用 `Trigger / Rule / Check`：Trigger 必须能在复发前识别，Rule 必须直接阻断失败机制，Check 必须证明控制覆盖相关范围；不增加 `Cause`、`Evidence`、状态或历史字段。
+
+### Workflows
+- Agent 在 Entry 与 Change Gates 以 Task Fingerprint 做 Trigger-first 语义召回并应用全部匹配 Rule；Completion Gate 复核 Rule 已约束当前工作，任何适用 Check 失败或不可观察都会阻止完成。
+- 用户纠正后先应用于当前任务，再在 Add、Update、Merge、Replace、Delete 与 No-op 中选择；同类错误复发说明闭环无效，应修订既有记录而非新增重复项。所有持久写入必须先展示精确变更并取得确认。
+
+### Decision and Verification Boundaries
+- `scripts/lessons.js` 只负责确定性只读解析、索引、按 ID 查询与 schema 校验；Agent 负责语义匹配、载体选择、冲突处理、Rule 应用和 Check 证据。Legacy records 渐进兼容，已选 IDs 不持久缓存。
+- 聚焦契约与回归入口为主 Skill、查询脚本、`evals/query_cases.json`、`evals/trigger_cases.json` 和 `tests/task-files.test.mjs`。
+
 ## Components
 
 - `csl-agent-kit install` treats the integration multiselect as sufficient authorization and does not ask a second external-CLI confirmation.
 - Triggerify's distributed `SKILL.md` is written in English, treats its bundled CLI as the accepted-behavior authority, and does not use the project RFC as runtime guidance.
-- `skills/workspace-workflow/workspace-lessons/` 以 `tasks/lessons.md` 为唯一权威规则集：Agent 在 Entry、Change 与 Completion Gates 负责语义召回、冲突处理和 Check，`scripts/lessons.js` 仅负责只读解析、索引、按 ID 查询与 schema 校验；所有持久 Add/Update/Merge/Replace/Delete 都必须先展示精确变更并取得确认，legacy records 渐进兼容且不缓存已选 IDs。权威契约与回归入口为该 skill 的 `SKILL.md`、查询脚本、`evals/query_cases.json`、共享 `evals/lessons_trigger_cases.json` 和 `tests/task-files.test.mjs`。
 - `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/meta/triggerify/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/triggerify.test.js`。
 - `pi/extensions/csl-context-hooks.ts` 是 Triggerify 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
