@@ -2,6 +2,8 @@
 
 - [停止默认替换 Agent 指令文件](tasks/stop-default-super-agent-replacement.md) — In Progress (2026-08-21 11:22)
 
+- [按关注点拆分提交当前全部本地改动](tasks/commit-current-local-changes-by-concern.md) — Completed (2026-08-21 11:32)
+
 - [提升 task-context 与 task-lessons 到共享技能根层级](tasks/promote-task-context-and-lessons.md) — Completed (2026-08-21 11:16)
 
 - [将 workspace-lessons 重命名为 task-lessons](tasks/rename-workspace-lessons-to-task-lessons.md) — Completed (2026-08-21 10:52)
