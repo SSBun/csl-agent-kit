@@ -1,10 +1,28 @@
 # 任务索引
 
+- [停止默认替换 Agent 指令文件](tasks/stop-default-super-agent-replacement.md) — In Progress (2026-08-21 11:22)
+
+- [提升 task-context 与 task-lessons 到共享技能根层级](tasks/promote-task-context-and-lessons.md) — Completed (2026-08-21 11:16)
+
+- [将 workspace-lessons 重命名为 task-lessons](tasks/rename-workspace-lessons-to-task-lessons.md) — Completed (2026-08-21 10:52)
+
+- [让安装日志实时逐条输出](tasks/stream-install-logs-in-realtime.md) — Completed (2026-08-21 11:09)
+
+- [修复安装脚本关闭 Shell 会话](tasks/fix-install-script-closing-shell.md) — Completed (2026-08-21 10:37)
+
+- [将 workspace-context 重命名为 task-context](tasks/rename-workspace-context-to-task-context.md) — Completed (2026-08-21 10:40)
+
+- [改进 Task Target 确认展示格式](tasks/improve-task-target-display-format.md) — Completed (2026-08-20 20:20)
+
+- [提取并接入共享 Task Target 对齐协议](tasks/plan-shared-task-target-protocol.md) — Completed (2026-08-20 20:01)
+
+- [强化 workspace-lessons 防复发闭环](tasks/optimize-workspace-lessons-prevention.md) — Completed (2026-08-20 19:52)
+
 - [按关注点拆分提交全部本地改动](tasks/commit-all-local-changes-by-concern.md) — Completed (2026-08-20 17:33)
 
 - [移除 Pi Task Target 确认界面](tasks/remove-pi-task-target-confirmation-ui.md) — Completed (2026-08-20 17:22)
 
-- [研究 Lesson 记录的权威格式](tasks/research-lesson-recording-formats.md) — In Progress (2026-08-20 17:05)
+- [研究 Lesson 记录的权威格式](tasks/research-lesson-recording-formats.md) — Completed (2026-08-20 19:04)
 
 - [扁平化 Meta 任务技能目录](tasks/flatten-csl-tasks-into-meta.md) — Completed (2026-08-20 17:21)
 
