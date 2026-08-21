@@ -1,6 +1,6 @@
 # 任务索引
 
-- [提交全部本地改动并列出仓库 Skills](tasks/commit-all-and-list-local-skills.md) — In Progress (2026-08-21 14:56)
+- [提交全部本地改动并列出仓库 Skills](tasks/commit-all-and-list-local-skills.md) — Completed (2026-08-21 15:01)
 
 - [统一 Agent 工具名称前缀](tasks/rename-agent-tool-family.md) — Completed (2026-08-21 14:47)
 
