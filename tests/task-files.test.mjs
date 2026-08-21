@@ -606,6 +606,15 @@ test("workspace lesson contract queries before work and confirms every persisten
   for (const field of ["Trigger", "Rule", "Check"]) {
     assert.match(skill, new RegExp(`- \`${field}\`:`), `missing lesson field: ${field}`);
   }
+  assert.match(skill, /A Lesson is learned only when it changes future behavior/);
+  assert.match(skill, /source, schema, types, tests, lint, CI, or a mandatory workflow/);
+  assert.match(skill, /last-mile behavioral control/);
+  assert.match(skill, /before the same failure recurs/);
+  assert.match(skill, /directly blocks the failure mechanism/);
+  assert.match(skill, /preventive control covers the relevant scope/);
+  assert.match(skill, /failed or unobservable applicable Check blocks completion/i);
+  assert.match(skill, /same failure recurs under a matching `Trigger`/);
+  assert.match(skill, /fully prevented by a stronger mechanical control/);
   for (const gate of ["Entry Gate", "Change Gate", "Completion Gate"]) {
     assert.ok(skill.includes(`### ${gate}`), `missing lesson gate: ${gate}`);
   }

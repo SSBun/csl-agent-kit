@@ -1,17 +1,17 @@
 ---
 name: workspace-lessons
-description: Query and apply relevant `tasks/lessons.md` rules when entering substantive work, restoring an interrupted thread, materially changing an active request, or receiving a user correction, and maintain reusable correction lessons with explicit write approval. Use to retrieve, add, merge, refine, replace, or remove workspace lessons. Do not use for ordinary preferences, one-off request details, execution status, durable repository facts, or secrets.
+description: Query and apply relevant `tasks/lessons.md` preventive controls when entering substantive work, restoring an interrupted thread, materially changing an active request, or receiving a user correction, and maintain reusable correction lessons with explicit write approval. Use to retrieve, apply, add, merge, refine, replace, or remove workspace lessons. Do not use for ordinary preferences, one-off request details, execution status, durable repository facts, or secrets.
 ---
 
-# Capture Workspace Lessons
+# Prevent Repeated Mistakes
 
-Use `tasks/lessons.md` as the canonical current rule set. Optimize for finding and applying relevant lessons before mistakes recur; capture is secondary.
+Use `tasks/lessons.md` as the canonical current set of reusable preventive controls. A Lesson is learned only when it changes future behavior: matching work recognizes its `Trigger`, follows its `Rule`, and satisfies its `Check`. Recording, displaying, or reading one is not completion.
 
 ## Boundaries
 
-Route information to its proper owner:
+Route information to its proper owner. Prefer eliminating the failure or enforcing prevention in source, schema, types, tests, lint, CI, or a mandatory workflow when that can work without Agent judgment. A Lesson is the last-mile behavioral control for the judgment that remains; never use one as a substitute for an enforceable invariant.
 
-- Reusable workspace correction rules belong in `tasks/lessons.md`.
+- Reusable, judgment-dependent workspace prevention rules belong in `tasks/lessons.md`.
 - Task-specific decisions, progress, results, and evidence belong in the owning task record.
 - Stable workspace structure and relationships belong in `tasks/context.md`.
 - Cross-workspace preferences or persistent directives belong in the applicable global rule mechanism.
@@ -19,6 +19,19 @@ Route information to its proper owner:
 - Speculation, secrets, duplicates, and one-off details are not stored.
 
 Routine lesson maintenance does not create a task record.
+
+## Admission Gate
+
+Store or retain a Lesson only when every condition holds:
+
+1. `Reusable`: the correction prevents a class of mistakes beyond the current task.
+2. `Preemptive`: an Agent can recognize the Trigger before the failure recurs.
+3. `Preventive`: the Rule directly changes behavior and blocks the failure mechanism rather than patching one symptom.
+4. `Verifiable`: the Check can show that the preventive control covers the relevant scope.
+5. `Last-mile`: stronger mechanical enforcement does not fully remove the need for Agent judgment.
+6. `Correctly routed`: Lessons is the right carrier under the boundaries above.
+
+If a stronger control fully removes the judgment, use or propose it through the appropriate owning task and choose No-op for Lessons. If judgment remains, record only the residual behavior.
 
 ## Lesson Schema
 
@@ -28,18 +41,18 @@ New or materially updated records use this exact shape:
 ## L-YYYYMMDD-ascii-slug — Title
 
 ### Trigger
-- Observable applicability condition.
+- Concrete condition recognizable before recurrence.
 
 ### Rule
-- One mandatory action or boundary.
+- Mandatory action or boundary that blocks the failure mechanism.
 
 ### Check
-- Observable, executable, or reviewable evidence.
+- Evidence that the preventive control covers the relevant scope.
 ```
 
-- `Trigger`: state when the lesson applies. Keep one condition per flat list item.
-- `Rule`: state one mandatory action or boundary per flat list item.
-- `Check`: state one observable, executable, or reviewable proof per flat list item.
+- `Trigger`: state one concrete, observable condition an Agent can recognize before the same failure recurs. Do not use vague domain labels or describe only the past incident.
+- `Rule`: state one mandatory action or boundary that directly blocks the failure mechanism. Do not use attitudes such as "be careful," generic reminders, or symptom-only patches.
+- `Check`: state one observable, executable, or reviewable proof that the preventive control covers the relevant scope. Do not merely restate the Rule or claim that recurrence is impossible.
 - Keep the section order exactly `Trigger`, `Rule`, `Check`, with at least one item in each section.
 - Use an ASCII ID in the form `L-<creation-date>-<slug>` and never change it when updating or moving the record.
 - Keep only current effective rules. Do not add status, history, or narrative fields such as `Why`.
@@ -59,7 +72,7 @@ Rebuild the Task Fingerprint and re-query after session resume or compaction, a 
 
 ### Completion Gate
 
-Before completion, execute or review every applicable selected `Check`. If scope changed without a Change Gate query, return to the Change Gate first. A failed or unobservable applicable Check blocks completion until evidence is improved, a task-local observable Check is derived, or the user resolves the gap.
+Before completion, confirm each selected `Rule` governed the work as required, then execute or review every applicable selected `Check`. If scope changed without a Change Gate query, return to the Change Gate first. A failed or unobservable applicable Check blocks completion until evidence is improved, a task-local observable Check is derived, or the user resolves the gap.
 
 Keep selected lesson IDs only in current session state. Do not persist them in task records or a separate cache. Resume and compaction always query the canonical file again.
 
@@ -95,9 +108,9 @@ For lessons at the same priority:
 
 ## Corrections and Writes
 
-Apply a user's correction to the current task immediately. Then inspect related lessons and choose exactly one operation: Add, Update, Merge, Replace, Delete, or No-op.
+Apply a user's correction to the current task immediately. Then inspect related lessons and choose exactly one operation: Add, Update, Merge, Replace, Delete, or No-op. If the same failure recurs under a matching `Trigger`, treat the closed-loop control as ineffective, inspect its retrieval, `Rule`, and `Check`, and update or replace the deficient record instead of adding a duplicate.
 
-- Choose No-op without interrupting the user when the correction is task-specific, not reusable, or already covered.
+- Choose No-op without interrupting the user when the correction is task-specific, not reusable, already covered, or fully prevented by a stronger mechanical control.
 - Before every persistent Add, Update, Merge, Replace, or Delete, show the target ID, operation, and exact proposed record or diff. Obtain explicit confirmation.
 - Without confirmation, leave `tasks/lessons.md` unchanged.
 - After confirmation, preserve the pre-write content, apply only the approved change, and run `validate`.
@@ -108,7 +121,7 @@ Apply a user's correction to the current task immediately. Then inspect related 
 
 Do not bulk-migrate existing records. The query script assigns each legacy record a scan-local `legacy-<content-hash>` ID and indexes its title plus legacy Trigger and Rule bullets as retrieval cues. It never writes this ID back.
 
-A selected legacy record without `Check` requires a temporary observable Check for the current task. Convert a legacy record to the current schema only when a confirmed write materially changes it; assign a new stable v1 ID then.
+A selected legacy record without `Check` requires a temporary observable Check that proves the preventive control covers the task-relevant scope. Convert a legacy record to the current schema only when a confirmed write materially changes it; assign a new stable v1 ID then.
 
 ## Degradation and Failure
 
