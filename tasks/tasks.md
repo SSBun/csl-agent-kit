@@ -1,12 +1,18 @@
 # 任务索引
 
+- [按关注点分组提交本地改动](tasks/group-commits-by-concern.md) — Pending (2026-08-27 16:50)
+
+- [task_focus 支持读取当前会话焦点任务](tasks/add-task-focus-read-mode.md) — Completed (2026-08-27 16:41)
+
+- [任务工作流要求真实发出 task_focus 调用](tasks/require-task-focus-emission.md) — Completed (2026-08-27 16:34)
+
 - [删除无消费者的 Interface YAML 元数据](tasks/remove-interface-yaml-metadata.md) — Completed (2026-08-27 15:28)
 
 - [删除孤立的 Workspace Workflow Evals](tasks/remove-workspace-workflow-evals.md) — Completed (2026-08-27 15:15)
 
 - [配置并验证 GLM-5.3-Flash](tasks/configure-glm-5-3-flash.md) — Completed (2026-08-27 14:11)
 
-- [提交全部本地改动](tasks/commit-local-changes.md) — In Progress (2026-08-27 15:30)
+- [提交全部本地改动](tasks/commit-local-changes.md) — Completed (2026-08-27 15:31)
 
 - [创建内置 Skill Quality 工具](tasks/create-skill-quality.md) — Completed (2026-08-27 15:06)
 
