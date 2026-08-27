@@ -32,21 +32,21 @@ Topic: 边界评测与证据
 >
 > **E1:** 将 fixture 扩为九个案例，并在测试中按 ID 固定这些正反边界；同步任务证据。
 >
-> **R2:** focused tests、skill validation、Yao 审计和路由评测均通过。
+> **R2:** focused tests、skill validation、local quality gate 审计和路由评测均通过。
 
 **Conclusion:** 公式的关键阈值和否定边界均有回归保护。
 
 Topic: Workflow skill 的完整性与预算例外
 
-> **E1:** 用户纠正 workflow skill 不应为了 Yao 的 1000-token 预算牺牲复杂任务指导的准确性与完整性。
+> **E1:** 用户纠正 workflow skill 不应为了 local quality gate 的 1000-token 预算牺牲复杂任务指导的准确性与完整性。
 >
 > **R1:** 初版预算例外不够窄，inline 完整性测试也无法阻止关键契约被再次删除。
 >
-> **E2:** 将全部任务契约合回主 `SKILL.md`，删除 split reference；把唯一非阻塞失败限定为 Yao 的 `Estimated initial-load tokens exceed budget`，并扩充核心章节和生命周期断言。
+> **E2:** 将全部任务契约合回主 `SKILL.md`，删除 split reference；把唯一非阻塞失败限定为 local quality gate 的 `Estimated initial-load tokens exceed budget`，并扩充核心章节和生命周期断言。
 >
 > **R2:** 预算例外、完整契约、测试证据和任务记录现已一致。
 
-**Conclusion:** Workflow skill 保持完整自包含；只有 Yao 1000-token initial-load 超限可被接受，其他验证仍然阻塞。
+**Conclusion:** Workflow skill 保持完整自包含；只有 local quality gate 1000-token initial-load 超限可被接受，其他验证仍然阻塞。
 
 Topic: 已完成任务的小幅续作
 

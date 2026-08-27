@@ -24,4 +24,4 @@ Parent: fix-selected-audit-findings
 
 ## Verification
 
-- Passed: 英文 prose/字段覆盖检查、Yao validate、resource boundary（988/1000 initial-load tokens）与 whitespace check 均通过。
+- Passed: 英文 prose/字段覆盖检查、local quality gate validate、resource boundary（988/1000 initial-load tokens）与 whitespace check 均通过。

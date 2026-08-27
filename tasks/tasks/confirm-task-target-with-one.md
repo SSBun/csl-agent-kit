@@ -26,4 +26,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 隐式确认契约断言、task core 9/9、Context validate/self-test、OpenAI quick_validate、语法与 diff 检查均通过；Yao 仅报告允许的 1000-token 初始加载预算超限。
+- Passed: 隐式确认契约断言、task core 9/9、Context validate/self-test、OpenAI quick_validate、语法与 diff 检查均通过；local quality gate 仅报告允许的 1000-token 初始加载预算超限。

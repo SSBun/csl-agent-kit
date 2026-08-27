@@ -21,4 +21,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: node --check（脚本与回归文件）、Hook rule validator、Pi show、Context validator 和 git diff --check 均通过；直接行为检查确认混合技术术语可保留、元标签被清理、长度上限为 24。Yao syntax、lint、governance 通过，仅有允许的既存初始加载预算 1463 > 1000；按当前用户规则未运行单元测试。
+- Passed: node --check（脚本与回归文件）、Hook rule validator、Pi show、Context validator 和 git diff --check 均通过；直接行为检查确认混合技术术语可保留、元标签被清理、长度上限为 24。local quality gate syntax、lint、governance 通过，仅有允许的既存初始加载预算 1463 > 1000；按当前用户规则未运行单元测试。

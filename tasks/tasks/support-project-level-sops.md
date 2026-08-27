@@ -23,4 +23,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: npm run test:all、聚焦 CLI/Pi 测试、bash/node 语法检查、Context 校验和 git diff --check 均通过；Yao 除允许的 SOP Manager 初始加载 token 预算外通过。
+- Passed: npm run test:all、聚焦 CLI/Pi 测试、bash/node 语法检查、Context 校验和 git diff --check 均通过；local quality gate 除允许的 SOP Manager 初始加载 token 预算外通过。

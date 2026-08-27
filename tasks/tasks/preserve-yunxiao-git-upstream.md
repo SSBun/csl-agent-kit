@@ -23,4 +23,4 @@ Parent: fix-selected-audit-findings
 
 ## Verification
 
-- Passed: 实际隔离 Git push smoke、node --check、Yao validate、resource boundary、-u 静态搜索与 whitespace check 均通过。
+- Passed: 实际隔离 Git push smoke、node --check、local quality gate validate、resource boundary、-u 静态搜索与 whitespace check 均通过。

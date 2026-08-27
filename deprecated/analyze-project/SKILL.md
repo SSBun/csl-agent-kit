@@ -38,4 +38,4 @@ Reply only with the absolute Markdown-linked report path, one blocker/selection 
 
 ## Maintenance
 
-Keep `evals/contract_cases.json`, `evals/trigger_cases.json`, and `evals/semantic_config.json` aligned. Run trigger, Yao, resource, and repository checks after changes.
+Keep `evals/contract_cases.json`, `evals/trigger_cases.json`, and `evals/semantic_config.json` aligned. Run routing, repository, and built-in Skill quality checks after changes.

@@ -27,6 +27,7 @@ test("registers nested skill commands without removed Matt Pocock skills", () =>
     "align",
     "archive",
     "task-review",
+    "skill-quality",
     "task",
     "task-plan",
     "task-queue",

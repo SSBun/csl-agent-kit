@@ -6,7 +6,7 @@
 - [x] Preserve the example's existing trigger, topic, and frontmatter compatibility.
 - [x] Include header metadata, purpose, scope, definitions, responsibilities, prerequisites, step-by-step procedure, exception handling, outputs, appendix, and lessons.
 - [x] Validate the example and `sop-manager` skill references.
-- [x] Audit the SOP/skill documentation change with `yao-meta-skill`.
+- [x] Audit the SOP/skill documentation change with `skill-quality`.
 
 ## Review
 
@@ -19,15 +19,15 @@ Adversarial review:
 
 - Risk: breaking skill trigger metadata. Mitigation: frontmatter was parsed and `name`/`description` were checked.
 - Risk: example becoming too domain-specific. Mitigation: kept the existing generic Markdown-saving scenario.
-- Risk: claiming Yao audit passed when it did not. Mitigation: recorded the exact pre-existing failure below.
+- Risk: claiming local quality gate audit passed when it did not. Mitigation: recorded the exact pre-existing failure below.
 
 Verification performed:
 
 - Parsed frontmatter and asserted all modern SOP headings exist.
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sop-manager`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 - `rg -n "good-sop-example|基本信息|职责|异常处理|输出结果|附录|Lessons|DOC-SAVE-001" skills/sop-manager tasks/todo.md`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.

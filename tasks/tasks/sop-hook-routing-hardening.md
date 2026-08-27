@@ -8,7 +8,7 @@
 - [x] Tighten PreToolUse SOP reminder to use `when_to_use` and completion criteria.
 - [x] Migrate all built-in and user-scoped SOP frontmatter to the newest criteria.
 - [x] Validate hook JSON, scripts, SOP frontmatter, summaries, and skill metadata.
-- [x] Audit changed rules, hooks, skills, and SOPs with `yao-meta-skill`.
+- [x] Audit changed rules, hooks, skills, and SOPs with `skill-quality`.
 
 ## Review
 
@@ -32,8 +32,8 @@ Verification performed:
 - Tested candidate matching for Swift API, Swift code organization, macOS DMG, and YouTube Markdown prompts.
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sop-manager`
 - `git diff --check -- hooks/hooks.json .codex-plugin/hooks/hooks.json skills/sop-manager/SKILL.md skills/sop-manager/scripts/sop-summaries.sh skills/sop-manager/scripts/sop-candidates.js skills/sop-manager/references/process-sop-example.md skills/sop-manager/references/rule-sop-example.md skills/sop-manager/sops/swift-api-design.md tasks/todo.md`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint and governance passed. Resource boundary passed with a warning that `SKILL.md` is getting heavy at 908 estimated tokens.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint and governance passed. Resource boundary passed with a warning that `SKILL.md` is getting heavy at 908 estimated tokens.

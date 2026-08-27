@@ -36,7 +36,7 @@ Content file (`references/agents.md`) stays as the single source of truth.
 - [ ] Remove `skills/super-agent/` directory + git-tracked backup file.
 - [ ] Clean references: 6 plugin manifests, README, `tasks/context.md`.
 - [ ] Verify: `node --check`, `npm run test:cli`, `install --dry-run --json`.
-- [ ] Yao rule audit (per AGENTS.md).
+- [ ] local quality gate rule audit (per AGENTS.md).
 
 ## Review
 

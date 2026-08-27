@@ -12,5 +12,5 @@
 - 已删除 `design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`diagnose`、`to-issues`、`to-prd` 和 `zoom-out`。
 - `~/.agents/.skill-lock.json` 可正常解析，8 个对应键和所有指向 `deprecated/` 的记录均已清除。
 - 逐项验证 8 个目录均不存在；有效替代技能 `diagnosing-bugs`、`to-spec`、`to-tickets` 仍存在。
-- Yao 安装一致性审计通过：42 条锁记录均有安装目录，35 个 `mattpocock/skills` 记录均指向当前上游文件，deprecated 与 stale 路径均为 0。
+- local quality gate 安装一致性审计通过：42 条锁记录均有安装目录，35 个 `mattpocock/skills` 记录均指向当前上游文件，deprecated 与 stale 路径均为 0。
 - 未改动 `~/Desktop/test/skills` 上游参考仓库，也未清理 `~/.claude/skills` 等未授权目录。

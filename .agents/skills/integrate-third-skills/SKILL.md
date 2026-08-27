@@ -31,7 +31,7 @@ metadata:
 4. 先检查本仓库递归发现的所有技能名。若名称冲突，展示来源与差异，并要求用户明确选择替换、重命名或跳过；不得静默覆盖。已有导入技能更新时，先比较上游与本地修改，确认后才覆盖或合并。
 5. 仅在现有发现机制无法识别新布局时修改 CLI/Pi 发现逻辑。同步更新 README 技能表、技能数量和第三方来源说明。
 6. 添加或更新回归测试，至少验证每个第三方叶子都有可解析的 `.repository.json`，且 CLI 与 Pi 能发现新技能。
-7. 验证：运行 `npm run check`、`npx skills add . --list --full-depth`、`npm pack --dry-run --json` 与 `git diff --check`；随后按项目规则运行 `yao-meta-skill` 审计。除非用户明确要求，不运行实际安装器、不修改 `~/.agents/skills`，也不发布或推送。
+7. Validation: as permitted by the current user and project rules, run `npm run check`, `npx skills add . --list --full-depth`, `npm pack --dry-run --json`, and `git diff --check`; then run the repository's built-in `$skill-quality` gate for every changed Skill package. Unless the user explicitly requests it, do not run the real installer, modify `~/.agents/skills`, publish, or push.
 
 ## 检查已有来源
 

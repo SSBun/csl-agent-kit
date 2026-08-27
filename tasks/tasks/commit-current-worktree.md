@@ -28,7 +28,7 @@
 
 ## 复核
 
-- 完整快照包含 274 个路径；仓库 56 项测试、安装 dry-run、三项 skill 校验、Yao 审计、两组 trigger eval 与 JSON 检查通过。
+- 完整快照包含 274 个路径；仓库 56 项测试、安装 dry-run、三项 skill 校验、local quality gate 审计、两组 trigger eval 与 JSON 检查通过。
 - 评测 raw/scoring Markdown 的双空格硬换行作为原始证据保留，未破坏已记录哈希。
 - `analyze-project` owning task 仍为 `BLOCKED/CONTINUE`，Trial 013 仍为 `RUNNING/PENDING`；本提交是 checkpoint，不宣称 feature 完成。
 - 独立 Reviewer 在 `INITIAL (1)` 无 findings 批准完整 staged snapshot。

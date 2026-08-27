@@ -20,9 +20,9 @@ Kind: Task
 - T1: archive Skill 已加入共享发现，Pi /archive 会把调用前的 session file、workspace 和 active leaf 作为来源边界发送给 Agent；聚焦命令测试通过。
 - T2: archive-session.mjs 的写入测试确认文件落到 tasks/conversations、按 User/Agent 顺序保留双空格与换行，并写入非权威历史记录声明。
 - T3: 分支夹具与真实 PI_SESSION_FILE 提取验证确认排除 thinking、toolResult 和 abandoned branch；无效或反向范围以退出码 1 拒绝。
-- T4: npm run test:all 全部通过；Yao validate、resource boundary、16/16 trigger eval、JSON、Context validate 与 git diff --check 均通过。
+- T4: npm run test:all 全部通过；local quality gate validate、resource boundary、16/16 trigger eval、JSON、Context validate 与 git diff --check 均通过。
 - Review gate: Skipped — 用户未要求独立 adversarial review；按任务契约跳过。
 
 ## Verification
 
-- Passed: 完整 npm run test:all、Archive 聚焦测试、Yao 包校验、路由 eval、真实 Session 精确提取、Context/task validate 与 diff 检查均通过。
+- Passed: 完整 npm run test:all、Archive 聚焦测试、local quality gate 包校验、路由 eval、真实 Session 精确提取、Context/task validate 与 diff 检查均通过。

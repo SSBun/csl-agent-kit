@@ -28,4 +28,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: Yao、resource-boundary、语法、canonical 路径、递归发现、Pi runtime、npm pack、Context/Lessons 与 git diff --check 全部通过；按用户规则未运行单元测试。
+- Passed: local quality gate、resource-boundary、语法、canonical 路径、递归发现、Pi runtime、npm pack、Context/Lessons 与 git diff --check 全部通过；按用户规则未运行单元测试。

@@ -38,7 +38,7 @@
 - [x] `super-agent` 默认规则不再重复三个 skill 的详细正文。
 - [x] 正向、负向和相邻触发用例通过。
 - [x] 递归发现、安装 dry-run 和相关测试通过。
-- [x] `yao-meta-skill` 规则审计通过。
+- [x] `skill-quality` 规则审计通过。
 
 ## Result
 
@@ -50,4 +50,4 @@
 - 验证：CLI 25 项、Tips 18 项、Pi 10 项和工作流定向 2 项测试通过。
 - 验证：安装 dry-run、README 32 项计数、全局 AGENTS symlink 和 `git diff --check` 通过。
 - 限制：完整任务图检查被既有 `simplify-adversarial-review-report.md` 报告缺少反向 Task 链接阻塞；本任务未修改该其他任务。
-- 限制：`yao.py validate` 额外要求 `agents/interface.yaml`，与已确认的官方 `agents/openai.yaml` 最小结构不一致；已改用 skill-creator 校验、Yao trigger eval 与 adapt-scan 审计。
+- 限制：当时的 package validator 额外要求 `agents/interface.yaml`，与已确认的官方 `agents/openai.yaml` 最小结构不一致；已改用 skill-creator 校验和 trigger eval。

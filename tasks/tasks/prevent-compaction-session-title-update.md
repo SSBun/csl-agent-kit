@@ -26,4 +26,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 脚本与回归文件语法、Hook 规则、隔离行为、Context 校验及相关 diff check 通过；Yao syntax/lint/governance 通过，仅有允许的既存初始加载预算 1463 > 1000；按用户规则未运行单元测试。
+- Passed: 脚本与回归文件语法、Hook 规则、隔离行为、Context 校验及相关 diff check 通过；local quality gate syntax/lint/governance 通过，仅有允许的既存初始加载预算 1463 > 1000；按用户规则未运行单元测试。

@@ -6,7 +6,7 @@ Kind: Plan
 ## Target
 - [x] T1: `skills/tldr/SKILL.md` defines an input-agnostic overview workflow that resolves an explicit target or the current topic, gathers only necessary information, and produces a faithful one-screen overview.
 - [x] T2: The `tldr` skill is discoverable through the existing Claude, Codex, Cursor, and Pi integration paths, with README documentation and no new runtime dependency or script.
-- [x] T3: Positive and negative routing fixtures, Pi alias coverage, repository tests, Yao validation, resource-boundary validation, and `git diff --check` verify the implementation.
+- [x] T3: Positive and negative routing fixtures, Pi alias coverage, repository tests, local quality gate validation, resource-boundary validation, and `git diff --check` verify the implementation.
 
 ## Scope
 
@@ -30,15 +30,15 @@ Kind: Plan
 1. Create the minimal English `skills/tldr/SKILL.md` contract from the approved design, including target resolution, information acquisition, overview construction, output, boundaries, and failure behavior.
 2. Add focused positive and negative routing fixtures that distinguish concise overview requests from research, review, tutorials, and full repository analysis.
 3. Add only the required discovery and documentation references: the Claude explicit skill list, README skill table, and Pi alias assertion; rely on existing recursive discovery for Codex, Cursor, and Pi.
-4. Run focused routing and Pi checks, the repository test suite, Yao validation, resource-boundary validation, and `git diff --check`; fix only failures caused by this task.
+4. Run focused routing and Pi checks, the repository test suite, local quality gate validation, resource-boundary validation, and `git diff --check`; fix only failures caused by this task.
 
 ## Result
 
-- T1: 新增 input-agnostic `skills/tldr/SKILL.md`；OpenAI quick validation 与 Yao validate 均通过，resource boundary 初始加载估算为 993/1000 tokens。
+- T1: 新增 input-agnostic `skills/tldr/SKILL.md`；OpenAI quick validation 与 local quality gate validate 均通过，resource boundary 初始加载估算为 993/1000 tokens。
 - T2: Claude 显式清单和 README 已加入 tldr；Codex、Cursor、Pi 继续递归发现，CLI leaf-skill 测试与 Pi `/tldr` alias 测试通过。
-- T3: Routing fixtures 28/28（precision/recall 1.0）、npm tests 83/83、Pi tests 8/8、Yao/resource checks、OpenAI quick validation、JSON/英文扫描及完整 `git diff --check` 均通过。
+- T3: Routing fixtures 28/28（precision/recall 1.0）、npm tests 83/83、Pi tests 8/8、local quality gate/resource checks、OpenAI quick validation、JSON/英文扫描及完整 `git diff --check` 均通过。
 - Review gate: Skipped — 用户未要求独立 adversarial review；按任务契约跳过。
 
 ## Verification
 
-- Passed: 最终验证通过：npm test、npm run test:pi、routing eval、OpenAI quick validation、Yao validate、resource boundary、manifest/package shape 与 git diff --check。
+- Passed: 最终验证通过：npm test、npm run test:pi、routing eval、OpenAI quick validation、local quality gate validate、resource boundary、manifest/package shape 与 git diff --check。

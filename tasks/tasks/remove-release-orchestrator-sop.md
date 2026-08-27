@@ -5,7 +5,7 @@
 - [x] Delete the built-in `release-orchestrator` SOP shell.
 - [x] Update `skills/release/SKILL.md` to route directly to concrete existing release SOPs.
 - [x] Verify SOP summaries no longer list `release-orchestrator`.
-- [x] Validate affected skills and audit with `yao-meta-skill`.
+- [x] Validate affected skills and audit with `skill-quality`.
 - [x] Record changed files and unresolved risks.
 
 ## Review
@@ -25,10 +25,10 @@ Verification performed:
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/release`
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sop-manager`
 - `bash skills/sop-manager/scripts/sop-summaries.sh`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/release`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/release`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 - `git diff --check -- skills/release/SKILL.md skills/sop-manager/sops/release-orchestrator.md tasks/todo.md`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/release` and `skills/sop-manager`; lint, governance check, and resource boundary check passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/release` and `skills/sop-manager`; lint, governance check, and resource boundary check passed.

@@ -6,7 +6,7 @@
 - [x] Update `sop-manager/SKILL.md` so it no longer assumes every SOP is step-based.
 - [x] Migrate `swift-api-design.md` to the rule SOP format.
 - [x] Validate frontmatter, references, and SOP structures.
-- [x] Audit the SOP changes with `yao-meta-skill`.
+- [x] Audit the SOP changes with `skill-quality`.
 
 ## Review
 
@@ -28,9 +28,9 @@ Verification performed:
 - Asserted `sop-manager/SKILL.md` references `process-sop-example.md` and `rule-sop-example.md`, and no longer references `good-sop-example.md`.
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sop-manager`
 - `bash skills/sop-manager/scripts/sop-summaries.sh`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 - `rg -n "good-sop-example|owner: team-or-role|owner: \\{role-or-team\\}|## Lessons|companion lesson|process-sop-example|rule-sop-example|## 3\\. 使用方式|## 4\\. 规则分组|## 5\\. 冲突处理|## 6\\. 完成标准" skills/sop-manager`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.

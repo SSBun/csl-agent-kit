@@ -23,5 +23,5 @@
 
 - T1: `triggerify.js` 已缩为 38 行稳定 facade，内部职责拆到 `rule.js`、`store.js`、`runtime.js`、`cli.js` 与 `native-hook.js`；原有公共导出保持不变，并新增宿主无关的 `createEvent()`。原有十类 Codex payload、dispatcher、CLI 和 Pi session prompt 契约测试全部通过。
 - T2: 新增 `scripts/validate-rules.js`，支持 `--scope global|project` 和多个 `.md` 文件，直接复用 V1 parser；有效文件返回 0，规则无效返回 1，调用错误返回 2。真实 CLI 校验当前全局 trigger 文件通过。
-- T3: `npm run check` 全部通过，包括 CLI 26 项、Triggerify 20 项、task contract 11 项、Pi 4 项与安装 dry-run；Skill Creator quick validation 通过。Yao 的 structure、lint、governance 和非预算 resource checks 通过，仅保留允许的 1063/1000 initial-load token 告警；`git diff --check` 通过。
+- T3: `npm run check` 全部通过，包括 CLI 26 项、Triggerify 20 项、task contract 11 项、Pi 4 项与安装 dry-run；Skill Creator quick validation 通过。local quality gate 的 structure、lint、governance 和非预算 resource checks 通过，仅保留允许的 1063/1000 initial-load token 告警；`git diff --check` 通过。
 - Review gate: Skipped — 虽涉及多个内部模块，但公共 facade、完整相关测试、实际 CLI 校验与安装 dry-run 为核心结果提供了确定性验证，不存在 Verification Gap，且未触及发布、安全或不可逆操作。

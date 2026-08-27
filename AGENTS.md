@@ -2,8 +2,8 @@
 
 ## Rule Changes
 
-- After modifying a **skill package** (anything under `skills/*/` with a `SKILL.md`), invoke `yao-meta-skill` to audit it before claiming the work is complete: `python3 ~/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/<name>` (plus `resource_boundary_check.py` per skill dir). yao-meta-skill only validates skill packages, not rule files.
-- After modifying **non-skill rules** (AGENTS.md, CLAUDE.md, SOPs under `~/.csl-agent-kit/sops/` or `skills/meta/agent-sops/sops/`, hooks), yao-meta-skill does not apply. Verify instead by: (1) structural consistency with existing files of the same kind, and (2) for SOPs — matching the YAML header fields and section template of peer SOPs. Run `adversarial-review` or request human review only when the user explicitly asks for that review; high risk alone does not trigger it.
+- After modifying any **skill package** under `skills/` or `.agents/skills/`, load the built-in `skill-quality` Skill and run `node skills/meta/skill-quality/scripts/check.js <skill-dir>` from the workspace root for every changed package before claiming completion. Use `--all --workspace .` only for broad Skill changes. Quality failures block completion; review and disclose any accepted warning that affects confidence.
+- After modifying **non-skill rules** (AGENTS.md, CLAUDE.md, SOPs under `~/.csl-agent-kit/sops/` or `skills/meta/agent-sops/sops/`, hooks), `skill-quality` does not apply. Verify instead by: (1) structural consistency with existing files of the same kind, and (2) for SOPs — matching the YAML header fields and section template of peer SOPs. Run `adversarial-review` or request human review only when the user explicitly asks for that review; high risk alone does not trigger it.
 
 ## Task Files
 

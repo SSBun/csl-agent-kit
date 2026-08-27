@@ -25,9 +25,9 @@ Kind: Task
 
 - T1: 静态路径检查确认 tests/task-files.test.mjs 统一从 skills/ 解析两个包，所有目标路径存在且 workflowDir 已清除；node --check 通过。
 - T2: Pi 递归发现注册 task-context/task-lessons 且无旧命令，Claude manifest、npm pack dry-run 与当前引用搜索均只指向 skills/ 根层级；旧包路径不存在。
-- T3: 基线逐文件比较确认两个移动包与专属 trigger fixtures 内容保留，共享 eval 文件未变；Context/Lessons CLI 校验有效，Yao 除已允许的初始加载 token 超限外全部通过。
+- T3: 基线逐文件比较确认两个移动包与专属 trigger fixtures 内容保留，共享 eval 文件未变；Context/Lessons CLI 校验有效，local quality gate 除已允许的初始加载 token 超限外全部通过。
 - Review gate: Skipped — 当前修复未收到独立 adversarial review 或 Reviewer approval 请求；按 task review gate 跳过。
 
 ## Verification
 
-- Passed: 通过语法检查、canonical 路径与 manifest 断言、Pi 发现、Context/Lessons index+validate、install/npm pack dry-run、Yao/resource-boundary 审计及 git diff --check；按用户全局约束未运行单元测试。
+- Passed: 通过语法检查、canonical 路径与 manifest 断言、Pi 发现、Context/Lessons index+validate、install/npm pack dry-run、local quality gate/resource-boundary 审计及 git diff --check；按用户全局约束未运行单元测试。

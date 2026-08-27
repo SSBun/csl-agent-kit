@@ -44,13 +44,13 @@ Verification performed:
 - Active-doc stale path check: `rg -n "~/.ssbun-skills|\\.ssbun-skills|ssbun-skills|SSBun tips|Loading SSBun|Reloading SSBun" README.md hooks .codex-plugin/hooks skills/release skills/sop-manager/SKILL.md skills/tips/SKILL.md`
 - `git diff --check -- README.md hooks/hooks.json .codex-plugin/hooks/hooks.json scripts/install.sh skills/tips/SKILL.md skills/tips/scripts/tips-add.sh skills/tips/scripts/tips-inject.sh skills/tips/scripts/tips-doctor.sh skills/sop-manager/SKILL.md skills/sop-manager/scripts/sop-summaries.sh skills/sop-manager/scripts/sop-candidates.js skills/release/SKILL.md tasks/lessons.md tasks/todo.md`
 
-Yao audit:
+local quality gate audit:
 
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/tips`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/release`
+- `node skills/meta/skill-quality/scripts/check.js skills/tips`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/release`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `tips`, `sop-manager`, and `release`; lint, governance, and resource boundary checks passed. `sop-manager` still has the existing heavy `SKILL.md` warning.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `tips`, `sop-manager`, and `release`; lint, governance, and resource boundary checks passed. `sop-manager` still has the existing heavy `SKILL.md` warning.
 - Historical task logs and generated analysis reports may still mention `~/.ssbun-skills/` as historical context; active docs and runtime paths now use `~/.csl-agent-kit/`.

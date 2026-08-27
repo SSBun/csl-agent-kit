@@ -28,7 +28,7 @@ Parent: retire-analyze-and-unify-tldr
 2. 清理 README、Claude manifest、Pi 命令期望及所有当前发现入口中的活动身份，同时保留历史记录。
 3. 删除只描述活动能力的 `CTX-analyze-project` Pack，并验证其他 Context 结论仍正确。
 4. 验证活动 skill 发现与命令列表均无 `analyze-project`，归档 package 完整存在，历史任务、PRD、既有报告与评测产物未被改写。
-5. 对被移动的 skill package 执行 Yao 与 resource-boundary 审计，并运行格式、清单和 `git diff --check`；除非用户另行明确要求，不运行项目或单元测试套件。
+5. 对被移动的 skill package 执行 local quality gate 与 resource-boundary 审计，并运行格式、清单和 `git diff --check`；除非用户另行明确要求，不运行项目或单元测试套件。
 
 ## Result
 
@@ -39,4 +39,4 @@ Parent: retire-analyze-and-unify-tldr
 
 ## Verification
 
-- Passed: Task-specific checks passed: archive hashes and paths, active discovery absence, package dry-run exclusion, manifest parsing, Context validation, Yao syntax/lint/governance, repo-map resource boundary, and git diff --check. Archived package only retains its pre-existing allowed Yao initial-load budget warning (1382 > 1000). Project tests were not run because the user did not request them. A pre-existing unrelated Claude manifest parity drift remains: active task-grill is not listed.
+- Passed: Task-specific checks passed: archive hashes and paths, active discovery absence, package dry-run exclusion, manifest parsing, Context validation, local quality gate syntax/lint/governance, repo-map resource boundary, and git diff --check. Archived package only retains its pre-existing allowed local quality gate initial-load budget warning (1382 > 1000). Project tests were not run because the user did not request them. A pre-existing unrelated Claude manifest parity drift remains: active task-grill is not listed.

@@ -24,4 +24,4 @@ Parent: fix-selected-audit-findings
 
 ## Verification
 
-- Passed: 隔离 CLI lock smoke、node --check/help、Yao validate、resource boundary（996/1000 initial-load tokens）与 whitespace check 均通过。
+- Passed: 隔离 CLI lock smoke、node --check/help、local quality gate validate、resource boundary（996/1000 initial-load tokens）与 whitespace check 均通过。

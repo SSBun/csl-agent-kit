@@ -16,7 +16,7 @@ Kind: Task
 
 1. 用当前完整用户授权的双向语义等价检查替代默认重复确认，并统一首次对齐、用户修订与 discovery realignment。
 2. 同步所有当前生产者、消费者、规则、评测与 Context，删除旧 marker 入口且不留兼容路径。
-3. 运行静态、路由、Context、Yao、资源边界与差异验证，记录当前结果后完成任务。
+3. 运行静态、路由、Context、local quality gate、资源边界与差异验证，记录当前结果后完成任务。
 
 ## Result
 
@@ -26,4 +26,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: JSON 解析、Node 语法、Context validate/show、规则 heading 结构、聚焦 diff check、四组 routing eval（均 precision/recall 1.0）与三个 quick_validate 均通过；Yao/资源检查仅报告允许的 1000-token 初始加载预算超限；按当前请求约束未运行项目测试。
+- Passed: JSON 解析、Node 语法、Context validate/show、规则 heading 结构、聚焦 diff check、四组 routing eval（均 precision/recall 1.0）与三个 quick_validate 均通过；local quality gate/资源检查仅报告允许的 1000-token 初始加载预算超限；按当前请求约束未运行项目测试。

@@ -23,4 +23,4 @@ Replaced the Triggerify skill with a concise English operational guide. It now t
 
 ## Verification
 
-Passed `yao-meta-skill` package validation with no failures or warnings.
+Passed `skill-quality` package validation with no failures or warnings.

@@ -78,5 +78,5 @@ skills/tldr/
 
 - 正向路由覆盖明确调用 `tldr`、要求任意目标 overview，以及未指定目标时总结当前话题。
 - 负向路由覆盖深度研究、代码审查、完整项目分析和教程请求。
-- 验证 Pi `/tldr` alias、项目测试、Yao skill 校验、resource boundary check 与 `git diff --check`。
+- 验证 Pi `/tldr` alias、项目测试、local quality gate skill 校验、resource boundary check 与 `git diff --check`。
 - 由于没有可执行逻辑，不增加单元测试脚本。

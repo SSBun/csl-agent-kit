@@ -21,4 +21,4 @@ Status: Completed (2026-07-22 18:11)
 - T1: `skills/triggerify/` 提供七个管理操作、Agent metadata、路由 eval 和 RFC 使用约束；Claude manifest、README 与包依赖已同步。
 - T2: `triggerify.js` 实现严格 YAML、V1 AST/三值求值、UTF-8 排序、冲突与 trust 状态、安全脚本运行、Codex 十事件 adapter 及稳定诊断；项目运行时在无 trust verdict 时保持 unsupported。
 - T3: `csl-agent-kit triggerify` 直接复用同一管理核心；invalid、同 ID 冲突和自锁规则可从外部终端禁用或用 `update --from` 修复，`delete` 保留脚本。
-- T4: Node 语法检查通过；Triggerify 14/14 测试通过；Skill quick validator 和 `yao-meta-skill validate` 通过；adversarial-review 第 4 次复审决定 `APPROVED`；[报告](../../reports/adversarial-review/implement-triggerify-skill.md)
+- T4: Node 语法检查通过；Triggerify 14/14 测试通过；Skill quick validator 和 `skill-quality validate` 通过；adversarial-review 第 4 次复审决定 `APPROVED`；[报告](../../reports/adversarial-review/implement-triggerify-skill.md)

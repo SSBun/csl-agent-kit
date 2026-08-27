@@ -29,4 +29,4 @@ Kind: Queue
 
 ## Verification
 
-- Passed: Integrated identity/discovery assertions, Pi alias discovery, semantic routing evaluation (30/30), Yao checks, resource boundaries, JSON/YAML parsing, npm pack dry-run, Context validation, archive hashes, child/parent task validation, and git diff --check passed. Project/unit tests were not run because the user did not request them. An unrelated pre-existing Claude manifest parity drift remains: active task-grill is not listed.
+- Passed: Integrated identity/discovery assertions, Pi alias discovery, semantic routing evaluation (30/30), local quality gate checks, resource boundaries, JSON/YAML parsing, npm pack dry-run, Context validation, archive hashes, child/parent task validation, and git diff --check passed. Project/unit tests were not run because the user did not request them. An unrelated pre-existing Claude manifest parity drift remains: active task-grill is not listed.

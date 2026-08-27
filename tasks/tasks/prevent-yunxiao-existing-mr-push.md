@@ -24,4 +24,4 @@ Parent: fix-selected-audit-findings
 
 ## Verification
 
-- Passed: node --check、隔离已有 MR/race smoke、Yao validate、resource boundary 与 whitespace check 均通过。
+- Passed: node --check、隔离已有 MR/race smoke、local quality gate validate、resource boundary 与 whitespace check 均通过。

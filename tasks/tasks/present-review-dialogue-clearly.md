@@ -54,6 +54,6 @@ Status: Completed (2026-07-21)
 - 交付：用户指定报告已转换为新格式，原有三轮实质讨论和批准结论保持不变。
 - 边界：其他历史报告和现有 task/report 文件名未修改。
 - 验证：Skill 结构校验、JSON contract 校验、定向样例测试和 `git diff --check` 通过。
-- 验证：`yao-meta-skill` 规则审计通过。
-- 限制：Yao 通用 `output-eval` 只接受 JSONL，项目 report contract 为结构化 JSON；本次由定向 Node 测试执行该契约验证。
+- 验证：`skill-quality` 规则审计通过。
+- 限制：local quality gate 通用 `output-eval` 只接受 JSONL，项目 report contract 为结构化 JSON；本次由定向 Node 测试执行该契约验证。
 - 审查：APPROVED — [Adversarial review report](../../reports/adversarial-review/present-review-dialogue-clearly.md)

@@ -26,4 +26,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 定向 Node 测试、manifest 与唯一名称断言、行为保持比较及 git diff --check 通过；Yao 阻塞检查通过，仅有允许的初始加载 token 预算告警。
+- Passed: 定向 Node 测试、manifest 与唯一名称断言、行为保持比较及 git diff --check 通过；local quality gate 阻塞检查通过，仅有允许的初始加载 token 预算告警。

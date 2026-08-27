@@ -33,4 +33,4 @@ Kind: Queue
 
 ## Verification
 
-- Passed: 集成验证通过：相关脚本与相邻回归文件 node --check、四类隔离/直接 smoke、英文运行时契约、Yao/resource boundary、Context validate 与 scoped whitespace 检查均通过；agent-hooks 仅保留允许非阻塞的 1463>1000 初始加载预算告警。
+- Passed: 集成验证通过：相关脚本与相邻回归文件 node --check、四类隔离/直接 smoke、英文运行时契约、local quality gate/resource boundary、Context validate 与 scoped whitespace 检查均通过；agent-hooks 仅保留允许非阻塞的 1463>1000 初始加载预算告警。

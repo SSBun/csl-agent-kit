@@ -48,6 +48,7 @@
     "./skills/dev/beautiful-mermaid",
     "./skills/meta/task-grill",
     "./skills/meta/task-review",
+    "./skills/meta/skill-quality",
     "./skills/dev/adversarial-review",
     "./skills/dev/deliberate",
     "./skills/dev/bug-fix",

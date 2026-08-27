@@ -35,7 +35,7 @@ None.
 
 - `npm run check` — 56 tests 与安装 dry-run passed
 - Skill Creator quick validation — adversarial-review、analyze-project、super-agent passed
-- Yao lint/resource/governance/Skill IR — passed；仅有项目既有无 `manifest.json` warning
+- local quality gate lint/resource/governance/schema validation — passed；仅有项目既有无 `manifest.json` warning
 - 两组 trigger eval — precision/recall 1.0；JSON parse passed
 - `git diff --cached --check`（排除原样评测证据目录）— passed
 - Limitation: `reports/analyze-project-evals/**` 中的 raw/scoring Markdown 含原始双空格硬换行；为保持证据与已记录哈希，不机械清理。Trial 013 未完成且无活跃写入进程。

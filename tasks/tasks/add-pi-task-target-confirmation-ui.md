@@ -18,9 +18,9 @@ Kind: Task
 
 - T1: pi/extensions/csl-task-overlay.ts 注册 sequential task_target_confirm；已聚焦 canonical task 时调用 ctx.ui.confirm 展示目标，confirmed 结果允许同一 Agent 流程继续。
 - T2: 工具对 cancelled 返回停止指令，对无 UI 返回 unavailable 与准确 **Task Target:** 文本回退，并拒绝未聚焦或不存在的 task；三个 task workflow 均只在 confirmed 后继续。
-- T3: README、Super Agent dispatcher、三个 task skills、Pi/Triggerify/task contract 断言和两个 Context Packs 已同步；Node 语法、git diff、task/context、Yao syntax/lint/governance 校验通过。
+- T3: README、Super Agent dispatcher、三个 task skills、Pi/Triggerify/task contract 断言和两个 Context Packs 已同步；Node 语法、git diff、task/context、local quality gate syntax/lint/governance 校验通过。
 - Review gate: Skipped — 用户未要求独立 adversarial review。
 
 ## Verification
 
-- Passed: git diff --check 与 Node TypeScript/JavaScript 语法检查通过；task/context 校验有效；三个 skill 仅有允许的 Yao initial-load budget 警告。按用户规则未运行测试套件。
+- Passed: git diff --check 与 Node TypeScript/JavaScript 语法检查通过；task/context 校验有效；三个 skill 仅有允许的 local quality gate initial-load budget 警告。按用户规则未运行测试套件。

@@ -23,7 +23,7 @@ Kind: Task
 
 - T1: task/SKILL.md、super-agent/AGENTS.md 与 dispatcher 均要求具体非平凡 outcome 在实质讨论、澄清、探索、调研、规划、委派或实施前完成任务激活与 Session focus。
 - T2: task contract 与 routing fixtures 仅跳过一般事实问答、无具体目标的开放讨论、琐碎确定性操作及 Context/Lessons 维护；四组 routing eval precision/recall 均为 1.000。
-- T3: 三个 workflow skill 的 Yao syntax/lint/governance 通过，仅保留允许的 initial-load token warning；JSON、Context、Lessons、规则结构、persistent agent rule、git diff 与 stale-contract 检查通过。
+- T3: 三个 workflow skill 的 local quality gate syntax/lint/governance 通过，仅保留允许的 initial-load token warning；JSON、Context、Lessons、规则结构、persistent agent rule、git diff 与 stale-contract 检查通过。
 - Review gate: Skipped — 用户未要求独立 adversarial review。
 
 ## Verification

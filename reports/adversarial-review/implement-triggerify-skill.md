@@ -50,7 +50,7 @@ Topic: 诊断与验收证据
 >
 > **E2:** 聚焦测试扩展到 14 项，覆盖三值逻辑、Pointer、glob/regex、冲突、恢复、原生 block、退出/timeout/signal/spawn、诊断去重及 Swift/commit 端到端用例。
 >
-> **R2:** 全部测试、Skill validator 与 Yao 审计通过，未发现剩余阻塞项。
+> **R2:** 全部测试、Skill validator 与 local quality gate 审计通过，未发现剩余阻塞项。
 
 **Conclusion:** 当前证据覆盖 RFC V1 的共享核心、Codex adapter 和恢复 CLI。
 

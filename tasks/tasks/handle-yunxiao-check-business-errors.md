@@ -23,4 +23,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: node --check、集成 syncChecks mock smoke、git diff --check、Yao validate、resource boundary 与 Context validate 均通过；按当前规则未运行单元测试或项目测试套件。
+- Passed: node --check、集成 syncChecks mock smoke、git diff --check、local quality gate validate、resource boundary 与 Context validate 均通过；按当前规则未运行单元测试或项目测试套件。

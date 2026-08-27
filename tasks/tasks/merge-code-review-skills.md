@@ -14,7 +14,7 @@ Kind: Plan
 - [x] T2: 合并后的 code-review 同时支持 PR/MR、用户提供的 diff 与固定比较点，优先检查正确性、安全和数据风险，并在有证据时检查 Spec 与仓库 Standards，同时覆盖测试和可维护性。
 - [x] T3: 审查输出按严重级别集中呈现，每项包含 lens、file:line、影响、证据与可执行修复；普通审查不强制固定点、spec、并行 subagent 或 adversarial approval。
 - [x] T4: 当前文档、发现清单、第三方来源清单与示例、相邻技能引用和测试只使用 canonical code-review；历史任务与历史分析产物保持不变。
-- [x] T5: 路由与输出契约回归、skill discovery、manifest/JSON、Yao、resource boundary、diff check 与旧身份残留检查全部通过。
+- [x] T5: 路由与输出契约回归、skill discovery、manifest/JSON、local quality gate、resource boundary、diff check 与旧身份残留检查全部通过。
 
 ## Decisions
 
@@ -32,7 +32,7 @@ Kind: Plan
 
 1. 建立 canonical `code-review` package，合并两者非重复的输入解析、审查 lenses、finding 契约与必要运行时资源。
 2. 移除两个旧来源位置中的重复身份，更新当前发现清单、README、marketplace、相邻路由引用及第三方来源清单和示例。
-3. 增加最小路由、输出和旧身份拒绝回归，运行发现测试、项目检查、Yao、resource-boundary、JSON/manifest、残留搜索和 `git diff --check`。
+3. 增加最小路由、输出和旧身份拒绝回归，运行发现测试、项目检查、local quality gate、resource-boundary、JSON/manifest、残留搜索和 `git diff --check`。
 
 ## Result
 
@@ -40,9 +40,9 @@ Kind: Plan
 - T2: SKILL.md、review_workflow.md 与 contract_cases.json 覆盖 PR/MR、现成 diff、worktree、固定点及 Correctness/Security/Data Safety、Spec、Standards、Tests、Maintainability lenses。
 - T3: 合并契约按 Critical/Suggestion/Nit 排序，并强制 lens、file:line、impact、evidence、fix；contract cases 断言普通审查不要求 fixed point、spec、subagent 或 adversarial approval。
 - T4: 当前 README、全部插件 manifest、相邻 adversarial-review 路由、第三方 integration 示例与测试已使用 code-review；全局残留搜索只剩两条旧名不存在的负向断言。
-- T5: npm run check 全部通过（CLI 27、Triggerify 29、Tasks 26、Pi 8）；code-review 路由 23/23、adversarial 邻域 28/28；Yao/resource、JSON、discovery、pack dry-run、Context validate 与 git diff --check 均通过。
+- T5: npm run check 全部通过（CLI 27、Triggerify 29、Tasks 26、Pi 8）；code-review 路由 23/23、adversarial 邻域 28/28；local quality gate/resource、JSON、discovery、pack dry-run、Context validate 与 git diff --check 均通过。
 - Review gate: Skipped — 用户未要求 adversarial、双 Agent 或独立 Reviewer 审查；已完成普通自审与确定性验证。
 
 ## Verification
 
-- Passed: 最终复跑 npm run check、两组 trigger eval、两个受影响 skill 的 Yao/resource、JSON/manifest、skill discovery、npm pack、旧身份搜索、Context validate 与 git diff --check，结果均通过。
+- Passed: 最终复跑 npm run check、两组 trigger eval、两个受影响 skill 的 local quality gate/resource、JSON/manifest、skill discovery、npm pack、旧身份搜索、Context validate 与 git diff --check，结果均通过。

@@ -22,10 +22,10 @@ Kind: Task
 ## Result
 
 - T1: 递归 npx skills 发现与 Pi 运行时 smoke check 仅暴露 git-conflict；旧本地目录和旧 alias 均不存在。
-- T2: SKILL.md 已覆盖状态/意图识别、窄范围解决、冲突与项目检查、merge/rebase 继续及结束条件；Yao 与 resource-boundary 校验通过。
+- T2: SKILL.md 已覆盖状态/意图识别、窄范围解决、冲突与项目检查、merge/rebase 继续及结束条件；local quality gate 与 resource-boundary 校验通过。
 - T3: README、来源 fixture 与 Pi 命令 fixture 已同步；旧名称搜索仅保留 .repository.json 及 fixture 中有意保留的上游 sourcePath，npm pack 仅包含新本地路径。
 - Review gate: Skipped — 用户未要求独立 adversarial review。
 
 ## Verification
 
-- Passed: Yao、resource-boundary、语法、来源元数据 cmp、递归发现、Pi runtime、npm pack、旧路径、Context/Lessons 与 git diff --check 全部通过；按用户规则未运行单元测试。
+- Passed: local quality gate、resource-boundary、语法、来源元数据 cmp、递归发现、Pi runtime、npm pack、旧路径、Context/Lessons 与 git diff --check 全部通过；按用户规则未运行单元测试。

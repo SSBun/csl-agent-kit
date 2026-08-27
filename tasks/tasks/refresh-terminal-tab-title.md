@@ -60,7 +60,7 @@ Status (2026-07-29 16:11): Completed
 - T12: `isRoutineFollowUp()` 在模型调用前识别截图中的完整 commit prompt，以及 push、stage、测试、重试、继续等纯操作型跟进；聚焦回归测试、脚本 self-test 与 `npm run test:all` 全部通过。
 - T13: 截图中的实际坏输出 `R1: NOTE:` 已加入脚本 self-test 与 Triggerify 回归测试；`cleanModelTitle()` 将纯 `R<n>: NOTE/BLOCKER/QUESTION` 标记视为 `KEEP_CURRENT_TITLE`，不会写入 OSC。
 - T14: 每个 TTY 在 `triggerify/.tab-title/<tty>.title.json` 中按 workspace 保存最后一次成功标题；保持路径在既有 TTY 锁和 latest-token 检查内恢复它，无匹配记录时写项目名。`generatedTitleAction()` 回归测试确认空模型结果返回 `null` 而不写，`KEEP_CURRENT_TITLE` 恢复保存值；`npm run test:all` 72/72 通过。
-- Latest review gate: Skipped — 新状态仅保存已显示的非敏感标题，复用既有每 TTY 锁和 workspace 匹配，没有扩大会话数据、模型或宿主边界；保持、初始化、失败和 workspace 隔离均有确定性测试。Yao syntax/lint/governance 通过，仅保留既有的初始加载 token 预算告警。
+- Latest review gate: Skipped — 新状态仅保存已显示的非敏感标题，复用既有每 TTY 锁和 workspace 匹配，没有扩大会话数据、模型或宿主边界；保持、初始化、失败和 workspace 隔离均有确定性测试。local quality gate syntax/lint/governance 通过，仅保留既有的初始加载 token 预算告警。
 - T15: `titleModelInput()` 把已保存标题作为 existing main-task anchor 提供给模型；`generatedTitleAction()` 对相同完整标题返回 `remember: false`。实际 DeepSeek 样例对同一标签标题任务的跟进返回 `KEEP_CURRENT_TITLE`，对显式切换到认证缓存任务返回 `Authentication cache`。
 - T16: `buildTitle()` 按项目前缀占用的词数裁剪核心意图，使完整标题最多 7 个自然语言单词；回归样例把九词核心压缩为 `app · a b c d e f`，同时保留 24 个 Unicode 码点上限。`npm run test:all` 72/72 通过。
 - Newest review gate: Skipped — 只收紧标题稳定性和已有输出长度，没有新增状态类别、隐私数据或宿主集成；同任务保持、主任务切换和词数边界均有确定性或实际模型证据。
@@ -68,7 +68,7 @@ Status (2026-07-29 16:11): Completed
 - Current review gate: Skipped — 仅增加手动刷新结果的本地状态文件与 Pi UI 通知，自动刷新仍保持 detached、非阻塞且不新增逐轮 toast；未扩大会话模型或宿主边界。
 - T18: `buildTitleContext()` 现在从 Pi 活跃分支提取最近的 `User:` 与 `Assistant:` 文本，保留最新 prompt，按 Unicode 字符从尾部限制为 12,000 字符；Pi 回归测试确认 tool call、tool result 与被截断的旧内容不进入模型上下文。
 - T19: 标题模型 prompt 和 worker 已删除当前主题输入、`KEEP_CURRENT_TITLE` 协议及模型调用前的例行操作短路；真实 `deepseek/deepseek-v4-flash` 样例对“构建登录缓存 → Assistant 完成 → commit”重新生成 `login token cache`。
-- T20: 脚本 self-test、`npm run test:all`、`git diff --check` 与 Triggerify `show inner:refresh-tab-title --host pi` 均通过，规则保持 valid、supported、active。Yao 的 syntax、lint、governance 通过；未修改的 `skills/triggerify/SKILL.md` 仍有既存的初始加载预算结果 `1372 > 1000`。
+- T20: 脚本 self-test、`npm run test:all`、`git diff --check` 与 Triggerify `show inner:refresh-tab-title --host pi` 均通过，规则保持 valid、supported、active。local quality gate 的 syntax、lint、governance 通过；未修改的 `skills/triggerify/SKILL.md` 仍有既存的初始加载预算结果 `1372 > 1000`。
 - Latest follow-up review gate: Skipped — 用户未明确要求 adversarial review 或独立 Reviewer 批准。
 - T21: `/title` 的有参数与无参数路径现在都直接调用 `buildTitleContext(entries, prompt)`；现有回归覆盖已有对话与最新请求同时保留，`npm run test:pi` 7/7 通过。
 - `/title` parity follow-up review gate: Skipped — 用户未明确要求 adversarial review 或独立 Reviewer 批准。

@@ -118,7 +118,7 @@
 ## 验证
 
 - Skill Creator quick validation — passed
-- Yao lint、resource boundary、governance 与 Skill IR — passed；保留既有无 manifest 提示
+- local quality gate lint、resource boundary、governance 与 schema validation — passed；保留既有无 manifest 提示
 - Trigger eval — 21/21 passed
 - 报告契约固定场景与 JSON 解析 — passed
 - 完整仓库测试与安装 dry-run — 56 tests passed

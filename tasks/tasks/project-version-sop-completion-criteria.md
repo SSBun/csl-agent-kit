@@ -6,7 +6,7 @@
 - [x] Remove the `Lessons` section and merge its intent into the SOP body.
 - [x] Align frontmatter with lightweight SOP metadata.
 - [x] Validate YAML, section structure, and SOP summary loading.
-- [x] Audit the SOP change with `yao-meta-skill`.
+- [x] Audit the SOP change with `skill-quality`.
 
 ## Review
 
@@ -22,8 +22,8 @@ Verification performed:
 - Asserted required sections exist: `执行检查点`, `执行流程`, `异常处理`, `完成标准`.
 - Asserted `Lessons` and `owner` are absent.
 - `bash skills/sop-manager/scripts/sop-summaries.sh | rg -n "project-version-update|SOP manager|Read the full SOP"`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.

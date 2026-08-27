@@ -1,0 +1,37 @@
+{
+  "fallback_positive_concepts": [
+    "deterministic_skill_validation"
+  ],
+  "positive_concepts": {
+    "deterministic_skill_validation": {
+      "weight": 1.0,
+      "phrases": [
+        "validate the skill package",
+        "skill quality gate",
+        "agent skill package",
+        "skill frontmatter",
+        "routing fixtures",
+        "context budget"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "non_skill_or_runtime_validation": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "AGENTS.md rule file",
+        "project test suite",
+        "source-code diff"
+      ]
+    },
+    "subjective_portfolio_audit": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "subjective score",
+        "portfolio governance review"
+      ]
+    }
+  }
+}

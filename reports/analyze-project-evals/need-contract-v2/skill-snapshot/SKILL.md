@@ -64,4 +64,4 @@ Reply only with the absolute Markdown-linked report path, one blocker/selection 
 
 ## Maintenance
 
-`evals/contract_cases.json` is declarative, not executed. `evals/value_cases.json` contains exactly two frozen value cases. After changes, run trigger evaluation, Yao validation, and the resource-boundary check.
+`evals/contract_cases.json` is declarative, not executed. `evals/value_cases.json` contains exactly two frozen value cases. After changes, run trigger evaluation, local quality gate validation, and the resource-boundary check.

@@ -22,7 +22,7 @@ Kind: Task
 ## Result
 
 - T1: 任务开始时存在的 8 个 Matt Pocock Skill 包连同来源元数据和许可证已删除，skills/mattpocock 不存在；README、项目内集成示例及命令测试已同步，skills/ 下 .repository.json 数量为 0。
-- T2: 剩余 24 个共享 Skills 与 README 完全一致；Pi 不再注册 11 个删除名称/别名，10 项聚焦测试、install dry-run、npm pack、npx skills 清单、OpenAI quick validation、Yao 与 resource-boundary 均通过。
+- T2: 剩余 24 个共享 Skills 与 README 完全一致；Pi 不再注册 11 个删除名称/别名，10 项聚焦测试、install dry-run、npm pack、npx skills 清单、OpenAI quick validation、local quality gate 与 resource-boundary 均通过。
 - Review gate: Skipped — 用户未请求 adversarial review、双 Agent Reviewer–Editor 或独立 Reviewer approval。
 
 ## Verification

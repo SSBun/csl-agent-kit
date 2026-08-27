@@ -19,7 +19,7 @@ Kind: Task
 
 ## Result
 
-- T1: 五个叶子 skill package 均位于 skills/meta，旧实时路径扫描为空；Claude manifest 与 23 个项目叶子 skill 一致，Yao validate/lint 均通过，仅 workflow skill 出现规则明确允许的初始加载 token 预算超限。
+- T1: 五个叶子 skill package 均位于 skills/meta，旧实时路径扫描为空；Claude manifest 与 23 个项目叶子 skill 一致，local quality gate validate/lint 均通过，仅 workflow skill 出现规则明确允许的初始加载 token 预算超限。
 - Review gate: Skipped — 用户未要求 adversarial review 或独立 Reviewer 批准。
 
 ## Verification

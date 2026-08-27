@@ -8,7 +8,7 @@ review_cycles: 2
 
 Topic: Are the local (uncommitted) changes safe to commit?
 
-> **E1:** Editor received the Reviewer's INITIAL APPROVED with one R1 NOTE. The Editor nonetheless implemented a minimal fix for R1: added a local `let discoveringScope = "global"` in `runEvent`, set it to `"inner"` before `discover("inner", ...)`, and changed the budget-catch diagnostic prefix to `` `${discoveringScope}:${error.reason}` ``. Re-ran `npm run test:triggerify` (25/25) and `npm run test:cli` (26/26); `yao validate skills/simple-rules` passed. The change was scoped to the diagnostic label only; fail-open behavior, deadline semantics, and inject-output gating were preserved.
+> **E1:** Editor received the Reviewer's INITIAL APPROVED with one R1 NOTE. The Editor nonetheless implemented a minimal fix for R1: added a local `let discoveringScope = "global"` in `runEvent`, set it to `"inner"` before `discover("inner", ...)`, and changed the budget-catch diagnostic prefix to `` `${discoveringScope}:${error.reason}` ``. Re-ran `npm run test:triggerify` (25/25) and `npm run test:cli` (26/26); `local quality gate validate skills/simple-rules` passed. The change was scoped to the diagnostic label only; fail-open behavior, deadline semantics, and inject-output gating were preserved.
 >
 > **R1:** INITIAL pass found one NOTE: when `discover("inner", ...)` throws `TRIGGERIFY_BUDGET`, the shared catch labeled the error `global:${error.reason}`, which is inaccurate. Fail-open behavior (empty prompts, `blocked:false`) was already correct; only the debugging label was misleading. Non-blocking, minimal material risk.
 >
@@ -20,6 +20,6 @@ Topic: Are the local (uncommitted) changes safe to commit?
 
 **Final decision:** `APPROVED`
 
-**Outcome:** The local changes are safe to commit. Verification: `npm run test:triggerify` 25/25; `npm run test:cli` 26/26; `yao validate skills/simple-rules` ok; inner scope is read-only via all CLI mutation paths (create/update/delete/toggle reject `inner:`); `inject-output` injects only on script success (status 0) and only on inject-capable events, bounded by the existing `bounded()` 64KB cap; `read-simple-rules.js` handles missing/empty files with no path-traversal surface; end-to-end session-start injection confirmed for non-empty `simple-rules.md` and silent skip for empty/missing.
+**Outcome:** The local changes are safe to commit. Verification: `npm run test:triggerify` 25/25; `npm run test:cli` 26/26; `local quality gate validate skills/simple-rules` ok; inner scope is read-only via all CLI mutation paths (create/update/delete/toggle reject `inner:`); `inject-output` injects only on script success (status 0) and only on inject-capable events, bounded by the existing `bounded()` 64KB cap; `read-simple-rules.js` handles missing/empty files with no path-traversal surface; end-to-end session-start injection confirmed for non-empty `simple-rules.md` and silent skip for empty/missing.
 
 **Remaining:** none

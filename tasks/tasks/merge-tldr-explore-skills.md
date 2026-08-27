@@ -37,7 +37,7 @@ Parent: retire-analyze-and-unify-tldr
 2. 保留简略输出并加入深入报告契约，使主题、链接、文件、会话和项目目标遵循同一输入模型，而不恢复已退役的专用项目报告协议。
 3. 同步 `agents/interface.yaml`、README、trigger fixtures 与 semantic config，覆盖简略、深入、信号冲突、无信号默认及相邻能力边界。
 4. 删除全局 `/explore` Prompt Template，不保留 alias，并验证当前 Pi 命令与共享 skill 发现只暴露 `tldr`。
-5. 运行路由评测、Yao、resource-boundary、JSON/YAML、英文 skill prose 与 `git diff --check`；除非用户另行明确要求，不运行项目或单元测试套件。
+5. 运行路由评测、local quality gate、resource-boundary、JSON/YAML、英文 skill prose 与 `git diff --check`；除非用户另行明确要求，不运行项目或单元测试套件。
 
 ## Result
 
@@ -48,4 +48,4 @@ Parent: retire-analyze-and-unify-tldr
 
 ## Verification
 
-- Passed: Yao validation passed, including resource boundary at 993/1000 tokens; semantic routing evaluation passed with precision/recall 1.0 and no misfires; JSON/YAML parsing, contract assertions, Pi alias discovery, npm pack dry-run, Context validation, and git diff --check passed. Skill prose is English except intentional Chinese cue literals and fixtures. Project/unit tests were not run because the user did not request them.
+- Passed: local quality gate validation passed, including resource boundary at 993/1000 tokens; semantic routing evaluation passed with precision/recall 1.0 and no misfires; JSON/YAML parsing, contract assertions, Pi alias discovery, npm pack dry-run, Context validation, and git diff --check passed. Skill prose is English except intentional Chinese cue literals and fixtures. Project/unit tests were not run because the user did not request them.

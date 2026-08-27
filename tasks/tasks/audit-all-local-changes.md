@@ -15,4 +15,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: git diff --check、23 个 JSON 与 9 个 YAML 解析、11 个 Node 脚本语法、Task/Context/Lessons validate、npm pack/install dry-run 及 12 个 Skill 的 Yao/resource 检查已执行；仅有允许的初始加载预算超限，未运行测试。
+- Passed: git diff --check、23 个 JSON 与 9 个 YAML 解析、11 个 Node 脚本语法、Task/Context/Lessons validate、npm pack/install dry-run 及 12 个 Skill 的 local quality gate/resource 检查已执行；仅有允许的初始加载预算超限，未运行测试。

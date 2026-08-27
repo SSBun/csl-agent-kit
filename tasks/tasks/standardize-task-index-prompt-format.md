@@ -24,5 +24,5 @@ Status: Completed (2026-07-31 17:35)
 - T3：[`check-task-index.js`](../../skills/workspace-workflow/workspace-manage-task/scripts/check-task-index.js) 接受 extension 兼容格式，并拒绝此前的普通文本标题格式、状态或标题不一致及无效时间。
 - T4：workflow 继续要求每次同步后校验指定 canonical task；当前任务的 In Progress 与 Completed 状态迁移均通过检查。
 - T5：`npm run test:pi` 通过 7/7，`node --experimental-strip-types pi/extensions/csl-task-overlay.ts --check` 通过；索引样例与 extension 的 `INDEX_LINE`/`parseStatus` 契约一致。
-- T6：Skill Creator quick validation 通过；Yao syntax/frontmatter、lint 和 governance 通过，resource boundary 仅保留允许的初始加载 token 超限（1942/1000）；旧冲突格式只剩历史记录和明确拒绝用例。
+- T6：Skill Creator quick validation 通过；local quality gate syntax/frontmatter、lint 和 governance 通过，resource boundary 仅保留允许的初始加载 token 超限（1942/1000）；旧冲突格式只剩历史记录和明确拒绝用例。
 - Review gate: Skipped — no explicit user request.

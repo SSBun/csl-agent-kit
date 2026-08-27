@@ -14,7 +14,7 @@
 ## 复核
 
 - npm 当前最新版本为 `2.0.0`；未提交改动移除了 `tips.md` 运行时 fallback，并改为关键词 JSON，因此建议下一个版本为破坏性变更的 `3.0.0`。
-- `env -u NO_COLOR npm run check` 通过 37 项测试与安装 dry-run；`git diff --check` 通过。Yao lint 与资源边界审计通过，`validate_skill.py` 仅报告两个既有 skills 缺少 `agents/interface.yaml`。
+- `env -u NO_COLOR npm run check` 通过 37 项测试与安装 dry-run；`git diff --check` 通过。local quality gate lint 与资源边界审计通过，`validate_skill.py` 仅报告两个既有 skills 缺少 `agents/interface.yaml`。
 - `npm pack --dry-run` 通过并仅包含 82 个预期文件；保留用户要求提交的 `AGENTS.md.backup-*`，但从 npm `files` 白名单中排除，避免将临时备份发布。
 - npm 登录用户为 `ssbun`，`npm publish --dry-run --access public` 通过；发布提交为 `c97ece7`，本地 `v3.0.0` 标签已创建。
 - GitHub OAuth token 补充 `workflow` scope 后，HTTPS 已将 `main` 推送至 `c97ece7`，并创建远端 `v3.0.0` 标签。

@@ -21,4 +21,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 语义断言、git diff --check、Yao validate 与 resource boundary check 均通过；仅有非阻塞治理/资源组织警告。
+- Passed: 语义断言、git diff --check、local quality gate validate 与 resource boundary check 均通过；仅有非阻塞治理/资源组织警告。

@@ -5,13 +5,13 @@ Kind: Plan
 
 ## Scope
 
-- 包含：重写 `workspace-capture-lessons/SKILL.md`，新增 Yao 强制要求的 `agents/interface.yaml` 与只读 Node 查询脚本，并同步更新聚焦契约测试及 Lessons routing/query eval fixtures。
+- 包含：重写 `workspace-capture-lessons/SKILL.md`，新增 local quality gate 强制要求的 `agents/interface.yaml` 与只读 Node 查询脚本，并同步更新聚焦契约测试及 Lessons routing/query eval fixtures。
 - 排除：修改 Context 系统、Session dispatcher、默认 Agent 规则、其他 skill、无关测试或历史 Lessons。
 
 ## Target
 - [x] T1: `workspace-capture-lessons/SKILL.md` 完整定义 Trigger-first 检索、Entry/Change/Completion Gates、纠正后的持久写入确认、冲突优先级、失败策略及与 Context、Task、全局偏好的边界。
 - [x] T2: `scripts/lessons.js` 仅用 Node 标准库实现 `index`、批量 `show`、`validate` 和 `--self-test`，确定性支持 v1 records 与渐进兼容的 legacy records，且不修改或缓存 Lessons。
-- [x] T3: `agents/interface.yaml`、聚焦契约测试和 Lessons routing/query eval fixtures 与新契约一致；self-check、聚焦测试、eval、Yao、resource-boundary 和 `git diff --check` 满足计划中的门禁。
+- [x] T3: `agents/interface.yaml`、聚焦契约测试和 Lessons routing/query eval fixtures 与新契约一致；self-check、聚焦测试、eval、local quality gate、resource-boundary 和 `git diff --check` 满足计划中的门禁。
 - [x] T4: canonical task 的当前 Result 与 Verification 使用中文记录结论，同时保留技术标识的原生形式。
 
 ## Decisions
@@ -48,17 +48,17 @@ Kind: Plan
 1. 将已批准的 schema、查询 Gates、优先级、写入确认和失败策略写入主 Skill，并补齐跨宿主 interface metadata。
 2. 用 Node 标准库实现只读 Lessons CLI 及内置 self-check，覆盖 v1、legacy、重复 ID 和格式诊断。
 3. 同步聚焦契约测试与 routing/query eval fixtures，验证 CLI 数据契约和新工作流语义。
-4. 运行 self-check、聚焦测试、eval、Yao、resource-boundary、diff 与任务门禁，并按 Target 记录当前证据。
+4. 运行 self-check、聚焦测试、eval、local quality gate、resource-boundary、diff 与任务门禁，并按 Target 记录当前证据。
 5. 将 canonical task 的当前 Result 与 Verification 收敛为中文交付记录。
 
 ## Result
 
 - T1: SKILL.md 已定义固定 Trigger/Rule/Check schema、Entry/Change/Completion Gates、召回优先查询、优先级、持久写入确认、legacy 兼容、载体边界与 fail-closed 完成门禁；聚焦契约测试通过。
 - T2: lessons.js 仅使用 Node 标准库；self-test 通过，当前 63 条 legacy records 以零错误通过校验，文件缺失时 index/validate 返回空且有效的规则集，CLI 契约测试通过。
-- T3: interface metadata 与两类 eval fixtures 已对齐新契约；test:tasks 通过 23/23，routing 通过 13/13 且 precision/recall 均为 1.0，quick_validate 通过，Yao 仅剩已允许的 2155/1000 initial-load token 超限。
+- T3: interface metadata 与两类 eval fixtures 已对齐新契约；test:tasks 通过 23/23，routing 通过 13/13 且 precision/recall 均为 1.0，quick_validate 通过，local quality gate 仅剩已允许的 2155/1000 initial-load token 超限。
 - T4: canonical task 的 T1–T4 Result 与 Verification 已改用中文记录结论，命令、schema、文件名和指标等技术标识保持原生形式。
 - Review gate: Skipped — 用户未明确要求 adversarial review、双 Agent Reviewer–Editor 循环或独立 Reviewer 批准。
 
 ## Verification
 
-- Passed: Node 语法、self-test、当前及缺失文件检查、23 项 task tests、13 项 routing cases、JSON、OpenAI quick validation、Yao 非预算门禁与 git diff --check 均通过；仅存在明确允许的 Yao initial-load token 超限。
+- Passed: Node 语法、self-test、当前及缺失文件检查、23 项 task tests、13 项 routing cases、JSON、OpenAI quick validation、local quality gate 非预算门禁与 git diff --check 均通过；仅存在明确允许的 local quality gate initial-load token 超限。

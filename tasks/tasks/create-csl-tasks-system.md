@@ -31,7 +31,7 @@ Kind: Task
 - T3: 三个 SKILL.md 已分别固化单任务、planning-only decisions handoff 与 Auto 串行 child/parent integration gate，task contract 与 discovery 测试通过。
 - T4: 184 个 canonical records 与索引全量迁至 tasks/tasks.md 和 tasks/tasks/；task graph、报告互链、旧活动路径 grep 及用户级 Triggerify hook self-test 均通过。
 - T5: 旧 workspace-manage-task 目录和发现入口已删除；Pi overlay、context/lessons、Claude/Codex/Pi 集成回归通过。
-- T6: npm run check、聚焦迁移检查、git diff --check 与三个 skill 的 Yao 校验已运行；Yao 仅报告工作流允许的 initial-load token budget 超限，新集合无上游 AGPL 标识或实现复制。
+- T6: npm run check、聚焦迁移检查、git diff --check 与三个 skill 的 local quality gate 校验已运行；local quality gate 仅报告工作流允许的 initial-load token budget 超限，新集合无上游 AGPL 标识或实现复制。
 - Review gate: Skipped — no explicit user request
 
 ## Verification

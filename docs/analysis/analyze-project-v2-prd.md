@@ -261,7 +261,7 @@ Module Map 同时包含：
 - Mermaid 成功解析/渲染、无本地验证器和解析失败分别证明正常交付与零写入行为，且不安装依赖。
 - 合成秘密 fixture 证明 map 不含秘密值、片段、hash、位置或安全章节，最终回复只含允许的脱敏警告。
 - 第 12 节的输出 eval 通过。
-- OpenAI skill 结构校验与 Yao resource boundary 检查通过。
+- OpenAI skill 结构校验与 local quality gate resource boundary 检查通过。
 - 删除旧 prompts、templates 和 workflow 后没有失效引用或孤立资源。
 - 最终 skill 差异通过独立 adversarial review。
 

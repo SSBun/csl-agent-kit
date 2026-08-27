@@ -22,9 +22,9 @@ Kind: Task
 ## Result
 
 - T1: 逐文件 SHA-256 基线确认两个包内容与权限保持不变；新 canonical 路径存在、旧路径不存在，当前 README、Claude manifest、测试与 Context Authority 均已切换到 skills/meta。
-- T2: Context/Lessons CLI self-test 与 validate、6 项聚焦测试、Pi nested alias、Claude 23/23 manifest 路径、npm pack、install dry-run、OpenAI quick validation 均通过；Yao 仅报告规则允许的 initial-load token 超限。
+- T2: Context/Lessons CLI self-test 与 validate、6 项聚焦测试、Pi nested alias、Claude 23/23 manifest 路径、npm pack、install dry-run、OpenAI quick validation 均通过；local quality gate 仅报告规则允许的 initial-load token 超限。
 - Review gate: Skipped — 用户未请求 adversarial review、双 Agent Reviewer–Editor 或独立 Reviewer approval。
 
 ## Verification
 
-- Passed: canonical 路径与旧路径扫描、包内容哈希、脚本语法、自测、Context/Lessons 校验、聚焦测试、Pi/Claude/npm 发现、Yao/resource audit 和 git diff --check 已验证；两个宽泛测试入口仅暴露与本移动无关的既有断言失败。
+- Passed: canonical 路径与旧路径扫描、包内容哈希、脚本语法、自测、Context/Lessons 校验、聚焦测试、Pi/Claude/npm 发现、local quality gate/resource audit 和 git diff --check 已验证；两个宽泛测试入口仅暴露与本移动无关的既有断言失败。

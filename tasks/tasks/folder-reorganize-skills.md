@@ -13,4 +13,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: find: all 33 SKILL.md under skills/{dev,domain,meta,mattpocock}; grep: zero stale old-path refs in live code; triggerify show + sop-summaries + csl-tasks list run from new paths; yao token-budget failure pre-existing (SKILL.md byte-identical to HEAD)
+- Passed: find: all 33 SKILL.md under skills/{dev,domain,meta,mattpocock}; grep: zero stale old-path refs in live code; triggerify show + sop-summaries + csl-tasks list run from new paths; local quality gate token-budget failure pre-existing (SKILL.md byte-identical to HEAD)

@@ -1,12 +1,18 @@
 # 任务索引
 
-- [提交全部本地改动](tasks/commit-local-changes.md) — In Progress (2026-08-27 13:50)
+- [删除无消费者的 Interface YAML 元数据](tasks/remove-interface-yaml-metadata.md) — Completed (2026-08-27 15:28)
 
-- [创建内置 Skill Quality 工具](tasks/create-skill-quality.md) — In Progress (2026-08-27 13:37)
+- [删除孤立的 Workspace Workflow Evals](tasks/remove-workspace-workflow-evals.md) — Completed (2026-08-27 15:15)
+
+- [配置并验证 GLM-5.3-Flash](tasks/configure-glm-5-3-flash.md) — Completed (2026-08-27 14:11)
+
+- [提交全部本地改动](tasks/commit-local-changes.md) — In Progress (2026-08-27 15:30)
+
+- [创建内置 Skill Quality 工具](tasks/create-skill-quality.md) — Completed (2026-08-27 15:06)
 
 - [处理云效检查同步业务错误](tasks/handle-yunxiao-check-business-errors.md) — Completed (2026-08-27 13:40)
 
-- [实现 Pi 快速小模型命令](tasks/implement-pi-quick-command.md) — Completed (2026-08-27 13:46)
+- [实现 Pi 快速小模型命令](tasks/implement-pi-quick-command.md) — Completed (2026-08-27 13:57)
 
 - [优化 Task Target 对齐并移除 TASK_GO](tasks/optimize-task-target-alignment.md) — Completed (2026-08-27 12:12)
 
@@ -347,9 +353,6 @@
 - [SOP Manager Lessons](tasks/sop-manager-lessons.md) — 未标注
 - [Rewrite Swift API Design SOP](tasks/rewrite-swift-api-design-sop.md) — 未标注
 - [Inject May Agents Skill](tasks/inject-may-agents-skill.md) — 未标注
-- [Yao Meta Skill Portfolio Audit](tasks/yao-meta-skill-portfolio-audit.md) — 未标注
-- [Yao Meta Skill Audit Fixes](tasks/yao-meta-skill-audit-fixes.md) — 未标注
-- [Yao Meta Skill Optimization Reanalysis](tasks/yao-meta-skill-optimization-reanalysis.md) — 未标注
 - [Release Skill Routing](tasks/release-skill-routing.md) — 未标注
 - [Internet Research: Popular Agents and Skills](tasks/internet-research-popular-agents-and-skills.md) — 未标注
 - [Initial Test Triage Skill](tasks/initial-test-triage-skill.md) — 未标注

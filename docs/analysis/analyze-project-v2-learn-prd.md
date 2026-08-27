@@ -384,7 +384,7 @@ with-skill 必须通过五项，但本层不能单独证明 Agent 的迁移能�
 - 第 16 节的两层输出 eval 通过。
 - eval harness 证明两臂隔离、只开放目标写入、baseline 三种分支确定、匿名映射延迟揭示，且 sealed fixture 在 skill 冻结前不存在、生成器始终不可访问。
 - 保存 artifact 的审计重放必须复现原 verdict；任何新模型生成必须使用新 trial ID 与新 sealed fixture。
-- OpenAI skill 结构校验、Yao resource boundary 和最终独立审查通过。
+- OpenAI skill 结构校验、local quality gate resource boundary 和最终独立审查通过。
 - 删除旧 prompts、templates 和 workflow 后没有失效引用或孤立资源。
 
 ## 18. 实施顺序

@@ -21,4 +21,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 扩展导入成功，Pi Context Hooks 6/6、Triggerify 30/30 通过；Yao 仅报告允许的既有 1000-token 初始加载预算超限。
+- Passed: 扩展导入成功，Pi Context Hooks 6/6、Triggerify 30/30 通过；local quality gate 仅报告允许的既有 1000-token 初始加载预算超限。

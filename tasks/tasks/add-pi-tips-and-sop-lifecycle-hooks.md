@@ -7,7 +7,7 @@
 - [x] Add a Pi extension using `session_start`, `session_compact`, `input`, `before_agent_start`, `tool_call`, and `tool_result`.
 - [x] Inject tips and SOP summaries from `~/.csl-agent-kit/` into Pi's per-turn system prompt.
 - [x] Update package scripts, README, and changelog.
-- [x] Run Node tests, Pi extension loading tests, skill validation, package checks, and Yao audit.
+- [x] Run Node tests, Pi extension loading tests, skill validation, package checks, and local quality gate audit.
 
 ## Review
 
@@ -35,7 +35,7 @@ Verification performed:
 - All three Pi extensions loaded successfully with Node type stripping.
 - Codex SOP candidate CLI compatibility test passed.
 - `quick_validate.py skills/sop-manager` passed.
-- `yao.py validate skills/sop-manager` ran; the only failure remains the intentionally non-blocking `Missing agents/interface.yaml`, with lint/governance/resource checks passing apart from the existing heavy-SKILL warning.
+- `check.js skills/sop-manager` ran; the only failure remains the intentionally non-blocking `Missing agents/interface.yaml`, with lint/governance/resource checks passing apart from the existing heavy-SKILL warning.
 - `npm pack --dry-run --json` includes `pi/extensions/csl-context-hooks.ts` (83 package files).
 - `npm publish --dry-run --access public` passed.
 - `git diff --check` passed.

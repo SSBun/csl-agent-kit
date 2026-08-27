@@ -32,4 +32,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: Node 语法、三层直接脚本与真实 Hook 运行时、CLI 宿主状态、Skill 发现、npm pack、旧来源扫描、Context/Lessons、diff 及两包 Yao/resource 审计完成；agent-hooks 仅有允许的 initial-load token budget 超限，未运行单元测试。
+- Passed: Node 语法、三层直接脚本与真实 Hook 运行时、CLI 宿主状态、Skill 发现、npm pack、旧来源扫描、Context/Lessons、diff 及两包 local quality gate/resource 审计完成；agent-hooks 仅有允许的 initial-load token budget 超限，未运行单元测试。

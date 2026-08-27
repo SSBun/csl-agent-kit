@@ -10,5 +10,5 @@
 
 - 候选 hook 现在只输出一行“当前 prompt 已命中的已确认指令，除非高优先级指令冲突则遵守”说明与 tip 条目；不再输出来源路径、编号检查清单或重复的确认语句。Pi 使用相同的精简优先级语义。
 - 测试先行确认 RED：旧输出缺少新短头部且仍含冗余前言；实现后 tips 的 18 项测试、Pi 的 9 项测试与全量 37 项检查均通过。
-- `yao-meta-skill` lint、资源边界与 trigger eval（20/20）通过；governance 仅报告既有的可选 `manifest.json` 缺失。
+- `skill-quality` lint、资源边界与 trigger eval（20/20）通过；governance 仅报告既有的可选 `manifest.json` 缺失。
 - 已存在会话中的旧长上下文无法回写删除；当前本机插件直接链接工作区，后续匹配 prompt 会使用新格式。

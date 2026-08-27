@@ -5,7 +5,7 @@
 - [x] Rename `skills/inject-may-agents` to `skills/super-agent` and rename bundled `references/AGENTS.template.md` to `references/AGENTS.md`.
 - [x] Rewrite the skill behavior so `super-agent` asks which agent config file to replace, backs up the old file, then symlinks the bundled default instructions.
 - [x] Update skill metadata, README, plugin manifests, marketplace keywords, and Pi slash-command aliases from `inject-may-agents` to `super-agent`.
-- [x] Run validation, stale-reference grep, package checks, and `yao-meta-skill` audit.
+- [x] Run validation, stale-reference grep, package checks, and `skill-quality` audit.
 - [x] Record review evidence and unresolved risks.
 
 ## Review
@@ -38,11 +38,11 @@ Verification performed:
 - `git diff --check -- README.md .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .claude-plugin/marketplace.json .cursor-plugin/marketplace.json .agents/plugins/marketplace.json skills/super-agent skills/inject-may-agents pi/extensions/csl-skill-commands.ts .gitignore tasks/todo.md`
 - `git status --short --untracked-files=all -- skills/super-agent skills/inject-may-agents .gitignore`
 
-Yao audit:
+local quality gate audit:
 
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/super-agent`
+- `node skills/meta/skill-quality/scripts/check.js skills/super-agent`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `super-agent`; lint, governance, and resource-boundary checks passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `super-agent`; lint, governance, and resource-boundary checks passed.
 - Historical generated analysis docs still mention `inject-may-agents`; active docs, manifests, and skill files now use `super-agent`.

@@ -41,12 +41,12 @@
 
 - `npm run check` — 56 个测试及安装 dry-run 通过。
 - Skill Creator quick validation — 通过。
-- Yao lint、resource boundary 和 Skill IR validation — 通过；resource boundary 无预警。
+- local quality gate lint、resource boundary 和 schema validation validation — 通过；resource boundary 无预警。
 - Trigger eval — 21/21，通过率、precision 与 recall 均为 1.0。
 - `report_contract_cases.json` JSON 解析与 `git diff --check` — 通过。
 - 前向测试：无证据 BLOCKER 在 Editor 前被省略；过度全局方案被 `NARROW` 为局部解法。
 - 本机 Codex 插件刷新与五个受影响文件的源码/缓存 hash 比对 — 一致。
-- Limitations：Yao 完整 validate 仍报告该现有 skill 缺少 `agents/interface.yaml`；独立组件校验均通过，本任务不新增该非必要接口。
+- Limitations：local quality gate 完整 validate 仍报告该现有 skill 缺少 `agents/interface.yaml`；独立组件校验均通过，本任务不新增该非必要接口。
 
 ## 技术附录
 

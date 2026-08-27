@@ -8,16 +8,16 @@ Kind: Plan
 - [x] T2: 报告只保留直接答案、need 范围内工作模型、关键证据链与验证锚点；learning focus 仅追加一个 Prediction 和至多一个当前源码 Transfer，不再生成课程化或宽泛 inventory。
 - [x] T3: scope、证据、运行授权、secret redaction、freshness、替换确认和 Node 标准库发布流程满足 no-clobber/旧 bytes 保留边界，并明确不承诺并发隔离、hostile TOCTOU 或 fsync durability。
 - [x] T4: contract/value/trigger/semantic fixtures、README、repo-map 路由边界及旧 PRD/任务状态与新合同一致；旧 docs/analysis/learning 历史报告保持不动。
-- [x] T5: JSON 可解析且人工核对，两个冻结 value case 各至少有一个 accepted attempt；trigger eval、Yao 结构校验、npm test 与 git diff --check 通过，resource boundary check 除项目规则允许的初始加载 token 超限外无其他失败。
+- [x] T5: JSON 可解析且人工核对，两个冻结 value case 各至少有一个 accepted attempt；trigger eval、local quality gate 结构校验、npm test 与 git diff --check 通过，resource boundary check 除项目规则允许的初始加载 token 超限外无其他失败。
 - [x] T6: analyze-project 的当前产品合同只生成一份系统化 project/component report；报告不以具体问题、Need 或单条行为链作为组织主轴。
 - [x] T7: 报告以 Scope Summary、按需 Domain Glossary、Functional Module Map、Core Working Flows、按需 Cross-flow Invariants 组织，并以源码锚点证明主要职责、功能边界和核心流程，同时排除穷举 inventory、审计与实施建议。
 - [x] T8: invocation、trigger/contract/semantic fixtures、README、repo-map 边界、PRD 状态、历史任务说明与 CTX-analyze-project 均反映系统化报告合同；旧 learning 报告与历史 eval artifacts 保持不动。
 - [x] T9: 一个禁用 ambient skill 的 fresh-context 子 Agent 使用当前 skill snapshot，在 ZHShortStory 重新生成系统化 project report；父 Agent 确认它覆盖主要功能模块和多条核心工作流，而不是回答单一细节问题，并打开报告。
-- [x] T10: JSON、trigger eval、Yao 结构/resource checks、npm test、Context 校验与 git diff --check 通过；除项目规则允许的 workflow 初始加载 token 超限外无阻塞失败。
+- [x] T10: JSON、trigger eval、local quality gate 结构/resource checks、npm test、Context 校验与 git diff --check 通过；除项目规则允许的 workflow 初始加载 token 超限外无阻塞失败。
 - [x] T11: 每份系统化报告都包含一张功能架构图；每条跨多模块、异步/外部边界、关键分支或重要状态迁移的复杂核心流程均有对应流程图，简单流程不被迫生成冗余图。
 - [x] T12: 图表按关系选择 architecture flowchart、sequence 或 state diagram；已有 Mermaid validator 时必须验证，无 validator 或验证失败时使用 ASCII 图而不是退化为纯文字，且图与职责表/步骤不重复同一信息。
 - [x] T13: contract fixtures、README 与 CTX-analyze-project 同步图表合同；fresh-context 子 Agent 使用当前 snapshot 再次替换 ZHShortStory 报告，父 Agent确认架构和复杂流程均有图并打开报告。
-- [x] T14: JSON、trigger eval、Yao/resource、npm test、Context 与 git diff --check 重新通过；除允许的初始加载 token 超限外无阻塞失败。
+- [x] T14: JSON、trigger eval、local quality gate/resource、npm test、Context 与 git diff --check 重新通过；除允许的初始加载 token 超限外无阻塞失败。
 - [x] T15: 报告 Metadata 的 `Scope` 显示被分析对象的 canonical absolute path，不再以 `.` 或 repo-relative path 表示；contract fixture 与 ZHShortStory fresh-context 报告同步并通过相关校验。
 - [x] T16: 所有必需架构与复杂流程图都以 Mermaid code fence 表达，不再生成或回退到 ASCII 字符图；skill、contract fixture、CTX-analyze-project 与 fresh-context ZHShortStory 报告同步并通过结构、证据和仓库校验。
 - [x] T17: 报告正文、表格与流程步骤中的每个源码证据锚点都使用 Markdown inline code 标记；skill、contract fixture、CTX-analyze-project 与 fresh-context ZHShortStory 报告同步，且不存在裸露的 `path#symbol` / `path#line` 证据。
@@ -62,16 +62,16 @@ Kind: Plan
 - T2: need-contract-v3 的 standard 与 learning 冻结报告分别为 31/233 与 54/361 行/词，均 accepted；learning 仅含一个 Prediction、一个 Transfer 与 Key。
 - T3: 人工核对 37 个声明式 contract cases；两份 accepted transcript 均执行 owned open(wx) temp 后 link 发布，合同明确 replacement、redaction、freshness 与不承诺边界。
 - T4: README、repo-map、两份旧 PRD、旧任务与 CTX-analyze-project 已同步；旧 docs/analysis/learning 的 git diff 为空，旧路径引用仅余明确历史/归档说明。
-- T5: JSON 解析为 37 个 contract 与 2 个 value case且 ID 唯一；v3 两案 accepted；trigger 26/26、npm test 83/83、git diff --check、Context/Lessons 校验通过；两 skill 的 Yao 结构校验通过，唯一允许的资源失败为 analyze-project 初始加载 1120>1000，repo-map 为 950。
+- T5: JSON 解析为 37 个 contract 与 2 个 value case且 ID 唯一；v3 两案 accepted；trigger 26/26、npm test 83/83、git diff --check、Context/Lessons 校验通过；两 skill 的 local quality gate 结构校验通过，唯一允许的资源失败为 analyze-project 初始加载 1120>1000，repo-map 为 950。
 - T6: 最终 SKILL 只定义系统化 project/component report；主调用为 target 加可选无差异 develop alias，Need、detail-answer 与 Learn 模式均被排除。
 - T7: report contract 固定 Scope Summary、可选 Glossary、6 列职责 Module Map、Core Working Flows 与可选 Invariants，并以系统覆盖门、就近源码锚点和 density gate 阻止单链问答与穷举 inventory。
 - T8: 46 个声明式 contract cases、trigger/semantic fixtures、interface、README、repo-map、Develop/Learn PRD 状态、历史任务说明与 CTX-analyze-project 已同步；value case 文件删除，旧 learning 报告和历史 eval artifacts 未改。
 - T9: fresh-context delegate a6424724 以 skill:false 读取当前 snapshot，在外部 temp cwd 获准安全替换 ZHShortStory 报告；最终 100 行/652 词，含 6 个功能模块、5 条核心流程、3 个跨流程不变量和 34 个有效 evidence files，已 open 打开。
-- T10: JSON 与 ID 校验通过；trigger 26/26、npm test 83/83、Context validate、git diff --check 通过；analyze-project 与 repo-map 的 Yao 结构检查通过，唯一允许的资源失败为 analyze-project 初始加载 1187>1000，repo-map 为 950。
+- T10: JSON 与 ID 校验通过；trigger 26/26、npm test 83/83、Context validate、git diff --check 通过；analyze-project 与 repo-map 的 local quality gate 结构检查通过，唯一允许的资源失败为 analyze-project 初始加载 1187>1000，repo-map 为 950。
 - T11: 父 Agent 核对最新 ZHShortStory 报告：Functional Module Map 前恰有 1 张功能架构图，7 条具备分支、外部协作、状态迁移或多模块顺序的核心流程各恰有 1 张图；52 个 contract cases 同时覆盖简单线性流程不强制图。
 - T12: 目标环境无 mmdc/mermaid/mermaid-cli；fresh-context 输出按合同保留 8 张 ASCII 图（1 架构、7 流程），架构图位于职责表前且每张流程图位于编号步骤前；父 Agent核对图负责结构/时序/分支/状态，表格和步骤负责语义、证据及失败出口。
 - T13: SKILL、report contract、52 个 contract cases、README 与 CTX-analyze-project 已同步；fresh-context delegate f9162f55 以 skill:false 读取当前 snapshot 并重新生成报告，父 Agent确认 6 个模块、7 条核心流程、8 张图、6 个跨流程不变量、35 个有效 evidence files，并已用 open 打开。
-- T14: JSON 可解析且 52 个 case ID 唯一；trigger eval 26/26、npm test 83/83、Context/Lessons、task check、report/diff whitespace 检查通过；repo-map Yao/resource 950<1000 全通过，analyze-project validate/lint/governance 通过，唯一允许失败为 initial-load 1281>1000（skill body 1085）。
+- T14: JSON 可解析且 52 个 case ID 唯一；trigger eval 26/26、npm test 83/83、Context/Lessons、task check、report/diff whitespace 检查通过；repo-map local quality gate/resource 950<1000 全通过，analyze-project validate/lint/governance 通过，唯一允许失败为 initial-load 1281>1000（skill body 1085）。
 - T15: report contract 与第 53 个声明式 case 已要求 canonical absolute target path；fresh-context delegate 2902062e 从 symlink 调用解析到 canonical root 并完整重生成报告，首行精确为 /Users/caishilin/Desktop/work/zhihu_components/ZHShortStory，父 Agent确认 7 个模块、5 条核心流程、6 张图、41 个有效 evidence files、无尾随空白，并已 open 打开。
 - T16: SKILL、report contract、README、第 54 个声明式 case 与 CTX-analyze-project 已改为 Mermaid-only；fresh-context pi-agent 32df0175 完整重分析并替换 ZHShortStory 报告，父 Agent确认 1 张 Mermaid 架构图与 7 张 Mermaid 复杂流程图、0 个 text fence/ASCII 图、39 个有效 evidence files、canonical absolute Scope 和无尾随空白，并已 open 打开。
 - T17: SKILL、report contract、第 55 个声明式 case 与 CTX-analyze-project 已要求每个证据锚点单独使用 Markdown inline code；fresh-context run 在 transport abort 前安全发布完整报告，父 Agent确认 176/176 个 path#anchor 均分别包裹、0 裸露锚点、34 个 evidence files 全部存在，并已用 open 打开。
@@ -80,4 +80,4 @@ Kind: Plan
 
 ## Verification
 
-- Passed: 55 个 contract cases JSON/ID 通过；ZHShortStory 报告含 7 张 Mermaid、6 条核心流程、274 个独立 Markdown 证据 bullet、56 个有效证据文件；npm test 83/83、Context/Lessons/task 与 git diff --check 通过；Yao validate/lint/governance 通过，唯一资源失败为规则允许的 initial-load 1382>1000。
+- Passed: 55 个 contract cases JSON/ID 通过；ZHShortStory 报告含 7 张 Mermaid、6 条核心流程、274 个独立 Markdown 证据 bullet、56 个有效证据文件；npm test 83/83、Context/Lessons/task 与 git diff --check 通过；local quality gate validate/lint/governance 通过，唯一资源失败为规则允许的 initial-load 1382>1000。

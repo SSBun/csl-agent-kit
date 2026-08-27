@@ -19,14 +19,14 @@ Kind: Task
 1. 盘点 `code-review` 的当前发现入口、消费者、运行时契约与验证资产。
 2. 原位迁移 skill package，并以最小改动实现已确认的通用任务审查流程和输出契约。
 3. 同步当前 README、manifest、相邻 skill 引用、发现测试与评测，清理旧公开身份。
-4. 运行聚焦测试、路由与契约评测、Yao、resource boundary、发布发现检查和差异检查。
+4. 运行聚焦测试、路由与契约评测、local quality gate、resource boundary、发布发现检查和差异检查。
 
 ## Result
 
 - T1: skills/dev/task-review 已成为唯一当前普通审查 skill；README、plugin manifests、package keyword、Pi 发现测试与相邻引用均改用 task-review，当前源码中的 code-review 仅剩明确的负向缺失断言。
 - T2: SKILL.md 固定明确请求、目标优先级、单个 fresh 只读 subagent、non-independent fallback 与单次反馈边界；routing eval 26/26。
 - T3: SKILL.md 与 contract_cases.json 覆盖代码、文档/设计、配置/资产、无文件结果、Critical Findings、Concerns、Unverified Risks 及禁止修改/复审/批准/报告。
-- T4: quick_validate、Yao（含 998/1000 resource boundary）、task-review 26/26 与 adversarial-review 28/28 路由、deterministic contract、Pi alias、npm pack、CLI install dry-run、JSON、英文 runtime prose 与 git diff checks 均通过；标准测试入口仍被 HEAD 基线中的旧 sop 路径和 grill 期望阻断。
+- T4: quick_validate、local quality gate（含 998/1000 resource boundary）、task-review 26/26 与 adversarial-review 28/28 路由、deterministic contract、Pi alias、npm pack、CLI install dry-run、JSON、英文 runtime prose 与 git diff checks 均通过；标准测试入口仍被 HEAD 基线中的旧 sop 路径和 grill 期望阻断。
 - Review gate: Skipped — 用户未要求 adversarial review、Reviewer–Editor 修复闭环或独立批准。
 
 ## Verification

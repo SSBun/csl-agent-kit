@@ -13,4 +13,4 @@
 - Installer 会先移除新 identity 以支持幂等重装，再清理 `csl@CSL`、`csl@csl` 及旧 marketplaces，最后安装 `csl-agent-kit@csl-agent-market`；新增 CLI regression test 固定该命令序列。
 - 本机 `/Users/caishilin/.codex/config.toml` 和旧 cache 已清理；`codex plugin list` 只显示一个启用项 `csl-agent-kit@csl-agent-market`，连续运行 installer 两次仍保持单一注册。
 - `npm run check` 共通过 27 项测试（CLI 7、tips 13、Pi 7）；manifest contract、hook parity、npm pack 和 `git diff --check` 通过。
-- Yao audit 不适用：本轮未修改 agent rule、skill、SOP 或 hook 定义，只修改 Codex distribution identity、installer、文档和测试。
+- local quality gate audit 不适用：本轮未修改 agent rule、skill、SOP 或 hook 定义，只修改 Codex distribution identity、installer、文档和测试。

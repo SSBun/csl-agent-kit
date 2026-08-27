@@ -6,7 +6,7 @@
 - [x] Remove `Lessons` from the SOP creation template and quality checklist.
 - [x] Change `sop-manager learn` guidance so reusable corrections update the SOP directly.
 - [x] Record the correction in `tasks/lessons.md`.
-- [x] Validate the skill and audit with `yao-meta-skill`.
+- [x] Validate the skill and audit with `skill-quality`.
 
 ## Review
 
@@ -21,9 +21,9 @@ Verification performed:
 - Asserted the example no longer contains `Lessons`.
 - Asserted `skills/sop-manager/SKILL.md` no longer contains `## Lessons` or companion lesson guidance.
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sop-manager`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 - `rg -n "Lessons|companion lesson|直接更新到对应 SOP 正文|完成标准使用 checkbox" skills/sop-manager/SKILL.md skills/sop-manager/references/good-sop-example.md`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.

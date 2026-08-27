@@ -219,6 +219,6 @@ Outside Default Migration, do not bulk-migrate legacy content. When work materia
 
 ## Maintainer Validation
 
-Keep the CLI contract, focused tests, `evals/query_cases.json`, `evals/context_value_cases.json`, and `evals/trigger_cases.json` aligned. Run the script self-test, actual Context validation, focused task tests, applicable routing evaluation, OpenAI validation, Yao validation, resource-boundary check, and `git diff --check`.
+Keep the CLI contract, focused tests, `evals/query_cases.json`, `evals/context_value_cases.json`, and `evals/trigger_cases.json` aligned. Run the script self-test, actual Context validation, authorized focused task tests, the built-in `$skill-quality` gate against this package, and `git diff --check`.
 
-The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget` against its 1000-token initial-load budget. Syntax, frontmatter, governance, tests, routing, script trust, and every other check remain blocking. Never delete, distort, or split core workflow guidance merely to satisfy the initial-load budget.
+Quality failures block completion. Review warnings, but never delete, distort, or split core workflow guidance merely to satisfy the initial-load budget.

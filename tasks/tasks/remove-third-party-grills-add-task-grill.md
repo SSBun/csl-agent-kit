@@ -17,12 +17,12 @@
 - [x] Delete grill-me and grill-with-docs dirs (git rm)
 - [x] Create skills/task-grill/SKILL.md + agents/interface.yaml (English, per lessons rule)
 - [x] Update README table/CLI examples + 3 plugin.json lists (grill-me → task-grill, grill-with-docs row removed)
-- [x] yao-meta-skill validation: all 4 checks pass
+- [x] skill-quality validation: all 4 checks pass
 
 ## Result
 
 - Removed `skills/mattpocock/grill-me` and `skills/mattpocock/grill-with-docs`; `grilling` retained (dependency of `improve-codebase-architecture`).
 - New personal skill `skills/task-grill/`: grilling interview rules + task-recording rules (no grill dialogue into an existing task's file; standalone topics get a new canonical task).
 - References updated: README (table row, conflict note, `npx skills add/remove` examples), `.cursor-plugin` / `.claude-plugin` / `.codex-plugin` plugin.json.
-- Validation: yao validate all ok; resource boundary ok (375 tokens initial load).
+- Validation: local quality gate validate all ok; resource boundary ok (375 tokens initial load).
 - Not committed (not requested).

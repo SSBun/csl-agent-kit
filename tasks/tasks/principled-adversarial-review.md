@@ -15,7 +15,7 @@
 - [x] 在现有契约中定义共同原则、核心概念与裁决顺序。
 - [x] 更新 Reviewer 输出和 Editor 回答契约，保留接受、缩小、拒绝、确认和用户决定路径。
 - [x] 更新文件化报告格式和回归评测。
-- [x] 运行 Skill Creator、Yao、仓库检查、前向试用与独立复审。
+- [x] 运行 Skill Creator、local quality gate、仓库检查、前向试用与独立复审。
 
 ## Review status
 
@@ -33,4 +33,4 @@
 - 无证据 BLOCKER 前向测试：在进入 Editor 前省略，不进入台账。
 - 过度全局方案前向测试：Editor 选择 `NARROW`，保留局部最小充分解法。
 - 独立复审发现并关闭 R1：无 Suggested Remedy 的有效 Finding 现在可由 Editor 选择最小充分解法。
-- 仓库检查、Skill Creator 校验、Yao lint/resource/IR、trigger eval、JSON 解析、diff check 与插件缓存一致性均通过。
+- 仓库检查、Skill Creator 校验、local quality gate lint/resource/IR、trigger eval、JSON 解析、diff check 与插件缓存一致性均通过。

@@ -41,4 +41,4 @@ Reply only with the absolute Markdown-linked report path, one blocker/question, 
 
 ## Maintenance
 
-Contract cases are declarative; value cases are exactly two. Run trigger, Yao, and resource checks after changes.
+Contract cases are declarative; value cases are exactly two. Run trigger, local quality gate, and resource checks after changes.

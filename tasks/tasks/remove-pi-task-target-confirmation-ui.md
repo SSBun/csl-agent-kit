@@ -23,4 +23,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: Context 校验、TypeScript/JavaScript 语法、静态契约与 git diff 检查通过；Yao syntax/lint/governance 通过，仅有规则允许的初始加载 token 预算超限。按用户规则未运行测试套件。
+- Passed: Context 校验、TypeScript/JavaScript 语法、静态契约与 git diff 检查通过；local quality gate syntax/lint/governance 通过，仅有规则允许的初始加载 token 预算超限。按用户规则未运行测试套件。

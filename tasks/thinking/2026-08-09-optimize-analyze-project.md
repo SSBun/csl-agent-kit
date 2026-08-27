@@ -605,15 +605,7 @@ transcript 如需 secret redaction，使用占位符并在 manifest 说明发生
 令 `$ROOT` 指向 [`"/Users/caishilin/Desktop/personal/skills"`](file:///Users/caishilin/Desktop/personal/skills)，实施后执行：
 
 ```bash
-python3 ~/.codex/skills/yao-meta-skill/scripts/trigger_eval.py \
-  --description "$NEW_DESCRIPTION" \
-  --cases "$ROOT/skills/analyze-project/evals/trigger_cases.json" \
-  --semantic-config "$ROOT/skills/analyze-project/evals/semantic_config.json"
-
-python3 ~/.codex/skills/yao-meta-skill/scripts/yao.py \
-  validate "$ROOT/skills/analyze-project"
-
-python3 ~/.codex/skills/yao-meta-skill/scripts/resource_boundary_check.py \
+node skills/meta/skill-quality/scripts/check.js \
   "$ROOT/skills/analyze-project"
 
 npm test

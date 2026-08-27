@@ -6,7 +6,7 @@
 - [x] Replace product-style sections with agent behavior guidance.
 - [x] Keep confirmation gates, error handling, success criteria, and lessons.
 - [x] Record the correction in `tasks/lessons.md`.
-- [x] Validate the example and audit with `yao-meta-skill`.
+- [x] Validate the example and audit with `skill-quality`.
 
 ## Review
 
@@ -25,9 +25,9 @@ Verification performed:
 - Asserted `## 6. 完成标准` contains checkbox items.
 - Asserted `skills/sop-manager/SKILL.md` no longer suggests `owner` in the creation template.
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sop-manager`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 - `rg -n "^## 6\\. 完成标准|^- \\[ \\]" skills/sop-manager/references/good-sop-example.md`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint, governance check, and resource boundary check passed.

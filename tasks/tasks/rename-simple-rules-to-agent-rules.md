@@ -23,4 +23,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 非测试验证通过：语法、Hook status、注入 smoke、清单路径、重命名路径/权限、git diff --check；agent-rules Yao/resource 通过，triggerify 仅有规则允许的 1381>1000 initial-load token budget 失败。按全局规则未运行单元测试。
+- Passed: 非测试验证通过：语法、Hook status、注入 smoke、清单路径、重命名路径/权限、git diff --check；agent-rules local quality gate/resource 通过，triggerify 仅有规则允许的 1381>1000 initial-load token budget 失败。按全局规则未运行单元测试。

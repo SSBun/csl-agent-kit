@@ -12,14 +12,14 @@ Kind: Plan
 - [x] T1: 新 Agent 在 session start/resume/compaction 加载 Project Core，并在接收任务后通过 `core/index/show` 获得通常 1–3 个完整 Context Packs，无需重新进行宽泛 repo exploration 或项目分析。
 - [x] T2: 单一 `tasks/context.md` 包含可校验的 Project Core 与稳定 `CTX-*` Packs；Pack metadata、允许的正文 sections、Authority、Recheck 和分级写入权限符合已批准契约。
 - [x] T3: 当前已确认内容生成最小 Project Core，现有 Components/Relationships/Decisions 保持 legacy 并可由临时 hash IDs 查询；只有实际触及的内容才渐进迁移为正式 Pack。
-- [x] T4: 默认 Agent rules、workflow gates 与 `csl-task` 不再要求无差别读取完整 Context；CLI self-test、focused tests、query/admission eval、routing、OpenAI validation、Yao、resource-boundary 和 `git diff --check` 满足最终门禁。
+- [x] T4: 默认 Agent rules、workflow gates 与 `csl-task` 不再要求无差别读取完整 Context；CLI self-test、focused tests、query/admission eval、routing、OpenAI validation、local quality gate、resource-boundary 和 `git diff --check` 满足最终门禁。
 
 ## Decisions
 
 - Context 的首要责任是让任务可直接 dispatch 给新 Agent，使其无需重新进行宽泛 repo exploration 或项目分析；检索可靠性与 record 质量服务于这一目标。
 - 优先目标同时包含检索与应用可靠性、record 质量和可解析性；单纯压缩 token 或清理当前数据不是主目标。
 - 保留 Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；Tasks、Lessons、rules、SOP、ADR 与实时状态继续由各自载体负责。
-- 当前 `SKILL.md` 的 admission、mutable value、temporary fact 与 same-work maintenance 语义是基线，不得为了缩短文件或通过 Yao token 预算而失真。
+- 当前 `SKILL.md` 的 admission、mutable value、temporary fact 与 same-work maintenance 语义是基线，不得为了缩短文件或通过 local quality gate token 预算而失真。
 - 当前 `tasks/context.md` 约 21 KB，使用 section 下的自由格式 bullets，无稳定 record ID 或确定性 query boundary；现有 contract tests 主要验证 admission 语义，不验证任务相关检索。
 - Context 必须同时提供最小 Project Core（项目定位、术语、组件边界和关键关系）与任务相关 records；只做后者会让新 Agent 缺少形成正确 Task Fingerprint 的词汇。
 - “无需重新探索”明确指跳过宽泛 repo exploration、repo-map 和重复架构分析；新 Agent 仍须读取 Context 指向的任务直接相关源码与测试，并验证可能变化或高后果的事实。
@@ -49,7 +49,7 @@ Kind: Plan
 2. 用 Node 标准库实现只读 `core/index/show/validate/--self-test` CLI，覆盖 v1 Packs、legacy bullets、缺失/无效 Core、duplicate IDs 与 deterministic diagnostics。
 3. 从当前已确认内容 bootstrap 最小 Project Core，保留 legacy sections；同步默认 Agent rules、workflow gates 与 `csl-task` 的 Context consumer wording。
 4. 扩展 focused contract/CLI tests、query/admission fixtures 与 routing cases，验证同一候选 Context 的生产、查询、消费和渐进迁移边界。
-5. 运行 CLI self-test、实际 Context 校验、相关 Node tests、routing、OpenAI validation、所有受影响 skill 的 Yao/resource-boundary、残留搜索、`git diff --check` 与 CSL Tasks 门禁。
+5. 运行 CLI self-test、实际 Context 校验、相关 Node tests、routing、OpenAI validation、所有受影响 skill 的 local quality gate/resource-boundary、残留搜索、`git diff --check` 与 CSL Tasks 门禁。
 
 ## Result
 
@@ -61,4 +61,4 @@ Kind: Plan
 
 ## Verification
 
-- Passed: `npm test` 全绿；Context CLI self-test/actual validate、routing eval、OpenAI quick validation、symlink consumer comparison 与 git diff check 通过；两项 Yao 仅有已允许的 1000-token initial-load overage。
+- Passed: `npm test` 全绿；Context CLI self-test/actual validate、routing eval、OpenAI quick validation、symlink consumer comparison 与 git diff check 通过；两项 local quality gate 仅有已允许的 1000-token initial-load overage。

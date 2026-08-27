@@ -24,4 +24,4 @@ Parent: fix-selected-audit-findings
 
 ## Verification
 
-- Passed: 直接行为 smoke、脚本与相邻回归文件语法检查、Context validate、whitespace check 均通过；Yao 除既有且允许非阻塞的 1463>1000 initial-load token 预算外其余门禁通过。
+- Passed: 直接行为 smoke、脚本与相邻回归文件语法检查、Context validate、whitespace check 均通过；local quality gate 除既有且允许非阻塞的 1463>1000 initial-load token 预算外其余门禁通过。

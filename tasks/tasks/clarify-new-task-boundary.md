@@ -25,5 +25,5 @@ Status: Completed (2026-08-01 13:43)
 - T1：`workspace-manage-task` 现在明确要求每个可独立验收的新用户 outcome 默认创建新 canonical task；组件、文件、主题或实现重叠不能建立 ownership，歧义场景固定选择 New。
 - T2：旧任务只有在请求直接修正、补全或重新验证同一 outcome，且保持现有 Target/Result 会造成不完整或误导时才拥有该请求；completed task 仅在这一边界成立时重开。
 - T3：新增 7 个 ownership cases；`npm run test:tasks` 通过 14/14，覆盖 release CI 与文档纠错的 Reopen，以及同 skill 新行为、同组件新功能、新会话独立改进和歧义场景的 New。
-- T4：Skill Creator quick validation 通过；Yao syntax/frontmatter、lint 和 governance 通过，resource boundary 仅保留 workflow skill 已允许的初始加载 token 超限（2058/1000）；task index 检查与 `git diff --check` 通过。
+- T4：Skill Creator quick validation 通过；local quality gate syntax/frontmatter、lint 和 governance 通过，resource boundary 仅保留 workflow skill 已允许的初始加载 token 超限（2058/1000）；task index 检查与 `git diff --check` 通过。
 - Review gate: Skipped — no explicit user request.

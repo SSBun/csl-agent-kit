@@ -43,7 +43,7 @@
 - `npm run test:tasks` — 131/131 任务文件、索引状态及四份报告互链通过
 - Migration content check — 127 条字节一致；2 条仅改变迁移必需的报告相对路径
 - `npm run check` — 56 tests 与安装 dry-run passed
-- Skill Creator、Yao lint/resource/governance/Skill IR、trigger eval 21/21 与 JSON parse — passed
+- Skill Creator、local quality gate lint/resource/governance/schema validation、trigger eval 21/21 与 JSON parse — passed
 - 全局 `~/.agents/AGENTS.md` symlink 仍指向更新后的默认规则源
 - `git diff --cached --check` — passed
 - `RE-REVIEW (4)` — APPROVED；R2-1、R3-1、R3-2 全部关闭

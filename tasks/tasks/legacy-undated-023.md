@@ -13,4 +13,4 @@
 - 新增 `skills/integrate-third-skills/`：接收第三方技能仓库链接后先列候选、等待选择，再按来源分组导入；它要求逐技能元数据、保留许可证、显式处理重名与本地修改，并禁止把源码导入误当作 `~/.agents/skills` 安装。
 - README 已说明第三方目录与元数据约定，技能总数更新为 28；CLI/Pi 回归测试验证新技能被发现，CLI 测试还验证现有第三方叶子和来源数据一一对应。
 - `env -u NO_COLOR npm run check` 通过 40 项测试；`npx skills add . --list --full-depth` 发现 28 项；`npm pack --dry-run --json` 包含新流程和全部来源文件；`git diff --check` 通过。未运行真实安装、发布或推送，`~/.agents/skills` 保持为空。
-- `yao-meta-skill` 的 lint、资源边界和治理审计通过；资源边界为 361/1,000 初始 token，路由 eval 10/10 通过。治理仅警告全项目采用的无 `manifest.json` 约定；聚合 `validate_skill.py` 仅要求未采用的 `agents/interface.yaml`，按既有“避免一次性 agents 元数据目录”约定不新增该目录。
+- `skill-quality` 的 lint、资源边界和治理审计通过；资源边界为 361/1,000 初始 token，路由 eval 10/10 通过。治理仅警告全项目采用的无 `manifest.json` 约定；聚合 `validate_skill.py` 仅要求未采用的 `agents/interface.yaml`，按既有“避免一次性 agents 元数据目录”约定不新增该目录。

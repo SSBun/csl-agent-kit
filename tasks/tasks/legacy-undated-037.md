@@ -24,7 +24,7 @@
 - [x] 先补回归测试，明确所有 tips 都会被静默检查，但 `"*"` 不是合法关键词且不会匹配每条 prompt。
 - [x] 移除 wildcard 校验与匹配分支，并更新 skill、诊断和相关说明。
 - [x] 通过共享 JSON 写入逻辑删除本地 `DO NOT send optional commentary` tip，不改动其余 5 条。
-- [x] 运行聚焦与全量验证、打包检查和必需的 `yao-meta-skill` 审计。
+- [x] 运行聚焦与全量验证、打包检查和必需的 `skill-quality` 审计。
 
 ### 复核
 
@@ -32,7 +32,7 @@
 - 测试先行确认 RED：新增 `"*"` 能写入且会命中任意 prompt；实现后 `tips` 的 18 个测试和 Pi 的 9 个测试均通过。
 - 本地 JSON 在文件锁内按精确正文删除目标条目，再用共享原子写入器校验；现在保留 5 条显式关键词 tips，未命中 prompt 不输出任何 tip。
 - `env -u NO_COLOR npm run check` 通过 34 个测试与 install dry-run；Bash/Node/JSON 静态检查、manifest parity、`npm pack --dry-run`（82 个文件）和 `git diff --check` 通过。
-- `yao-meta-skill` 的 lint、governance、resource-boundary 通过；聚合校验仍仅报告既有的 `Missing agents/interface.yaml`，并提示可选的 `manifest.json` 未提供。
+- `skill-quality` 的 lint、governance、resource-boundary 通过；聚合校验仍仅报告既有的 `Missing agents/interface.yaml`，并提示可选的 `manifest.json` 未提供。
 - 已有会话历史中的旧完整 tips developer context 无法由 hook 删除；新会话和后续 prompt 不会再注入该 wildcard tip。
 
 ## 计划
@@ -42,7 +42,7 @@
 - [x] 将 tips 改为按 prompt 关键词匹配，只把命中的 tip 注入对应 turn 的上下文。
 - [x] 更新跨客户端实现、诊断、文档与回归测试。
 - [x] 按用户确认的 150 字符单条上限迁移本地数据，并重装本地 Codex plugin。
-- [x] 完成全量静态、打包与 `yao-meta-skill` 审计。
+- [x] 完成全量静态、打包与 `skill-quality` 审计。
 
 ## 复核
 
@@ -51,5 +51,5 @@
 - 已迁移 `/Users/caishilin/.csl-agent-kit/tips/tips.md`：现在有 6 条 JSON tips，旧文件安全保留为 `tips.md.bak`，`tips-doctor.sh` 未报告数据或 lifecycle 警告。
 - `csl-agent-kit@csl-agent-market` 已重新安装并启用，来源为当前工作区。
 - `env -u NO_COLOR npm run check` 通过 32 个测试与 install dry-run；Bash/Node/JSON 静态检查、hook manifest parity、`npm pack --dry-run`（82 个文件且包含新运行时脚本）和 `git diff --check` 均通过。
-- `yao-meta-skill` 的 lint、governance、resource-boundary 检查通过；聚合校验仅报告既有的 `Missing agents/interface.yaml`，governance 另提示未提供可选 `manifest.json`。
+- `skill-quality` 的 lint、governance、resource-boundary 检查通过；聚合校验仅报告既有的 `Missing agents/interface.yaml`，governance 另提示未提供可选 `manifest.json`。
 - 对抗性复核覆盖 150/151 字符边界、失败迁移不改动原文件、目标/源同路径拒绝、JSON 候选只命中相关 tip、`"*"` 全局匹配与旧 Markdown 备份；未发现需要修复的问题。

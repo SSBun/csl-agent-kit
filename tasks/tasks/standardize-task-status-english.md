@@ -39,5 +39,5 @@ Status: Completed (2026-07-21)
 - 交付：生命周期转换和用户纠正规则使用相同的英文状态词。
 - 验证：`workspace-manage-task` Skill 结构校验通过。
 - 验证：状态词定向契约测试通过。
-- 验证：`yao-meta-skill` 规则审计和 `git diff --check` 通过。
+- 验证：`skill-quality` 规则审计和 `git diff --check` 通过。
 - 边界：既有任务文件及索引中的历史中文状态未迁移。

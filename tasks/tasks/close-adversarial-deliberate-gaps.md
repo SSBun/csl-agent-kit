@@ -18,14 +18,14 @@
 
 1. 收紧语义路由概念并增加边界回归用例。
 2. 在核心 workflow 指引和 fixture 中闭合进展与 ledger 契约。
-3. 运行聚焦验证、Yao 审计与风险匹配的审查门禁。
+3. 运行聚焦验证、local quality gate 审计与风险匹配的审查门禁。
 
 ## Result
 
 - T1: `trigger_eval.py` 对 10 条正例、8 条反例和 13 条近邻用例全部通过；新用例同时覆盖裸角色名误触发与非审批 `adversarial review` 漏触发。
 - T2: `SKILL.md` 现要求 `CONTINUE` 引用实质性开放 D-ID 并说明下一轮具体变化；`material_continue` fixture 覆盖无进展退出。
 - T3: `SKILL.md` 固定 T-ID、单调分配且不复用 D-ID，并要求全量 D-ID 复审和全主题闭环；`ledger_closure` fixture 覆盖该契约。
-- T4: Skill Creator quick validation 通过；Yao 的 structure、lint、governance 和非预算 resource checks 通过，仅保留允许的 1302/1000 initial-load token 告警；`npm run check` 全部通过，包含 CLI、Triggerify、task、Pi 与 install dry-run。
+- T4: Skill Creator quick validation 通过；local quality gate 的 structure、lint、governance 和非预算 resource checks 通过，仅保留允许的 1302/1000 initial-load token 告警；`npm run check` 全部通过，包含 CLI、Triggerify、task、Pi 与 install dry-run。
 - Review gate: Required — 修改共享多 Agent 循环的终止和完成判定，属于全局 Agent lifecycle 风险。
 - Review decision: `APPROVED` — 独立 Reviewer 在 `INITIAL (1)` 完整检查后无未解决项。
 - Report: [Adversarial review report](../../reports/adversarial-review/close-adversarial-deliberate-gaps.md)

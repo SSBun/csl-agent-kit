@@ -62,14 +62,14 @@
 ## Verification
 
 - Skill Creator quick validation — 通过。
-- Yao lint/resource boundary — 通过；入口 646 tokens，无资源边界 warning。
+- local quality gate lint/resource boundary — 通过；入口 646 tokens，无资源边界 warning。
 - Trigger eval — 24/24 通过，precision/recall 均为 1.0。
 - Contract cases — 28/28 结构与唯一 ID 验证通过。
 - `npm run check` — 53 项测试与 Codex 安装 dry-run 通过。
 - Develop forward test — 无本地 Mermaid validator 时零写入，隔离工作树 clean。
 - Learn forward test — 在隔离仓库生成一份 file-scope guide；独立 Judge 核验路径、schema、覆盖链、材料顺序、Agent 语义及全部源码锚点后通过。
-- Yao Skill IR validate-only — 通过。
-- Limitations: Yao 完整 `validate` 仍报告本仓库内置 skill 的既有 `agents/interface.yaml` 发布元数据差异；lint、governance 与 resource boundary 单项通过。
+- skill schema validation validate-only — 通过。
+- Limitations: local quality gate 完整 `validate` 仍报告本仓库内置 skill 的既有 `agents/interface.yaml` 发布元数据差异；lint、governance 与 resource boundary 单项通过。
 
 ## Unresolved items
 

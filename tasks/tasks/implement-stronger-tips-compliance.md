@@ -8,7 +8,7 @@
 - [x] Wire complete tips injection into every supported per-turn lifecycle while preserving session and compaction coverage.
 - [x] Extend doctor diagnostics for limits, malformed data, injection preview, and lifecycle coverage.
 - [x] Update user-facing skill guidance and trigger evaluations without broadening automatic capture.
-- [x] Run focused tests, shell/static checks, diff review, and the required `yao-meta-skill` audit.
+- [x] Run focused tests, shell/static checks, diff review, and the required `skill-quality` audit.
 
 ## Review
 
@@ -27,7 +27,7 @@ Verification performed:
 - `npm run check`: 6 CLI tests, 8 tips tests, and 4 Pi tests passed; install dry-run passed.
 - Trigger evaluation: 0 false positives, 0 false negatives, precision 1.0, recall 1.0 across 20 cases.
 - Bash syntax, JSON parsing, hook parity, TypeScript no-emit check, Unicode 120/121-character boundary, doctor lifecycle smoke test, and `git diff --check` passed.
-- Required `yao-meta-skill` audit ran: lint, governance, and resource-boundary checks passed; the aggregate validator still reports the repository-wide packaging convention gap `Missing agents/interface.yaml`, which predates this change and is not added speculatively for tips alone.
+- Required `skill-quality` audit ran: lint, governance, and resource-boundary checks passed; the aggregate validator still reports the repository-wide packaging convention gap `Missing agents/interface.yaml`, which predates this change and is not added speculatively for tips alone.
 
 Unresolved risk:
 

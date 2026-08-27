@@ -52,4 +52,4 @@ Never use `APPROVED`, `READY`, or merge/completion authorization language.
 
 ## References
 
-Use `references/review_workflow.md` for evidence boundaries and the bundled code references for code. Maintainers run `evals/`, Yao, and the resource check.
+Use `references/review_workflow.md` for evidence boundaries and bundled code references. Maintainers align `evals/` and run authorized checks plus `$skill-quality`.

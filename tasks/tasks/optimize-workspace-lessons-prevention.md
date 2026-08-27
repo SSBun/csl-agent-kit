@@ -21,14 +21,14 @@ Kind: Task
 
 1. 对齐主 Skill 与发现元数据中的防复发语义和载体边界。
 2. 用最小聚焦断言固定新增契约，不修改 parser 或数据格式。
-3. 运行非测试型结构、Yao、resource-boundary 与差异校验并记录限制。
+3. 运行非测试型结构、local quality gate、resource-boundary 与差异校验并记录限制。
 
 ## Result
 
 - T1: 主 SKILL 与两份 Agent metadata 已将 Lesson 收敛为防复发控制：新增 Admission Gate，收紧 Trigger/Rule/Check 语义，并以聚焦契约断言固定关键要求。
-- T2: 机械控制优先、Check 阻塞完成和复发后修订闭环已写入主契约；parser、query cases 与 routing cases 无差异，Yao 除允许的 2667/1000 initial-load token 超限外通过。
+- T2: 机械控制优先、Check 阻塞完成和复发后修订闭环已写入主契约；parser、query cases 与 routing cases 无差异，local quality gate 除允许的 2667/1000 initial-load token 超限外通过。
 - Review gate: Skipped — 用户未要求 adversarial review、双 Agent Reviewer–Editor 循环或独立 Reviewer 批准。
 
 ## Verification
 
-- Passed: OpenAI quick validation、Yao syntax/lint/governance、13/13 routing、Node syntax、Lessons/Context validation 与 git diff --check 通过；仅保留允许的 Yao token-budget 超限，按用户规则未运行单元测试。
+- Passed: OpenAI quick validation、local quality gate syntax/lint/governance、13/13 routing、Node syntax、Lessons/Context validation 与 git diff --check 通过；仅保留允许的 local quality gate token-budget 超限，按用户规则未运行单元测试。

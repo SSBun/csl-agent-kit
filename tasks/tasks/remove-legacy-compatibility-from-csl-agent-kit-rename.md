@@ -33,7 +33,7 @@ Verification performed:
 - Active-surface stale compatibility grep: `rg -n "/CSL:|CSL@|csl@CSL|~/.cursor/plugins/local/CSL|\\.ssbun-skills|~/.ssbun-skills|SSBUN_TIPS|SSBUN|ssbun-skills|Renamed ~/.ssbun|legacy" README.md scripts hooks .codex-plugin/hooks skills .claude-plugin .cursor-plugin .codex-plugin .agents tasks/lessons.md`
 - `git diff --check -- README.md scripts/install.sh skills/tips/scripts/tips-add.sh skills/tips/scripts/tips-inject.sh skills/tips/scripts/tips-doctor.sh skills/sop-manager/scripts/sop-summaries.sh skills/sop-manager/scripts/sop-candidates.js skills/figma-describe/SKILL.md .claude-plugin/plugin.json .cursor-plugin/plugin.json .claude-plugin/marketplace.json .cursor-plugin/marketplace.json .agents/plugins/marketplace.json tasks/lessons.md tasks/todo.md`
 
-Yao audit:
+local quality gate audit:
 
 - `quick_validate.py` passed for `skills/tips`, `skills/sop-manager`, and `skills/figma-describe`.
-- `yao.py validate` still reports the pre-existing `Missing agents/interface.yaml` issue for those skills; lint, governance, and resource-boundary checks passed. `sop-manager` still has the existing heavy `SKILL.md` warning.
+- `check.js` still reports the pre-existing `Missing agents/interface.yaml` issue for those skills; lint, governance, and resource-boundary checks passed. `sop-manager` still has the existing heavy `SKILL.md` warning.

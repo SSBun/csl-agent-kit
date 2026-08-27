@@ -33,4 +33,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: npm run check, focused final hook tests, three routing evals, Context and Lessons validation, skill audits, and git diff --check passed; Yao reported only permitted workflow token-budget warnings.
+- Passed: npm run check, focused final hook tests, three routing evals, Context and Lessons validation, skill audits, and git diff --check passed; local quality gate reported only permitted workflow token-budget warnings.

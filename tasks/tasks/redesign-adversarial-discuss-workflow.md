@@ -15,7 +15,7 @@
 - [x] 核对当前 skill、评测、清单和仓库验证入口，确定最小变更范围。
 - [x] 更新角色契约、内部优先路由、User Decision Gate 与完整批处理协议。
 - [x] 更新相关评测、README/清单和工作区事实；记录本次用户纠正形成的可复用 lesson。
-- [x] 运行 Skill Creator、Yao Meta Skill、仓库测试、安装/打包检查及前向试用。
+- [x] 运行 Skill Creator、Skill Quality、仓库测试、安装/打包检查及前向试用。
 - [x] 对最终 artifact 与 diff 运行独立 adversarial review，修复全部阻塞项后完成任务。
 
 ## 边界
@@ -40,4 +40,4 @@
 - INITIAL (1) 报告 R1：`discuss internally first`、`完整批次` 等短语可脱离角色/循环语境单独命中，需收窄语义并补中英文反例。
 - Editor 接受 R1：删除四个通用正向 phrase，新增两个无显式否定词的普通 brainstorming 近邻用例；trigger eval 26/26。
 - 同一 Reviewer 在 RE-REVIEW (2) 关闭 R1；最终 fingerprint 为 `7e8ab6f0f5428c6b12723974f98d8708908bc44a4e105dd045894411ab8ffbf1`。
-- `npm run check`、安装/打包 dry-run、Skill Creator、Yao lint/resource boundary/Skill IR、26/26 trigger eval、JSON 与 diff 检查均通过。
+- `npm run check`、安装/打包 dry-run、Skill Creator、local quality gate lint/resource boundary/schema validation、26/26 trigger eval、JSON 与 diff 检查均通过。

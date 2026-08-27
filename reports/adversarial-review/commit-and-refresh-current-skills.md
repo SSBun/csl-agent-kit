@@ -41,7 +41,7 @@
 
 - `npm run check` — 56 项测试与安装 dry-run 通过。
 - Skill Creator quick validation — `adversarial-review` 与 `adversarial-discuss` 均通过。
-- Yao lint 与 resource boundary — 两项 skill 均通过，入口分别为 886/1,000 与 897/1,000 tokens。
+- local quality gate lint 与 resource boundary — 两项 skill 均通过，入口分别为 886/1,000 与 897/1,000 tokens。
 - `adversarial-discuss` trigger eval — 27/27，precision 与 recall 均为 1.0。
 - 相关 JSON、npm pack dry-run、敏感信息模式扫描与 `git diff --check` — 通过。
 - 功能提交 `40fe63b Refine adversarial workflows` — 19 个路径已提交。

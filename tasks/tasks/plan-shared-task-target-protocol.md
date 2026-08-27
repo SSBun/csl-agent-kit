@@ -31,16 +31,16 @@ Kind: Plan
 3. 收敛默认 Agent 规则与 workspace lifecycle dispatcher：保留稳定触发、顺序、跳过和禁止绕过的安全包络，将易变的确认细节指向共享协议。
 4. 迁移静态契约与 routing fixtures：集中验证协议语义、三个消费者的强制引用、默认规则的稳定门禁、文本确认兼容性，以及旧重复条款已无意外残留。
 5. 更新受影响的 Canonical task workflows Context Pack，使后续 Agent 能定位协议 Authority、消费者关系和重新检查事件。
-6. 执行英文内容、JSON/Markdown 结构、Yao、resource-boundary、stale-reference 与 diff 检查；更新测试断言，但仅在用户明确授权时运行单元测试或项目测试套件，并披露未运行项。
+6. 执行英文内容、JSON/Markdown 结构、local quality gate、resource-boundary、stale-reference 与 diff 检查；更新测试断言，但仅在用户明确授权时运行单元测试或项目测试套件，并披露未运行项。
 
 ## Result
 
 - T1: 共享协议文件已加入分发树，task、task-plan 与 task-queue 均显式完整读取并在缺失时 fail closed；静态引用与 npm pack dry-run 已确认。
 - T2: 共享协议集中定义必要聚焦澄清、确认前禁止项、精确文本格式、TASK_GO、修订和实质变化后的重新对齐；静态契约检查通过。
 - T3: super-agent 默认规则与 lifecycle dispatcher 保留触发、激活、确认、跳过和后续 Context/Lessons 顺序，详细 TASK_GO 与文本格式仅由共享协议拥有。
-- T4: 相关静态断言、routing fixtures 与 CTX-task-workflows/CTX-workspace-context 已同步；JSON、Node 语法、Context、package、diff、Yao 与 resource-boundary 的适用非测试检查满足约束。
+- T4: 相关静态断言、routing fixtures 与 CTX-task-workflows/CTX-workspace-context 已同步；JSON、Node 语法、Context、package、diff、local quality gate 与 resource-boundary 的适用非测试检查满足约束。
 - Review gate: Skipped — 用户未要求独立 adversarial review。
 
 ## Verification
 
-- Passed: 静态协议检查、JSON 解析、Node --check、Context validate/core、npm pack dry-run、AGENTS 结构、git diff --check 与 Yao syntax/lint/governance 通过；resource-boundary 仅有允许的 initial-load token 超限，按用户规则未运行单元测试或项目测试套件。
+- Passed: 静态协议检查、JSON 解析、Node --check、Context validate/core、npm pack dry-run、AGENTS 结构、git diff --check 与 local quality gate syntax/lint/governance 通过；resource-boundary 仅有允许的 initial-load token 超限，按用户规则未运行单元测试或项目测试套件。

@@ -23,9 +23,9 @@ Kind: Task
 
 - T1: skills/align、三份插件清单与 README 均使用 align；Pi 命令测试确认 /align 存在且 /same-page 不存在。
 - T2: 将 HEAD 中旧技能正文按三处身份替换后与新 SKILL.md 完全一致，reference 除标题和文件名外完全一致；能力契约保持不变。
-- T3: 25 项发现/安装测试、Yao validate、resource boundary、JSON 解析、git diff --check 与旧身份定向检查均通过；历史记录未修改。
+- T3: 25 项发现/安装测试、local quality gate validate、resource boundary、JSON 解析、git diff --check 与旧身份定向检查均通过；历史记录未修改。
 - Review gate: Skipped — 用户未要求 adversarial、双 Agent 或独立 Reviewer 审查。
 
 ## Verification
 
-- Passed: Yao 全步骤通过，resource boundary 无失败，node --test 25/25 通过，canonical identity 与 behavior-preservation 断言通过。
+- Passed: local quality gate 全步骤通过，resource boundary 无失败，node --test 25/25 通过，canonical identity 与 behavior-preservation 断言通过。

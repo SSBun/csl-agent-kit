@@ -24,5 +24,5 @@
 
 - T1: Added optional `description` validation as one trimmed, non-empty, control-free line up to 160 characters; qualified IDs remain filename-derived. Adversarial finding R1 added coverage for tabs, escape/control characters, NEL, and Unicode line/paragraph separators.
 - T2: Added create/update/clear support, JSON/status projection, `show` display, and a human-readable `list` header with `DESCRIPTION`; updated `global:open-todo-in-typora` to `Open changed task records in Typora.`
-- T3: Triggerify tests passed 18/18, CLI tests 26/26, route eval 11/11, Yao validation passed, and `git diff --check` passed. Yao reports 998/1000 initial-load tokens.
+- T3: Triggerify tests passed 18/18, CLI tests 26/26, route eval 11/11, local quality gate validation passed, and `git diff --check` passed. local quality gate reports 998/1000 initial-load tokens.
 - Review: `APPROVED` after two Reviewer passes; report: [add-triggerify-description](../../reports/adversarial-review/add-triggerify-description.md)

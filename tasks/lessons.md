@@ -92,16 +92,16 @@
   - 生成文本不超过产品规定的 Unicode 码点上限，且不含模型元标签。
   - commit、push、test、retry、continue 等纯操作样例不会覆盖现有标签。
 
-## 2026-07-23 Workflow skill 完整性优先于 Yao token 预算
+## 2026-07-23 Workflow skill 完整性优先于初始加载预算
 
 - **Trigger:**
   - 创建、优化或审计负责复杂任务指导的 workflow skill。
 - **Rule:**
-  - workflow skill 的准确性和完整性优先于 Yao 的 1000-token 初始加载预算。
+  - workflow skill 的准确性和完整性优先于 1000-token 初始加载预算。
   - 不得为了通过该预算而删除、压缩失真或拆散执行所必需的核心契约。
 - **Check:**
   - 核心判断、步骤、状态迁移、异常处理和完成条件可从主 `SKILL.md` 完整获得。
-  - Yao 超限只作为已知审计结果记录，不作为 workflow skill 的完成阻塞项。
+  - 初始加载预算超限只作为已知检查结果记录，不作为 workflow skill 的完成阻塞项。
 
 ## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection
 

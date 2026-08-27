@@ -92,4 +92,4 @@ Do not retrofit untouched historical record bodies. All records share the new pa
 
 ## Maintainer Validation
 
-Routing fixtures are in `evals/`. Run focused core/task tests, routing evaluation when descriptions change, OpenAI validation, and Yao plus resource-boundary audits. The only acceptable non-blocking Yao failure is the 1000-token initial-load budget for this workflow skill; syntax, governance, tests, and all other checks remain blocking.
+Keep the routing fixtures in `evals/` aligned, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.

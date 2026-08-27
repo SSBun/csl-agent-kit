@@ -6,7 +6,7 @@
 - [x] Convert built-in SOP frontmatter values to English.
 - [x] Convert user-scoped SOP frontmatter values to English.
 - [x] Validate frontmatter language, summary output, hooks, and skill metadata.
-- [x] Audit changed SOP rules with `yao-meta-skill`.
+- [x] Audit changed SOP rules with `skill-quality`.
 
 ## Review
 
@@ -28,8 +28,8 @@ Verification performed:
 - `jq . hooks/hooks.json .codex-plugin/hooks/hooks.json`
 - `cmp -s hooks/hooks.json .codex-plugin/hooks/hooks.json`
 - `git diff --check -- hooks/hooks.json .codex-plugin/hooks/hooks.json skills/sop-manager/SKILL.md skills/sop-manager/scripts/sop-summaries.sh skills/sop-manager/scripts/sop-candidates.js skills/sop-manager/references/process-sop-example.md skills/sop-manager/references/rule-sop-example.md skills/sop-manager/sops/swift-api-design.md tasks/todo.md`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/sop-manager`
+- `node skills/meta/skill-quality/scripts/check.js skills/sop-manager`
 
 Unresolved risk:
 
-- Yao validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint and governance passed. Resource boundary passed with a warning that `SKILL.md` is getting heavy at 908 estimated tokens.
+- local quality gate validation still reports the pre-existing `Missing agents/interface.yaml` issue for `skills/sop-manager`; lint and governance passed. Resource boundary passed with a warning that `SKILL.md` is getting heavy at 908 estimated tokens.

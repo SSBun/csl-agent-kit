@@ -40,14 +40,14 @@ Status: Completed
 ## Result
 
 - T1–T5：triggerify 核心改动落地。`inject-output: true` 让 run-script stdout 作为 prompt 返回（仅 inject-capable event）；`inner` scope 从 triggerify 包内 `hooks/` discover，只读，`runEvent` 合并 global + inner。
-- T6：`skills/simple-rules/` 含 SKILL.md + agents/interface.yaml；yao-meta-skill validate + resource_boundary_check 通过。
+- T6：`skills/simple-rules/` 含 SKILL.md + agents/interface.yaml；skill-quality validate + context-budget check 通过。
 - T7：triggerify 测试 25/25 通过（新增 5 个测试覆盖 inject-output 注入/不注入、校验、inner scope 非空注入、CLI 只读保护）。
 - T8：端到端验证——CSL_AGENT_KIT_HOME 指向含 simple-rules.md 的目录，runEvent 返回 inner:simple-rules prompt，内容为 `## Simple Rules` + 文件正文；空文件返回 0 prompts 无诊断。
 
 ## 预存问题（非本次引入，未修复）
 
 - `.claude-plugin/plugin.json` 缺 `zhihu-circle`（本会话前已存在，与 simple-rules 无关）。
-- triggerify resource_boundary_check 超 token 预算（1251 > 1000，本会话前已超）。
+- triggerify context-budget check 超 token 预算（1251 > 1000，本会话前已超）。
 - `README.md` 有未解决合并冲突（UU），非本任务引入。
 - 工作区有预存暂存项（zhihu-circle、deploy.sh、.DS_Store 等），非本任务引入。
 

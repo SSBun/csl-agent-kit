@@ -29,4 +29,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 静态发现、Pi 命令发现、npm pack dry-run、Lessons 与 Context validation、Yao 与 resource-boundary 审核、语法和 git diff 检查完成；Yao 仅报告契约明确允许的 initial-load token overage，按用户规则未运行单元测试或项目测试套件。
+- Passed: 静态发现、Pi 命令发现、npm pack dry-run、Lessons 与 Context validation、local quality gate 与 resource-boundary 审核、语法和 git diff 检查完成；local quality gate 仅报告契约明确允许的 initial-load token overage，按用户规则未运行单元测试或项目测试套件。

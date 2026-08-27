@@ -5,7 +5,7 @@
 - [x] Read `/Users/caishilin/.codex/AGENTS.md` as the source template.
 - [x] Replace `skills/inject-may-agents/references/AGENTS.template.md` with that source content.
 - [x] Verify the copied template matches the source exactly.
-- [x] Validate the updated skill and run a light Yao audit.
+- [x] Validate the updated skill and run a light local quality gate audit.
 - [x] Record results and unresolved risks.
 
 ## Review
@@ -15,16 +15,16 @@
 - Verified the template copy is byte-for-byte identical to `/Users/caishilin/.codex/AGENTS.md`.
 - Verified the copied template passes `/Users/caishilin/Desktop/personal/skills/scripts/check_codex_agents_contract.py`.
 
-Yao audit:
+local quality gate audit:
 
 - `quick_validate.py` passed for `/Users/caishilin/Desktop/personal/skills/skills/inject-may-agents`.
-- `yao.py validate` still reports `Missing agents/interface.yaml`.
+- `check.js` still reports `Missing agents/interface.yaml`.
 - Treating that metadata gap as a pre-existing release-only gate; lint, governance check, and resource boundary check passed.
 
 Verification performed:
 
 - `cmp -s /Users/caishilin/.codex/AGENTS.md skills/inject-may-agents/references/AGENTS.template.md`
 - `python3 /Users/caishilin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/inject-may-agents`
-- `python3 /Users/caishilin/.codex/skills/yao-meta-skill/scripts/yao.py validate skills/inject-may-agents`
+- `node skills/meta/skill-quality/scripts/check.js skills/inject-may-agents`
 - `python3 scripts/check_codex_agents_contract.py skills/inject-may-agents/references/AGENTS.template.md`
 - `git diff --check -- skills/inject-may-agents/references/AGENTS.template.md tasks/todo.md`

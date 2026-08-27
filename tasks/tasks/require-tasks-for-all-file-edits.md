@@ -23,9 +23,9 @@ Kind: Task
 
 - T1: Contract、默认 AGENTS、task Skill 与两套路由 fixtures 均覆盖所有用户请求的文件创建/修改/移动/重命名/删除；routing eval 分别 18/18 与 16/16 通过。
 - T2: Contract 与 task Skill 明确 task lifecycle bootstrap exception；直接契约检查通过且 Contract 未泄漏 task_focus、tasks/tasks、$task 或 SKILL.md。
-- T3: 仓库权威经实际 Agent Hooks 注入、skill discovery、npm pack、OpenAI quick_validate 与 Yao 审核验证后，用户 Agent Rules 原子移除两条重复规则，其余 3 条逐字节保留并由 Codex/Claude Code/Pi 成功注入。
+- T3: 仓库权威经实际 Agent Hooks 注入、skill discovery、npm pack、OpenAI quick_validate 与 local quality gate 审核验证后，用户 Agent Rules 原子移除两条重复规则，其余 3 条逐字节保留并由 Codex/Claude Code/Pi 成功注入。
 - Review gate: Skipped — 用户未要求独立 adversarial review；已执行普通自审与失败模式检查。
 
 ## Verification
 
-- Passed: 直接契约/运行时 smoke、两套路由评测、JSON 与 Node 语法、Context/Lessons 校验、skill discovery、npm pack dry-run、OpenAI quick_validate、git diff --check 均通过；Yao 唯一结果为规则允许的 2422/1000 initial-load token 超限；依用户规则未运行单元测试。
+- Passed: 直接契约/运行时 smoke、两套路由评测、JSON 与 Node 语法、Context/Lessons 校验、skill discovery、npm pack dry-run、OpenAI quick_validate、git diff --check 均通过；local quality gate 唯一结果为规则允许的 2422/1000 initial-load token 超限；依用户规则未运行单元测试。

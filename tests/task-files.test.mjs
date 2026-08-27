@@ -298,6 +298,8 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(rules.includes("applicable task requirement"), false);
 
   const projectRules = readFileSync(path.join(root, "AGENTS.md"), "utf8");
+  assert.match(projectRules, /After modifying any \*\*skill package\*\* under `skills\/` or `\.agents\/skills\/`/);
+  assert.match(projectRules, /node skills\/meta\/skill-quality\/scripts\/check\.js <skill-dir>/);
   assert.match(projectRules, /Run `adversarial-review` or request human review only when the user explicitly asks/);
   assert.match(projectRules, /high risk alone does not trigger it/);
 
@@ -388,7 +390,8 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   assert.match(skill, /run both `core` and `validate` against the same file/);
   assert.match(skill, /Do not disclose an existing legacy or invalid Core before attempting Default Migration/);
   assert.match(skill, /Missing `tasks\/context\.md`, an existing Core that Default Migration cannot safely recover/);
-  assert.match(skill, /The only acceptable non-blocking failure is Yao `Estimated initial-load tokens exceed budget`/);
+  assert.match(skill, /run the built-in `\$skill-quality` gate against this package/);
+  assert.match(skill, /Quality failures block completion/);
 });
 
 test("workspace context value cases enforce admission and temporary exits", () => {
@@ -600,7 +603,8 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /Use `cancel <id>` for a reversible soft stop/);
   assert.match(skill, /This is the only route to Completed and fails closed/);
   assert.match(skill, /Do not retrofit untouched historical record bodies/);
-  assert.match(skill, /only acceptable non-blocking Yao failure is the 1000-token initial-load budget/);
+  assert.match(skill, /run the built-in `\$skill-quality` gate against this package/);
+  assert.match(skill, /Quality failures block completion/);
 
   for (const status of ["Pending", "In Progress", "Completed", "Blocked", "Cancelled"]) {
     assert.ok(skill.includes(status), `missing task status: ${status}`);

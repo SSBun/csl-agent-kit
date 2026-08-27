@@ -40,11 +40,11 @@
 ## 验证
 
 - Skill Creator quick validation — 通过。
-- Yao lint、resource boundary 与 Skill IR validation — 通过。
+- local quality gate lint、resource boundary 与 schema validation validation — 通过。
 - Trigger eval — 26/26，通过率、precision 与 recall 均为 1.0；新增近邻得分 0.02 与 0.0。
 - `npm run check`、安装 dry-run、npm pack dry-run 与 `git diff --check` — 通过。
 - 前向试用 — 决策分叉场景按整批 D1–D5 收敛后只询问一个关键选择；内部完整批处理场景因独立 Challenger 超时中止，未计为通过证据。
-- Limitations：Yao 完整 validate 要求本仓库共享 skills 未采用的 `agents/interface.yaml`；依项目既有约定未新增孤立接口目录。
+- Limitations：local quality gate 完整 validate 要求本仓库共享 skills 未采用的 `agents/interface.yaml`；依项目既有约定未新增孤立接口目录。
 
 ## 技术附录
 

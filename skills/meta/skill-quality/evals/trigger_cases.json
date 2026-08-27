@@ -1,0 +1,20 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Validate the skill package I just changed.",
+    "Run the local Skill quality gate on this new skill.",
+    "Check every Agent Skill package in this workspace.",
+    "Verify this Skill's frontmatter, resources, context budget, and routing fixtures."
+  ],
+  "should_not_trigger": [
+    "Validate this AGENTS.md rule file.",
+    "Run the application's project test suite.",
+    "Give every skill in the portfolio a subjective score out of 100.",
+    "Run a subjective portfolio governance review."
+  ],
+  "near_neighbor": [
+    "Review this source-code diff for correctness.",
+    "List the skills installed in this workspace.",
+    "Create a new Agent Skill from this product workflow."
+  ]
+}

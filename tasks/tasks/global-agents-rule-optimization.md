@@ -6,7 +6,7 @@
 - [x] Keep `### 8. Verification Before Done` unchanged.
 - [x] Merge duplicate thinking, planning, task-management, and simplicity rules.
 - [x] Record the correction about todo/lessons in `tasks/lessons.md`.
-- [x] Audit the updated rules with `yao-meta-skill` and verify the final diff.
+- [x] Audit the updated rules with `skill-quality` and verify the final diff.
 
 ## Review
 
@@ -18,7 +18,7 @@
 - Preserved strong `tasks/todo.md` and `tasks/lessons.md` compliance rules.
 - Recorded the todo/lessons correction in `tasks/lessons.md`.
 
-Yao audit:
+local quality gate audit:
 
 - Scope is an AGENTS rule-file cleanup, not a skill package or release.
 - No trigger boundary changed for a skill; no `trigger_eval.py` required.

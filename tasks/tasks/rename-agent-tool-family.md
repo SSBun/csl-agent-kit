@@ -42,4 +42,4 @@ Kind: Task
 
 ## Verification
 
-- Passed: 语法、JSON、TS transpile、diff、Context/Lessons、skill discovery、Hook/SOP 路由、实际用户数据与隔离迁移/冲突 smoke 均通过；Yao 仅有规则允许的 initial-load token 超额；按计划未运行 unit tests，完整 tsc 仅剩未改动的既有第 165 行类型错误。
+- Passed: 语法、JSON、TS transpile、diff、Context/Lessons、skill discovery、Hook/SOP 路由、实际用户数据与隔离迁移/冲突 smoke 均通过；local quality gate 仅有规则允许的 initial-load token 超额；按计划未运行 unit tests，完整 tsc 仅剩未改动的既有第 165 行类型错误。

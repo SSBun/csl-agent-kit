@@ -25,5 +25,5 @@
 - Pi 删除原始输入单槽状态，连续 prompt 直接按当前 `event.prompt` 重算候选；失败和已提醒的设计工具结果不再追加提醒。
 - doctor 改为从脚本物理路径定位 package root；临时无 Git 包目录测试和真实 `npm pack` 解包检查均能发现 UserPromptSubmit 与 before_agent_start lifecycle。
 - `npm run check` 通过：6 个 CLI、10 个 tips、6 个 Pi 测试，共 22 个测试；Bash、Node、JSON、TypeScript、hook parity、signal lock cleanup、npm pack 隔离和 `git diff --check` 均通过。
-- tips trigger eval 为 0 false positive、0 false negative；两个相关 skill 的 quick validation 通过。Yao 聚合审计的 lint、governance 和 resource boundary 通过，仅继续报告仓库既有的 `Missing agents/interface.yaml` 约定缺口。
+- tips trigger eval 为 0 false positive、0 false negative；两个相关 skill 的 quick validation 通过。local quality gate 聚合审计的 lint、governance 和 resource boundary 通过，仅继续报告仓库既有的 `Missing agents/interface.yaml` 约定缺口。
 - 已知边界：不可捕获的 `SIGKILL` 可能遗留 `.lock` 目录；命令会在 5 秒后失败并报告完整锁路径，不会绕过限制或损坏 tips 文件。
