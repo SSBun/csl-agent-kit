@@ -12,26 +12,18 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
 | task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查。 |
-| domain-modeling | `/csl:domain-modeling` | `/domain-modeling` | 建立领域术语、统一语言与架构决策。 |
-| improve-codebase-architecture | `/csl:improve-codebase-architecture` | `/improve-codebase-architecture` | 扫描架构改进机会并生成可视化报告。 |
-| research | `/csl:research` | `/research` | 基于高可信来源调研并产出带引用的 Markdown。 |
-| resolving-merge-conflicts | `/csl:resolving-merge-conflicts` | `/resolving-merge-conflicts` | 按双方意图解决进行中的 merge 或 rebase 冲突。 |
-| tdd | `/csl:tdd` | `/tdd` | 以 red-green-refactor 流程进行测试驱动开发。 |
-| grilling | `/csl:grilling` | `/grilling` | 对计划、决策或想法进行逐项压力测试。 |
-| handoff | `/csl:handoff` | `/handoff` | 将当前对话压缩为可继续工作的交接文档。 |
-| teach | `/csl:teach` | `/teach` | 在当前工作区中分多轮教授概念或技能。 |
-| writing-great-skills | `/csl:writing-great-skills` | `/writing-great-skills` | 编写和维护高质量 Agent Skill 的参考。 |
+| git-conflict | `/csl:git-conflict` | `/git-conflict` | 按双方意图谨慎解决进行中的 Git merge 或 rebase 冲突。 |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |
 | adversarial-review | `/csl:adversarial-review` | `/adversarial-review` | 以不限轮次、状态驱动的 Reviewer–Editor 闭环审查代码、PRD、RFC、设计文档等交付物。 |
 | deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
-| test-triage | `/csl:test-triage` | `/test-triage` | Diagnose failing tests, bugs, CI failures, and regressions. |
+| bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
 | task-context | `/csl:task-context` | `/task-context` | Load or recover Project Core, query task-relevant Context Packs, then maintain durable context. |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
 | task-lessons | `/csl:task-lessons` | `/task-lessons` | Query, apply, and maintain reusable workspace lessons. |
-| agent-rules | `/csl:agent-rules` | `/agent-rules` | 管理每次会话启动时注入的持久 Agent 规则。 |
+| agent-rules | `/csl:agent-rules` | `/agent-rules` | 管理 Built-in、User 与 Project 三层持久 Agent Rules。 |
 | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
 | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
@@ -41,7 +33,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:workspace-workflow-gates` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:workspace-workflow-gates` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
 
 ## Canonical source and duplicates
 
@@ -60,10 +52,10 @@ If you also have same-named skills from other marketplaces or personal folders (
 node .agents/skills/integrate-third-skills/scripts/third-party-skills.js status
 
 # 比较某项技能：上游自导入后的变化，以及当前上游与本地副本的差异
-node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff research
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff SKILL_NAME
 
 # 需要完整 unified diff 时才输出补丁
-node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff research --patch
+node .agents/skills/integrate-third-skills/scripts/third-party-skills.js diff SKILL_NAME --patch
 ```
 
 它们从 `.repository.json` 获取上游地址、ref 与导入 commit；不会更新本地技能或 `~/.agents/skills`。每个来源/ref 只在系统临时目录中检出一次上游，并在结束后删除。
@@ -203,7 +195,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/task-review`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：桥接 Agent Hooks 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
-- `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
+- `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
 - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
 
 **启用/禁用扩展或技能：** 装完整包后，用 pi 原生命令精细控制：
@@ -219,6 +211,11 @@ TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无
 
 ```json
 {
+  "quick": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "thinkingLevel": "off"
+  },
   "flash-max": {
     "provider": "deepseek",
     "model": "deepseek-v4-flash",
@@ -232,7 +229,7 @@ TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无
 }
 ```
 
-在 Pi 中执行 `/preset list` 查看当前预设，执行 `/preset` 交互选择，或直接执行 `/preset flash-max`、`/preset sol-xhigh`。配置文件每次执行时重新读取，修改后无需 `/reload`。
+在 Pi 中执行 `/preset list` 查看当前预设，执行 `/preset` 交互选择，或直接执行 `/preset flash-max`、`/preset sol-xhigh`。执行 `/quick <prompt>` 会临时切换到 `quick` 预设，完成后恢复原模型与 thinking level。配置文件每次执行时重新读取，修改后无需 `/reload`。
 
 Fast Mode usage:
 
@@ -306,9 +303,8 @@ csl-agent-kit install --all
 skills/                  # Shared skill source (all platforms)
 skills/meta/{task,task-plan,task-queue}/ # Cross-host task workflow skills
 skills/meta/csl-tasks/shared/           # Shared task-state core
-skills/{task-context,task-lessons}/     # Context and lessons workflow skills
+skills/meta/{task-context,task-lessons}/ # Context and lessons workflow skills
 skills/meta/workspace-workflow/evals/   # Shared cross-workflow routing eval suite
-skills/mattpocock/       # 用户选择的 Matt Pocock 来源技能与逐技能 .repository.json
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest
 .cursor-plugin/          # Cursor plugin manifest

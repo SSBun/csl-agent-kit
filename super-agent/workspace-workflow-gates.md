@@ -17,7 +17,7 @@ This contract defines expected Agent behavior. When a CSL Agent Kit Skill applie
 Work in this order:
 
 1. **Orient** — Recover the workspace model before acting.
-2. **Align** — Establish and confirm the intended outcome before substantive work.
+2. **Align** — Establish and align the intended outcome before substantive work.
 3. **Prepare** — Consult only relevant Context, Lessons, and authoritative sources.
 4. **Execute** — Make the minimum correct and surgical change.
 5. **Verify** — Prove the observable outcome before reporting completion.
@@ -41,7 +41,11 @@ Understand the real flow before editing. A small change in the wrong place is no
 
 ## Task Target
 
-Once a request establishes a concrete, non-trivial outcome, align a concise Task Target with the user before substantive preparation or execution.
+Before any user-requested file creation, modification, move, rename, or deletion, activate the owning canonical Task workflow and bind the current session to that task through the host mechanism. This applies even to trivial deterministic edits. The task-lifecycle writes needed to create or restore that record, bind the session, and align its Target are the bootstrap exception; do not edit the requested deliverable before activation.
+
+For requests without a file mutation, activate a Task workflow once the request establishes a concrete, non-trivial outcome. Simple factual answers and open-ended conversation without a concrete outcome remain outside the workflow.
+
+Whenever a Task workflow applies, align a concise Task Target with the user's current authorization before substantive preparation or execution.
 
 The Task Target states:
 
@@ -51,11 +55,13 @@ The Task Target states:
 
 It describes the result, not the implementation.
 
-Before confirmation, limit discussion to user-owned ambiguity required to state the Target honestly. Do not turn the confirmation gate into implementation planning or repository investigation.
+Treat a clear user instruction as authorization for a materially equivalent Target; do not ask the user to confirm an equivalent restatement. Ask focused clarification when no honest Target can be stated. Present the Target and wait for confirmation only when it adds, removes, weakens, omits, or changes the authorized outcome, completion conditions, boundaries, preserved behavior, compatibility, side effects, or user-owned trade-offs.
 
-After confirmation, continue independently wherever authoritative evidence can answer the remaining questions.
+Before alignment, limit discussion to user-owned ambiguity required to state the Target honestly. Do not turn the alignment gate into implementation planning or repository investigation.
 
-Pause and realign when discovery or a new request materially changes the outcome, completion conditions, scope boundary, preserved behavior, compatibility boundary, side effect, or user-owned trade-off. Implementation-only changes do not require realignment when the confirmed result remains the same.
+After alignment, continue independently wherever authoritative evidence can answer the remaining questions.
+
+A complete explicit user revision authorizes an equivalent revised Target without another confirmation. Pause and realign when discovery or the Agent introduces a material change to the outcome, completion conditions, scope boundary, preserved behavior, compatibility boundary, side effect, or user-owned trade-off. Implementation-only changes do not require realignment when the aligned result remains the same. Independent safety or permission confirmations remain separate and are never bypassed by Target alignment.
 
 ## Task, Context, and Lessons
 
@@ -67,7 +73,7 @@ Keep the three responsibilities distinct:
 
 At session start, resume, or compaction, recover the workspace Context before acting.
 
-After Task Target confirmation, consult only the Context relevant to the current outcome. Context accelerates orientation but never replaces authoritative source, tests, schemas, configuration, or formal decisions. Authority wins when it conflicts with Context.
+After Task Target alignment, consult only the Context relevant to the current outcome. Context accelerates orientation but never replaces authoritative source, tests, schemas, configuration, or formal decisions. Authority wins when it conflicts with Context.
 
 Before substantive work, apply every relevant Lesson. After a user correction, apply the correction immediately and reconsider whether an existing preventive rule should change. Do not treat task history, one-off details, speculation, or preferences as Lessons.
 
@@ -75,7 +81,7 @@ Keep current progress out of Context and keep project facts out of Lessons.
 
 ## Simplicity First
 
-Implement the minimum solution that fully satisfies the confirmed outcome:
+Implement the minimum solution that fully satisfies the aligned outcome:
 
 - Fix root causes rather than reported symptoms.
 - Reuse an existing project solution before creating another one.
@@ -90,14 +96,14 @@ Never simplify away trust-boundary validation, data-loss prevention, security co
 
 ## Surgical Changes
 
-Touch only what the confirmed outcome requires:
+Touch only what the aligned outcome requires:
 
 - Do not refactor, reformat, rename, or improve adjacent unaffected code.
 - Match the existing local style.
 - Do not remove pre-existing dead code unless requested.
 - Remove imports, variables, functions, files, or configuration made obsolete by your own change.
 - Mention unrelated problems instead of fixing them silently.
-- Ensure every changed line traces to the confirmed outcome or its verification.
+- Ensure every changed line traces to the aligned outcome or its verification.
 
 ## Verification Before Done
 

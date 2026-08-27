@@ -7,7 +7,7 @@
     "检查已 vendor 的第三方技能是否有上游更新，并比较本地副本。"
   ],
   "should_not_trigger": [
-    "Install the existing research skill into ~/.agents/skills.",
+    "Install an existing shared skill into ~/.agents/skills.",
     "Create a new skill from our deployment SOP.",
     "Update this repository's README skill table."
   ],

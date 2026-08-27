@@ -351,7 +351,7 @@ test("maps script success, failure, timeout, signal, post-event exit two, and sy
       ["post-block", "#!/bin/sh\nexit 2\n", "after-tool", false, ["global:post-block:block-unsupported"]],
     ];
     for (const [name, source, event, blocked, diagnostics] of cases) {
-      for (const file of fs.readdirSync(hooks)) fs.unlinkSync(path.join(hooks, file));
+      for (const file of fs.readdirSync(hooks).filter((file) => file.endsWith(".md"))) fs.unlinkSync(path.join(hooks, file));
       fs.writeFileSync(path.join(scripts, `${name}.sh`), source, { mode: 0o700 });
       writeRule(name, event, `${name}.sh`);
       const result = agentHooks.runEvent(payload(event), { host: "codex", workspace: data, eventBudgetMs: 2000 });
@@ -359,14 +359,14 @@ test("maps script success, failure, timeout, signal, post-event exit two, and sy
       assert.deepEqual(result.diagnostics, diagnostics);
     }
 
-    for (const file of fs.readdirSync(hooks)) fs.unlinkSync(path.join(hooks, file));
+    for (const file of fs.readdirSync(hooks).filter((file) => file.endsWith(".md"))) fs.unlinkSync(path.join(hooks, file));
     fs.writeFileSync(path.join(scripts, "timeout.js"), "#!/usr/bin/env node\nsetTimeout(() => {}, 2000);\n", { mode: 0o700 });
     writeRule("timeout", "before-tool", "timeout.js");
     const timed = agentHooks.runEvent(payload("before-tool"), { host: "codex", workspace: data, eventBudgetMs: 100 });
     assert.equal(timed.blocked, false);
     assert.deepEqual(timed.diagnostics, ["global:timeout:runtime-error"]);
 
-    for (const file of fs.readdirSync(hooks)) fs.unlinkSync(path.join(hooks, file));
+    for (const file of fs.readdirSync(hooks).filter((file) => file.endsWith(".md"))) fs.unlinkSync(path.join(hooks, file));
     const outside = path.join(data, "outside.sh");
     fs.writeFileSync(outside, "#!/bin/sh\nexit 0\n", { mode: 0o700 });
     fs.symlinkSync(outside, path.join(scripts, "escape.sh"));
@@ -476,7 +476,7 @@ test("dispatch maps PermissionRequest and PreCompact blocks to native JSON", { c
   };
   try {
     for (const [nativeEvent, event] of [["PermissionRequest", "permission-request"], ["PreCompact", "before-compact"]]) {
-      for (const file of fs.readdirSync(hooks)) fs.unlinkSync(path.join(hooks, file));
+      for (const file of fs.readdirSync(hooks).filter((file) => file.endsWith(".md"))) fs.unlinkSync(path.join(hooks, file));
       fs.writeFileSync(path.join(hooks, `${event}.md`), `---\nschema: agent-hooks/v1\nevent: ${event}\naction: run-script\nenabled: true\nscript: deny.sh\n---\n`);
       const captured = capture();
       assert.equal(agentHooks.dispatch(JSON.stringify({ hook_event_name: nativeEvent, session_id: nativeEvent, cwd: data }), { PLUGIN_ROOT: "/plugin" }, captured.io), 0);
@@ -568,35 +568,52 @@ test("inject-output is validated as boolean and rejected on inject-prompt", () =
   assert.deepEqual(onInject.errors.map((error) => error.code), ["inject-output-unexpected"]);
 });
 
-test("inner scope ships a read-only agent-rules hook that injects canonical and legacy files", () => {
+test("inner scope injects built-in, user, and project agent-rules.md in order", { concurrency: false }, () => {
   const data = fs.mkdtempSync(path.join(os.tmpdir(), "agent-hooks-inner-"));
   const previous = process.env.CSL_AGENT_KIT_HOME;
+  const builtInRule = "display every local file or directory reference as its full absolute path";
   process.env.CSL_AGENT_KIT_HOME = data;
   try {
-    // empty: no prompt
+    // Built-in rules require no user or project file and reach every supported session host.
+    for (const host of ["codex", "claude-code", "pi"]) {
+      const payload = agentHooks.createEvent({ event: "session-start", host, workspace: data });
+      const result = agentHooks.runEvent(payload, { host, workspace: data });
+      const prompt = result.prompts.find((item) => item.id === "inner:agent-rules");
+      assert.ok(prompt, `expected inner:agent-rules prompt for ${host}`);
+      assert.match(prompt.content, /^## Agent Rules\n/);
+      assert.ok(prompt.content.includes(builtInRule));
+      assert.match(prompt.content, /absolute `file:\/\/` URL/);
+    }
+
+    const cursorPayload = agentHooks.createEvent({ event: "session-start", host: "cursor", workspace: data });
+    const cursor = agentHooks.runEvent(cursorPayload, { host: "cursor", workspace: data });
+    assert.equal(cursor.prompts.length, 0);
+    assert.ok(cursor.diagnostics.includes("capability-unsupported"));
+
+    // Only agent-rules.md is a user source; the legacy name is ignored.
+    fs.writeFileSync(path.join(data, "simple-rules.md"), "- legacy rule\n");
     let payload = agentHooks.createEvent({ event: "session-start", host: "pi", workspace: data });
     let result = agentHooks.runEvent(payload, { host: "pi", workspace: data });
-    const empty = result.prompts.find((prompt) => prompt.id === "inner:agent-rules");
-    assert.equal(empty, undefined);
-
-    // legacy file: injected through the canonical hook
-    const legacyFile = path.join(data, "simple-rules.md");
-    fs.writeFileSync(legacyFile, "- legacy rule\n");
-    payload = agentHooks.createEvent({ event: "session-start", host: "pi", workspace: data });
-    result = agentHooks.runEvent(payload, { host: "pi", workspace: data });
     let prompt = result.prompts.find((item) => item.id === "inner:agent-rules");
-    assert.match(prompt.content, /- legacy rule/);
-    fs.rmSync(legacyFile);
+    assert.doesNotMatch(prompt.content, /legacy rule/);
 
-    // canonical file: injected
-    fs.writeFileSync(path.join(data, "agent-rules.md"), "- rule one\n- rule two\n");
+    const userFile = path.join(data, "agent-rules.md");
+    const userRules = "- user rule one\n- user rule two\n";
+    const projectFile = path.join(data, ".agents", "agent-rules.md");
+    const projectRules = "- project rule\n";
+    fs.writeFileSync(userFile, userRules);
+    fs.mkdirSync(path.dirname(projectFile), { recursive: true });
+    fs.writeFileSync(projectFile, projectRules);
+
     payload = agentHooks.createEvent({ event: "session-start", host: "pi", workspace: data });
     result = agentHooks.runEvent(payload, { host: "pi", workspace: data });
     prompt = result.prompts.find((item) => item.id === "inner:agent-rules");
-    assert.ok(prompt, "expected inner:agent-rules prompt");
-    assert.match(prompt.content, /^## Agent Rules\n/);
-    assert.match(prompt.content, /- rule one/);
-    assert.match(prompt.content, /- rule two/);
+    const builtInIndex = prompt.content.indexOf(builtInRule);
+    const userIndex = prompt.content.indexOf("user rule one");
+    const projectIndex = prompt.content.indexOf("project rule");
+    assert.ok(builtInIndex >= 0 && builtInIndex < userIndex && userIndex < projectIndex);
+    assert.equal(fs.readFileSync(userFile, "utf8"), userRules);
+    assert.equal(fs.readFileSync(projectFile, "utf8"), projectRules);
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;
@@ -617,6 +634,8 @@ test("inner workspace workflow gates inject the CSL Agent Kit contract on suppor
       assert.ok(prompt, `expected CSL Agent Kit contract for ${host}`);
       assert.match(prompt.content, /^CSL AGENT KIT CONTRACT ACTIVE/);
       assert.match(prompt.content, /Existing user rules and the current explicit request take precedence/);
+      assert.match(prompt.content, /Before any user-requested file creation, modification, move, rename, or deletion/);
+      assert.match(prompt.content, /task-lifecycle writes .* are the bootstrap exception/);
       assert.match(prompt.content, /align a concise Task Target with the user/);
       assert.match(prompt.content, /consult only the Context relevant to the current outcome/);
       assert.match(prompt.content, /apply every relevant Lesson/);
@@ -791,31 +810,46 @@ test("title hook publishes a manual refresh failure result", () => {
   }
 });
 
-test("title hook regenerates concise core-intent titles from conversation context", () => {
+test("title hook ignores internal compaction continuation prompts", () => {
+  assert.equal(titleHook.isInternalCompactionPrompt("Compaction completed. Continue."), true);
+  assert.equal(titleHook.isInternalCompactionPrompt("Improve compaction behavior"), false);
+});
+
+test("title hook requires Chinese core-intent titles while allowing technical terms", () => {
   assert.equal(titleHook.cleanModelTitle("KEEP_CURRENT_TITLE"), "");
   assert.equal(titleHook.cleanModelTitle("Commit these changes"), "");
   assert.equal(titleHook.cleanModelTitle("Run the tests again"), "");
   assert.equal(titleHook.buildTitle({}, "/tmp/app", ""), null);
-  assert.equal(titleHook.buildTitle({}, "/tmp/app", "Concise tab titles"), "app · Concise tab titles");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "简洁会话标题"), "简洁会话标题");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "Concise tab titles"), null);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "Authentication cache invalidation behavior 中文"), null);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "项目 · 会话标题"), null);
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "stable main task: Commit focused git changes with conventional message"), null);
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "R1: NOTE:"), null);
-  assert.equal(titleHook.buildTitle({}, "/tmp/app", "Authentication cache invalidation behavior"), "app · Authentication cache");
-  assert.equal(titleHook.buildTitle({}, "/tmp/app", "a b c d e f g h i"), "app · a b c d e f");
-  assert.ok(Array.from(titleHook.cleanModelTitle("Authentication cache invalidation behavior")).length <= 24);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "认证 cache"), "认证 cache");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "GPT 5 标题"), "GPT 5 标题");
+  assert.ok(Array.from(titleHook.cleanModelTitle("界".repeat(100))).length <= 24);
 
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "agent-hooks-saved-title-"));
   const previousHome = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = home;
   try {
-    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "app");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "");
     titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "app · Concise tab titles");
-    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "app · Concise tab titles");
-    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/other"), "other");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "");
+    titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "Concise tab titles");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "");
+    titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "简洁会话标题");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "简洁会话标题");
+    titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "认证 cache");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "认证 cache");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/other"), "");
     const input = { prompt: "fix title", tty: "/dev/ttys999", workspace: "/tmp/app" };
     assert.equal(titleHook.generatedTitleAction(input, ""), null);
     assert.equal(titleHook.generatedTitleAction(input, "KEEP_CURRENT_TITLE"), null);
-    assert.deepEqual(titleHook.generatedTitleAction(input, "Concise tab titles"), {
-      title: "app · Concise tab titles",
+    assert.equal(titleHook.generatedTitleAction(input, "Concise tab titles"), null);
+    assert.deepEqual(titleHook.generatedTitleAction(input, "认证 cache"), {
+      title: "认证 cache",
       remember: false,
     });
     assert.equal(titleHook.titleModelInput(input), "User: fix title");

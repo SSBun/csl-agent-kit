@@ -2,16 +2,18 @@
   "recommended_threshold": 0.5,
   "should_trigger": [
     "Create the task record in tasks/tasks.md before implementing this feature.",
+    "Rename this file and track the operation before editing.",
+    "Fix one typo in this file through the owning task workflow.",
     "Research this concrete non-trivial outcome and track it before reading task-direct sources.",
     "Before substantive discussion, create the task record for this specific non-trivial outcome.",
-    "After task activation, apply the shared Task Target Alignment Protocol and wait for confirmation before research.",
+    "After task activation, apply the shared Task Target Alignment Protocol before research, requesting confirmation only for a material difference.",
     "Update the owning task record with the new target and checklist.",
     "Record the result and hand the completed artifact to adversarial review."
   ],
   "should_not_trigger": [
     "Answer this simple factual question.",
     "Discuss possibilities without selecting a concrete outcome.",
-    "Perform this trivial mechanical operation.",
+    "Check this file's size without changing it.",
     "I prefer concise answers."
   ],
   "near_neighbor": [

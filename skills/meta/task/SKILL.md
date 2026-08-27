@@ -1,6 +1,6 @@
 ---
 name: task
-description: Create, resume, update, cancel, verify, and complete a canonical workspace task for one concrete non-trivial outcome. Use as soon as that outcome is identified, then confirm a concise Task Target before substantive work unless the originating request ends with the one-request `TASK_GO` marker. Skip simple factual answers, open-ended conversation without a concrete outcome, and trivial deterministic operations.
+description: Create, resume, update, cancel, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Align a concise Task Target before substantive work, continuing directly when it materially matches current user authorization and requesting clarification or confirmation only when needed. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
 ---
 
 # Task
@@ -11,7 +11,7 @@ Manage one outcome through the host Agent. Use the host's existing file, shell, 
 
 Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
 
-This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-confirmation task workflow. The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics.
+This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-alignment task workflow. The shared protocol owns readiness, semantic alignment, focused clarification, conditional confirmation, revision, and realignment semantics.
 
 ## Storage and Core
 
@@ -23,12 +23,13 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
 
 ## Activation and Ownership
 
-- Create, resume, or reopen the owning record as soon as the request establishes a concrete, non-trivial, independently acceptable outcome.
-- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
+- Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
+- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. For a requested file mutation, activation and, when available, the host's task-focus mechanism must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
+- The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.
 - Start a new task for every independently acceptable user outcome.
 - Reopen an existing task only when the request directly corrects, completes, or re-verifies the same outcome and leaving its Target or Result unchanged would be misleading.
 - Component, file, topic, or implementation overlap alone does not establish ownership. Create a new task when ownership is ambiguous.
-- Skip records only for simple factual answers, open-ended conversation without a concrete outcome, trivial deterministic file operations, context maintenance, and lesson maintenance.
+- Skip records only for simple factual answers and open-ended conversation that request no file mutation and establish no concrete outcome, read-only trivial deterministic operations, and routine Context or Lessons maintenance that is not itself the requested deliverable.
 
 ## Start or Resume
 
@@ -37,8 +38,8 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
 3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing. After creation, resume, or reopen, call the host's task-focus mechanism when available.
-4. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before confirmation, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
-5. After the protocol confirms the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
+4. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
+5. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
 6. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
 
 ## Record Contract

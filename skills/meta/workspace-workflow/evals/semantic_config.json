@@ -16,13 +16,20 @@
       "phrases": [
         "tasks/tasks.md",
         "task record",
+        "create this file",
+        "edit this file",
+        "typo",
+        "rename this file",
+        "move this file",
+        "delete this file",
         "concrete non-trivial outcome",
         "before substantive discussion",
         "before research",
         "Task Target",
         "shared Task Target Alignment Protocol",
         "focused target-forming clarification",
-        "confirmation",
+        "semantic alignment",
+        "conditional confirmation",
         "adversarial review"
       ]
     },
@@ -40,14 +47,14 @@
     }
   },
   "negative_concepts": {
-    "no_concrete_task_or_trivial": {
+    "no_concrete_task_or_file_change": {
       "weight": 0.5,
       "exclusive": true,
       "phrases": [
         "simple factual answer",
         "open-ended conversation",
         "no concrete outcome",
-        "trivial mechanical operation"
+        "without changing it"
       ]
     },
     "ordinary_preference": {

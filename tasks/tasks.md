@@ -1,12 +1,74 @@
 # 任务索引
 
+- [提交全部本地改动](tasks/commit-local-changes.md) — In Progress (2026-08-27 13:50)
+
+- [创建内置 Skill Quality 工具](tasks/create-skill-quality.md) — In Progress (2026-08-27 13:37)
+
+- [处理云效检查同步业务错误](tasks/handle-yunxiao-check-business-errors.md) — Completed (2026-08-27 13:40)
+
+- [实现 Pi 快速小模型命令](tasks/implement-pi-quick-command.md) — Completed (2026-08-27 13:46)
+
+- [优化 Task Target 对齐并移除 TASK_GO](tasks/optimize-task-target-alignment.md) — Completed (2026-08-27 12:12)
+
+- [阻止压缩任务修改会话标题](tasks/prevent-compaction-session-title-update.md) — Completed (2026-08-27 11:49)
+
+- [安全回收 Project Index 陈旧写锁](tasks/recover-project-index-stale-lock.md) — Completed (2026-08-27 11:55)
+
+- [确定性拒绝纯英文标签标题](tasks/enforce-chinese-tab-title-output.md) — Completed (2026-08-27 11:49)
+
+- [将云效 MR 运行时契约改为英文](tasks/translate-yunxiao-runtime-contract.md) — Completed (2026-08-27 11:45)
+
+- [避免云效 MR 推送修改 Git upstream](tasks/preserve-yunxiao-git-upstream.md) — Completed (2026-08-27 11:42)
+
+- [阻止已有云效 MR 前的分支推送](tasks/prevent-yunxiao-existing-mr-push.md) — Completed (2026-08-27 11:40)
+
+- [修复选定的本地改动审计问题](tasks/fix-selected-audit-findings.md) — Completed (2026-08-27 12:04)
+
+- [研判 Task Target 免确认执行条件](tasks/deliberate-task-target-bypass.md) — Completed (2026-08-27 11:45)
+
+- [审计全部本地工作区改动](tasks/audit-all-local-changes.md) — Completed (2026-08-27 13:26)
+
+- [修复 Pi 标题派发超时](tasks/fix-pi-title-dispatch-timeout.md) — Completed (2026-08-26 17:34)
+
+- [清理无引用 Hook 残留](tasks/clean-orphan-hook-artifacts.md) — Completed (2026-08-26 17:29)
+
+- [修复 Codex Marketplace 配置](tasks/repair-codex-marketplace-config.md) — Completed (2026-08-26 17:26)
+
+- [迁移 Claude Agent Hooks 插件](tasks/migrate-claude-agent-hooks-plugin.md) — Completed (2026-08-26 17:24)
+
+- [修复本地 Hook 配置问题](tasks/fix-local-hook-config-issues.md) — Completed (2026-08-26 17:36)
+
+- [将知乎 Skill 移入 deprecated 目录](tasks/move-zhihu-to-deprecated.md) — Completed (2026-08-26 17:12)
+
+- [审计本地旧版 Hook 配置](tasks/audit-local-hook-config.md) — Completed (2026-08-26 17:06)
+
+- [支持输入 1 确认 Task Target](tasks/confirm-task-target-with-one.md) — Completed (2026-08-26 15:20)
+
+- [修复 Agent Hooks 单元测试清理失败](tasks/fix-agent-hooks-test-cleanup.md) — Completed (2026-08-26 11:21)
+
+- [要求所有会话标题使用中文](tasks/session-titles-chinese.md) — Completed (2026-08-25 14:11)
+
+- [要求所有文件编辑使用 canonical task](tasks/require-tasks-for-all-file-edits.md) — Completed (2026-08-25 14:01)
+
+- [移除全部 Matt Pocock Skills](tasks/remove-all-mattpocock-skills.md) — Completed (2026-08-25 13:39)
+
+- [将 task-context 与 task-lessons 移至 meta 分类](tasks/move-task-context-and-lessons-to-meta.md) — Completed (2026-08-21 18:07)
+
+- [将 test-triage 重命名为 bug-fix](tasks/rename-test-triage-to-bug-fix.md) — Completed (2026-08-21 17:17)
+
+- [添加完整路径引用的内置 Agent Rule](tasks/add-builtin-full-path-agent-rule.md) — Completed (2026-08-21 17:50)
+
+- [将 git-conflict 移至 dev 分类](tasks/move-git-conflict-to-dev.md) — Completed (2026-08-21 15:57)
+
+- [将 resolving-merge-conflicts 重写为 git-conflict](tasks/rewrite-git-conflict-skill.md) — Completed (2026-08-21 15:47)
+
 - [提交全部本地改动并列出仓库 Skills](tasks/commit-all-and-list-local-skills.md) — Completed (2026-08-21 15:01)
 
 - [统一 Agent 工具名称前缀](tasks/rename-agent-tool-family.md) — Completed (2026-08-21 14:47)
 
 - [为 Triggerify skill 探索新名称](tasks/brainstorm-triggerify-name.md) — Completed (2026-08-21 13:11)
 
-- [停止默认替换 Agent 指令文件](tasks/stop-default-super-agent-replacement.md) — In Progress (2026-08-21 14:08)
+- [停止默认替换 Agent 指令文件](tasks/stop-default-super-agent-replacement.md) — Completed (2026-08-21 15:53)
 
 - [按关注点拆分提交当前全部本地改动](tasks/commit-current-local-changes-by-concern.md) — Completed (2026-08-21 11:32)
 

@@ -1,0 +1,27 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Create a Yunxiao MR for these committed branches without using zspec.",
+    "Push these module branches and create a One union MR after showing me the plan.",
+    "Use the internal One API to open first-time MRs for these two Zhihu repositories.",
+    "帮我把当前分支推上去，并在云效创建单仓 MR。",
+    "为这三个组件创建云效联合 MR，不要依赖 zspec。",
+    "用 Yunxiao MR skill 规划并发布这些已提交分支。"
+  ],
+  "should_not_trigger": [
+    "Explain how zspec creates a Yunxiao MR.",
+    "Review this existing Yunxiao MR for bugs.",
+    "Update the title and QA binding of an existing MR.",
+    "Restore my workspace from this union MR URL.",
+    "Create a GitHub pull request for this branch.",
+    "Resolve the merge conflicts in this branch.",
+    "分析这个云效 MR 的代码变更。"
+  ],
+  "near_neighbor": [
+    "Run zspec mr in the current workspace.",
+    "Join another developer's MR modules into my local workspace.",
+    "Publish a release after these MRs are merged.",
+    "List all MRs attached to this Yunxiao epic.",
+    "Create a GitLab merge request on a non-Zhihu server."
+  ]
+}

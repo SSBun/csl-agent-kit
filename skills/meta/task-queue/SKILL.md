@@ -11,7 +11,7 @@ Coordinate multiple canonical tasks through the current host Agent. This is host
 
 Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
 
-This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-confirmation Queue workflow. The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
+This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. The shared protocol owns readiness, semantic alignment, focused clarification, conditional confirmation, revision, and realignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
 
 ## Build the Task Graph
 
@@ -19,8 +19,8 @@ This skill owns Queue-parent activation, the integration Target meaning, permitt
 2. As soon as the request establishes a concrete multi-task outcome, create or resume one Queue parent with an initial integration Target:
    `create <parent-id> --title <title> --kind queue --target "T1: <integrated outcome>"`.
    Resume the parent and call the host's task-focus mechanism when available. If no honest integration Target can yet be stated, ask one focused question and create the parent immediately after the answer.
-3. Apply the shared Task Target Alignment Protocol to the active parent. For this workflow, the conversational Target means the parent integration outcome and observable completion condition; before confirmation, the permitted lifecycle writes are create, resume, focus, sync, and check. The gate follows activation and precedes task-direct source inspection, graph decomposition, or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
-4. After the protocol confirms the current Target, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
+3. Apply the shared Task Target Alignment Protocol to the active parent. For this workflow, the conversational Target means the parent integration outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, focus, sync, and check. The gate follows activation and precedes task-direct source inspection, graph decomposition, or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
+4. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
 5. Refine the parent's integration Targets and create a child only for an independently acceptable or independently blocked outcome. Each child has its own observable Targets and complete `task` lifecycle.
 6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents and cycles, and preserves order.
 7. Add the parent's current Scope and Plan, then `sync` and `check` every touched record.

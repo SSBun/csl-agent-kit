@@ -103,18 +103,6 @@
   - 核心判断、步骤、状态迁移、异常处理和完成条件可从主 `SKILL.md` 完整获得。
   - Yao 超限只作为已知审计结果记录，不作为 workflow skill 的完成阻塞项。
 
-## L-20260820-task-before-preparation — 先建立任务记录再进行实质准备
-
-### Trigger
-- 用户请求或对话已形成一个具体、非平凡且可独立验收的目标。
-
-### Rule
-- 在针对该目标进行实质讨论、需求澄清、仓库探索、调研、规划、委派或实施前，先创建、恢复或重新打开 owning canonical task；此前只允许加载 Project Core，以及为确认任务归属而进行最小范围的索引和候选记录查询。
-- 一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可以跳过任务记录。
-
-### Check
-- 对每个具体非平凡目标，首次读取任务直接相关来源、调研、委派或修改交付物前，canonical task 已存在且当前 Session 已聚焦；跳过场景符合上述边界。
-
 ## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection
 
 - **Trigger:** A user explicitly selects installation targets, then the workflow asks a generic second confirmation for the same selected actions.
@@ -163,12 +151,6 @@
 - **Trigger:** 优化通用或项目 `AGENTS.md`，且相关 workflow 依赖 skill 主动触发。
 - **Rule:** `AGENTS.md` 必须保留稳定的触发条件、强制动作、先后顺序和跳过边界；只有易变的字段、循环和输出契约留在 skill。不得把启动工作流所必需的信息压缩成只有 skill 名称或高层路由。
 - **Check:** 脱离 hook 注入时，仅阅读 `AGENTS.md` 也能判断何时加载 skill、实施前应读写哪些文件，以及何时可以跳过。
-
-## 2026-07-21 让流程成本与可验证风险匹配
-
-- **Trigger:** 用户要求执行精确保存、复制、移动、重命名等基础文件操作，且结果可由目标路径、文件类型、hash、`cmp` 或同等确定性检查完整证明。
-  - **Rule:** 不为这类无语义变更的机械操作创建 todo 或运行 adversarial review，直接完成并验证。只有工作需要实质判断、改变内容语义，或涉及破坏性、歧义、安全与数据完整性风险时，才进入相应任务记录和审查流程。
-  - **Why:** 机械操作的正确性已有直接证据；额外的任务台账和多 Agent 审查不会增加可信度，只会拖慢交付。
 
 ## 2026-07-20 让多 Agent 角色名匹配工作阶段
 

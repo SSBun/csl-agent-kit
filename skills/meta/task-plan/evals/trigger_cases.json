@@ -1,7 +1,7 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
-    "Create the task plan, apply its shared Task Target Alignment Protocol, and wait for confirmation before research.",
+    "Create the task plan and apply its shared Task Target Alignment Protocol before research, requesting confirmation only for a material difference.",
     "Research this feature and give me an implementation-ready plan, but do not edit the product yet.",
     "Resolve the requirements and create a task plan for later execution.",
     "I want a decisions-only handoff before coding.",

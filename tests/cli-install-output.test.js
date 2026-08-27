@@ -329,38 +329,8 @@ test("third-party integration workflow is a tracked project-local skill", () => 
   assert.match(readFileSync(localSkill, "utf8"), /metadata:\n  internal: true/);
 });
 
-test("vendored third-party skills retain their upstream source metadata", () => {
-  const vendorRoot = path.join(root, "skills", "mattpocock");
-  const expectedSources = {
-    "domain-modeling": "skills/engineering/domain-modeling",
-    "grill-me": "skills/productivity/grill-me",
-    "grill-with-docs": "skills/engineering/grill-with-docs",
-    grilling: "skills/productivity/grilling",
-    handoff: "skills/productivity/handoff",
-    "improve-codebase-architecture": "skills/engineering/improve-codebase-architecture",
-    research: "skills/engineering/research",
-    "resolving-merge-conflicts": "skills/engineering/resolving-merge-conflicts",
-    tdd: "skills/engineering/tdd",
-    teach: "skills/productivity/teach",
-    "writing-great-skills": "skills/productivity/writing-great-skills",
-  };
-  const leafNames = readdirSync(vendorRoot, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && existsSync(path.join(vendorRoot, entry.name, "SKILL.md")))
-    .map((entry) => entry.name)
-    .sort();
-
-  assert.deepEqual(leafNames, Object.keys(expectedSources).sort());
-  for (const [name, sourcePath] of Object.entries(expectedSources)) {
-    const metadata = JSON.parse(readFileSync(path.join(vendorRoot, name, ".repository.json"), "utf8"));
-    assert.deepEqual(metadata, {
-      repository: "https://github.com/mattpocock/skills",
-      sourcePath,
-      ref: "main",
-      commit: "66898f60e8c744e269f8ce06c2b2b99ce7660d5f",
-      license: "MIT",
-      upstreamStatus: "active",
-    });
-  }
+test("does not ship Matt Pocock skills", () => {
+  assert.equal(existsSync(path.join(root, "skills", "mattpocock")), false);
 });
 
 test("--color forces ANSI colors for terminal output", () => {

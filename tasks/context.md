@@ -7,26 +7,26 @@
 
 ### Global Vocabulary
 - Skill package 是以 `SKILL.md` 为运行时契约的可发现能力；共享包位于 `skills/`，项目专用包位于 `.agents/skills/`。
-- Project Core 是 session start、resume 与 compaction 时始终加载的项目级最小模型；Context Pack 是具体任务按需检索的完整组件或工作流模型；权威契约为 `skills/task-context/SKILL.md`。
+- Project Core 是 session start、resume 与 compaction 时始终加载的项目级最小模型；Context Pack 是具体任务按需检索的完整组件或工作流模型；权威契约为 `skills/meta/task-context/SKILL.md`。
 - Canonical task 是 `tasks/tasks/<task-slug>.md` 中的权威任务记录，`tasks/tasks.md` 仅是 newest-first 导航索引；权威实现为 `skills/meta/csl-tasks/shared/lib/task-core.js`。
 
 ### System Map
-- `super-agent/` 提供跨宿主默认 Agent rules 与 workspace lifecycle dispatcher。
-- `skills/` 提供可分发 skills；`skills/meta/task/`、`skills/meta/task-plan/` 与 `skills/meta/task-queue/` 管理任务生命周期，`skills/task-context/` 与 `skills/task-lessons/` 管理 Context 与 Lessons。
+- `super-agent/` 提供显式 opt-in 的默认 Agent rules，以及由受支持宿主自动注入的稳定 CSL Agent Kit 行为契约；具体操作流程由对应 Skills 和共享协议持有。
+- `skills/` 提供可分发 skills；`skills/meta/task/`、`skills/meta/task-plan/` 与 `skills/meta/task-queue/` 管理任务生命周期，`skills/meta/task-context/` 与 `skills/meta/task-lessons/` 管理 Context 与 Lessons。
 - `pi/extensions/` 提供 Pi 宿主集成；`bin/`、`scripts/` 与各宿主 manifest 负责安装、发现和分发。
 - `tasks/` 保存 workspace-local Context、Lessons、canonical task records 与任务产出的 reports。
 
 ### Global Invariants
 - Skill package 的 `SKILL.md`、runtime references、prompts、templates 与 eval-facing prose 使用英文；用户回答和生成报告使用用户语言；权威约定记录在本文件的 Decisions and Conventions。
-- Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/task-context/SKILL.md`。
+- Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/meta/task-context/SKILL.md`。
 - Context 用于跳过宽泛项目探索，不取代任务直接相关源码、测试和 Authority 验证；Authority 与 Context 冲突时以 Authority 为准。
 - 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `super-agent/AGENTS.md` 与 `skills/meta/task/SKILL.md`。
 
 ## CTX-task-context — Workspace Context dispatch and maintenance
 - Scope: Workspace Context loading, task-relevant retrieval, source-backed maintenance, and default lifecycle consumers.
-- Paths: `tasks/context.md`, `skills/task-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
+- Paths: `tasks/context.md`, `skills/meta/task-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
 - Keywords: task context, workspace context, project core, context pack, task fingerprint, dispatch, authority
-- Authority: `skills/task-context/SKILL.md`, `skills/task-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
+- Authority: `skills/meta/task-context/SKILL.md`, `skills/meta/task-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
 - Recheck: When the Context schema, task activation order, query lifecycle, write permissions, or default consumer wording changes.
 
 ### Purpose and Boundaries
@@ -41,7 +41,7 @@
 - `super-agent/AGENTS.md` 保留显式安装时的完整默认规则；自动注入的 `super-agent/workspace-workflow-gates.md` 改为稳定的行为契约，要求 session 边界恢复 Context、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活；共享协议允许必要的 user-owned Target 澄清并完成确认，之后才检索相关 Packs。
+- Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活；共享协议允许必要的 user-owned Target 澄清，并以当前用户授权完成语义对齐，只有候选 Target 存在实质差异时才要求确认；对齐后才检索相关 Packs。
 
 ### Decision and Verification Boundaries
 - Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，当前工作区已有旧版或无效 Context 的默认迁移已预授权，其他 Project Core 持久变更仍须先展示精确 diff 并取得用户确认。
@@ -88,36 +88,36 @@
 - `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
 
 ## CTX-task-workflows — Canonical task workflows
-- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、Task Target 确认、状态证据与完成门禁。
+- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、Task Target 语义对齐与条件确认、状态证据及完成门禁。
 - Paths: `skills/meta/task/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
-- Keywords: task, task-plan, task-queue, canonical task, Task Target, textual confirmation, queue parent, Kind Queue, legacy Auto
+- Keywords: task, task-plan, task-queue, canonical task, Task Target, semantic alignment, conditional confirmation, queue parent, Kind Queue, legacy Auto
 - Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
-- Recheck: 当公开 skill identity、task activation timing、Task Target 确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
+- Recheck: 当公开 skill identity、task activation timing、Task Target 对齐或确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
 ### Purpose and Boundaries
 - `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
 
 ### Structure
-- 三个 workflow 直接位于 `skills/meta/`，进入或在上下文丢失后恢复时均须读取 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`；该普通 Markdown runtime contract 是 readiness、澄清、确认、修订与重新对齐的唯一详细 Authority，不参与 skill discovery。
-- 三个 workflow 共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不持久化会话确认，也不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
+- 三个 workflow 直接位于 `skills/meta/`，进入或在上下文丢失后恢复时均须读取 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`；该普通 Markdown runtime contract 是 readiness、语义对齐、条件确认、修订与重新对齐的唯一详细 Authority，不参与 skill discovery。
+- 三个 workflow 共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不持久化会话 alignment 或 confirmation，也不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
 - Core 将 `Status: <state> (<YYYY-MM-DD HH:MM>)` 投影到 canonical record，并在 `tasks/tasks.md` 维护对应的标题、状态与 `tasks/<task-slug>.md` 链接；record 在索引不一致时仍是权威。
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 一旦请求形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session；若尚不能诚实陈述 outcome，则先问一个聚焦问题并在答案形成结果时激活。激活后共享协议只允许解决 user-owned Target 歧义所必需的澄清与 workflow 指定的 lifecycle writes，禁止任务直接来源调查和实质准备。Target ready 后，精确末行 `TASK_GO` 只授权本次门禁且不消除歧义；否则展示固定 `Task Target` 标题、按用户语言本地化的必填 Outcome 与 Done when、以及仅在存在实质范围歧义时出现的 Boundaries，再等待明确回复。确认后才加载 task-relevant Context、Lessons 与任务直接来源。一般事实问答、未形成具体目标的开放讨论、琐碎确定性机械操作及 Context/Lessons 维护可跳过。
+- 一旦请求要求创建、修改、移动、重命名或删除任一文件（即使是琐碎确定性编辑），或形成具体、非平凡且可独立验收的 outcome，先用 Project Core 与最小任务归属查询创建、恢复或重新打开 owning record 并聚焦 Session；首次请求交付物编辑必须晚于激活与宿主可用的聚焦机制，建立、恢复、聚焦及对齐 task 所需的 lifecycle writes 是启动例外。若尚不能诚实陈述 outcome，则先问一个聚焦问题并在答案形成结果时激活。激活后共享协议只允许解决 user-owned Target 歧义所必需的澄清与 workflow 指定的 lifecycle writes，禁止任务直接来源调查和实质准备。Target ready 后，将候选 Target 与由原请求、聚焦澄清、用户明确修订及已接受 Target 组成的当前用户授权双向比较；候选没有增加、删除、弱化、遗漏或改变结果、完成条件、边界、保留行为、兼容性、副作用及 user-owned trade-off 时直接对齐，不展示重复确认。存在 user-owned 歧义时只问一个聚焦问题；存在实质差异时才展示固定 `Task Target` 标题、按用户语言本地化的必填 Outcome 与 Done when、以及仅在容易误解时出现的 Boundaries，并等待明确确认；去除首尾空白后精确等于 `1` 或不区分大小写等于 `y` 仍可确认已展示 Target，但不在提示中公开快捷输入。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。仅无文件变更的一般事实问答、未形成具体目标的开放讨论、只读琐碎操作，以及不是用户请求交付物的例行 Context/Lessons 维护可跳过。
 
 ### Decision and Verification Boundaries
-- User-facing Task Target 是 task 激活后的会话承诺门，不替代 canonical task record 的 `Target` section，也不产生持久 confirmation 字段；展示不包含实现方法、文件、命令、内部计划或 checkbox。文本回复与 `TASK_GO` 是互斥授权路径，用户修改结果或发现造成结果、完成条件、边界、副作用或 user-owned trade-off 实质变化时必须更新 record 并重新对齐。
+- User-facing Task Target 是 task 激活后的会话承诺门，不替代 canonical task record 的 `Target` section，也不产生持久 alignment 或 confirmation 字段；展示不包含实现方法、文件、命令、内部计划、checkbox 或快捷确认提示。用户完整明确提交的修订先进入当前授权，等价的修订 Target 直接采用；Agent 或 discovery 引入的实质变化在用户接受前不属于授权，必须更新 record、重新展示并等待确认。协议不保留单次 marker、兼容 alias 或持久 fast mode；Task Target 对齐也不绕过独立的安全、权限、发布、破坏性操作或外部副作用确认。
 - 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
 ## CTX-agent-hooks — Agent Hooks runtime and built-in hooks
-- Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, data migration, and host lifecycle adapters.
-- Paths: `skills/meta/agent-hooks/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/agent-hooks.test.js`, `tests/pi-context-hooks.test.mjs`
-- Keywords: agent hooks, inner hook, session-start, inject-output, workspace workflow gates, compaction, host adapter
-- Authority: `skills/meta/agent-hooks/scripts/agent-hooks.js`, `skills/meta/agent-hooks/scripts/lib/store.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `hooks/hooks.json`
-- Recheck: 当 Agent Hooks rule schema、存储路径、inner hook override、宿主 capability 或 session/compaction lifecycle mapping 变化时复核。
+- Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, three-level Agent Rules injection, data migration, and host lifecycle adapters.
+- Paths: `skills/meta/agent-hooks/`, `skills/meta/agent-rules/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/agent-hooks.test.js`, `tests/pi-context-hooks.test.mjs`
+- Keywords: agent hooks, agent rules, inner hook, session-start, inject-output, workspace workflow gates, compaction, host adapter
+- Authority: `skills/meta/agent-hooks/scripts/agent-hooks.js`, `skills/meta/agent-hooks/scripts/lib/store.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `skills/meta/agent-hooks/scripts/read-agent-rules.js`, `skills/meta/agent-rules/SKILL.md`, `hooks/hooks.json`
+- Recheck: 当 Agent Hooks rule schema、存储路径、inner hook override、built-in Agent Rules 来源、宿主 capability 或 session/compaction lifecycle mapping 变化时复核。
 
 ### Purpose and Boundaries
 - `skills/meta/agent-hooks/scripts/agent-hooks.js` 是稳定 facade；rule、store、runtime、CLI 与 native hook 模块分别负责 V1 语义、存储、执行和宿主适配，外部 adapter 通过 `createEvent()` 与 `runEvent()` 接入。
@@ -125,6 +125,7 @@
 ### Structure
 - 用户规则、配置和脚本位于 `<data-root>/hooks/`，项目规则和脚本位于 `<workspace>/.agents/hooks/`；旧 Triggerify 用户级与项目级根目录只作为一次性迁移输入，成功迁移后不再读取。
 - `skills/meta/agent-hooks/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/hooks/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
+- `inner:agent-rules` 依次合并 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md` 三个同格式单文件来源；`AGENTS.md` / `CLAUDE.md` 不属于该系统，禁用 inner hook 会同时停止三个来源的注入。
 - Hook 规则、配置、事件与脚本环境协议分别使用 `agent-hooks/v1`、`agent-hooks.config/v1`、`agent-hooks.event/v1` 与 `AGENT_HOOKS_*`。
 - `inner:workspace-workflow-gates` 在 `session-start` 运行 bundled script 并注入 `super-agent/workspace-workflow-gates.md` 的自包含行为契约，使目标对齐、Context、Lessons、最小与手术式执行及验证边界不依赖用户替换默认 Super Agent。
 
@@ -132,7 +133,7 @@
 - `hooks/hooks.json` 的 SessionStart dispatcher 处理 startup、resume 与 compact 来源，Pi adapter 在每次 `before_agent_start` 重建 session prompts；同一 Contract prompt 不再由 manifest 直接 `cat`，避免重复注入。
 
 ### Decision and Verification Boundaries
-- Codex、Claude Code 与 Pi 支持该 session prompt；Cursor 在宿主传递 injected context 前保持 unsupported。`tests/agent-hooks.test.js` 与 `tests/pi-context-hooks.test.mjs` 验证迁移、默认启用、用户禁用、最终 task 名称和压缩后重建边界。
+- Codex、Claude Code 与 Pi 支持该 session prompt；Cursor 在宿主传递 injected context 前保持 unsupported。`tests/agent-hooks.test.js` 与 `tests/pi-context-hooks.test.mjs` 验证迁移、默认启用、Built-in → User → Project Agent Rules 合并、来源不变、用户禁用、最终 task 名称和压缩后重建边界。
 
 ## CTX-agent-sops — Project, user, and built-in SOP routing
 - Scope: SOP discovery, writable ownership, same-name precedence, session summaries, prompt candidates, and Pi workspace loading.
@@ -157,9 +158,9 @@
 
 ## CTX-task-lessons — Workspace preventive lessons
 - Scope: Workspace-local preventive Lesson admission, trigger-first retrieval, application, confirmed maintenance, and legacy compatibility.
-- Paths: `tasks/lessons.md`, `skills/task-lessons/`, `skills/task-lessons/evals/trigger_cases.json`, `tests/task-files.test.mjs`
+- Paths: `tasks/lessons.md`, `skills/meta/task-lessons/`, `skills/meta/task-lessons/evals/trigger_cases.json`, `tests/task-files.test.mjs`
 - Keywords: task lessons, workspace lessons, prevention, recurrence, Trigger, Rule, Check, correction, mechanical control
-- Authority: `skills/task-lessons/SKILL.md`, `skills/task-lessons/scripts/lessons.js`, `skills/task-lessons/evals/query_cases.json`
+- Authority: `skills/meta/task-lessons/SKILL.md`, `skills/meta/task-lessons/scripts/lessons.js`, `skills/meta/task-lessons/evals/query_cases.json`
 - Recheck: 当 Lesson schema、准入与载体边界、Entry/Change/Completion Gates、持久写入确认或 legacy 解析行为变化时复核。
 
 ### Purpose and Boundaries
@@ -194,10 +195,27 @@
 ### Decision and Verification Boundaries
 - 交互 multiselect 的提交已构成安装授权，不再追加通用确认；默认边界以 `buildInstallChoices(null)` 与 `install --yes --json` 验证，显式 `super-agent` 行为以隔离 HOME 验证，宿主注入能力以 `agent-hooks show inner:workspace-workflow-gates --host <host>` 验证。
 
+## CTX-tab-title — Pi terminal tab title refresh
+- Scope: Pi 终端标签标题的自动与手动刷新、生成边界、持久化和并发保护。
+- Paths: `pi/extensions/csl-context-hooks.ts`, `skills/meta/agent-hooks/hooks/refresh-tab-title.md`, `skills/meta/agent-hooks/scripts/refresh-tab-title.js`, `tests/pi-context-hooks.test.mjs`, `tests/agent-hooks.test.js`
+- Keywords: terminal tab title, Chinese title, core intent, /title, prompt-submit, OSC, TTY
+- Authority: `pi/extensions/csl-context-hooks.ts`, `skills/meta/agent-hooks/hooks/refresh-tab-title.md`, `skills/meta/agent-hooks/scripts/refresh-tab-title.js`, `tests/pi-context-hooks.test.mjs`, `tests/agent-hooks.test.js`
+- Recheck: 当标题刷新时机、输入上下文、生成模型、中文与格式约束、TTY 写入、持久化或手动结果反馈发生变化时复核。
+
+### Purpose and Boundaries
+- `inner:refresh-tab-title` 更新终端标签的 OSC 标题而非 Pi session metadata；成功标题只显示简洁中文任务描述，不包含项目目录名前缀。中文是表达语言而非纯汉字字符集，信息密度更高时可保留数字、拉丁字母和技术术语。
+
+### Workflows
+- Pi 在带 prompt 的 `before_agent_start` 中触发 `prompt-submit`；自动刷新把当前活跃分支的用户与 Assistant 文本及最新 prompt 限制在 12,000 字符内交给独立模型，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文；原生压缩后注入的 `Compaction completed. Continue.` 内部提示会在派发标题 worker 前确定性跳过，不生成或写入标题。
+- `/title` 使用同类有界对话手动刷新，有参数时将参数作为最新用户请求追加；自动刷新非阻塞且不显示 toast；手动派发异常会立即显示原始错误且不启动结果监听，派发成功后通过 request ID 报告 refreshed、unchanged、failed 或 timed out。
+
+### Decision and Verification Boundaries
+- 每次有效刷新都重新生成标题，不向模型提供已保存标题；生成模型负责用简洁中文表达当前任务，代码要求最终标题至少包含一个汉字，同时确定性清理模型元标签、目录前缀、纯操作型或无效输出，并把标题限制为最多 24 个 Unicode 码点。
+- 每个 TTY 按 workspace 只保存满足当前格式契约的成功标题，并用 token 与锁防止旧 worker 覆盖新结果；模型或写入失败不覆盖已有有效标题。
+
 ## Components
 
 - Agent Hooks 的分发 `SKILL.md` 使用英文，以 bundled CLI 作为 accepted-behavior authority，不把项目 RFC 当作 runtime guidance。
-- `inner:refresh-tab-title` 在 Pi 上由 `before_agent_start` 的 `prompt-submit` hook 触发；自动刷新把当前活跃分支中最近的用户与 Assistant 文本及最新用户 prompt 限制在 12,000 字符内发送给独立的 `deepseek/deepseek-v4-flash`，排除工具调用、工具结果、thinking、图片、项目文件和主 Agent 上下文。手动 `/title` 始终使用同类有界对话，有参数时把参数作为最新用户请求追加。每次有效刷新都重新生成标题，不向模型提供已保存主题，不使用 `KEEP_CURRENT_TITLE` 或例行操作输入短路；无效输出与模型失败仍不写标题。有效输出经确定性清洗后写入 `<project> · <core intent>` OSC 标题，核心意图最多 24 个 Unicode 码点，完整标题最多 7 个自然语言单词；每个 TTY 按 workspace 保存成功标题，并用 token/锁防止旧 worker 覆盖新结果。手动刷新通过 request ID 报告 refreshed、unchanged、failed 或 timed out，自动刷新保持非阻塞且不显示每轮 toast。权威实现与回归入口为 `pi/extensions/csl-context-hooks.ts`、`skills/meta/agent-hooks/scripts/refresh-tab-title.js`、`tests/pi-context-hooks.test.mjs` 和 `tests/agent-hooks.test.js`。
 - `pi/extensions/csl-context-hooks.ts` 是 Agent Hooks 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/meta/agent-hooks/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 Hook Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `agent-hooks show` 为准。权威入口是该脚本与 `skills/meta/agent-hooks/SKILL.md`。

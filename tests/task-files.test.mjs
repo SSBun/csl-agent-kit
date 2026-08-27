@@ -191,9 +191,9 @@ test("cross-linked task and report slugs fail validation", () => {
 test("default agent instructions explain workspace records and route work to workflow skills", () => {
   const rules = readFileSync(path.join(root, "super-agent", "AGENTS.md"), "utf8");
   const expected = {
-    "task-context": [path.join(skillsDir, "task-context"), "tasks/context.md"],
+    "task-context": [path.join(cslTasksDir, "task-context"), "tasks/context.md"],
     "task": [path.join(cslTasksDir, "task"), "tasks/tasks.md"],
-    "task-lessons": [path.join(skillsDir, "task-lessons"), "tasks/lessons.md"],
+    "task-lessons": [path.join(cslTasksDir, "task-lessons"), "tasks/lessons.md"],
   };
 
   for (const [name, [skillDir, ownedPath]] of Object.entries(expected)) {
@@ -224,35 +224,53 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(rules.includes("$workspace-context"), false);
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
   assert.equal(rules.includes("Read `tasks/context.md` first"), false);
+  assert.match(rules, /asks to create, modify, move, rename, or delete any file—even when the requested edit is trivial/);
   assert.match(rules, /load `\$task` and follow its `SKILL\.md` to create, resume, or reopen the owning record before substantive discussion/);
+  assert.match(rules, /task lifecycle writes needed for activation, focus, and Target alignment are the bootstrap exception/);
   assert.match(rules, /apply the selected task-family skill's required shared Task Target Alignment Protocol/);
+  assert.match(rules, /current complete user authorization/);
+  assert.match(rules, /bidirectionally materially equivalent/);
   assert.match(rules, /focused user-owned clarification needed to form an honest commitment/);
-  assert.match(rules, /Continue to substantive preparation or execution only after confirmation/);
+  assert.match(rules, /Continue to substantive preparation or execution only after alignment/);
   assert.doesNotMatch(rules, /TASK_GO/);
   assert.doesNotMatch(rules, /`\*\*Task Target:\*\* <target>`/);
   assert.doesNotMatch(rules, /task_target_confirm/);
-  assert.match(rules, /Skip task records only for simple factual answers, open-ended conversation without a concrete outcome/);
+  assert.match(rules, /Skip task records only for simple factual answers and open-ended conversation that request no file mutation/);
+  assert.match(rules, /read-only trivial deterministic operations/);
 
   const alignmentProtocolPath = path.join(cslTasksSharedDir, "protocols", "task-target-alignment.md");
   assert.ok(existsSync(alignmentProtocolPath), "missing shared Task Target alignment protocol");
   const alignmentProtocol = readFileSync(alignmentProtocolPath, "utf8");
   assert.doesNotMatch(alignmentProtocol, /^---/);
-  assert.match(alignmentProtocol, /sole detailed authority for Task Target readiness, presentation, confirmation, and realignment/);
-  assert.match(alignmentProtocol, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+  assert.match(alignmentProtocol, /sole detailed authority for Task Target readiness, semantic alignment, conditional presentation and confirmation, revision, and realignment/);
+  assert.doesNotMatch(alignmentProtocol, /TASK_GO/);
+  assert.match(alignmentProtocol, /current user authorization/);
+  assert.match(alignmentProtocol, /originating request, focused clarification answers, explicit user additions or revisions/);
+  assert.match(alignmentProtocol, /neither adds, removes, weakens, omits, nor changes/);
+  assert.match(alignmentProtocol, /If the user could accept the current authorization yet reasonably reject the candidate Target/);
+  assert.match(alignmentProtocol, /If the candidate Target could be satisfied while the current authorization remains unsatisfied/);
+  assert.match(alignmentProtocol, /continue without rendering a confirmation prompt/);
   assert.match(alignmentProtocol, /^   \*\*Task Target\*\*$/m);
   assert.match(alignmentProtocol, /^   - \*\*Outcome:\*\*/m);
   assert.match(alignmentProtocol, /^   - \*\*Done when:\*\*/m);
   assert.match(alignmentProtocol, /^   - \*\*Boundaries:\*\*/m);
   assert.match(alignmentProtocol, /Confirm this target, or state what should change/);
+  assert.doesNotMatch(alignmentProtocol, /Reply `1`/);
   assert.match(alignmentProtocol, /Keep the title exactly `\*\*Task Target\*\*`/);
   assert.match(alignmentProtocol, /Localize the `Outcome`, `Done when`, and `Boundaries` labels/);
+  assert.match(alignmentProtocol, /do not add confirmation shortcut hints to it/);
   assert.match(alignmentProtocol, /`Outcome` and `Done when` are required/);
   assert.match(alignmentProtocol, /Include the entire `Boundaries` item only when omitting a material scope boundary could cause misunderstanding/);
   assert.match(alignmentProtocol, /Render it without a code fence, implementation method, file list, command sequence, internal plan, or checkbox/);
   assert.doesNotMatch(alignmentProtocol, /`\*\*Task Target:\*\* <intended outcome and observable completion condition>`/);
   assert.match(alignmentProtocol, /This focused clarification forms the commitment/);
-  assert.match(alignmentProtocol, /revises the Target instead of confirming it/);
-  assert.match(alignmentProtocol, /pause and realign before continuing/);
+  assert.match(alignmentProtocol, /trimmed content is exactly `1` or case-insensitively equals `y` confirms the currently presented Target/);
+  assert.match(alignmentProtocol, /Treat these as implicit shortcuts and do not advertise them in the user-facing block/);
+  assert.match(alignmentProtocol, /Any other unambiguous affirmative response that accepts it also confirms it/);
+  assert.match(alignmentProtocol, /updates the current user authorization instead of confirming the old Target/);
+  assert.match(alignmentProtocol, /continue without asking the user to confirm their own explicit revision again/);
+  assert.match(alignmentProtocol, /material change introduced by the Agent or by discovery is not authorized until the user accepts it/);
+  assert.match(alignmentProtocol, /Independent Safety Gates/);
   assert.match(alignmentProtocol, /does not replace the canonical record's `Target` section/);
   assert.doesNotMatch(alignmentProtocol, /task_target_confirm/);
 
@@ -261,8 +279,8 @@ test("default agent instructions explain workspace records and route work to wor
     assert.ok(skill.includes("csl-tasks/shared/protocols/task-target-alignment.md"), `${name} missing shared protocol reference`);
     assert.match(skill, /Before forming, presenting, or accepting a Task Target, read/);
     assert.match(skill, /stop before substantive work and report the missing runtime dependency/);
-    assert.match(skill, /The shared protocol owns readiness, focused clarification, confirmation, revision, and realignment semantics/);
-    assert.doesNotMatch(skill, /final non-empty line is exactly the case-sensitive marker `TASK_GO`/);
+    assert.match(skill, /The shared protocol owns readiness, semantic alignment, focused clarification, conditional confirmation, revision, and realignment semantics/);
+    assert.doesNotMatch(skill, /TASK_GO/);
     assert.doesNotMatch(skill, /state one line in the exact format `\*\*Task Target:\*\*/);
     assert.doesNotMatch(skill, /task_target_confirm/);
   }
@@ -309,11 +327,18 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /^CSL AGENT KIT CONTRACT ACTIVE/);
   assert.match(contract, /never requires replacing or rewriting `AGENTS\.md`/);
   assert.match(contract, /Existing user rules and the current explicit request take precedence/);
-  assert.match(contract, /Once a request establishes a concrete, non-trivial outcome, align a concise Task Target/);
+  assert.match(contract, /Before any user-requested file creation, modification, move, rename, or deletion/);
+  assert.match(contract, /This applies even to trivial deterministic edits/);
+  assert.match(contract, /task-lifecycle writes needed to create or restore that record, bind the session, and align its Target are the bootstrap exception/);
+  assert.match(contract, /Whenever a Task workflow applies, align a concise Task Target/);
+  assert.match(contract, /Treat a clear user instruction as authorization for a materially equivalent Target/);
+  assert.match(contract, /Present the Target and wait for confirmation only when it adds, removes, weakens, omits, or changes/);
+  assert.match(contract, /A complete explicit user revision authorizes an equivalent revised Target without another confirmation/);
+  assert.match(contract, /Independent safety or permission confirmations remain separate/);
   assert.match(contract, /At session start, resume, or compaction, recover the workspace Context before acting/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
-  assert.match(contract, /Implement the minimum solution that fully satisfies the confirmed outcome/);
-  assert.match(contract, /Touch only what the confirmed outcome requires/);
+  assert.match(contract, /Implement the minimum solution that fully satisfies the aligned outcome/);
+  assert.match(contract, /Touch only what the aligned outcome requires/);
   assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it/);
   assert.match(contract, /The Contract stays behavioral and stable\. Skills retain operational detail\./);
   assert.doesNotMatch(contract, /\$(?:task|task-plan|task-queue|task-context|task-lessons)/);
@@ -324,7 +349,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
 });
 
 test("workspace context contract supports dispatch-ready retrieval and durable admission", () => {
-  const skill = readFileSync(path.join(skillsDir, "task-context", "SKILL.md"), "utf8");
+  const skill = readFileSync(path.join(cslTasksDir, "task-context", "SKILL.md"), "utf8");
 
   for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Default Migration", "Legacy Migration", "Degradation and Failure", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing context section: ${section}`);
@@ -367,7 +392,7 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
 });
 
 test("workspace context value cases enforce admission and temporary exits", () => {
-  const fixture = JSON.parse(readFileSync(path.join(skillsDir, "task-context", "evals", "context_value_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task-context", "evals", "context_value_cases.json"), "utf8"));
   const requiredExits = new Set(["task-end", "next-module-change", "evidence-invalid"]);
   const outcomes = new Set();
 
@@ -406,7 +431,7 @@ test("workspace context value cases enforce admission and temporary exits", () =
 });
 
 test("workspace context query cases cover session, task, write, and failure gates", () => {
-  const fixture = JSON.parse(readFileSync(path.join(skillsDir, "task-context", "evals", "query_cases.json"), "utf8"));
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task-context", "evals", "query_cases.json"), "utf8"));
   assert.equal(fixture.schema, "csl-context.query-cases/v1");
   const actions = Object.fromEntries(fixture.cases.map((item) => [item.id, item.expected_action]));
   assert.equal(actions["session-start"], "LoadCore");
@@ -426,7 +451,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   const workspace = mkdtempSync(path.join(os.tmpdir(), "context-query-"));
   const contextDir = path.join(workspace, "tasks");
   const contextFile = path.join(contextDir, "context.md");
-  const script = path.join(skillsDir, "task-context", "scripts", "context.js");
+  const script = path.join(cslTasksDir, "task-context", "scripts", "context.js");
   mkdirSync(contextDir, { recursive: true });
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
 
@@ -534,7 +559,7 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
 });
 
 test("current workspace Context has a valid Core plus formal and legacy Packs", () => {
-  const script = path.join(skillsDir, "task-context", "scripts", "context.js");
+  const script = path.join(cslTasksDir, "task-context", "scripts", "context.js");
   const result = spawnSync(process.execPath, [script, "--workspace", root, "validate"], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const validation = JSON.parse(result.stdout);
@@ -629,7 +654,7 @@ test("workspace review-gate cases require an explicit user request", () => {
 });
 
 test("workspace lesson contract queries before work and confirms every persistent write", () => {
-  const skillDir = path.join(skillsDir, "task-lessons");
+  const skillDir = path.join(cslTasksDir, "task-lessons");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
   const queryCases = JSON.parse(readFileSync(path.join(skillDir, "evals", "query_cases.json"), "utf8"));
 
@@ -677,7 +702,7 @@ test("workspace lesson CLI indexes v1 and legacy records and rejects malformed v
   const workspace = mkdtempSync(path.join(os.tmpdir(), "lessons-query-"));
   const lessonsDir = path.join(workspace, "tasks");
   const lessonsFile = path.join(lessonsDir, "lessons.md");
-  const script = path.join(skillsDir, "task-lessons", "scripts", "lessons.js");
+  const script = path.join(cslTasksDir, "task-lessons", "scripts", "lessons.js");
   mkdirSync(lessonsDir, { recursive: true });
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
 

@@ -116,6 +116,43 @@ test("builds bounded recent title context from user and assistant text only", ()
   assert.doesNotMatch(context, /old-start|secret\.txt|private tool output|Tool:/);
 });
 
+test("reports manual title dispatch failures without starting timeout polling", async () => {
+  const root = createFixture();
+  mkdirSync(join(root, "triggerify"), { recursive: true });
+  writeFileSync(join(root, "triggerify", "legacy.md"), "legacy\n");
+  const previousHome = process.env.CSL_AGENT_KIT_HOME;
+  const previousSetTimeout = globalThis.setTimeout;
+  const notifications = [];
+  let timeoutStarted = false;
+  process.env.CSL_AGENT_KIT_HOME = root;
+  globalThis.setTimeout = () => {
+    timeoutStarted = true;
+    return 0;
+  };
+  const { api, commands } = fakePi();
+  const context = {
+    ...fakeContext(root),
+    ui: { notify: (message, level) => notifications.push({ message, level }) },
+  };
+
+  try {
+    cslContextHooks(api);
+    await commands.get("title").handler("", context);
+    assert.equal(timeoutStarted, false);
+    assert.equal(notifications.length, 1);
+    assert.equal(notifications[0].level, "error");
+    assert.match(
+      notifications[0].message,
+      /^Tab title refresh failed: cannot migrate Agent Hooks: both .*triggerify and .*hooks contain data$/,
+    );
+  } finally {
+    globalThis.setTimeout = previousSetTimeout;
+    if (previousHome === undefined) delete process.env.CSL_AGENT_KIT_HOME;
+    else process.env.CSL_AGENT_KIT_HOME = previousHome;
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("formats Agent Hooks session prompts into Pi context", () => {
   const context = formatTriggerContext(
     [{ id: "global:directive-output", content: "Prefer concise reports." }],
@@ -128,6 +165,9 @@ test("formats Agent Hooks session prompts into Pi context", () => {
 
 test("rebuilds Pi Agent Hooks context before every agent turn", async () => {
   const root = createFixture();
+  writeFileSync(join(root, "agent-rules.md"), "- User Agent Rule.\n");
+  mkdirSync(join(root, ".agents"), { recursive: true });
+  writeFileSync(join(root, ".agents", "agent-rules.md"), "- Project Agent Rule.\n");
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
   const { api, handlers } = fakePi();
@@ -141,8 +181,14 @@ test("rebuilds Pi Agent Hooks context before every agent turn", async () => {
     await handlers.get("session_compact")({}, context);
     const first = await handlers.get("before_agent_start")({ prompt: "deploy frobnicator production", systemPrompt: "base prompt" }, context);
     assert.match(first.systemPrompt, /Prefer concise reports/);
+    assert.match(first.systemPrompt, /full absolute path/);
+    assert.match(first.systemPrompt, /User Agent Rule/);
+    assert.match(first.systemPrompt, /Project Agent Rule/);
+    assert.ok(first.systemPrompt.indexOf("full absolute path") < first.systemPrompt.indexOf("User Agent Rule"));
+    assert.ok(first.systemPrompt.indexOf("User Agent Rule") < first.systemPrompt.indexOf("Project Agent Rule"));
     assert.match(first.systemPrompt, /deploy-production/);
     assert.match(first.systemPrompt, /CSL AGENT KIT CONTRACT ACTIVE/);
+    assert.match(first.systemPrompt, /Before any user-requested file creation, modification, move, rename, or deletion/);
     assert.match(first.systemPrompt, /align a concise Task Target with the user/);
     assert.match(first.systemPrompt, /apply every relevant Lesson/);
     assert.doesNotMatch(first.systemPrompt, /Task Target Alignment Protocol/);
@@ -150,6 +196,9 @@ test("rebuilds Pi Agent Hooks context before every agent turn", async () => {
     writeSessionPrompt(root, "directive-output", "Show absolute paths.");
     const second = await handlers.get("before_agent_start")({ prompt: "show a path", systemPrompt: "base prompt" }, context);
     assert.match(second.systemPrompt, /Show absolute paths/);
+    assert.match(second.systemPrompt, /full absolute path/);
+    assert.match(second.systemPrompt, /User Agent Rule/);
+    assert.match(second.systemPrompt, /Project Agent Rule/);
     assert.doesNotMatch(second.systemPrompt, /Prefer concise reports/);
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;

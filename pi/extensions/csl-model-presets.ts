@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 type ThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
 
@@ -22,6 +22,38 @@ const THINKING_LEVELS = new Set<ThinkingLevel>([
 ]);
 
 export default function cslModelPresets(pi: ExtensionAPI) {
+	let quickRun: { model: ExtensionContext["model"]; thinkingLevel: ThinkingLevel } | undefined;
+
+	async function applyPreset(preset: Preset, ctx: ExtensionContext): Promise<boolean> {
+		const model = ctx.modelRegistry.find(preset.provider, preset.model);
+		if (!model) {
+			ctx.ui.notify(`Model not found: ${preset.provider}/${preset.model}`, "error");
+			return false;
+		}
+		if (!supportsThinkingLevel(model, preset.thinkingLevel)) {
+			ctx.ui.notify(`${preset.provider}/${preset.model} does not support thinking:${preset.thinkingLevel}`, "error");
+			return false;
+		}
+		if (!(await pi.setModel(model))) {
+			ctx.ui.notify(`No credentials for ${preset.provider}/${preset.model}`, "error");
+			return false;
+		}
+
+		pi.setThinkingLevel(preset.thinkingLevel);
+		return true;
+	}
+
+	async function restoreQuickRun(ctx: ExtensionContext): Promise<void> {
+		const previous = quickRun;
+		quickRun = undefined;
+		if (!previous) return;
+		if (previous.model && !(await pi.setModel(previous.model))) {
+			ctx.ui.notify("Quick task finished, but the previous model could not be restored.", "warning");
+			return;
+		}
+		pi.setThinkingLevel(previous.thinkingLevel);
+	}
+
 	pi.registerCommand("preset", {
 		description: "List presets or switch model and thinking level together",
 		getArgumentCompletions: (prefix) => {
@@ -65,23 +97,48 @@ export default function cslModelPresets(pi: ExtensionAPI) {
 				return;
 			}
 
-			const model = ctx.modelRegistry.find(preset.provider, preset.model);
-			if (!model) {
-				ctx.ui.notify(`Model not found: ${preset.provider}/${preset.model}`, "error");
+			if (await applyPreset(preset, ctx)) {
+				ctx.ui.notify(`Preset "${name}": ${preset.provider}/${preset.model} · ${preset.thinkingLevel}`, "info");
+			}
+		},
+	});
+
+	pi.registerCommand("quick", {
+		description: "Run one prompt with the quick model preset, then restore the current model",
+		handler: async (args, ctx) => {
+			const prompt = args.trim();
+			if (!prompt) {
+				ctx.ui.notify("Usage: /quick <prompt>", "warning");
 				return;
 			}
-			if (!supportsThinkingLevel(model, preset.thinkingLevel)) {
-				ctx.ui.notify(`${preset.provider}/${preset.model} does not support thinking:${preset.thinkingLevel}`, "error");
+			if (!ctx.isIdle()) await ctx.waitForIdle();
+
+			let preset: Preset | undefined;
+			try {
+				preset = loadPresets().quick;
+			} catch (error) {
+				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
 				return;
 			}
-			if (!(await pi.setModel(model))) {
-				ctx.ui.notify(`No credentials for ${preset.provider}/${preset.model}`, "error");
+			if (!preset) {
+				ctx.ui.notify('Model preset "quick" is not defined.', "error");
 				return;
 			}
 
-			pi.setThinkingLevel(preset.thinkingLevel);
-			ctx.ui.notify(`Preset "${name}": ${preset.provider}/${preset.model} · ${preset.thinkingLevel}`, "info");
+			const previous = { model: ctx.model, thinkingLevel: pi.getThinkingLevel() };
+			if (!(await applyPreset(preset, ctx))) return;
+			quickRun = previous;
+			try {
+				pi.sendUserMessage(prompt);
+			} catch (error) {
+				await restoreQuickRun(ctx);
+				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+			}
 		},
+	});
+
+	pi.on("agent_settled", async (_event, ctx) => {
+		await restoreQuickRun(ctx);
 	});
 }
 

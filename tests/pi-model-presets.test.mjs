@@ -25,15 +25,22 @@ function createFixture(config, models = [FLASH, SOL], setModelResult = true) {
   const previousAgentDir = process.env.PI_CODING_AGENT_DIR;
   process.env.PI_CODING_AGENT_DIR = agentDir;
 
-  let command;
   let selectedModel;
   let thinkingLevel = "off";
+  let agentSettled;
+  const commands = new Map();
+  const messages = [];
   const notifications = [];
   const selections = [];
   cslModelPresets({
     registerCommand(name, value) {
-      assert.equal(name, "preset");
-      command = value;
+      commands.set(name, value);
+    },
+    on(event, handler) {
+      if (event === "agent_settled") agentSettled = handler;
+    },
+    sendUserMessage(message) {
+      messages.push(message);
     },
     async setModel(model) {
       selectedModel = model;
@@ -49,6 +56,9 @@ function createFixture(config, models = [FLASH, SOL], setModelResult = true) {
 
   const context = {
     hasUI: true,
+    isIdle: () => true,
+    waitForIdle: async () => {},
+    model: SOL,
     modelRegistry: { find: (provider, model) => models.find((item) => item.provider === provider && item.id === model) },
     ui: {
       notify: (...args) => notifications.push(args),
@@ -61,10 +71,13 @@ function createFixture(config, models = [FLASH, SOL], setModelResult = true) {
 
   return {
     agentDir,
-    command,
+    command: commands.get("preset"),
+    quickCommand: commands.get("quick"),
     context,
+    messages,
     notifications,
     selections,
+    settle: () => agentSettled({}, context),
     state: () => ({ selectedModel, thinkingLevel }),
     cleanup() {
       if (previousAgentDir === undefined) delete process.env.PI_CODING_AGENT_DIR;
@@ -92,6 +105,24 @@ test("selects a preset and reloads configuration for every command", async () =>
     await fixture.command.handler("flash-max", fixture.context);
     assert.deepEqual(fixture.state(), { selectedModel: SOL, thinkingLevel: "xhigh" });
     assert.equal(fixture.notifications.at(-1)[1], "info");
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test("runs one quick prompt and restores the previous model after it settles", async () => {
+  const fixture = createFixture({ quick: PRESETS["flash-max"] });
+  try {
+    await fixture.quickCommand.handler("  commit the current changes  ", fixture.context);
+    assert.deepEqual(fixture.messages, ["commit the current changes"]);
+    assert.deepEqual(fixture.state(), { selectedModel: FLASH, thinkingLevel: "max" });
+
+    await fixture.settle();
+    assert.deepEqual(fixture.state(), { selectedModel: SOL, thinkingLevel: "off" });
+
+    await fixture.quickCommand.handler("   ", fixture.context);
+    assert.deepEqual(fixture.messages, ["commit the current changes"]);
+    assert.equal(fixture.notifications.at(-1)[1], "warning");
   } finally {
     fixture.cleanup();
   }

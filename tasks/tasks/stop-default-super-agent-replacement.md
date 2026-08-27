@@ -1,6 +1,6 @@
 # 停止默认替换 Agent 指令文件
 
-Status: In Progress (2026-08-21 14:08)
+Status: Completed (2026-08-21 15:53)
 Kind: Task
 
 ## Scope
@@ -28,10 +28,14 @@ Kind: Task
 ## Result
 
 - T1: 隔离 HOME 的 --yes 安装只返回 codex-plugin，四个全局 Agent 指令路径均不存在且未被写入；fresh checklist 也只预选 codex-plugin。
-- T3: triggerify show 确认 workspace workflow gates 在 codex、claude-code、pi 上均为 supported/active，其他默认目标仍为 codex-plugin。
-- T4: triggerify show 确认 cursor 为 unsupported/inactive；README 与 CTX-install 明确记录默认安装不使用文件替换回退。
 - T2: 显式 --target super-agent 在隔离 HOME 中为四个普通文件创建备份并替换为正确 symlink；--all 与当前运行的主动选择仍可执行该目标。
 - T5: 保存包含 super-agent 的选择后，load 仍保留原记录，但 buildInstallChoices 对既有和新保存值均不预选 super-agent；README 与 CTX-install 已同步每次 opt-in 契约。
 - T7: 用户在完整行为 Contract 候选展示后明确回复 confirm，批准实施该文本。
 - T6: 批准的行为 Contract 已原样注入，覆盖目标对齐、Context、Lessons、工程判断、最小/手术式修改与验证；rg 确认不含协议加载、task_focus、记录路径或 Skill 文件机制，且 Agent Hooks 在 Codex、Claude Code、Pi 为 active、Cursor 为 unsupported。
+- T3: Agent Hooks show 确认 inner:workspace-workflow-gates 在 Codex、Claude Code、Pi 均 supported/active；注入脚本输出与批准的 Contract 文件逐字一致，npm pack dry-run 包含 Contract、Hook 与读取脚本。
+- T4: Agent Hooks show 确认 Cursor 为 unsupported/inactive；README 与 CTX-install 保留不以默认文件替换回退的边界。
 - Review gate: Skipped — 用户未请求独立 adversarial review。
+
+## Verification
+
+- Passed: 注入脚本与批准 Contract 逐字一致且不含内部运行机制；Agent Hooks 在 Codex/Claude Code/Pi active、Cursor unsupported；npm pack 包含全部注入资产；变更 JS/MJS 语法、Context core/validate 与 git diff --check 均通过。未运行单元测试，遵循用户的显式验证限制。

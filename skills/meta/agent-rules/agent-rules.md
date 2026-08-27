@@ -1,0 +1,1 @@
+- In user-facing responses, display every local file or directory reference as its full absolute path. When making one clickable in Markdown, also use the corresponding absolute `file://` URL as the link target.

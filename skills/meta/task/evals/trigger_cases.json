@@ -2,9 +2,11 @@
   "recommended_threshold": 0.5,
   "should_trigger": [
     "Create the canonical task record before implementing this feature.",
+    "Rename this file and verify the destination exists.",
+    "Fix this one-character typo in the file.",
     "Research this concrete non-trivial outcome and create its task record before research.",
     "Before substantive discussion, create the task record for this specific outcome.",
-    "Activate this concrete task, apply its shared Task Target Alignment Protocol, and wait for confirmation before research.",
+    "Activate this concrete task and apply its shared Task Target Alignment Protocol before research, requesting confirmation only for a material difference.",
     "Resume the existing task and finish its remaining targets.",
     "Cancel this task for now; I may continue it later.",
     "Verify and complete the current workspace task."
@@ -14,7 +16,7 @@
     "Brainstorm freely without choosing a concrete outcome.",
     "Plan this feature but do not implement it.",
     "Run these five tasks automatically in order.",
-    "Rename this file and verify the destination exists."
+    "Check whether this file exists without changing it."
   ],
   "near_neighbor": [
     "At session start, refresh tasks/context.md.",

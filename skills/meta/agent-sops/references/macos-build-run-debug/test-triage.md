@@ -1,6 +1,6 @@
 # macOS Test Triage
 
-仅在 Xcode 或 SwiftPM macOS test build/execution 失败时读取。通用 bug diagnosis 仍服从项目测试规则和 `test-triage` skill；本 reference 只补充 macOS harness、host app、entitlement 与 simulator assumption 边界。
+仅在 Xcode 或 SwiftPM macOS test build/execution 失败时读取。通用 bug diagnosis 仍服从项目测试规则和 `bug-fix` skill；本 reference 只补充 macOS harness、host app、entitlement 与 simulator assumption 边界。
 
 ## 1. 先确认 Harness
 

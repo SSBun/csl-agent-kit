@@ -283,12 +283,14 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		workspace: string,
 		context: TriggerContext = {},
 		hookInputs?: Record<string, object>,
+		onError?: (error: unknown) => void,
 	): TriggerPrompt[] {
 		try {
 			const payload = buildPayload(event, workspace, context);
 			const result = agentHooks.runEvent(payload, { host: "pi", workspace, hookInputs });
 			return result.prompts;
-		} catch {
+		} catch (error) {
+			onError?.(error);
 			return [];
 		}
 	}
@@ -431,13 +433,21 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 			const prompt = requestedTitle || latestUserPrompt(entries) || "(manual refresh)";
 			const sessionContext = buildTitleContext(entries, prompt);
 			const requestId = randomUUID();
+			let dispatchFailed = false;
 			triggerPrompts(
 				"prompt-submit",
 				ctx.cwd,
 				{ prompt },
 				{ [TITLE_HOOK_ID]: { sessionContext, requestId } },
+				(error) => {
+					dispatchFailed = true;
+					ctx.ui.notify(
+						`Tab title refresh failed: ${error instanceof Error ? error.message : String(error)}`,
+						"error",
+					);
+				},
 			);
-			watchTitleResult(requestId, ctx);
+			if (!dispatchFailed) watchTitleResult(requestId, ctx);
 		},
 	});
 }

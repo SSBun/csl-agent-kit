@@ -1,7 +1,7 @@
 interface:
   display_name: "Agent Rules"
-  short_description: "Persist global agent rules in ~/.csl-agent-kit/agent-rules.md for session-start injection"
-  default_prompt: "Use $agent-rules to add, edit, list, or remove a persistent rule or convention in ~/.csl-agent-kit/agent-rules.md."
+  short_description: "Manage built-in, user, and project Agent Rules"
+  default_prompt: "Use $agent-rules to manage or inspect the requested built-in, user, or project Agent Rule."
 
 compatibility:
   canonical_format: "agent-skills"

@@ -2,7 +2,7 @@
   "positive_concepts": {
     "single_task_management": {
       "weight": 1.0,
-      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "shared Task Target Alignment Protocol", "focused target-forming clarification", "confirmation", "resume", "cancel", "verify", "complete"]
+      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "shared Task Target Alignment Protocol", "focused target-forming clarification", "semantic alignment", "conditional confirmation", "resume", "cancel", "verify", "complete", "create this file", "edit this file", "typo", "rename this file", "move this file", "delete this file", "trivial file edit"]
     }
   },
   "negative_concepts": {
@@ -15,11 +15,6 @@
       "weight": 0.5,
       "exclusive": true,
       "phrases": ["multiple tasks automatically", "parent and child tasks", "task queue"]
-    },
-    "trivial_mechanical_operation": {
-      "weight": 0.5,
-      "exclusive": true,
-      "phrases": ["rename this file", "trivial mechanical"]
     }
   }
 }

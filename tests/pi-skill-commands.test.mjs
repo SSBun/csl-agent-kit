@@ -3,7 +3,19 @@ import test from "node:test";
 
 import cslSkillCommands from "../pi/extensions/csl-skill-commands.ts";
 
-test("registers aliases for nested skills", () => {
+test("registers bug-fix without a test-triage alias", () => {
+  const commands = new Map();
+  cslSkillCommands({
+    registerCommand(name, command) {
+      commands.set(name, command);
+    },
+  });
+
+  assert.ok(commands.has("bug-fix"));
+  assert.equal(commands.has("test-triage"), false);
+});
+
+test("registers nested skill commands without removed Matt Pocock skills", () => {
   const commands = new Map();
   cslSkillCommands({
     registerCommand(name, command) {
@@ -18,6 +30,12 @@ test("registers aliases for nested skills", () => {
     "task",
     "task-plan",
     "task-queue",
+    "git-conflict",
+    "tldr",
+    "task-lessons",
+    "task-context",
+  ];
+  const removedNames = [
     "domain-modeling",
     "grill-me",
     "grill-with-docs",
@@ -25,18 +43,15 @@ test("registers aliases for nested skills", () => {
     "handoff",
     "improve-codebase-architecture",
     "research",
-    "resolving-merge-conflicts",
     "tdd",
     "teach",
-    "tldr",
-    "task-lessons",
-    "task-context",
     "writing-great-skills",
+    "mattpocock",
   ];
 
   for (const name of selectedNames) assert.ok(commands.has(name), `missing /${name}`);
+  for (const name of removedNames) assert.equal(commands.has(name), false, `retained /${name}`);
   assert.equal(commands.has("integrate-third-skills"), false);
-  assert.equal(commands.has("mattpocock"), false);
   assert.equal(commands.has("code-review"), false);
   assert.equal(commands.has("code-reviewer"), false);
   assert.equal(commands.has("deep-explore"), false);
@@ -52,7 +67,6 @@ test("registers aliases for nested skills", () => {
   assert.equal(commands.has("workspace-manage-task"), false);
   assert.equal(commands.has("workspace-maintain-context"), false);
   assert.equal(commands.has("workspace-context"), false);
-  assert.match(commands.get("grilling").description, /Alias for \/skill:grilling/);
 });
 
 test("passes the pre-dispatch Pi branch boundary to archive", async () => {
