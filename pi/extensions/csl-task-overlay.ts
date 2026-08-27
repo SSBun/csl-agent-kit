@@ -357,23 +357,31 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 	pi.registerTool({
 		name: "task_focus",
 		label: "Task Focus",
-		description: "Associate this Pi session with one canonical workspace task.",
+		description: "Associate this Pi session with one canonical workspace task, or report the current focus when taskId is omitted.",
 		promptSnippet: "Focus this Pi session on a canonical task.",
 		promptGuidelines: [
 			"After task, task-plan, or task-queue creates, resumes, reopens, or activates a canonical task for this session, call task_focus with that task ID.",
+			"Call task_focus without arguments to fetch the task ID this session currently focuses.",
 		],
 		parameters: {
 			type: "object",
-			required: ["taskId"],
 			properties: {
 				taskId: {
 					type: "string",
-					description: "Canonical task ID without the .md suffix",
+					description: "Canonical task ID without the .md suffix; omit to read the current focus",
 					pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$",
 				},
 			},
 		},
 		async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+			if (!params.taskId) {
+				// Live mirror first: appendEntry may not be reflected on the branch yet.
+				const current = refreshState.focusedTaskId ?? restoreFocusedTask(ctx.sessionManager.getBranch());
+				return {
+					content: [{ type: "text", text: current ? `Focused task: ${current}` : "No focused task in this session." }],
+					details: { taskId: current ?? null },
+				};
+			}
 			const taskId = params.taskId.trim();
 			if (!TASK_ID.test(taskId) || !loadTasks(ctx.cwd).some((row) => taskId === taskIdForRow(row))) {
 				throw new Error(`Canonical task not found: ${taskId}`);

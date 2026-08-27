@@ -318,10 +318,19 @@ test("persists session focus and keeps a completed task focused until changed or
     assert.deepEqual(entries.at(-1).data, { taskId: "other" });
     assert.match(widget.render(200)[1], /⏳ Other task/);
 
+    const focused = await focusTool.execute("call-read", {}, undefined, undefined, ctx);
+    assert.match(focused.content[0].text, /Focused task: other/);
+    assert.equal(focused.details.taskId, "other");
+
+    const noFocus = await focusTool.execute("call-read-none", {}, undefined, undefined, { ...ctx, sessionManager: { getBranch: () => [] } });
+    assert.match(noFocus.content[0].text, /Focused task: other/); // live mirror wins over a stale branch
+
     await commands.get("task-focus").handler("clear", ctx);
     assert.equal(commands.has("csl-task-focus"), false);
     assert.equal(commands.has("csl-tasks"), false);
     assert.deepEqual(entries.at(-1).data, { taskId: null });
+    const cleared = await focusTool.execute("call-read-cleared", {}, undefined, undefined, ctx);
+    assert.match(cleared.content[0].text, /No focused task/);
     assert.match(widget.render(200)[0], /📋 Tasks/);
     assert.ok(widget.render(200).every((line) => !line.includes("This Session")));
 
