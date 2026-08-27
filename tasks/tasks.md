@@ -1,6 +1,6 @@
 # 任务索引
 
-- [按关注点分组提交本地改动](tasks/group-commits-by-concern.md) — Pending (2026-08-27 16:50)
+- [按关注点分组提交本地改动](tasks/group-commits-by-concern.md) — Completed (2026-08-27 16:52)
 
 - [task_focus 支持读取当前会话焦点任务](tasks/add-task-focus-read-mode.md) — Completed (2026-08-27 16:41)
 
