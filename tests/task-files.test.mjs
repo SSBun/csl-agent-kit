@@ -609,7 +609,7 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
     assert.ok(skill.includes(status), `missing task status: ${status}`);
   }
   assert.deepEqual(readdirSync(skillDir).sort(), ["SKILL.md", "agents", "evals"]);
-  assert.deepEqual(readdirSync(cslTasksSharedDir).sort(), ["lib", "scripts"]);
+  assert.deepEqual(readdirSync(cslTasksSharedDir).sort(), ["lib", "protocols", "scripts"]);
 });
 
 test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {
