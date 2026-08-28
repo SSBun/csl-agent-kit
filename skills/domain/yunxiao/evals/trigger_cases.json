@@ -6,7 +6,15 @@
     "Use the internal One API to open first-time MRs for these two Zhihu repositories.",
     "帮我把当前分支推上去，并在云效创建单仓 MR。",
     "为这三个组件创建云效联合 MR，不要依赖 zspec。",
-    "用 Yunxiao MR skill 规划并发布这些已提交分支。"
+    "用 Yunxiao MR skill 规划并发布这些已提交分支。",
+    "List my unmerged Yunxiao MRs created between 2026-08-01 and 2026-08-31.",
+    "列出我在 2026-08-01 到 2026-08-31 创建且尚未合并的 One MR。",
+    "List all available QA configured for the Yunxiao repository vip-ios/ReaderShareUI.",
+    "列出云效仓库 vip-ios/ReaderShareUI 所属应用当前可用的 QA。",
+    "Plan my pending MR approval requests, then approve all pending Yunxiao MRs after I confirm.",
+    "列出待我审批的云效 MR，等我确认后全部批准并报告结果。",
+    "Install the Yunxiao MR macOS auto-approval daemon and show its local dashboard.",
+    "管理云效 MR 自动审批守护进程，并查看本地审批历史 Dashboard。"
   ],
   "should_not_trigger": [
     "Explain how zspec creates a Yunxiao MR.",

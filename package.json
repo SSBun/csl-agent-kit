@@ -23,6 +23,7 @@
     "commands/",
     "hooks/",
     "pi/",
+    "prompts/",
     "scripts/install.sh",
     "skills/",
     "super-agent/",
@@ -35,7 +36,8 @@
     "access": "public"
   },
   "bin": {
-    "csl-agent-kit": "bin/csl-agent-kit.js"
+    "csl-agent-kit": "bin/csl-agent-kit.js",
+    "yunxiao": "skills/domain/yunxiao/scripts/yunxiao.mjs"
   },
   "scripts": {
     "test": "npm run test:cli && npm run test:agent-hooks && npm run test:tasks && npm run test:archive",
@@ -72,10 +74,14 @@
     ],
     "skills": [
       "./skills"
+    ],
+    "prompts": [
+      "./prompts"
     ]
   },
   "dependencies": {
     "classic-level": "^3.0.0",
+    "mqtt": "^5.15.2",
     "prompts": "^2.4.2",
     "yaml": "^2.0.0"
   },
