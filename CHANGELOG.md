@@ -4,10 +4,37 @@
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-08-28
+
+### Added
+
+- 新增 `task`、`task-plan`、`task-queue`、共享 Task Target 对齐协议和会话任务聚焦机制，统一跨宿主任务生命周期。
+- 新增标准化的 `task-context`、预防型 `task-lessons` 与内置 `skill-quality` 质量门禁。
+- 新增 Agent Rules、三级 SOP 路由、macOS 开发 SOP、归档、项目索引和扩展后的 `tldr` 等工作流。
+- Pi 新增模型与 thinking level 预设、`/quick`、可点击任务浮层和改进后的动态 Skill 命令。
+- `create-app-icon` 新增 10 种内置风格、透明主图处理与平台图标材料生成。
+- 新增云效审批、批量处理和本地 daemon/dashboard 能力。
+
 ### Changed
 
-- 将 `adversarial-deliberate` 重命名为 `deliberate`；工作流与角色职责保持不变。
-- 强化 `deliberate` 的 effective carrier model 披露、INLINE-FALLBACK `SUFFICIENT` 语义与量化证据要求。
+- 将 workspace workflow skills 收敛为 `task-*` 家族，并将易变流程下沉到共享 task core 与对齐协议。
+- 将 Triggerify 与 Simple Rules 分别收敛为 Agent Hooks 与 Agent Rules；默认行为契约改由内置 Hook 跨宿主注入。
+- 共享 Skills 按 `dev`、`domain`、`meta` 重组，CLI、Pi 和 plugin manifests 统一递归发现叶子 Skill。
+- `task-context` 不再迁移旧 Context：现有非标准文件从权威来源重写，缺失文件先生成最小 Core 提案并取得确认。
+- 将 `adversarial-deliberate` 重命名为 `deliberate`，并强化 effective carrier model、INLINE-FALLBACK 与量化证据要求。
+- 将 code review、test triage 和 same-page 流程分别整合为 `task-review`、`bug-fix` 和 `align`。
+- 安装器默认输出完整彩色进度，并改进 shell 会话保持、Codex plugin 清理和宿主工作流交付。
+
+### Removed
+
+- 从共享分发中移除 `release` 与 `analyze-project`；发布工作改由具体 SOP 路由，主题理解统一使用 `tldr`。
+- 移除已被本项目原生工作流替代的部分第三方 Skills 和旧公开别名。
+
+### Breaking Changes
+
+- 旧 workspace workflow、Triggerify、Simple Rules、code review、test triage、same-page 与 adversarial-deliberate 的公开名称不再保留；调用方需改用对应的新 Skill 名称。
+- 旧 Context 顶层记录不再作为 legacy Packs 读取；缺少有效 Project Core 的现有文件会被标准 Core 重写。
+- `release` 和 `analyze-project` 不再作为可安装共享 Skill 提供。
 
 ## [3.2.0] - 2026-07-31
 
@@ -93,7 +120,8 @@
 - 旧 `~/.ssbun-skills/` 路径不再读取；用户数据只使用 `~/.csl-agent-kit/`。
 - 旧 `inject-may-agents` invocation 不再存在；改用 `super-agent`。
 
-[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v3.2.0...HEAD
+[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/SSBun/csl-agent-kit/compare/v3.2.0...v4.0.0
 [3.2.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.1.0
 [3.0.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.0.0

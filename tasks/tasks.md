@@ -2,9 +2,9 @@
 
 - [发布并验证 CSL Agent Kit 4.0.0](tasks/publish-csl-agent-kit-4-0-0.md) — Pending (2026-08-28 20:51)
 
-- [准备 CSL Agent Kit 4.0.0](tasks/prepare-csl-agent-kit-4-0-0.md) — Pending (2026-08-28 20:51)
+- [准备 CSL Agent Kit 4.0.0](tasks/prepare-csl-agent-kit-4-0-0.md) — In Progress (2026-08-28 20:54)
 
-- [提交当前 Context 工作区改动](tasks/commit-context-bootstrap-changes.md) — In Progress (2026-08-28 20:52)
+- [提交当前 Context 工作区改动](tasks/commit-context-bootstrap-changes.md) — Completed (2026-08-28 20:54)
 
 - [提交改动并发布可安装版本](tasks/commit-release-and-install-guide.md) — In Progress (2026-08-28 20:50)
 
