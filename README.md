@@ -18,7 +18,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
 | bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
-| task-context | `/csl:task-context` | `/task-context` | Load or recover Project Core, query task-relevant Context Packs, then maintain durable context. |
+| task-context | `/csl:task-context` | `/task-context` | Ensure a standard Project Core, query task-relevant Context Packs, then maintain durable context. |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |

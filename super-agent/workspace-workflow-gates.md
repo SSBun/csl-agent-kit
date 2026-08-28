@@ -71,7 +71,7 @@ Keep the three responsibilities distinct:
 - **Context** owns confirmed, durable project facts that materially improve future orientation and decisions.
 - **Lessons** own reusable preventive rules that help Agents avoid repeating a class of mistakes.
 
-At session start, resume, or compaction, recover the workspace Context before acting.
+At session start, resume, or compaction, establish and load the standard workspace Context before acting; creation of a missing Context still requires the skill's explicit confirmation gate.
 
 After Task Target alignment, consult only the Context relevant to the current outcome. Context accelerates orientation but never replaces authoritative source, tests, schemas, configuration, or formal decisions. Authority wins when it conflicts with Context.
 

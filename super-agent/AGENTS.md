@@ -15,10 +15,10 @@
 ### 2. Workspace Context
 
 - Use the session-start directory as the workspace root and keep `tasks/context.md` there as the canonical dispatch-ready project model. Save only confirmed, durable facts a later Agent would otherwise need broad repository exploration or architecture analysis to recover.
-- At session start, after resume or compaction, load `$task-context` and use it to load Project Core before acting. When an existing Context is pre-v1 or its Core is invalid, let the skill migrate the current workspace by default before proceeding. Do not wait for the user to request context loading or migration.
+- At session start, after resume or compaction, load `$task-context` and use it to establish and load a standard Project Core before acting. Rewrite an existing nonstandard Context through the skill; when `tasks/context.md` is missing, let the skill analyze the project and obtain explicit confirmation for the exact minimal file before creating it. Do not wait for the user to request context loading or bootstrap.
 - After activating the owning canonical task and aligning its user-facing `Task Target`, use the skill to query only the relevant Context Packs, normally one to three; do not indiscriminately read the whole Context file. Context guides orientation, but task-direct source and tests remain authoritative.
 - Before ending when durable facts changed, load the skill and follow its Pack maintenance, validation, and Project Core write-permission rules. Do not save task progress or history, lessons, speculation, secrets, global preferences, or cached live values.
-- If Context is missing, default migration cannot safely recover it, it is untrusted, or it conflicts with Authority, disclose the degradation and investigate normally; ask a focused question only when evidence cannot resolve a user-owned fact. Routine context loading, migration, and maintenance need no task record.
+- If confirmed creation is declined, Context bootstrap fails, Context is untrusted, or it conflicts with Authority, disclose the degradation and investigate normally; ask a focused question only when evidence cannot resolve a user-owned fact. Routine context loading, bootstrap, and maintenance need no task record.
 
 ---
 

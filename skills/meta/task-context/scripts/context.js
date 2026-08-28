@@ -2,7 +2,6 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -16,7 +15,6 @@ const PACK_SECTIONS = [
   "Workflows",
   "Decision and Verification Boundaries",
 ];
-const LEGACY_SECTIONS = new Set(["Components", "Relationships", "Decisions and Conventions"]);
 const PACK_HEADING = /^## (CTX-[a-z0-9]+(?:-[a-z0-9]+)*) — (.+)$/;
 
 function unique(items) {
@@ -191,49 +189,6 @@ function parsePack(lines, block, errors) {
   };
 }
 
-function legacyTitle(raw) {
-  const code = raw.match(/`([^`]+)`/);
-  if (code) return code[1];
-  return raw.replace(/^-\s*/, "").replace(/[*_#]/g, "").split(/[。.!；;]/, 1)[0].trim().slice(0, 100);
-}
-
-function legacyKeywords(raw, section) {
-  const code = [...raw.matchAll(/`([^`]+)`/g)].map((match) => match[1]);
-  return unique([section, ...code, legacyTitle(raw)]).slice(0, 12);
-}
-
-function parseLegacy(lines, block) {
-  const records = [];
-  let start = null;
-  const flush = (end) => {
-    if (start === null) return;
-    const raw = lines.slice(start, end).join("\n").trimEnd();
-    const normalized = raw.replace(/\s+/g, " ").trim();
-    const id = `legacy-${crypto.createHash("sha256").update(normalized).digest("hex").slice(0, 12)}`;
-    const code = [...raw.matchAll(/`([^`]+)`/g)].map((match) => match[1]);
-    records.push({
-      id,
-      title: legacyTitle(raw),
-      format: "legacy",
-      scope: block.name,
-      paths: unique(code.filter((item) => item.includes("/") || /\.[a-z0-9]+$/i.test(item))),
-      keywords: legacyKeywords(raw, block.name),
-      raw,
-      startLine: start + 1,
-    });
-    start = null;
-  };
-
-  for (let index = block.start + 1; index < block.end; index += 1) {
-    if (/^-\s+\S/.test(lines[index])) {
-      flush(index);
-      start = index;
-    }
-  }
-  flush(block.end);
-  return records;
-}
-
 function parseContext(markdown, { missing = false } = {}) {
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   const topSections = sectionBlocks(lines, 2);
@@ -245,14 +200,7 @@ function parseContext(markdown, { missing = false } = {}) {
 
   for (const block of topSections) {
     if (block.name === "Project Core") continue;
-    if (block.name.startsWith("CTX-")) {
-      packs.push(parsePack(lines, block, errors));
-    } else if (LEGACY_SECTIONS.has(block.name)) {
-      for (const pack of parseLegacy(lines, block)) {
-        packs.push(pack);
-        warnings.push(diagnostic("legacy-pack", "legacy pack remains readable but is not v1", pack.startLine, pack.id));
-      }
-    }
+    if (block.name.startsWith("CTX-")) packs.push(parsePack(lines, block, errors));
   }
 
   const byId = new Map();
@@ -301,29 +249,17 @@ function showPayload(parsed, ids) {
       errors.push(diagnostic("duplicate-id", `context pack ID is ambiguous: ${id}`, null, id));
     } else {
       const pack = matches[0];
-      if (pack.format === "legacy") {
-        packs.push({
-          id: pack.id,
-          title: pack.title,
-          format: pack.format,
-          scope: pack.scope,
-          paths: pack.paths,
-          keywords: pack.keywords,
-          raw: pack.raw,
-        });
-      } else {
-        packs.push({
-          id: pack.id,
-          title: pack.title,
-          format: pack.format,
-          scope: pack.scope,
-          paths: pack.paths,
-          keywords: pack.keywords,
-          authority: pack.authority,
-          recheck: pack.recheck,
-          sections: pack.sections,
-        });
-      }
+      packs.push({
+        id: pack.id,
+        title: pack.title,
+        format: pack.format,
+        scope: pack.scope,
+        paths: pack.paths,
+        keywords: pack.keywords,
+        authority: pack.authority,
+        recheck: pack.recheck,
+        sections: pack.sections,
+      });
     }
   }
   return { payload: { schema: "csl-context.packs/v1", packs }, errors };
@@ -401,16 +337,11 @@ function selfTest() {
 
 ### Purpose and Boundaries
 - Tasks own progress, not Context.
-
-## Components
-
-- \`legacy/component.js\` owns legacy behavior.
 `);
   assert.equal(valid.errors.length, 0);
   assert.equal(valid.core.purpose.length, 1);
-  assert.equal(valid.packs.length, 2);
+  assert.equal(valid.packs.length, 1);
   assert.deepEqual(valid.packs[0].paths, ["tasks/tasks.md", "tasks/tasks/"]);
-  assert.match(valid.packs[1].id, /^legacy-[a-f0-9]{12}$/);
   assert.equal(showPayload(valid, valid.packs.map(({ id }) => id)).errors.length, 0);
 
   const missing = parseContext("", { missing: true });

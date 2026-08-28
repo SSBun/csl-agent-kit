@@ -218,8 +218,9 @@ test("default agent instructions explain workspace records and route work to wor
   assert.equal(existsSync(path.join(skillsDir, "workspace-context")), false);
   assert.equal(existsSync(path.join(skillsDir, "workspace-lessons")), false);
 
-  assert.match(rules, /load `\$task-context` and use it to load Project Core before acting/);
-  assert.match(rules, /let the skill migrate the current workspace by default before proceeding/);
+  assert.match(rules, /load `\$task-context` and use it to establish and load a standard Project Core before acting/);
+  assert.match(rules, /Rewrite an existing nonstandard Context through the skill/);
+  assert.match(rules, /obtain explicit confirmation for the exact minimal file before creating it/);
   assert.equal(rules.includes("$workspace-maintain-context"), false);
   assert.equal(rules.includes("$workspace-context"), false);
   assert.match(rules, /query only the relevant Context Packs, normally one to three/);
@@ -337,7 +338,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Present the Target and wait for confirmation only when it adds, removes, weakens, omits, or changes/);
   assert.match(contract, /A complete explicit user revision authorizes an equivalent revised Target without another confirmation/);
   assert.match(contract, /Independent safety or permission confirmations remain separate/);
-  assert.match(contract, /At session start, resume, or compaction, recover the workspace Context before acting/);
+  assert.match(contract, /At session start, resume, or compaction, establish and load the standard workspace Context before acting/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
   assert.match(contract, /Implement the minimum solution that fully satisfies the aligned outcome/);
   assert.match(contract, /Touch only what the aligned outcome requires/);
@@ -353,7 +354,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
 test("workspace context contract supports dispatch-ready retrieval and durable admission", () => {
   const skill = readFileSync(path.join(cslTasksDir, "task-context", "SKILL.md"), "utf8");
 
-  for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Default Migration", "Legacy Migration", "Degradation and Failure", "Maintainer Validation"]) {
+  for (const section of ["Purpose", "Data Model", "Query Lifecycle", "Admission Gate", "Store", "Route Elsewhere", "Authority and Writes", "Mutable Information", "Temporary Unrouted Facts", "Standard Context Bootstrap", "Degradation and Failure", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing context section: ${section}`);
   }
 
@@ -365,7 +366,7 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   }
 
   assert.match(skill, /without repeating broad repository exploration, repo mapping, or architecture analysis/);
-  assert.match(skill, /Do not read the whole Context file for orientation/);
+  assert.match(skill, /do not read the whole Context file for orientation/);
   assert.match(skill, /Usually select one to three Packs/);
   assert.match(skill, /node <skill-dir>\/scripts\/context\.js --workspace <workspace> core/);
   assert.match(skill, /one batched `show`/);
@@ -377,19 +378,22 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   assert.match(skill, /Never cache a mutable current value/);
   assert.match(skill, /A stable lookup does not qualify by itself/);
   assert.match(skill, /Exclude an obvious version or configuration pointer/);
-  assert.match(skill, /Default Migration of the current workspace's existing pre-v1 or invalid Context is pre-authorized/);
+  assert.match(skill, /Replacing the current workspace's existing Context when it lacks a valid Project Core is pre-authorized/);
+  assert.match(skill, /Creating a missing `tasks\/context\.md` requires showing the exact complete proposed file and obtaining explicit user confirmation/);
   assert.match(skill, /Every other persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation/);
   assert.match(skill, /source-backed Add, Update, or Delete may happen automatically/);
   assert.match(skill, /If validation fails, restore the pre-write content/);
   assert.match(skill, /the current task ends/);
   assert.match(skill, /the related module next changes materially/);
   assert.match(skill, /evidence, source, assumption, or Authority becomes invalid/);
-  assert.match(skill, /Outside Default Migration, do not bulk-migrate legacy content/);
-  assert.match(skill, /legacy-<content-hash>/);
-  assert.match(skill, /Never delete or rewrite unresolved legacy content during automatic migration/);
-  assert.match(skill, /run both `core` and `validate` against the same file/);
-  assert.match(skill, /Do not disclose an existing legacy or invalid Core before attempting Default Migration/);
-  assert.match(skill, /Missing `tasks\/context\.md`, an existing Core that Default Migration cannot safely recover/);
+  assert.match(skill, /Never convert old Context content into Packs or carry it into the replacement/);
+  assert.match(skill, /Replace the entire file with a minimal standard Context/);
+  assert.match(skill, /Show the exact complete proposed file and request explicit user confirmation/);
+  assert.match(skill, /Run both `core` and `validate` against the replacement/);
+  assert.match(skill, /Do not disclose an existing invalid Core before attempting Existing Context Rewrite/);
+  assert.doesNotMatch(skill, /Default Migration|Legacy Migration|legacy-<content-hash>/);
+  const script = readFileSync(path.join(cslTasksDir, "task-context", "scripts", "context.js"), "utf8");
+  assert.doesNotMatch(script, /parseLegacy|legacy-pack|LEGACY_SECTIONS/);
   assert.match(skill, /run the built-in `\$skill-quality` gate against this package/);
   assert.match(skill, /Quality failures block completion/);
 });
@@ -444,13 +448,14 @@ test("workspace context query cases cover session, task, write, and failure gate
   assert.equal(actions["ordinary-follow-up"], "ReuseSelectedPacks");
   assert.equal(actions["durable-pack-change"], "MaintainPackThenValidate");
   assert.equal(actions["project-core-change"], "ShowDiffAndConfirm");
-  assert.equal(actions["existing-legacy-or-invalid-core"], "MigrateThenLoadCore");
-  assert.equal(actions["default-migration-failed"], "RestoreAndDisclose");
-  assert.equal(actions["missing-context"], "DiscloseAndExplore");
+  assert.equal(actions["existing-nonstandard-context"], "RewriteThenLoadCore");
+  assert.equal(actions["existing-context-rewrite-failed"], "RestoreAndDisclose");
+  assert.equal(actions["missing-context"], "AnalyzeProposeAndConfirm");
+  assert.equal(actions["missing-context-confirmed"], "CreateThenLoadCore");
   assert.equal(actions["duplicate-relevant-id"], "DoNotApply");
 });
 
-test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails closed", (t) => {
+test("workspace context CLI loads Core, queries only v1 Packs, and fails closed", (t) => {
   const workspace = mkdtempSync(path.join(os.tmpdir(), "context-query-"));
   const contextDir = path.join(workspace, "tasks");
   const contextFile = path.join(contextDir, "context.md");
@@ -487,11 +492,6 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
 
 ### Decision and Verification Boundaries
 - Verify status through the shared task core.
-
-## Components
-
-- \`legacy/component.js\` owns the legacy adapter.
-  Its callers must preserve the adapter boundary.
 `, "utf8");
 
   const run = (...args) => spawnSync(process.execPath, [script, "--workspace", workspace, ...args], { encoding: "utf8" });
@@ -503,24 +503,22 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   assert.equal(indexResult.status, 0, indexResult.stderr);
   const index = JSON.parse(indexResult.stdout);
   assert.equal(index.schema, "csl-context.index/v1");
-  assert.equal(index.packs.length, 2);
+  assert.equal(index.packs.length, 1);
   assert.deepEqual(Object.keys(index.packs[0]), ["id", "title", "format", "scope", "paths", "keywords"]);
   assert.equal(index.packs[0].id, "CTX-workspace-tasks");
   assert.deepEqual(index.packs[0].paths, ["tasks/tasks.md", "tasks/tasks/"]);
-  assert.match(index.packs[1].id, /^legacy-[a-f0-9]{12}$/);
 
   const showResult = run("show", ...index.packs.map(({ id }) => id));
   assert.equal(showResult.status, 0, showResult.stderr);
   const shown = JSON.parse(showResult.stdout);
   assert.equal(shown.schema, "csl-context.packs/v1");
   assert.equal(shown.packs[0].authority, "`skills/meta/task/SKILL.md`");
-  assert.match(shown.packs[1].raw, /Its callers must preserve the adapter boundary/);
 
   const validationResult = run("validate");
   assert.equal(validationResult.status, 0, validationResult.stderr);
   const validation = JSON.parse(validationResult.stdout);
   assert.equal(validation.valid, true);
-  assert.deepEqual(validation.warnings.map(({ code }) => code), ["legacy-pack"]);
+  assert.deepEqual(validation.warnings, []);
 
   const selfTest = spawnSync(process.execPath, [script, "--self-test"], { encoding: "utf8" });
   assert.equal(selfTest.status, 0, selfTest.stderr);
@@ -561,19 +559,19 @@ test("workspace context CLI loads Core, queries v1 and legacy Packs, and fails c
   assert.ok(invalidCodes.has("duplicate-id"));
 });
 
-test("current workspace Context has a valid Core plus formal and legacy Packs", () => {
+test("current workspace Context has a valid Core and formal Packs", () => {
   const script = path.join(cslTasksDir, "task-context", "scripts", "context.js");
   const result = spawnSync(process.execPath, [script, "--workspace", root, "validate"], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const validation = JSON.parse(result.stdout);
   assert.equal(validation.valid, true);
-  assert.ok(validation.warnings.some(({ code }) => code === "legacy-pack"));
+  assert.deepEqual(validation.warnings, []);
 
   const indexResult = spawnSync(process.execPath, [script, "--workspace", root, "index"], { encoding: "utf8" });
   assert.equal(indexResult.status, 0, indexResult.stderr);
   const packs = JSON.parse(indexResult.stdout).packs;
   assert.ok(packs.some(({ id, format }) => id === "CTX-task-context" && format === "v1"));
-  assert.ok(packs.some(({ format }) => format === "legacy"));
+  assert.ok(packs.every(({ format }) => format === "v1"));
 });
 
 test("CSL task contract keeps acceptance, evidence, and review gates explicit", () => {

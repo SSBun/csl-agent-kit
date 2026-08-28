@@ -1,8 +1,16 @@
 # 任务索引
 
+- [发布并验证 CSL Agent Kit 4.0.0](tasks/publish-csl-agent-kit-4-0-0.md) — Pending (2026-08-28 20:51)
+
+- [准备 CSL Agent Kit 4.0.0](tasks/prepare-csl-agent-kit-4-0-0.md) — Pending (2026-08-28 20:51)
+
+- [提交当前 Context 工作区改动](tasks/commit-context-bootstrap-changes.md) — In Progress (2026-08-28 20:52)
+
+- [提交改动并发布可安装版本](tasks/commit-release-and-install-guide.md) — In Progress (2026-08-28 20:50)
+
 - [提交当前全部本地改动](tasks/commit-all-local-changes-20260828.md) — Completed (2026-08-28 17:40)
 
-- [统一标准 Context 引导流程](tasks/standardize-context-bootstrap.md) — In Progress (2026-08-28 17:34)
+- [统一标准 Context 引导流程](tasks/standardize-context-bootstrap.md) — Completed (2026-08-28 17:51)
 
 - [为图标生成 Skill 添加内置风格](tasks/add-built-in-app-icon-styles.md) — Completed (2026-08-28 17:32)
 

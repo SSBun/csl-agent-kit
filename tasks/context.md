@@ -35,17 +35,17 @@
 ### Structure
 - `tasks/context.md` 是单一 canonical 文件，由始终加载的 Project Core 与任务按需选择的完整 Context Packs 组成；不生成持久 index、cache 或 selected-ID state。
 - Project Core 固定包含 Purpose、Global Vocabulary、System Map 与 Global Invariants；正式 Pack 使用稳定 `CTX-*` ID、Scope/Paths/Keywords/Authority/Recheck metadata 和非空适用正文 sections。
-- `scripts/context.js` 只读解析 Core、正式 Packs 和 legacy bullets，提供 `core/index/show/validate/--self-test`；Agent 负责 Task Fingerprint、语义匹配、Authority 验证、写入判断，以及当前工作区已有旧版或无效 Context 的默认迁移。
+- `scripts/context.js` 只读解析标准 Core 与正式 `CTX-*` Packs，提供 `core/index/show/validate/--self-test`；非标准顶层内容不进入 Pack 索引，Agent 负责 Task Fingerprint、语义匹配、Authority 验证和写入判断。
 
 ### Relationships
 - `super-agent/AGENTS.md` 保留显式安装时的完整默认规则；自动注入的 `super-agent/workspace-workflow-gates.md` 改为稳定的行为契约，要求 session 边界恢复 Context、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；当前工作区已有 Context 采用旧格式或 Core 无效时，Agent 先保留写前文件、从原内容和最小权威来源生成有效 Core 与可确认 Packs、运行 `core` 和 `validate`，成功后无须另行确认或报告降级；无法安全迁移时恢复并披露诊断。随后具体非平凡 outcome 才进入 canonical task 激活；共享协议允许必要的 user-owned Target 澄清，并以当前用户授权完成语义对齐，只有候选 Target 存在实质差异时才要求确认；对齐后才检索相关 Packs。
+- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时，Agent 保留写前文件用于回滚，从最小权威来源重建仅含必要 Core 的标准文件，并运行 `core` 与 `validate`；文件缺失时，Agent 先分析最小权威来源并展示完整的最小 Core 提案，取得明确确认后才创建。随后具体非平凡 outcome 才进入 canonical task 激活；共享协议允许必要的 user-owned Target 澄清，并以当前用户授权完成语义对齐，只有候选 Target 存在实质差异时才要求确认；对齐后才检索相关 Packs。
 
 ### Decision and Verification Boundaries
-- Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，当前工作区已有旧版或无效 Context 的默认迁移已预授权，其他 Project Core 持久变更仍须先展示精确 diff 并取得用户确认。
-- 缺失 Context、无法安全完成默认迁移、无可信相关 Packs、相关 malformed/duplicate Pack 必须披露并回退普通探索；迁移不得编造占位事实、删除未解决旧内容或扫描其他工作区，CLI self-test、实际 Context validation 和 `tests/task-files.test.mjs` 共同验证格式与消费者。
+- Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，已有文件缺少有效 Core 时可自动重写，缺失文件的创建及其他有效 Project Core 持久变更必须先展示精确内容并取得用户确认。
+- 重写失败时恢复原文件；缺失文件未获确认、无可信相关 Packs、相关 malformed/duplicate Pack 或 Authority 冲突时披露并回退普通探索。Core 不得使用占位事实，CLI self-test、实际 Context validation 和 `tests/task-files.test.mjs` 共同验证格式与消费者。
 
 ## CTX-skill-quality — Built-in Skill package quality gate
 - Scope: 日常 Skill package 的确定性结构、资源、上下文预算与 routing fixture 验证，以及共享和项目本地 package 的检查入口。

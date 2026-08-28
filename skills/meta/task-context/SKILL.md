@@ -1,6 +1,6 @@
 ---
 name: task-context
-description: Load, automatically migrate, and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, when an existing Context has a missing or invalid Project Core, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Load or recover Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, and cached live values.
+description: Load, establish, and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, when Context is missing or lacks a valid Project Core, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Ensure a standard Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, and cached live values.
 ---
 
 # Maintain Workspace Context
@@ -11,7 +11,7 @@ Use `tasks/context.md` to give a newly dispatched Agent the project model needed
 
 Context accelerates orientation; it does not replace reading task-direct source and tests. Treat linked source, schema, configuration, ADR, SOP, rule, or formal document as authoritative. Verify task-relevant Authority before an important decision, and let Authority override stale Context.
 
-When an existing Context predates this schema or has no valid Project Core, recover it in place by default before task dispatch. Routine context loading, migration, and maintenance do not create a task record.
+Every workspace must have a standard Context before task dispatch. When an existing file lacks a valid Project Core, rewrite it from authoritative project sources without preserving its old content. When the file is missing, inspect the project, present a minimal Project Core proposal, and obtain explicit user confirmation before creating it. Routine context loading, bootstrap, and maintenance do not create a task record.
 
 ## Data Model
 
@@ -89,10 +89,11 @@ At session start, after resume, or after compaction:
 
 1. Treat the session-start directory as the workspace root.
 2. Run `core` before acting.
-3. If an existing Context has no valid Core or uses a pre-v1 structure, perform Default Migration, rerun `core`, and use the recovered Core.
-4. Use Core to form the initial project vocabulary and system model.
+3. If an existing Context has no valid Core, perform Existing Context Rewrite, rerun `core`, and use the replacement Core.
+4. If `tasks/context.md` is missing, perform Missing Context Bootstrap and stop for confirmation before writing it.
+5. Use the valid Core to form the initial project vocabulary and system model.
 
-Outside Default Migration, do not read the whole Context file for orientation.
+Outside Standard Context Bootstrap, do not read the whole Context file for orientation.
 
 ### Task Gate
 
@@ -107,14 +108,14 @@ After understanding a concrete task:
 
 Do not silently load every Pack. Keep selected IDs only in session state.
 
-The script performs deterministic parsing, indexing, retrieval, legacy compatibility, and validation. The Agent owns semantic matching, Authority verification, admission decisions, and writes. The script must not edit Context, perform semantic matching, run validation commands from Context, or persist state.
+The script performs deterministic parsing, indexing, retrieval, and validation. The Agent owns semantic matching, Authority verification, admission decisions, and writes. The script must not edit Context, perform semantic matching, run validation commands from Context, or persist state.
 
 ### Completion Gate
 
 Before ending:
 
 1. Identify whether the work changed a selected Pack's conclusion, boundary, relationship, Authority, or Recheck event.
-2. Update, migrate, or remove affected Pack content in the same work.
+2. Update or remove affected Pack content in the same work.
 3. Run `validate`; skip the write when no durable fact changed.
 
 ## Admission Gate
@@ -159,9 +160,10 @@ Context states the durable fact and decision effect; the other carrier owns enfo
 ## Authority and Writes
 
 - For an ordinary Pack, source-backed Add, Update, or Delete may happen automatically within the owning task. Preserve the pre-write file, make the smallest change, then run `validate`.
-- Default Migration of the current workspace's existing pre-v1 or invalid Context is pre-authorized and runs without a separate confirmation.
+- Replacing the current workspace's existing Context when it lacks a valid Project Core is pre-authorized and runs without a separate confirmation.
+- Creating a missing `tasks/context.md` requires showing the exact complete proposed file and obtaining explicit user confirmation first.
 - Every other persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation first.
-- Stop and ask before a source conflict, user-owned business judgment, unverified fact, or migration of another workspace.
+- Stop and ask before a source conflict, user-owned business judgment, unverified fact, or any write to another workspace.
 - If validation fails, restore the pre-write content and report the diagnostics.
 - Rewrite current truth in place. Do not append history or retain superseded tombstones unless an old state still constrains compatibility.
 - Do not create a global periodic audit or individual Context owner; the work that changes a fact owns its maintenance.
@@ -192,27 +194,31 @@ At that event, choose exactly one outcome:
 
 Do not substitute calendar review dates for these events.
 
-## Default Migration
+## Standard Context Bootstrap
 
-When `core` fails because an existing `tasks/context.md` has no valid Project Core or uses a pre-v1 structure, migrate the current workspace before disclosing degradation:
+When `core` fails, distinguish an existing nonstandard file from a missing file. Never convert old Context content into Packs or carry it into the replacement.
 
-1. Preserve the exact pre-write file.
-2. Read the complete legacy file and only the minimum authoritative project sources needed to establish a confirmed Core. Never add generic filler merely to satisfy the parser.
-3. Add or repair the four required Core sections. Convert source-backed, Context-eligible legacy conclusions into formal `CTX-*` Packs when their semantic boundary and Authority are clear.
-4. Never delete or rewrite unresolved legacy content during automatic migration; keep its original text in place for later routing. Never scan or migrate sibling workspaces.
-5. Write the migration, then run both `core` and `validate` against the same file.
-6. On success, continue without asking for confirmation or reporting a degradation. On insufficient evidence, source conflict, or failed validation, restore the exact pre-write content and disclose the concrete diagnostics.
+### Existing Context Rewrite
 
-## Legacy Migration
+1. Preserve the exact pre-write file for rollback, but do not use its contents as Context.
+2. Inspect only the minimum authoritative project sources needed to establish confirmed Core facts. Never add generic filler merely to satisfy the parser.
+3. Replace the entire file with a minimal standard Context containing only the four required non-empty Core sections.
+4. Run both `core` and `validate` against the replacement.
+5. On success, continue without another confirmation. On insufficient evidence, source conflict, or failed validation, restore the exact pre-write file and disclose the concrete diagnostics.
 
-Existing top-level bullets under `Components`, `Relationships`, and `Decisions and Conventions` remain readable as scan-local `legacy-<content-hash>` Packs. The CLI never writes those IDs back.
+### Missing Context Bootstrap
 
-Outside Default Migration, do not bulk-migrate legacy content. When work materially touches a component, merge only its relevant legacy bullets into one formal `CTX-*` Pack, remove the migrated originals, and validate. Verify legacy content against its Authority before relying on it.
+1. Inspect the minimum authoritative project sources needed to establish confirmed Core facts. Never scan sibling workspaces or add generic filler.
+2. Draft a complete minimal `tasks/context.md` containing only the four required non-empty Core sections.
+3. Show the exact complete proposed file and request explicit user confirmation. Do not create the file or its parent directory before confirmation.
+4. After confirmation, create `tasks/` if needed, write the proposed file, then run both `core` and `validate` against it.
+5. On validation failure, remove the new file, remove a newly created empty `tasks/` directory, and disclose the diagnostics. If the user declines, leave the file absent and disclose that Context remains unavailable.
 
 ## Degradation and Failure
 
-- Missing `tasks/context.md`, an existing Core that Default Migration cannot safely recover, or no trusted relevant Packs means Context is unavailable for dispatch. Disclose that state and fall back to ordinary exploration; do not pretend the project model is complete.
-- Do not disclose an existing legacy or invalid Core before attempting Default Migration.
+- A missing `tasks/context.md` remains unavailable until the user confirms its exact proposal and creation succeeds. If confirmation is declined, disclose that state and fall back to ordinary exploration.
+- If Existing Context Rewrite cannot establish a valid Core, or no trusted relevant Packs exist, disclose the degradation and fall back to ordinary exploration; do not pretend the project model is complete.
+- Do not disclose an existing invalid Core before attempting Existing Context Rewrite.
 - If the CLI is unavailable or fails, disclose the degradation and manually perform the same Core, metadata, and selected-Pack scan.
 - Never auto-apply a duplicated ID or a relevant malformed Pack.
 - If Authority conflicts with Context, Authority wins; update the affected ordinary Pack in the same task or request confirmation for Core.

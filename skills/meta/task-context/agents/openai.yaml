@@ -1,4 +1,4 @@
 interface:
   display_name: "Task Context"
-  short_description: "Load, migrate, and maintain workspace context"
-  default_prompt: "Use $task-context to load or recover Project Core, retrieve task-relevant Context Packs, and maintain changed durable context."
+  short_description: "Load, establish, and maintain workspace context"
+  default_prompt: "Use $task-context to ensure a standard Project Core, retrieve task-relevant Context Packs, and maintain changed durable context."

@@ -33,23 +33,28 @@
     },
     {
       "id": "project-core-change",
-      "event": "A valid Project Core would be persistently changed outside Default Migration.",
+      "event": "A valid Project Core would be persistently changed.",
       "expected_action": "ShowDiffAndConfirm"
     },
     {
-      "id": "existing-legacy-or-invalid-core",
-      "event": "An existing tasks/context.md uses a pre-v1 structure or has no valid Project Core.",
-      "expected_action": "MigrateThenLoadCore"
+      "id": "existing-nonstandard-context",
+      "event": "An existing tasks/context.md has no valid Project Core.",
+      "expected_action": "RewriteThenLoadCore"
     },
     {
-      "id": "default-migration-failed",
-      "event": "Default Migration lacks authoritative evidence, finds a source conflict, or fails validation.",
+      "id": "existing-context-rewrite-failed",
+      "event": "Existing Context Rewrite lacks authoritative evidence, finds a source conflict, or fails validation.",
       "expected_action": "RestoreAndDisclose"
     },
     {
       "id": "missing-context",
-      "event": "The workspace has no tasks/context.md to migrate.",
-      "expected_action": "DiscloseAndExplore"
+      "event": "The workspace has no tasks/context.md.",
+      "expected_action": "AnalyzeProposeAndConfirm"
+    },
+    {
+      "id": "missing-context-confirmed",
+      "event": "The user confirms the exact minimal Context proposal for a missing tasks/context.md.",
+      "expected_action": "CreateThenLoadCore"
     },
     {
       "id": "duplicate-relevant-id",
