@@ -6,7 +6,7 @@
 
 - [提交当前 Context 工作区改动](tasks/commit-context-bootstrap-changes.md) — Completed (2026-08-28 20:54)
 
-- [提交改动并发布可安装版本](tasks/commit-release-and-install-guide.md) — In Progress (2026-08-28 20:50)
+- [提交改动并发布可安装版本](tasks/commit-release-and-install-guide.md) — Completed (2026-08-28 21:49)
 
 - [提交当前全部本地改动](tasks/commit-all-local-changes-20260828.md) — Completed (2026-08-28 17:40)
 

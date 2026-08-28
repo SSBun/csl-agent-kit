@@ -1,6 +1,6 @@
 # 提交改动并发布可安装版本
 
-Status: In Progress (2026-08-28 20:50)
+Status: Completed (2026-08-28 21:49)
 Kind: Queue
 
 ## Scope
@@ -9,8 +9,7 @@ Kind: Queue
 - 排除：额外创建 GitHub Release；仓库既有发布流程以 npm 包、Git tag 和分支推送为准。
 
 ## Target
-
-- [ ] T1: 当前工作区的全部本地改动已提交，新版本已通过仓库既有发布渠道发布且可由其他用户安装，并提供经发布状态验证的安装说明。
+- [x] T1: 当前工作区的全部本地改动已提交，新版本已通过仓库既有发布渠道发布且可由其他用户安装，并提供经发布状态验证的安装说明。
 
 ## Children
 
@@ -24,3 +23,12 @@ Kind: Queue
 2. 完成“准备 CSL Agent Kit 4.0.0”，同步版本与发布说明并通过发布演练。
 3. 在正式发布确认后完成“发布并验证 CSL Agent Kit 4.0.0”，推送、发布并验证安装与最终远端 CI。
 4. 对全部子结果执行 Queue 集成验收并给出其他用户的安装方式。
+
+## Result
+
+- T1: 三个子任务均完成；origin/main 32359a8 与本地一致且 run 33177019569 成功，v4.0.0 指向 c923dbf，npm latest 为 4.0.0，公开安装验证通过。
+- Review gate: Skipped — 用户未要求独立 adversarial review。
+
+## Verification
+
+- Passed: 确认全部子任务 Completed、工作区与 origin/main 同步、最终 CI 成功、tag SHA、npm registry/latest 和 registry 安装入口。
