@@ -42,7 +42,6 @@
   "skills": [
     "./skills/domain/create-app-icon",
     "./skills/meta/archive",
-    "./skills/dev/release",
     "./skills/domain/venom-cli",
     "./skills/domain/yunxiao",
     "./skills/dev/beautiful-mermaid",

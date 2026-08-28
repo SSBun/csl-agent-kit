@@ -828,6 +828,11 @@ test("title hook requires Chinese core-intent titles while allowing technical te
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "R1: NOTE:"), null);
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "认证 cache"), "认证 cache");
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "GPT 5 标题"), "GPT 5 标题");
+  // Connector-initial fragments stay rejected while compound phrases keep
+  // their leading verb instead of being stripped into a fragment.
+  assert.equal(titleHook.cleanModelTitle("与运行指南"), "");
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "与运行指南"), null);
+  assert.equal(titleHook.buildTitle({}, "/tmp/app", "构建与运行指南"), "构建与运行指南");
   assert.ok(Array.from(titleHook.cleanModelTitle("界".repeat(100))).length <= 24);
 
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "agent-hooks-saved-title-"));

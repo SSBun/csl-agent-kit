@@ -118,6 +118,21 @@ function looksLikeCodeToken(value) {
   return false;
 }
 
+// Connectors that cannot open a natural noun-phrase title. The full set
+// guards the verb strip below so a compound phrase (构建与运行指南) keeps its
+// leading verb instead of being stripped into an orphaned fragment
+// (与运行指南). The conservative subset additionally rejects fragment output;
+// 和/并/同 are excluded there because real titles start with them (和平、并行、同步).
+const STRIP_ORPHAN_CONNECTORS = /^[与和及或并跟同、]/;
+const FRAGMENT_CONNECTORS = /^[与及或跟、]/;
+
+function stripLeadingAction(value) {
+  const stripped = value
+    .replace(/^(?:make|fix|add|update|change|improve|implement|build|create|review|research|explain)\s+(?:the\s+)?/i, "")
+    .replace(/^(?:修复|实现|添加|新增|更新|修改|优化|构建|创建|审查|评审|研究|解释)/, "");
+  return STRIP_ORPHAN_CONNECTORS.test(stripped) ? value : stripped;
+}
+
 function cleanModelTitle(value) {
   // Take the first non-empty line; the model is instructed to return only
   // the title, so verbose multi-line output is already a failure mode.
@@ -125,12 +140,10 @@ function cleanModelTitle(value) {
     .split(/\r?\n/)
     .map(sanitize)
     .find((candidate) => candidate.length >= 2) || "";
-  const title = line
+  const title = stripLeadingAction(line
     .replace(/^(?:(?:stable\s+)?(?:main\s+)?task|core\s+intent(?:ion)?|title|current\s+thread|标题)\s*[:：-]?\s*/i, "")
     .replace(/^["'“‘]+|["'”’.,!?。！？]+$/g, "")
-    .replace(/^(?:make|fix|add|update|change|improve|implement|build|create|review|research|explain)\s+(?:the\s+)?/i, "")
-    .replace(/^(?:修复|实现|添加|新增|更新|修改|优化|构建|创建|审查|评审|研究|解释)/, "")
-    .trim();
+    .trim());
   if (!title) return "";
   if (/^(?:R\d+\s*:\s*)?(?:NOTE|BLOCKER|QUESTION)\s*:?$/.test(title)) return "";
   if (isOperationTitle(title)) return "";
@@ -142,6 +155,7 @@ function cleanModelTitle(value) {
   if (/[.,;:，。；：]/.test(title)) return "";
   if (title.split(/\s+/).length > 10) return "";
   const compacted = compactTitle(title);
+  if (FRAGMENT_CONNECTORS.test(compacted)) return "";
   return /\p{Script=Han}/u.test(compacted) ? compacted : "";
 }
 
@@ -473,6 +487,13 @@ function selfTest() {
   assert.equal(cleanModelTitle("认证 cache"), "认证 cache");
   assert.equal(cleanModelTitle("GPT 5 标题"), "GPT 5 标题");
   assert.equal(cleanModelTitle("缺陷报告"), "缺陷报告");
+  // Connector-initial fragments are rejected, while compound phrases keep
+  // their leading verb instead of being stripped into a fragment.
+  assert.equal(cleanModelTitle("与运行指南"), "");
+  assert.equal(cleanModelTitle("构建与运行指南"), "构建与运行指南");
+  assert.equal(cleanModelTitle("修复与预防认证竞态"), "修复与预防认证竞态");
+  assert.equal(cleanModelTitle("同步缓存策略"), "同步缓存策略");
+  assert.equal(cleanModelTitle("并行加载方案"), "并行加载方案");
   assert.equal(buildTitle({}, "/tmp/app", "stable main task: Commit focused git changes with conventional message"), null);
   assert.equal(buildTitle({}, "/tmp/app", "R1: NOTE:"), null);
   assert.equal(buildTitle({}, "/tmp/app", "\u001b]0;owned\u0007"), null);

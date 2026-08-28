@@ -157,7 +157,7 @@
 
 ## CTX-agent-sops — Project, user, and built-in SOP routing
 - Scope: SOP discovery, writable ownership, same-name precedence, session summaries, prompt candidates, and Pi workspace loading.
-- Paths: `skills/meta/agent-sops/`, `skills/dev/release/SKILL.md`, `pi/extensions/csl-context-hooks.ts`, `tests/cli-install-output.test.js`, `tests/pi-context-hooks.test.mjs`
+- Paths: `skills/meta/agent-sops/`, `pi/extensions/csl-context-hooks.ts`, `tests/cli-install-output.test.js`, `tests/pi-context-hooks.test.mjs`
 - Keywords: agent sops, project SOP, user SOP, built-in SOP, .agents/sops, precedence, candidates
 - Authority: `skills/meta/agent-sops/SKILL.md`, `skills/meta/agent-sops/scripts/sop-summaries.sh`, `skills/meta/agent-sops/scripts/sop-candidates.js`
 - Recheck: 当 SOP 存储层级、workspace 根边界、同名覆盖顺序或宿主 context 注入方式变化时复核。
@@ -171,7 +171,7 @@
 
 ### Relationships
 - Native hooks 通过 `sop-summaries.sh` 从当前工作目录生成 session summary，并通过 `sop-candidates.js` 做 prompt-time 路由；Pi adapter 必须把 `ctx.cwd` 显式传给同一候选模块。
-- Release skill 复用同一三级发现边界，不另建发布 SOP 注册表。
+- 发布工作直接按同一三级发现边界匹配具体 SOP，不另建发布 SOP 注册表。
 
 ### Decision and Verification Boundaries
 - `tests/cli-install-output.test.js` 同时验证摘要与候选路由的项目 > 用户 > 内置覆盖；`tests/pi-context-hooks.test.mjs` 验证 Pi 从活跃 workspace 注入项目 SOP。

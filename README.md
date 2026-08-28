@@ -6,9 +6,8 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 | Skill | Claude | Cursor / Codex / Pi extension | Description |
 |-------|--------|------------------------------|-------------|
-| create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Generate an AI-image-generator prompt for an app icon. |
+| create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Choose from 10 built-in styles, generate and approve an app icon, then create a transparent master and optional platform materials. |
 | archive | `/csl:archive` | `/archive` | 将当前 Pi Session 中指定范围的 User 与 Agent 可见文本逐字保存到 `tasks/conversations/`。 |
-| release | `/csl:release` | `/release` | Route release work to the matching SOP and gather confirmation items. |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
 | task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查。 |
@@ -135,7 +134,7 @@ npx skills add . --all -a cursor -g -y
 npx skills add SSBun/csl-agent-kit --list
 
 # Install by name
-npx skills add SSBun/csl-agent-kit --skill task-grill --skill release -a cursor -g -y
+npx skills add SSBun/csl-agent-kit --skill task-grill -a cursor -g -y
 ```
 
 **Other useful commands:**

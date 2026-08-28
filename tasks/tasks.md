@@ -1,5 +1,29 @@
 # 任务索引
 
+- [提交当前全部本地改动](tasks/commit-all-local-changes-20260828.md) — In Progress (2026-08-28 17:35)
+
+- [统一标准 Context 引导流程](tasks/standardize-context-bootstrap.md) — In Progress (2026-08-28 17:34)
+
+- [为图标生成 Skill 添加内置风格](tasks/add-built-in-app-icon-styles.md) — Completed (2026-08-28 17:32)
+
+- [重写并测试图标生成 Skill](tasks/rewrite-icon-generation-skill-plan.md) — Completed (2026-08-28 17:08)
+
+- [PRINCIPLE.md 聚焦 meta 的 agent-* 与 task-* 工作流](tasks/principle-md-meta-workflow-focus.md) — Completed (2026-08-28 17:20)
+
+- [扩写 PRINCIPLE.md 为完整设计原则文档](tasks/principle-md-complete-doc.md) — Completed (2026-08-28 14:09)
+
+- [创建 PRINCIPLE.md 设计原则文档](tasks/principle-md-design-principles.md) — Completed (2026-08-28 13:57)
+
+- [创建 CSL Agent Kit 宣讲模板](tasks/csl-agent-kit-presentation-template.md) — Completed (2026-08-28 13:50)
+
+- [退役 release skill](tasks/deprecate-release-skill.md) — Completed (2026-08-28 11:16)
+
+- [修复标签标题插件生成连接词碎片标题](tasks/fix-orphaned-connector-tab-title.md) — Completed (2026-08-28 11:03)
+
+- [诊断任务聚焦未显示原因](tasks/diagnose-missing-task-focus-display.md) — Completed (2026-08-27 17:20)
+
+- [分析 Task Skill 工作流](tasks/analyze-task-skill-workflow.md) — Completed (2026-08-27 17:03)
+
 - [按关注点分组提交本地改动](tasks/group-commits-by-concern.md) — Completed (2026-08-27 16:52)
 
 - [task_focus 支持读取当前会话焦点任务](tasks/add-task-focus-read-mode.md) — Completed (2026-08-27 16:41)
