@@ -182,7 +182,7 @@
 
 - [Reorganize skills into dev/meta/domain subfolders](tasks/folder-reorganize-skills.md) — Completed (2026-08-19 17:51)
 
-- [移除第三方 grill 封装并新增个人 task-grill 技能](tasks/remove-third-party-grills-add-task-grill.md) — Completed (2026-08-10)
+- [Task: Remove third-party grill wrappers, add personal task-grill skill](tasks/remove-third-party-grills-add-task-grill.md) — Completed (2026-08-10)
 
 - [引导 SOP 生成可匹配关键词](tasks/guide-sop-route-keywords.md) — Completed (2026-08-18 19:20)
 

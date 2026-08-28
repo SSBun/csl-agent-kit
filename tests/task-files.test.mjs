@@ -291,7 +291,7 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(taskSkill, /single-outcome Target meaning/);
   assert.match(planSkill, /planning-handoff Target meaning/);
   assert.match(queueSkill, /integration Target meaning/);
-  assert.match(rules, /load `\$task-lessons` and follow its `SKILL\.md` before continuing/);
+  assert.match(rules, /before substantive preparation or execution, load `\$task-lessons` and follow its `SKILL\.md`/);
   assert.equal(rules.includes("$workspace-capture-lessons"), false);
   assert.equal(rules.includes("$workspace-lessons"), false);
   assert.match(rules, /Do not wait for the user to request/);
@@ -304,7 +304,7 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(projectRules, /Run `adversarial-review` or request human review only when the user explicitly asks/);
   assert.match(projectRules, /high risk alone does not trigger it/);
 
-  const reviewSkill = readFileSync(path.join(root, "skills", "adversarial-review", "SKILL.md"), "utf8");
+  const reviewSkill = readFileSync(path.join(root, "skills", "dev", "adversarial-review", "SKILL.md"), "utf8");
   assert.match(reviewSkill, /Use only when the user explicitly requests adversarial review/);
   assert.match(reviewSkill, /Enter only from an explicit user request/);
   assert.equal(reviewSkill.includes("applicable requirement mandates"), false);
@@ -394,7 +394,7 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   assert.doesNotMatch(skill, /Default Migration|Legacy Migration|legacy-<content-hash>/);
   const script = readFileSync(path.join(cslTasksDir, "task-context", "scripts", "context.js"), "utf8");
   assert.doesNotMatch(script, /parseLegacy|legacy-pack|LEGACY_SECTIONS/);
-  assert.match(skill, /run the built-in `\$skill-quality` gate against this package/);
+  assert.match(skill, /the built-in `\$skill-quality` gate against this package/);
   assert.match(skill, /Quality failures block completion/);
 });
 
@@ -588,7 +588,8 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /tasks\/tasks\.md/);
   assert.match(skill, /tasks\/tasks\/<slug>\.md/);
   assert.match(skill, /Do not hand-edit status or index lines/);
-  assert.match(skill, /load Project Core and task-relevant Context Packs without reading all of `tasks\/context\.md`/);
+  assert.match(skill, /Load Project Core, then read only the newest index entries/);
+  assert.match(skill, /After the protocol aligns the current Target, query task-relevant Context Packs/);
   assert.match(skill, /Start a new task for every independently acceptable user outcome/);
   assert.match(skill, /directly corrects, completes, or re-verifies the same outcome/);
   assert.match(skill, /Component, file, topic, or implementation overlap alone does not establish ownership/);
@@ -782,9 +783,9 @@ test("workspace lesson CLI indexes v1 and legacy records and rejects malformed v
 });
 
 test("adversarial review report presents compact human-readable dialogue", () => {
-  const contract = readFileSync(path.join(root, "skills", "adversarial-review", "references", "final-review-report.md"), "utf8");
+  const contract = readFileSync(path.join(root, "skills", "dev", "adversarial-review", "references", "final-review-report.md"), "utf8");
   const report = readFileSync(path.join(reportDir, "optimize-workspace-capture-lessons.md"), "utf8");
-  const cases = JSON.parse(readFileSync(path.join(root, "skills", "adversarial-review", "evals", "report_contract_cases.json"), "utf8"));
+  const cases = JSON.parse(readFileSync(path.join(root, "skills", "dev", "adversarial-review", "evals", "report_contract_cases.json"), "utf8"));
 
   for (const field of ["created", "task", "review_cycles"]) {
     assert.match(contract, new RegExp(`^${field}:`, "m"), `missing report metadata: ${field}`);
