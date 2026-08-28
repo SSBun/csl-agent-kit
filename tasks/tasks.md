@@ -1,6 +1,6 @@
 # 任务索引
 
-- [提交当前全部本地改动](tasks/commit-all-local-changes-20260828.md) — In Progress (2026-08-28 17:35)
+- [提交当前全部本地改动](tasks/commit-all-local-changes-20260828.md) — Completed (2026-08-28 17:40)
 
 - [统一标准 Context 引导流程](tasks/standardize-context-bootstrap.md) — In Progress (2026-08-28 17:34)
 
