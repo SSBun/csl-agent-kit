@@ -1,6 +1,6 @@
 # 准备 CSL Agent Kit 4.0.0
 
-Status: In Progress (2026-08-28 20:54)
+Status: Completed (2026-08-28 20:59)
 Kind: Task
 Parent: commit-release-and-install-guide
 
@@ -10,8 +10,7 @@ Parent: commit-release-and-install-guide
 - 排除：独立版本仍为 `2.0.0` 的宿主 plugin manifests，以及正式 tag、push 与 npm publish。
 
 ## Target
-
-- [ ] T1: 版本 source of truth、lockfile 与 changelog 一致更新为 4.0.0，发布说明覆盖自 3.2.0 起的用户可见及破坏性变更，npm 包演练与允许的发布前校验通过。
+- [x] T1: 版本 source of truth、lockfile 与 changelog 一致更新为 4.0.0，发布说明覆盖自 3.2.0 起的用户可见及破坏性变更，npm 包演练与允许的发布前校验通过。
 
 ## Plan
 
@@ -19,3 +18,12 @@ Parent: commit-release-and-install-guide
 2. 将 `[Unreleased]` 的现有条目与自 `v3.2.0` 起的用户可见变化整理为 `4.0.0` 发布说明和 breaking changes。
 3. 执行允许的语法、结构、包内容与 publish dry-run 校验，确认目标版本未占用和 npm 登录态。
 4. 创建发布准备 commit，并整理正式 tag、push 与 npm publish 的最终确认摘要。
+
+## Result
+
+- T1: Commit 5785c32 将 package 与 lockfile 同步为 4.0.0，并新增完整 CHANGELOG 发布说明；npm pack/publish dry-run、tarball 安装、CLI、registry/login 与全 Skill quality gate 均通过。
+- Review gate: Skipped — 用户未要求独立 adversarial review。
+
+## Verification
+
+- Passed: 4.0.0 未被占用；npm 用户 ssubun；161 个发布文件、无 tasks/reports/output/deprecated；all-skill gate 0 failure，未运行本地单元测试。

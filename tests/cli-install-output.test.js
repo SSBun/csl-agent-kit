@@ -528,7 +528,7 @@ test("Codex plugin cleanup removes only owned links and is idempotent", () => {
   mkdirSync(externalSource);
   symlinkSync(path.join(root, "skills", "analyze-project"), owned);
   symlinkSync(path.join(root, "skills", "removed-csl-skill"), stale);
-  symlinkSync(path.join(root, "skills", "repo-map"), ownedAlias);
+  symlinkSync(path.join(root, "skills", "dev", "repo-map"), ownedAlias);
   symlinkSync(ownedAlias, resolvedOwned);
   symlinkSync(externalSource, external);
   symlinkSync(path.join(directory, "missing-external"), brokenExternal);
