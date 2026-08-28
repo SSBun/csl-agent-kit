@@ -7,7 +7,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const script = join(root, "skills", "archive", "scripts", "archive-session.mjs");
+const script = join(root, "skills", "meta", "archive", "scripts", "archive-session.mjs");
 
 function run(args) {
   return spawnSync(process.execPath, [script, ...args], { encoding: "utf8" });
