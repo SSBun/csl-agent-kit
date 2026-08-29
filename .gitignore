@@ -12,11 +12,12 @@ node_modules/
 .idea/
 .pi-subagents/
 
-# 仅跟踪项目本地的第三方技能集成流程。
+# 仅跟踪明确批准的项目本地 Skill 入口。
 .agents/skills/*
 !.agents/skills/
 !.agents/skills/integrate-third-skills/
 !.agents/skills/integrate-third-skills/**
+!.agents/skills/task-target-alignment-eval
 
 # Project agent rules are tracked even if a global gitignore ignores AGENTS.md.
 !/AGENTS.md

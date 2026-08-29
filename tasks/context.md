@@ -67,6 +67,26 @@
 - 日常 Skill 修改必须逐包运行内置门禁，失败阻塞完成；warning 需要结合 package 语义评估，workflow 的完整性优先于初始加载预算。
 - 聚焦行为测试、宿主发现、manifest 一致性和 package 专属验证仍由对应项目检查证明，不能由结构门禁替代。
 
+## CTX-project-evals — Project-local evaluation workspace
+- Scope: 仓库专用评测套件、共享评测脚本、生成结果边界和 project-only evaluation skills 的 canonical 存储与发现。
+- Paths: `evals/`, `.agents/skills/task-target-alignment-eval`
+- Keywords: project evals, task target alignment eval, gold cases, scorer, project-local skill, symlink discovery
+- Authority: `evals/README.md`, `evals/scripts/check-project-evals.js`, `evals/scripts/evaluate-task-target-alignment.js`, `evals/task-target-alignment/cases.json`, `evals/skills/task-target-alignment-eval/SKILL.md`
+- Recheck: 当根评测目录布局、项目 skill 发现入口、发布清单、结果持久化边界或评测 runner contract 变化时复核。
+
+### Purpose and Boundaries
+- 根 `evals/` 是项目评测 artifacts 的 canonical source，只服务当前 CSL Agent Kit 仓库；它不属于共享 `skills/` 分发树、npm 发布清单、全局安装或 Pi 共享命令枚举。
+
+### Structure
+- `evals/scripts/` 保存跨 suite 的确定性 validator／runner／scorer，`evals/<suite>/` 保存 tracked cases 与 suite 文档，`evals/skills/<name>/` 保存评测 skill 源码；各 suite 的 `results/` 是默认忽略的生成数据。
+- `.agents/skills/task-target-alignment-eval` 是指向 canonical skill source 的唯一相对 symlink 发现入口。Pi 会跟随 project `.agents/skills` 目录链接，共享 CLI 只枚举根 `skills/`，因此该 skill 只在受信任的当前项目中激活。
+
+### Workflows
+- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`／`--self-test`、针对 symlink package 的 Skill Quality 和 Context validation。v2 模型请求由 `prepare` 生成且不含 oracle；score／compare 分别评测 L0–L4 decision、L2 checkpoint、L3／L4 mode、S0／S1 overlay、reason 和 transition，并在 provisional labels 下保持 report-only。
+
+### Decision and Verification Boundaries
+- Oracle cases、schema、固定 prediction samples 和确定性脚本可提交；当前 Task Target labels 在人工 adjudication 前保持 provisional／report-only。付费模型 run 需要当前用户明确授权，prediction／报告默认写入 ignored `results/`。不得保存 chain-of-thought、凭据、客户数据或未脱敏完整会话。
+
 ## CTX-third-party-skills — Third-party skill integration and discovery
 - Scope: 共享与第三方 skill 的项目内整合、来源元数据、递归发现和 Pi 特定命令接入边界。
 - Paths: `.agents/skills/integrate-third-skills/`, `skills/`, `bin/csl-agent-kit.js`, `pi/extensions/csl-skill-commands.ts`, `tests/cli-install-output.test.js`, `tests/pi-skill-commands.test.mjs`
