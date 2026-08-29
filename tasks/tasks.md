@@ -1,5 +1,7 @@
 # 任务索引
 
+- [实现 Queue 对齐与任务展示优化](tasks/plan-queue-alignment-and-task-display.md) — Completed (2026-08-29 22:59)
+
 - [发布并验证 CSL Agent Kit 4.1.0](tasks/publish-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:44)
 
 - [准备 CSL Agent Kit 4.1.0](tasks/prepare-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:34)
