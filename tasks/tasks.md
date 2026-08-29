@@ -1,6 +1,6 @@
 # 任务索引
 
-- [发布并验证 CSL Agent Kit 4.1.0](tasks/publish-csl-agent-kit-4-1-0.md) — In Progress (2026-08-29 21:35)
+- [发布并验证 CSL Agent Kit 4.1.0](tasks/publish-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:44)
 
 - [准备 CSL Agent Kit 4.1.0](tasks/prepare-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:34)
 
@@ -8,7 +8,7 @@
 
 - [按关注点提交 2026-08-29 全部本地改动](tasks/commit-all-local-changes-20260829.md) — Completed (2026-08-29 21:14)
 
-- [发布并验证 CSL Agent Kit 4.1.0](tasks/release-csl-agent-kit-4-1-0.md) — In Progress (2026-08-29 20:59)
+- [发布并验证 CSL Agent Kit 4.1.0](tasks/release-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:44)
 
 - [实现分级 Task Target Guard](tasks/design-task-target-guard-levels.md) — Completed (2026-08-29 20:55)
 
