@@ -1,6 +1,6 @@
 # 任务索引
 
-- [分组提交当前本地改动](tasks/group-alignment-changes-commits.md) — In Progress (2026-08-29 09:21)
+- [分组提交当前本地改动](tasks/group-alignment-changes-commits.md) — Completed (2026-08-29 09:25)
 
 - [精简 Task Target 对齐设计](tasks/simplify-task-target-alignment-design.md) — Completed (2026-08-29 09:17)
 
