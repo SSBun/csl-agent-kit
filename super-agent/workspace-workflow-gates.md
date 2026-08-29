@@ -45,7 +45,7 @@ Before any user-requested file creation, modification, move, rename, or deletion
 
 For requests without a file mutation, activate a Task workflow once the request establishes a concrete, non-trivial outcome. Simple factual answers and open-ended conversation without a concrete outcome remain outside the workflow.
 
-Whenever a Task workflow applies, align a concise Task Target with the user's current authorization before substantive preparation or execution.
+Whenever a Task workflow applies, align a concise Task Target with the user's current authorization before substantive preparation or execution. For a concrete, non-trivial outcome, present the ready Target before that work begins.
 
 The Task Target states:
 
@@ -55,13 +55,13 @@ The Task Target states:
 
 It describes the result, not the implementation.
 
-Treat a clear user instruction as authorization for a materially equivalent Target; do not ask the user to confirm an equivalent restatement. Ask focused clarification when no honest Target can be stated. Present the Target and wait for confirmation only when it adds, removes, weakens, omits, or changes the authorized outcome, completion conditions, boundaries, preserved behavior, compatibility, side effects, or user-owned trade-offs.
+Always present every ready Task Target for a concrete, non-trivial outcome once before substantive work. A task activated solely for a trivial deterministic file mutation may omit the informational display when its Target is materially equivalent. A materially equivalent Target continues without waiting for redundant confirmation; a materially different Target must be presented with a confirmation instruction and explicitly accepted. Ask focused clarification when no honest Target can be stated.
 
 Before alignment, limit discussion to user-owned ambiguity required to state the Target honestly. Do not turn the alignment gate into implementation planning or repository investigation.
 
 After alignment, continue independently wherever authoritative evidence can answer the remaining questions.
 
-A complete explicit user revision authorizes an equivalent revised Target without another confirmation. Pause and realign when discovery or the Agent introduces a material change to the outcome, completion conditions, scope boundary, preserved behavior, compatibility boundary, side effect, or user-owned trade-off. Implementation-only changes do not require realignment when the aligned result remains the same. Independent safety or permission confirmations remain separate and are never bypassed by Target alignment.
+Present a complete explicit user revision and continue when the revised Target is materially equivalent. Pause and realign when discovery or the Agent introduces a material change to the committed result or boundary. Implementation-only changes do not require realignment when the aligned result remains the same. Independent safety or permission confirmations remain separate and are never bypassed by Target alignment.
 
 ## Task, Context, and Lessons
 

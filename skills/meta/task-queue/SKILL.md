@@ -11,7 +11,7 @@ Coordinate multiple canonical tasks through the current host Agent. This is host
 
 Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
 
-This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. The shared protocol owns readiness, semantic alignment, focused clarification, conditional confirmation, revision, and realignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
+This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
 
 ## Build the Task Graph
 
