@@ -62,6 +62,10 @@ function titleOf(text) {
   return title;
 }
 
+function normalizedTitle(title) {
+  return title.normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
 function statusOf(text) {
   const match = text.match(STATUS_PATTERN);
   if (!match) throw new Error("canonical task is missing a standard status line");
@@ -368,6 +372,14 @@ function linkChild(workspace, parentId, childId) {
   if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
   if (child.parent && child.parent !== parentId) throw new Error(`${childId} already belongs to ${child.parent}`);
 
+  const childTitle = normalizedTitle(child.title);
+  if (childTitle === normalizedTitle(parent.title)) throw new Error("Queue parent and children need distinct titles");
+  for (const sibling of parent.children) {
+    if (sibling.id !== childId && normalizedTitle(readTask(workspace, sibling.id).title) === childTitle) {
+      throw new Error("Queue children need distinct titles");
+    }
+  }
+
   const seen = new Set();
   const reachesParent = (id) => {
     if (id === parentId) return true;
@@ -462,10 +474,16 @@ function validateWorkspace(workspace) {
       if (!parent) errors.push(`${task.id}: missing parent ${task.parent}`);
       else if (!parent.children.some(({ id }) => id === task.id)) errors.push(`${task.id}: parent link is not reciprocal`);
     }
+    const queueTitles = task.kind === "queue" ? new Map([[normalizedTitle(task.title), task.id]]) : undefined;
     for (const child of task.children) {
       const record = modern.get(child.id);
       if (!record) errors.push(`${task.id}: missing child ${child.id}`);
-      else if (record.parent !== task.id) errors.push(`${task.id}: child link is not reciprocal for ${child.id}`);
+      else {
+        if (record.parent !== task.id) errors.push(`${task.id}: child link is not reciprocal for ${child.id}`);
+        const key = normalizedTitle(record.title);
+        if (queueTitles?.has(key)) errors.push(`${task.id}: duplicate Queue title for ${child.id}`);
+        else queueTitles?.set(key, child.id);
+      }
     }
   }
   return errors;

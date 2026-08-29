@@ -133,6 +133,22 @@ test("queue tasks keep reciprocal ordered children and resume at the first unfin
   assert.match(body(root, "parent"), /^Status: Completed /m);
 });
 
+test("Queue parents and children require distinct normalized titles", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "parent", title: "Release workflow", kind: "queue", targets: ["T1: Integrate"] });
+  core.createTask(root, { id: "same-as-parent", title: " Release  workflow ", kind: "task", targets: ["T1: Finish"] });
+  assert.throws(() => core.linkChild(root, "parent", "same-as-parent"), /parent and children need distinct titles/);
+
+  core.createTask(root, { id: "child-a", title: "Publish package", kind: "task", targets: ["T1: Finish A"] });
+  core.createTask(root, { id: "child-b", title: "Ｐｕｂｌｉｓｈ package", kind: "task", targets: ["T1: Finish B"] });
+  core.linkChild(root, "parent", "child-a");
+  assert.throws(() => core.linkChild(root, "parent", "child-b"), /children need distinct titles/);
+
+  writeFileSync(core.taskPath(root, "child-a"), body(root, "child-a").replace("# Publish package", "# Release workflow"));
+  core.syncIndex(root, "child-a");
+  assert.match(core.validateWorkspace(root).join("\n"), /duplicate Queue title for child-a/);
+});
+
 test("a child can have only one parent", (t) => {
   const root = workspace(t);
   for (const id of ["parent-a", "parent-b"]) {

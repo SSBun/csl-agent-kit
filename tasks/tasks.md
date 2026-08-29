@@ -8,7 +8,7 @@
 
 - [按关注点提交 2026-08-29 全部本地改动](tasks/commit-all-local-changes-20260829.md) — Completed (2026-08-29 21:14)
 
-- [发布并验证 CSL Agent Kit 4.1.0](tasks/release-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:44)
+- [完成 CSL Agent Kit 4.1.0 发布流程](tasks/release-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:44)
 
 - [实现分级 Task Target Guard](tasks/design-task-target-guard-levels.md) — Completed (2026-08-29 20:55)
 

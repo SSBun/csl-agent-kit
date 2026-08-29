@@ -128,9 +128,9 @@
 - `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
 
 ## CTX-task-workflows — Canonical task workflows
-- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、main-session L0–L4 Task Target gate、delegated child alignment inheritance、S0／S1 Safety Overlay、状态证据及完成门禁。
+- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、main-session L0–L4 Task Target gate、delegated child alignment inheritance、S0／S1 Safety Overlay、Queue title invariants、状态证据及完成门禁。
 - Paths: `skills/meta/task/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
-- Keywords: task, task-plan, task-queue, canonical task, Task Target, Authorization Ledger, interaction owner, delegated child, L2 checkpoint, L4 change approval, Safety Overlay, Kind Queue, legacy Auto
+- Keywords: task, task-plan, task-queue, canonical task, Task Target, Authorization Ledger, interaction owner, delegated child, L2 checkpoint, L4 change approval, Safety Overlay, Queue title, Kind Queue, legacy Auto
 - Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
 - Recheck: 当公开 skill identity、task activation timing、Task Target 对齐或确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
@@ -148,7 +148,7 @@
 
 ### Decision and Verification Boundaries
 - User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
-- 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。
+- 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 

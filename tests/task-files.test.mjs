@@ -304,6 +304,7 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(taskSkill, /delegated child must use the existing owning task named by the main session's current delegation packet/);
   assert.match(planSkill, /planning-handoff Target meaning/);
   assert.match(queueSkill, /integration Target meaning/);
+  assert.match(queueSkill, /parent, child, and sibling titles in one Queue must not normalize to the same text/);
   assert.match(queueSkill, /do not display another child checkpoint/);
   assert.match(queueSkill, /material child-distribution graph change/);
   assert.match(rules, /before substantive preparation or execution, load `\$task-lessons` and follow its `SKILL\.md`/);
