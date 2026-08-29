@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-08-29
+
+### Added
+
+- `create-app-icon` 新增 Chrome Extension 图标材料、Manifest 配置建议和针对小尺寸图标的验证要求。
+- 新增仓库专用 Task Target Alignment 评测工作区，包含 64 个 provisional cases、离线 validator／scorer 和 fresh-context 模型评测流程；该工作区不进入共享安装或 npm 包。
+
+### Changed
+
+- Task Target Alignment 引入 Authorization Ledger、L0–L4 guard levels 与独立 S0／S1 Safety Overlay，统一区分琐碎直通、等价意图核对、用户歧义和授权变更。
+- 新的或实质修订后的非平凡等价 Target 现在必须展示一次并等待用户确认；已确认且未变化的 Target 不重复确认。
+
 ## [4.0.0] - 2026-08-28
 
 ### Added
@@ -120,7 +132,8 @@
 - 旧 `~/.ssbun-skills/` 路径不再读取；用户数据只使用 `~/.csl-agent-kit/`。
 - 旧 `inject-may-agents` invocation 不再存在；改用 `super-agent`。
 
-[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v4.1.0...HEAD
+[4.1.0]: https://github.com/SSBun/csl-agent-kit/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/SSBun/csl-agent-kit/compare/v3.2.0...v4.0.0
 [3.2.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.2.0
 [3.1.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.1.0
