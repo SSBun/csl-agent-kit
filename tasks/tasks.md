@@ -1,5 +1,25 @@
 # 任务索引
 
+- [发布并验证 CSL Agent Kit 4.1.0](tasks/publish-csl-agent-kit-4-1-0.md) — Pending (2026-08-29 21:04)
+
+- [准备 CSL Agent Kit 4.1.0](tasks/prepare-csl-agent-kit-4-1-0.md) — Pending (2026-08-29 21:04)
+
+- [修复 4.1.0 发布前 GitHub Build](tasks/fix-github-build-before-4-1-0.md) — Pending (2026-08-29 21:04)
+
+- [按关注点提交 2026-08-29 全部本地改动](tasks/commit-all-local-changes-20260829.md) — In Progress (2026-08-29 21:05)
+
+- [发布并验证 CSL Agent Kit 4.1.0](tasks/release-csl-agent-kit-4-1-0.md) — In Progress (2026-08-29 20:59)
+
+- [实现分级 Task Target Guard](tasks/design-task-target-guard-levels.md) — Completed (2026-08-29 20:55)
+
+- [运行 Luna Task Target Alignment 完整评测](tasks/run-task-target-alignment-eval-luna.md) — Completed (2026-08-29 12:18)
+
+- [运行 Spark Task Target Alignment 完整评测](tasks/run-task-target-alignment-eval-spark.md) — Blocked (2026-08-29 11:27)
+
+- [实现 Task Target Alignment 评测 MVP](tasks/implement-task-target-alignment-evals.md) — Completed (2026-08-29 11:12)
+
+- [建立项目级评测工作区](tasks/design-task-target-alignment-evals.md) — Completed (2026-08-29 10:43)
+
 - [分组提交当前本地改动](tasks/group-alignment-changes-commits.md) — Completed (2026-08-29 09:25)
 
 - [精简 Task Target 对齐设计](tasks/simplify-task-target-alignment-design.md) — Completed (2026-08-29 09:17)
