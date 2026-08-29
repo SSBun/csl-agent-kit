@@ -82,7 +82,7 @@
 - `.agents/skills/task-target-alignment-eval` 是指向 canonical skill source 的唯一相对 symlink 发现入口。Pi 会跟随 project `.agents/skills` 目录链接，共享 CLI 只枚举根 `skills/`，因此该 skill 只在受信任的当前项目中激活。
 
 ### Workflows
-- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`／`--self-test`、针对 symlink package 的 Skill Quality 和 Context validation。v2 模型请求由 `prepare` 生成且不含 oracle；score／compare 分别评测 L0–L4 decision、L2 checkpoint、L3／L4 mode、S0／S1 overlay、reason 和 transition，并在 provisional labels 下保持 report-only。
+- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`／`--self-test`、针对 symlink package 的 Skill Quality 和 Context validation。v3 模型请求由 `prepare` 生成且不含 oracle；score／compare 分别评测 main-session L0–L4、delegated child handoff、L2 checkpoint、L3／L4 mode、S0／S1 overlay、child confirmation leak、stale-plan continue、reason 和 transition，并在 provisional labels 下保持 report-only。
 
 ### Decision and Verification Boundaries
 - Oracle cases、schema、固定 prediction samples 和确定性脚本可提交；当前 Task Target labels 在人工 adjudication 前保持 provisional／report-only。付费模型 run 需要当前用户明确授权，prediction／报告默认写入 ignored `results/`。不得保存 chain-of-thought、凭据、客户数据或未脱敏完整会话。

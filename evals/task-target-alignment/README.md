@@ -8,12 +8,13 @@
 - `L3_CLARIFICATION_HOLD`：用户歧义，先问一个问题。
 - `L4_TARGET_CHANGE_APPROVAL`：Target 改变授权，展示差异并等待批准。
 - `S1_REQUIRED`：独立 Safety Confirmation 仍然存在。
+- delegated child：不进入用户可见 L0–L4；Plan 覆盖完整时 `continue_delegated`，否则 `return_to_main`。
 
-Actions 为 `no_task`、`trivial_pass`、`show_checkpoint`、`clarify`、`show_change_wait` 和 `continue_unchanged`。Oracle 使用 `allowedDecisions`，因此琐碎等价 case 可以同时允许 L1 或 L2，而不会把协议允许的选择误判为失败。
+Main-session actions 为 `no_task`、`trivial_pass`、`show_checkpoint`、`clarify`、`show_change_wait` 和 `continue_unchanged`；delegated actions 为 `continue_delegated` 与 `return_to_main`。Oracle 使用 `allowedDecisions`，因此琐碎等价 case 可以同时允许 L1 或 L2，而不会把协议允许的选择误判为失败。
 
 ## 文件
 
-- `cases.json`：32 个 contrast scenarios、64 个展开 cases 和 provisional v2 oracle；人工 adjudication 前固定为 `report-only`。
+- `cases.json`：36 个 contrast scenarios、72 个展开 cases 和 provisional v3 oracle；覆盖 main／delegated session role、material／implementation-only Plan change，人工 adjudication 前固定为 `report-only`。
 - `results/`：生成的 request／prediction JSONL 与报告；由根 `.gitignore` 排除。
 - `../scripts/evaluate-task-target-alignment.js`：离线 validator、request preparer、scorer 和 comparator。
 - `../skills/task-target-alignment-eval/SKILL.md`：当前项目专用的维护与运行工作流。
@@ -33,4 +34,4 @@ node evals/scripts/evaluate-task-target-alignment.js compare \
   --candidate evals/task-target-alignment/results/candidate.json
 ```
 
-`prepare` 输出不包含 oracle。`score` 报告 guard level、checkpoint、mode、Safety Overlay、reason completeness、transition、family、stability 和 commitment dimensions。PASS／FAIL 只表示当前 provisional labels 下的阈值结果，不构成 release approval。付费模型运行仍需单独授权。
+`prepare` 输出不包含 oracle。`score` 报告 guard level、checkpoint、mode、Safety Overlay、child confirmation leak、stale-plan continue、reason completeness、transition、family、stability 和 commitment dimensions。PASS／FAIL 只表示当前 provisional labels 下的阈值结果，不构成 release approval。付费模型运行仍需单独授权。

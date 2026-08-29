@@ -4,10 +4,10 @@
 
 `evaluate-task-target-alignment.js` 提供：
 
-- `validate`：校验 64-case v2 corpus、L0–L4 decisions、S0／S1 overlays、contrast pairs 和 reason requirements。
+- `validate`：校验 72-case v3 corpus、main-session L0–L4 decisions、delegated child handoff、S0／S1 overlays、contrast pairs 和 reason requirements。
 - `prepare`：生成不含 oracle 的 model request JSONL。
-- `score`：计算 under／over guard、L2 checkpoint、L3／L4 mode、Safety Overlay、reason、transition、family 和稳定性指标。
+- `score`：计算 under／over guard、L2 checkpoint、L3／L4 mode、Safety Overlay、child confirmation leak、stale-plan continue、reason、transition、family 和稳定性指标。
 - `compare`：比较 baseline 与 candidate report，列出逐 case regressions。
-- `--self-test`：验证 perfect baseline 以及 under-guard、over-guard、checkpoint、L3／L4 和 safety regressions。
+- `--self-test`：验证 perfect baseline 以及 under-guard、over-guard、checkpoint、L3／L4、safety、child confirmation 和 stale-plan regressions。
 
 该脚本不调用模型；host／provider adapter 只负责把 `prepare` 输出转换为 prediction JSONL。

@@ -17,11 +17,11 @@ Operate this project-local suite without shared Skill distribution.
 ## Workflow
 
 1. Run `node <workspace>/evals/scripts/check-project-evals.js`, then run the evaluator's `validate` command before relying on the suite.
-2. For fixture work, keep stable ASCII case IDs, versioned schemas, provisional oracle labels, two-variant contrast scenarios, `allowedDecisions`, risk, commitment-difference dimensions, reason requirements, and Safety Overlay. Keep `gateMode` report-only until human adjudication.
+2. For fixture work, keep stable ASCII case IDs, versioned schemas, provisional oracle labels, two-variant contrast scenarios, main/delegated session roles, Plan change classification, `allowedDecisions`, risk, commitment-difference dimensions, reason requirements, and Safety Overlay. Keep `gateMode` report-only until human adjudication.
 3. Keep deterministic validation and scoring separate from model execution. Use `prepare` to create oracle-free request JSONL and `score` or `compare` only with observed prediction/report files; never fabricate eval results.
-4. For Pi model runs, use one parent-owned async `workflowScript` with the exact model under test and fresh-context evaluator children. For the 64-case baseline, split oracle-free packets into 16 unrelated batches of four and run three fresh repeats (48 children), using waves when the effective spawn or concurrency cap is lower. Randomize batch order; never let one child process the entire corpus or expose gold labels.
+4. For Pi model runs, use one parent-owned async `workflowScript` with the exact model under test and fresh-context evaluator children. For the 72-case baseline, split oracle-free packets into 18 unrelated batches of four and run three fresh repeats (54 children), using waves when the effective spawn or concurrency cap is lower. Randomize batch order; never let one child process the entire corpus or expose gold labels.
 5. Save generated predictions and reports only under the suite's ignored `results/` directory unless the user explicitly approves a durable artifact.
-6. Report under-guard, over-guard, L2 checkpoint, L3/L4 mismatch, Safety Overlay, reason completeness, transition, family, and stability metrics separately; never hide opposing regressions behind one aggregate score or present a provisional report as release approval.
+6. Report under-guard, over-guard, L2 checkpoint, L3/L4 mismatch, Safety Overlay, child confirmation leak, stale-plan continue, reason completeness, transition, family, and stability metrics separately; never hide opposing regressions behind one aggregate score or present a provisional report as release approval.
 
 ## Commands
 
