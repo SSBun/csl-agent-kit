@@ -2,7 +2,7 @@
   "positive_concepts": {
     "single_task_management": {
       "weight": 1.0,
-      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "shared Task Target Alignment Protocol", "focused target-forming clarification", "semantic alignment", "conditional confirmation", "resume", "cancel", "verify", "complete", "create this file", "edit this file", "typo", "rename this file", "move this file", "delete this file", "trivial file edit"]
+      "phrases": ["task record", "concrete non-trivial outcome", "before substantive discussion", "before research", "Task Target", "shared Task Target Alignment Protocol", "focused target-forming clarification", "semantic alignment", "resume", "cancel", "verify", "complete", "create this file", "edit this file", "typo", "rename this file", "move this file", "delete this file", "trivial file edit"]
     }
   },
   "negative_concepts": {
