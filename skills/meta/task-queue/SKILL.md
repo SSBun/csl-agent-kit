@@ -23,7 +23,7 @@ This skill owns Queue-parent activation, the integration Target meaning, permitt
 4. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
 5. Refine the parent's integration Targets and create a child only for an independently acceptable or independently blocked outcome. Each child has its own observable Targets and complete `task` lifecycle.
 6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents and cycles, and preserves order.
-7. Add the parent's current Scope and Plan, then `sync` and `check` every touched record.
+7. Add the parent's current Scope and Plan. The Plan must name every child ID in execution order so it is the delegation source, then `sync` and `check` every touched record.
 
 Do not duplicate a child's Target, Plan, Result, or status in the parent. The parent Plan links or names children and states dependencies only.
 
@@ -31,9 +31,9 @@ Do not duplicate a child's Target, Plan, Result, or status in the parent. The pa
 
 1. Confirm the parent is In Progress.
 2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
-3. Resume and execute that child under the full `task` workflow, including Result, review, verification, completion, and index check.
+3. Resume and execute that child under the full `task` lifecycle, including Result, review, verification, completion, and index check. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
 4. Run `next` again only after the current child completes.
-5. Stop when the current child is Blocked or Cancelled, verification fails, the user must decide, or a material graph change is required. Do not skip ahead.
+5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
 
 On resume, inspect the parent and the task returned by `next`; verify workspace reality before trusting old evidence. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
 

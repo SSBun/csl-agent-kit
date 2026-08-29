@@ -59,7 +59,28 @@ A Target is ready only when the request supports one concrete, independently acc
 - Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands.
 - Do not ask the user for implementation facts that can be inspected after alignment.
 
+## Interaction Owner and Delegated Execution
+
+The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. Its first ready non-trivial L2 Target receives one checkpoint before substantive execution; an accepted unchanged Target does not receive another one.
+
+A child session or child task is delegated only when the main session supplies a session-local delegation packet containing:
+
+- the main task ID;
+- the existing owning child task ID or an explicit current Plan node;
+- the exact delegated outcome and observable completion conditions; and
+- the delegated scope and boundaries.
+
+Do not persist this packet or confirmation state in the canonical task core. A delegated child validates the packet before work:
+
+- when the assignment is fully covered by the current main Plan, use `continue_delegated` without rendering a Task Target or asking the user;
+- when the packet is missing or stale, the assignment exceeds the Plan, a user-owned decision is required, or an S1 action boundary is reached, use `return_to_main`, stop, and report the relevant commitment dimensions and evidence to the interaction owner;
+- a child never renders L2, L3, L4, or Safety Confirmation directly.
+
+A material Plan distribution change means adding, removing, or reordering a child, or changing a child's outcome, done conditions, or scope. It returns control to the main session: use L2 when the accepted Target remains equivalent, L3 when a user-owned ambiguity blocks a ready Target, and L4 when authorization changes. Files, functions, algorithms, commands, and verification methods within one unchanged child node are implementation-only and do not trigger realignment.
+
 ## Guard Levels
+
+The table below applies only to the interaction owner; delegated children use the gate above and do not choose an L0-L4 level.
 
 | Level | Name | Trigger | User interaction | Exit |
 | --- | --- | --- | --- | --- |
@@ -75,14 +96,15 @@ L2 and L4 both pause, but their authority semantics differ: L2 verifies that the
 
 Apply this order:
 
-1. If no task workflow applies, choose L0.
-2. If no honest Target can be formed because of user-owned ambiguity, choose L3.
-3. Form the minimum candidate Target from the Authorization Ledger.
-4. Run both material-equivalence counterfactuals across every commitment atom.
-5. If any relation is `add`, `omit`, `weaken`, `change`, or concrete `unknown`, choose L4.
-6. If every relation is `preserve` and the task exists solely for a trivial deterministic file mutation, choose L1.
-7. Otherwise choose L2.
-8. Independently compute the Safety Overlay described below.
+1. Determine whether the current session is the interaction owner or has a complete delegation packet. A delegated child applies the delegated gate and returns without entering L0-L4.
+2. If no task workflow applies, choose L0.
+3. If no honest Target can be formed because of user-owned ambiguity, choose L3.
+4. Form the minimum candidate Target from the Authorization Ledger.
+5. Run both material-equivalence counterfactuals across every commitment atom.
+6. If any relation is `add`, `omit`, `weaken`, `change`, or concrete `unknown`, choose L4.
+7. If every relation is `preserve` and the task exists solely for a trivial deterministic file mutation, choose L1.
+8. Otherwise choose L2.
+9. Independently compute the Safety Overlay described below.
 
 L2 is valid only when all of these hold:
 
@@ -111,6 +133,8 @@ reasonCodes
 ```
 
 Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all difference and unresolved fields are empty. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 names the governing safety rule or action boundary.
+
+A delegated child instead uses a compact session-local packet with `sessionRole`, `mainTaskId`, `owningTaskId` or `planNode`, `action`, `changedDimensions`, and `reasonCodes`. Its action is exactly `continue_delegated` or `return_to_main`; it has no user-facing L-code.
 
 ## User-Facing Target Body
 
@@ -165,17 +189,18 @@ After task activation, continue without waiting when the request is solely a tri
 - L4 acceptance adds the displayed Target to current authorization.
 - A question, hesitation, unrelated reply, or ambiguous acknowledgment is not acceptance. Answer or clarify only within the pre-alignment boundary, then present the current checkpoint again when ready.
 - A user response that adds, removes, or changes a commitment revises authorization instead of accepting the old Target. Update the canonical Target as needed, run required consistency commands, regenerate the candidate, and recompute the level.
-- Every new or materially revised non-trivial equivalent Target must pass one L2 checkpoint, including a normalized Target produced after an explicit user revision.
-- Once accepted, an unchanged Target must not be presented for redundant confirmation in the same recoverable conversation state.
-- After resume or compaction, if explicit acceptance evidence cannot be recovered, present the checkpoint again rather than assuming acceptance.
+- Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint, including a normalized Target produced after an explicit user revision or a material Plan distribution change.
+- Once accepted, an unchanged main Target must not be presented for redundant confirmation in the same recoverable conversation state; delegated children covered by its current Plan inherit that acceptance.
+- After main-session resume or compaction, if explicit acceptance evidence cannot be recovered, present the checkpoint again rather than assuming acceptance. A delegated child without a complete current packet returns to the main session instead.
 
 ## Realignment
 
 After alignment:
 
-- Implementation-only changes such as files, functions, algorithms, internal plans, or verification commands do not trigger a new checkpoint while the accepted result and boundaries remain unchanged.
+- Implementation-only changes such as files, functions, algorithms, commands, or verification methods within an unchanged Plan node do not trigger a new checkpoint while the accepted result and boundaries remain unchanged.
 - Refining the canonical record from authoritative sources does not trigger a new checkpoint when the accepted user-facing commitment remains unchanged.
-- A material change introduced by the Agent or discovery invalidates affected evidence, updates the canonical Target, and enters L4.
+- A material Plan distribution change returns control to the main session and requires one new checkpoint before the changed child graph executes; a delegated child never performs that checkpoint.
+- A material commitment change introduced by the Agent or discovery invalidates affected evidence, updates the canonical Target, and enters L4 in the main session.
 - A user revision enters L3 when it still contains a user-owned ambiguity; otherwise it produces a revised L2 or L4 Target as determined above.
 
 The conversational checkpoint does not replace the canonical Target and does not create a persisted alignment or confirmation field.
@@ -187,14 +212,14 @@ Compute safety independently from L0-L4:
 - `S0 NONE`: no separate governing safety or permission gate applies.
 - `S1 REQUIRED`: publication, payment, destructive action, credentials, permissions, privacy data, deployment, or another external side effect is governed by a separate workflow.
 
-L2 or L4 acceptance never clears S1. At the actual action boundary, render a separate localized `**Safety Confirmation**` block naming the action, affected object, consequence, and governing rule. Do not attach safety approval to the L2 or L4 footer. Conversely, safety confirmation does not align a materially different Target.
+L2 or L4 acceptance never clears S1. At the actual action boundary, the main session renders a separate localized `**Safety Confirmation**` block naming the action, affected object, consequence, and governing rule. A delegated child reaching that boundary returns to the main session and does not render the block itself. Do not attach safety approval to the L2 or L4 footer. Conversely, safety confirmation does not align a materially different Target.
 
 ## Consumer Responsibilities
 
-- `task` supplies the intended outcome and observable completion condition for one independently acceptable result.
+- `task` supplies the intended outcome and observable completion condition for one independently acceptable result, or activates the exact existing record named by a valid delegation packet.
 - `task-plan` supplies the intended planning outcome and observable condition for an implementation-ready handoff.
-- `task-queue` supplies the parent integration outcome and observable completion condition.
-- Each consumer names its permitted lifecycle writes before alignment and its next step after alignment. Consumers must not copy the level table or detailed semantics.
+- `task-queue` supplies the parent integration outcome, creates and names the child graph, and provides each child or subagent with the current delegation packet.
+- Each consumer names its permitted lifecycle writes before alignment and its next step after alignment. Consumers must not copy the level table or detailed delegation semantics.
 - Default Agent rules and lifecycle dispatchers retain stable routing, activation order, checkpoint, stop, and skip boundaries while deferring detail to this protocol.
 - The shared task core owns persistent record state, Targets, evidence, relationships, and completion gates; it does not persist guard levels or acceptance.
 

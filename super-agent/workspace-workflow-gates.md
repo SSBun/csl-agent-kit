@@ -55,13 +55,13 @@ The Task Target states:
 
 It describes the result, not the implementation.
 
-After activating the internal task record, present every new or materially revised non-trivial equivalent Target once as a neutral checkpoint and wait for explicit acceptance before substantive work. A task activated solely for a materially equivalent trivial deterministic file mutation may omit the checkpoint. When a ready Target materially changes current authorization, show the changed commitment dimensions and wait for explicit change approval. Ask one focused clarification instead of presenting a guessed Target when no honest Target can be stated. Do not repeat a checkpoint for an accepted unchanged Target.
+After activating the internal task record, the main user-facing session presents every new or materially revised non-trivial equivalent Target once as a neutral checkpoint and waits for explicit acceptance before substantive work. A task activated solely for a materially equivalent trivial deterministic file mutation may omit the checkpoint. A child session or child task explicitly delegated by the accepted current main Plan inherits alignment and never prompts the user; missing coverage, a material child-distribution graph change, a user decision, or a safety boundary returns to the main session. When a ready Target materially changes current authorization, the main session shows the changed commitment dimensions and waits for explicit change approval. Ask one focused clarification there instead of presenting a guessed Target. Do not repeat a checkpoint for an accepted unchanged Target.
 
 Before alignment, limit discussion to user-owned ambiguity required to state the Target honestly. Do not turn the alignment gate into implementation planning or repository investigation.
 
 After alignment, continue independently wherever authoritative evidence can answer the remaining questions.
 
-A complete explicit user revision updates authorization, but its normalized non-trivial Target still receives one checkpoint before execution. Pause for change approval when discovery or the Agent introduces a material change to the committed result or boundary. Implementation-only changes do not require realignment while the accepted Target remains unchanged. Independent safety or permission confirmations remain separate and are never bypassed by Target acceptance.
+A complete explicit user revision updates authorization, but its normalized non-trivial Target still receives one main-session checkpoint before execution. A material child-distribution graph change—adding, removing, reordering, or changing a child's outcome, done conditions, or scope—also returns to the main session before execution. Pause for change approval when discovery or the Agent introduces a material change to the committed result or boundary. Files, functions, algorithms, commands, and verification methods within an unchanged child node do not require realignment. Independent safety or permission confirmations remain separate, are never bypassed by Target acceptance, and are handled only by the main session.
 
 ## Task, Context, and Lessons
 

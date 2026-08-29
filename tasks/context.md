@@ -128,9 +128,9 @@
 - `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
 
 ## CTX-task-workflows — Canonical task workflows
-- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、L0–L4 Task Target checkpoint／change approval、S0／S1 Safety Overlay、状态证据及完成门禁。
+- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、main-session L0–L4 Task Target gate、delegated child alignment inheritance、S0／S1 Safety Overlay、状态证据及完成门禁。
 - Paths: `skills/meta/task/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
-- Keywords: task, task-plan, task-queue, canonical task, Task Target, Authorization Ledger, L2 checkpoint, L4 change approval, Safety Overlay, queue parent, Kind Queue, legacy Auto
+- Keywords: task, task-plan, task-queue, canonical task, Task Target, Authorization Ledger, interaction owner, delegated child, L2 checkpoint, L4 change approval, Safety Overlay, Kind Queue, legacy Auto
 - Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
 - Recheck: 当公开 skill identity、task activation timing、Task Target 对齐或确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
@@ -144,10 +144,10 @@
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。对齐前只允许必要的 user-owned 澄清与 consumer 指定的 lifecycle writes；非平凡等价 Target 进入 L2 checkpoint 并等待一次核对，实质差异进入 L4 change approval，用户歧义进入 L3，纯琐碎等价编辑可走 L1。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。无文件变更的一般事实问答、无具体 outcome 的开放讨论、只读琐碎操作和非交付物的例行 Context/Lessons 维护可跳过。
+- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 初次执行前进入一次 L2 checkpoint，实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
 
 ### Decision and Verification Boundaries
-- User-facing Task Target 只描述结果、可观察完成条件和必要边界；L2 使用中性 checkpoint footer，L4 额外列出 changed commitment dimensions，S1 使用独立 Safety Confirmation。Level、decision packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
+- User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
 - 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
