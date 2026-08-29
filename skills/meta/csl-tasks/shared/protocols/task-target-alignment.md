@@ -1,93 +1,203 @@
 # Task Target Alignment Protocol
 
-This host-neutral runtime contract is the sole detailed authority for Task Target readiness, semantic alignment, mandatory non-trivial presentation, conditional confirmation, revision, and realignment across `task`, `task-plan`, and `task-queue`. It is not a skill and must not participate in skill discovery or routing.
+This host-neutral runtime contract is the sole detailed authority for Task Target readiness, Authorization Ledger construction, semantic equivalence, L0-L4 guard levels, presentation, confirmation, revision, realignment, and the independent Safety Overlay across `task`, `task-plan`, and `task-queue`. It is not a Skill and must not participate in Skill discovery or routing.
 
 ## Loading
 
-Each consuming skill must resolve the collection root, read this file in full before forming, presenting, or accepting a Task Target, and read it again after resume or compaction when it is no longer present in context. The consumer owns when to invoke the protocol and what its workflow-specific Target means.
+Each consuming Skill must resolve the collection root, read this file in full before forming, presenting, or accepting a Task Target, and read it again after resume or compaction when it is no longer present in context. The consumer owns when to invoke the protocol and what its workflow-specific Target means.
 
-If this file is missing or unreadable, stop before substantive work and report the missing runtime dependency. Do not reconstruct the detailed contract from memory or a consumer summary.
-
-## Readiness and Clarification
-
-A Task Target is ready only when the request supports one concrete, independently acceptable outcome and an honest observable completion condition.
-
-- Open-ended discussion without a concrete outcome remains outside the task workflows.
-- If no honest Target can be stated, ask one focused question about the user-owned ambiguity. Create or activate the record as soon as the answer establishes the outcome.
-- Once a concrete outcome exists, activate and focus its owning record before any further target-forming clarification.
-- After activation but before alignment, clarification is limited to user-owned ambiguity that must be resolved to state or align the Target accurately. This focused clarification forms the commitment; it is not substantive preparation.
-- Do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, edit the requested deliverable, run unrelated mutating commands, or delegate work before alignment. Do not ask the user for implementation facts that can be inspected after alignment.
+If this file is missing or unreadable, stop before substantive work and report the missing runtime dependency. Do not reconstruct the contract from memory or a consumer summary.
 
 ## Current User Authorization
 
-Compare every candidate Target with the current user authorization. It consists of the originating request, focused clarification answers, explicit user additions or revisions, and any previously presented Target the user accepted. When those expressions conflict, the later explicit user expression wins.
+Current user authorization consists only of:
 
-Do not add Agent assumptions, unaccepted discovery results, proposed changes, or implementation-convenience constraints to the authorization baseline.
+- the originating request;
+- focused clarification answers;
+- explicit user additions or revisions; and
+- a previously accepted Task Target.
 
-Material equivalence is bidirectional. A candidate Target is equivalent only when it neither adds, removes, weakens, omits, nor changes the authorized outcome, observable completion conditions, scope boundaries, preserved behavior, compatibility boundaries, side effects, or user-owned trade-offs. Wording and structure may be normalized only when they preserve the entire commitment.
+When those expressions conflict, the later explicit user expression wins. Agent assumptions, implementation convenience, repository discovery, unaccepted proposals, and inferred preferences are not authorization.
 
-Use both counterfactual checks:
+### Authorization Ledger
 
-- If the user could accept the current authorization yet reasonably reject the candidate Target, the candidate adds or changes a commitment.
-- If the candidate Target could be satisfied while the current authorization remains unsatisfied, the candidate removes, weakens, or omits a commitment.
+Before choosing a guard level, create a compact session-local Authorization Ledger. Give each explicit commitment a temporary stable ID and one type:
 
-If either case is reasonably possible, the candidate is not materially equivalent.
+- `outcome`;
+- `done_conditions`;
+- `scope`;
+- `preserved_behavior`;
+- `compatibility`;
+- `side_effects`; or
+- `tradeoffs`.
 
-## Alignment Gate
+Record the normalized meaning and source message for each atom. Project the candidate Target from this Ledger rather than freely elaborating it:
 
-After the owning record is active and the candidate Target is ready:
+- Outcome comes only from outcome atoms.
+- Every explicit acceptance atom maps to at least one Done when item.
+- Explicit exclusions, preservation, compatibility, and side-effect limits remain visible in Boundaries or acceptance conditions.
+- Quantifiers and strong terms such as `all`, `only`, exact thresholds, and `must not` cannot be invented or weakened.
+- Agent-selected files, algorithms, counts, commands, and verification methods remain in Plan or execution, not Target commitments.
 
-1. Compare the candidate Target with the current user authorization before any task-direct inspection or substantive preparation.
-2. If no honest candidate can be formed because of user-owned ambiguity, ask the focused question allowed above, incorporate the answer into the current user authorization, and repeat this gate.
-3. For every ready candidate Target that represents a concrete, non-trivial outcome, render the following plain Markdown structure:
+For every candidate atom, classify its relationship to authorization as `preserve`, `add`, `omit`, `weaken`, `change`, or `unknown`.
 
-   ```markdown
-   **Task Target**
+Material equivalence is bidirectional. Both counterfactuals must be false for `preserve`:
 
-   - **Outcome:** <intended user-visible or system result>
-   - **Done when:**
-     - <observable completion condition>
-   - **Boundaries:** <material scope boundary>
-   ```
+- If the candidate can be satisfied while current authorization remains unsatisfied, it omits or weakens a commitment.
+- If the user can accept current authorization yet reasonably reject the candidate, it adds or changes a commitment.
 
-   Keep the title exactly `**Task Target**`. Localize the `Outcome`, `Done when`, and `Boundaries` labels to the user's conversation language. `Outcome` and `Done when` are required; list one or more observable conditions under `Done when`. Include the entire `Boundaries` item only when omitting a material scope boundary could cause misunderstanding. A consumer may omit this informational block only when the task was activated solely for a trivial deterministic file mutation and the candidate is materially equivalent; every non-equivalent candidate must still use the rendered block.
-4. If the candidate is bidirectionally materially equivalent and no user-owned ambiguity remains, treat the rendered Target or permitted trivial-mutation exception as aligned and continue immediately without waiting for a user response. The user's existing instruction is the authorization; do not ask them to approve an equivalent restatement or end the turn merely because the Target was displayed.
-5. If the candidate is not materially equivalent, append the following instruction after the rendered block, localize it to the user's conversation language, then stop and wait for explicit textual confirmation:
+`unknown` cannot mean generic model uncertainty. Name the exact atom and a plausible counterfactual difference. If such a difference exists, treat the candidate as materially different. If no concrete semantic difference can be stated, do not escalate merely because confidence is low.
 
-   `Confirm this target, or state what should change.`
+## Readiness and Pre-Alignment Boundary
 
-   Do not add confirmation shortcut hints to it.
-6. Before alignment, permit only the focused clarification defined above and the task lifecycle writes named by the consuming skill.
-7. After alignment, continue with task-relevant Context Packs, relevant Lessons, and task-direct sources.
+A Target is ready only when the request supports one concrete, independently acceptable outcome and an honest observable completion condition.
 
-Render the Target exactly once for each alignment attempt that requires presentation. The user-facing block describes the result and observable completion boundary. Render it without a code fence, implementation method, file list, command sequence, internal plan, or checkbox. Do not repeat an unchanged aligned Target in progress updates or before individual actions.
+- Open-ended discussion without a concrete outcome remains outside task workflows.
+- If a user-owned ambiguity prevents an honest Target, ask one focused question.
+- Once a concrete outcome exists, activate and focus its owning record before further clarification or presentation.
+- Task lifecycle writes required for create, resume, reopen, focus, sync, and check are bootstrap exceptions; they are not execution authorization.
+- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands.
+- Do not ask the user for implementation facts that can be inspected after alignment.
+
+## Guard Levels
+
+| Level | Name | Trigger | User interaction | Exit |
+| --- | --- | --- | --- | --- |
+| L0 | `NO_TASK` | No file mutation and no concrete non-trivial outcome | No Target | Answer or continue conversation |
+| L1 | `TRIVIAL_PASS` | Task exists solely for a trivial deterministic file mutation and Target is materially equivalent | Target display may be omitted | Continue after lifecycle activation |
+| L2 | `VISIBLE_CHECKPOINT` | Ready non-trivial Target; every authorized atom is preserved and no candidate atom is untraceable | Display Target and wait for one acknowledgment | Explicit acceptance of the displayed Target |
+| L3 | `CLARIFICATION_HOLD` | User-owned ambiguity prevents an honest Target | Ask exactly one focused question; do not present a guessed Target | User answer makes a Target ready |
+| L4 | `TARGET_CHANGE_APPROVAL` | Target is ready but adds, omits, weakens, changes, or cannot rule out a concrete commitment difference | Display Target, name changed dimensions, and wait for approval | Explicit acceptance adds the Target to authorization |
+
+L2 and L4 both pause, but their authority semantics differ: L2 verifies that the Agent understood existing authorization; L4 requests approval for a changed commitment.
+
+## Deterministic Decision Procedure
+
+Apply this order:
+
+1. If no task workflow applies, choose L0.
+2. If no honest Target can be formed because of user-owned ambiguity, choose L3.
+3. Form the minimum candidate Target from the Authorization Ledger.
+4. Run both material-equivalence counterfactuals across every commitment atom.
+5. If any relation is `add`, `omit`, `weaken`, `change`, or concrete `unknown`, choose L4.
+6. If every relation is `preserve` and the task exists solely for a trivial deterministic file mutation, choose L1.
+7. Otherwise choose L2.
+8. Independently compute the Safety Overlay described below.
+
+L2 is valid only when all of these hold:
+
+```text
+targetReady = true
+taskIsTrivial = false
+missingAuthorizedAtoms = []
+untraceableCandidateAtoms = []
+differences = []
+unresolvedUserDecisions = []
+```
+
+## Compact Decision Packet
+
+Create a compact packet for self-checking and evaluation:
+
+```text
+level
+preservedAtomIds
+missingAtomIds
+addedAtomIds
+changedDimensions
+unresolvedQuestion
+safetyOverlay
+reasonCodes
+```
+
+Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all difference and unresolved fields are empty. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 names the governing safety rule or action boundary.
+
+## User-Facing Target Body
+
+L2 and L4 use the same localized Target body:
+
+```markdown
+**Task Target**
+
+- **Outcome:** <intended user-visible or system result>
+- **Done when:**
+  - <observable completion condition>
+- **Boundaries:** <material scope boundary>
+```
+
+Keep the title exactly `**Task Target**`. Localize the labels to the conversation language. Outcome and Done when are required. Include the entire Boundaries item only when omission could cause misunderstanding. Render without a code fence, implementation method, file list, command sequence, internal plan, or checkbox.
+
+### L2 Checkpoint
+
+After the Target body, append a neutral localized Checkpoint footer with this meaning:
+
+`Please confirm that the Target above accurately expresses your intent, or state what should change. I will begin substantive work only after confirmation.`
+
+Do not show a difference list or imply that the user expanded authorization. Stop and wait. Creating or focusing the internal task record does not bypass this checkpoint.
+
+### L4 Change Approval
+
+After the Target body, add a localized section:
+
+```markdown
+**Changes requiring approval:**
+
+- **<commitment dimension>:** <current authorization> → <candidate change>
+```
+
+List only material commitment deltas. Do not include implementation details, broad risk commentary, or private reasoning. Then append a localized footer with this meaning:
+
+`This Target changes your current authorization. Explicitly approve these changes or state how to revise them. I will not execute before approval.`
+
+### L3 Clarification
+
+Ask one focused question about the exact user-owned ambiguity. Do not render a candidate Target, difference list, or generic confirmation prompt. Incorporate the answer into authorization and recompute the level.
+
+### L1 Trivial Pass
+
+After task activation, continue without waiting when the request is solely a trivial deterministic file mutation and the Target is materially equivalent. A consumer may display it, but display then becomes an L2 checkpoint and must wait for acceptance.
 
 ## Confirmation and Revision
 
-- A response whose trimmed content is exactly `1` or case-insensitively equals `y` confirms only a currently presented Target that is awaiting confirmation. Treat these as implicit shortcuts and do not advertise them in the user-facing block. Any other unambiguous affirmative response that accepts it also confirms it. Acceptance adds the presented Target to the current user authorization and aligns it. A materially equivalent Target rendered without a confirmation instruction is already aligned, so these shortcuts do not apply to it.
-- A response that explicitly adds, removes, or changes the outcome, completion condition, scope boundary, preserved behavior, compatibility boundary, side effect, or user-owned trade-off updates the current user authorization instead of confirming the old Target. Update the canonical record as needed, run its required consistency commands, regenerate the candidate, and repeat the Alignment Gate. If the new candidate is materially equivalent, render it and continue without asking the user to confirm their own explicit revision again; if the revision is ambiguous or the candidate still differs, clarify or present it as required by the gate.
-- A question, hesitation, unrelated reply, or ambiguous acknowledgment is not confirmation. Answer or clarify only within the pre-alignment boundary, then present the current Target again when it is ready and still requires confirmation.
+- A response whose trimmed content is exactly `1` or case-insensitively equals `y` accepts the currently displayed L2 or L4 Target. These shortcuts are implicit; never advertise them.
+- Any other unambiguous affirmative response that accepts the displayed Target also confirms it.
+- L2 acceptance records that the displayed interpretation is correct; it does not expand authorization.
+- L4 acceptance adds the displayed Target to current authorization.
+- A question, hesitation, unrelated reply, or ambiguous acknowledgment is not acceptance. Answer or clarify only within the pre-alignment boundary, then present the current checkpoint again when ready.
+- A user response that adds, removes, or changes a commitment revises authorization instead of accepting the old Target. Update the canonical Target as needed, run required consistency commands, regenerate the candidate, and recompute the level.
+- Every new or materially revised non-trivial equivalent Target must pass one L2 checkpoint, including a normalized Target produced after an explicit user revision.
+- Once accepted, an unchanged Target must not be presented for redundant confirmation in the same recoverable conversation state.
+- After resume or compaction, if explicit acceptance evidence cannot be recovered, present the checkpoint again rather than assuming acceptance.
 
-## Canonical Target and Realignment
-
-The conversational Task Target is a concise commitment gate; it does not replace the canonical record's `Target` section and does not create a persisted alignment or confirmation field.
+## Realignment
 
 After alignment:
 
-- An explicit, complete user revision updates the current user authorization. Render and adopt a materially equivalent revised Target directly without asking the user to confirm the same revision again.
-- A material change introduced by the Agent or by discovery is not authorized until the user accepts it. Pause, update the canonical Target, invalidate stale evidence as required by the task workflow, present the revised Task Target, and wait for confirmation.
-- Do not realign for implementation-only changes such as file paths, functions, algorithms, internal plans, or verification commands when the aligned result and boundaries remain unchanged.
-- Refine a canonical Target from authoritative sources without another presentation or confirmation only when the already displayed user-facing commitment remains materially equivalent to the current user authorization.
+- Implementation-only changes such as files, functions, algorithms, internal plans, or verification commands do not trigger a new checkpoint while the accepted result and boundaries remain unchanged.
+- Refining the canonical record from authoritative sources does not trigger a new checkpoint when the accepted user-facing commitment remains unchanged.
+- A material change introduced by the Agent or discovery invalidates affected evidence, updates the canonical Target, and enters L4.
+- A user revision enters L3 when it still contains a user-owned ambiguity; otherwise it produces a revised L2 or L4 Target as determined above.
 
-## Independent Safety Gates
+The conversational checkpoint does not replace the canonical Target and does not create a persisted alignment or confirmation field.
 
-Semantic alignment does not bypass any separate safety, permission, publication, destructive-action, payment, or external-side-effect confirmation required by another governing workflow. Those gates remain independent even when the Target is materially equivalent to what the user already authorized. Conversely, satisfying an independent safety gate does not align a materially different Target.
+## Independent Safety Overlay
+
+Compute safety independently from L0-L4:
+
+- `S0 NONE`: no separate governing safety or permission gate applies.
+- `S1 REQUIRED`: publication, payment, destructive action, credentials, permissions, privacy data, deployment, or another external side effect is governed by a separate workflow.
+
+L2 or L4 acceptance never clears S1. At the actual action boundary, render a separate localized `**Safety Confirmation**` block naming the action, affected object, consequence, and governing rule. Do not attach safety approval to the L2 or L4 footer. Conversely, safety confirmation does not align a materially different Target.
 
 ## Consumer Responsibilities
 
 - `task` supplies the intended outcome and observable completion condition for one independently acceptable result.
 - `task-plan` supplies the intended planning outcome and observable condition for an implementation-ready handoff.
 - `task-queue` supplies the parent integration outcome and observable completion condition.
-- Each consumer names its permitted lifecycle writes before alignment, invokes the mandatory presentation for every ready Target representing a concrete non-trivial outcome, and names its next step after alignment.
-- Default Agent rules and lifecycle dispatchers retain stable routing, activation order, mandatory gate, and skip boundaries. They defer the detailed alignment semantics to this protocol rather than copying them.
-- The shared task core owns persistent record state, Targets, evidence, relationships, and completion gates; it does not persist conversational alignment.
+- Each consumer names its permitted lifecycle writes before alignment and its next step after alignment. Consumers must not copy the level table or detailed semantics.
+- Default Agent rules and lifecycle dispatchers retain stable routing, activation order, checkpoint, stop, and skip boundaries while deferring detail to this protocol.
+- The shared task core owns persistent record state, Targets, evidence, relationships, and completion gates; it does not persist guard levels or acceptance.
+
+## Maintainer Validation
+
+Keep the shared protocol, stable Agent rules, task-family consumers, project-local level fixtures and scorer, Context, and focused contract assertions aligned. Run authorized focused tests, the built-in Skill Quality gate for changed Skill packages, project eval validation and self-test, Context validation, and `git diff --check`. Quality failures block completion; context-budget warnings never justify removing required workflow guidance.

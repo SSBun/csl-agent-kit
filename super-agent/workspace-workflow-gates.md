@@ -55,13 +55,13 @@ The Task Target states:
 
 It describes the result, not the implementation.
 
-Always present every ready Task Target for a concrete, non-trivial outcome once before substantive work. A task activated solely for a trivial deterministic file mutation may omit the informational display when its Target is materially equivalent. A materially equivalent Target continues without waiting for redundant confirmation; a materially different Target must be presented with a confirmation instruction and explicitly accepted. Ask focused clarification when no honest Target can be stated.
+After activating the internal task record, present every new or materially revised non-trivial equivalent Target once as a neutral checkpoint and wait for explicit acceptance before substantive work. A task activated solely for a materially equivalent trivial deterministic file mutation may omit the checkpoint. When a ready Target materially changes current authorization, show the changed commitment dimensions and wait for explicit change approval. Ask one focused clarification instead of presenting a guessed Target when no honest Target can be stated. Do not repeat a checkpoint for an accepted unchanged Target.
 
 Before alignment, limit discussion to user-owned ambiguity required to state the Target honestly. Do not turn the alignment gate into implementation planning or repository investigation.
 
 After alignment, continue independently wherever authoritative evidence can answer the remaining questions.
 
-Present a complete explicit user revision and continue when the revised Target is materially equivalent. Pause and realign when discovery or the Agent introduces a material change to the committed result or boundary. Implementation-only changes do not require realignment when the aligned result remains the same. Independent safety or permission confirmations remain separate and are never bypassed by Target alignment.
+A complete explicit user revision updates authorization, but its normalized non-trivial Target still receives one checkpoint before execution. Pause for change approval when discovery or the Agent introduces a material change to the committed result or boundary. Implementation-only changes do not require realignment while the accepted Target remains unchanged. Independent safety or permission confirmations remain separate and are never bypassed by Target acceptance.
 
 ## Task, Context, and Lessons
 

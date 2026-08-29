@@ -41,7 +41,7 @@
 - `super-agent/AGENTS.md` 保留显式安装时的完整默认规则；自动注入的 `super-agent/workspace-workflow-gates.md` 改为稳定的行为契约，要求 session 边界恢复 Context、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是非平凡 Target 展示一次、等价时直接继续、实质差异时等待确认，以及纯琐碎文件编辑保留等价展示例外。对齐后才检索相关 Packs。
+- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是非平凡等价 Target 展示一次并等待 checkpoint 确认、实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
 
 ### Decision and Verification Boundaries
 - Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，已有文件缺少有效 Core 时可自动重写，缺失文件的创建及其他有效 Project Core 持久变更必须先展示精确内容并取得用户确认。
@@ -128,9 +128,9 @@
 - `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
 
 ## CTX-task-workflows — Canonical task workflows
-- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、Task Target 非平凡强制展示、语义对齐与条件确认、状态证据及完成门禁。
+- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、L0–L4 Task Target checkpoint／change approval、S0／S1 Safety Overlay、状态证据及完成门禁。
 - Paths: `skills/meta/task/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
-- Keywords: task, task-plan, task-queue, canonical task, Task Target, mandatory non-trivial presentation, semantic alignment, conditional confirmation, queue parent, Kind Queue, legacy Auto
+- Keywords: task, task-plan, task-queue, canonical task, Task Target, Authorization Ledger, L2 checkpoint, L4 change approval, Safety Overlay, queue parent, Kind Queue, legacy Auto
 - Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`
 - Recheck: 当公开 skill identity、task activation timing、Task Target 对齐或确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
@@ -144,10 +144,10 @@
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。对齐前只允许必要的 user-owned 澄清与 consumer 指定的 lifecycle writes；非平凡 Target 展示一次，等价时直接继续，实质差异时等待确认，纯琐碎文件编辑保留等价展示例外。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。无文件变更的一般事实问答、无具体 outcome 的开放讨论、只读琐碎操作和非交付物的例行 Context/Lessons 维护可跳过。
+- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。对齐前只允许必要的 user-owned 澄清与 consumer 指定的 lifecycle writes；非平凡等价 Target 进入 L2 checkpoint 并等待一次核对，实质差异进入 L4 change approval，用户歧义进入 L3，纯琐碎等价编辑可走 L1。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。无文件变更的一般事实问答、无具体 outcome 的开放讨论、只读琐碎操作和非交付物的例行 Context/Lessons 维护可跳过。
 
 ### Decision and Verification Boundaries
-- User-facing Task Target 只描述结果、可观察完成条件和必要边界，不替代 canonical record，也不持久化 alignment／confirmation；实现方法、确认输入、修订、重新对齐与独立安全门的详细规则只由共享协议定义。
+- User-facing Task Target 只描述结果、可观察完成条件和必要边界；L2 使用中性 checkpoint footer，L4 额外列出 changed commitment dimensions，S1 使用独立 Safety Confirmation。Level、decision packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
 - 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
