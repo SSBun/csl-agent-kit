@@ -4,9 +4,9 @@
 
 - [准备 CSL Agent Kit 4.1.0](tasks/prepare-csl-agent-kit-4-1-0.md) — Pending (2026-08-29 21:04)
 
-- [修复 4.1.0 发布前 GitHub Build](tasks/fix-github-build-before-4-1-0.md) — Pending (2026-08-29 21:04)
+- [修复 4.1.0 发布前 GitHub Build](tasks/fix-github-build-before-4-1-0.md) — Completed (2026-08-29 21:26)
 
-- [按关注点提交 2026-08-29 全部本地改动](tasks/commit-all-local-changes-20260829.md) — In Progress (2026-08-29 21:05)
+- [按关注点提交 2026-08-29 全部本地改动](tasks/commit-all-local-changes-20260829.md) — Completed (2026-08-29 21:14)
 
 - [发布并验证 CSL Agent Kit 4.1.0](tasks/release-csl-agent-kit-4-1-0.md) — In Progress (2026-08-29 20:59)
 
