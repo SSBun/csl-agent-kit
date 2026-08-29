@@ -819,6 +819,8 @@ test("title hook requires Chinese core-intent titles while allowing technical te
   assert.equal(titleHook.cleanModelTitle("KEEP_CURRENT_TITLE"), "");
   assert.equal(titleHook.cleanModelTitle("Commit these changes"), "");
   assert.equal(titleHook.cleanModelTitle("Run the tests again"), "");
+  assert.equal(titleHook.cleanModelTitle("确认"), "");
+  assert.equal(titleHook.cleanModelTitle("确认流程"), "确认流程");
   assert.equal(titleHook.buildTitle({}, "/tmp/app", ""), null);
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "简洁会话标题"), "简洁会话标题");
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "Concise tab titles"), null);

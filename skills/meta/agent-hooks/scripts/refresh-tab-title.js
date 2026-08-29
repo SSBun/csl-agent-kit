@@ -25,7 +25,8 @@ const SYSTEM_PROMPT = [
   "- Aim for a concise 4 to 12-character phrase.",
   "- It must read like a natural Chinese phrase, not a code symbol.",
   "- Describe the THING being worked on (a feature, a file area, a concept), not an action or a status.",
-  "- Use the whole supplied conversation, with the newest messages carrying the most weight.",
+  "- Use the whole supplied conversation, with the newest substantive task details carrying the most weight.",
+  "- Treat confirmation-only replies such as confirm, yes, 1, 确认, or 同意 as follow-ups with no standalone subject; infer the underlying task from earlier context.",
   "- Always return the best current title. For a follow-up action such as commit, retry, or test, infer the underlying task from the surrounding conversation.",
   "",
   "Examples (Input -> Reply):",
@@ -35,6 +36,7 @@ const SYSTEM_PROMPT = [
   '"Design four app icon candidates" -> 应用图标设计',
   '"生成四款应用图标候选" -> 应用图标设计',
   '"Build a login token cache" then "commit these changes" -> 登录令牌缓存',
+  '"Add a floating learning card" then "confirm" -> 悬浮学习卡片',
   '"BUG_REPORT" -> 缺陷报告',
   '"TOAST_ON_TITLE_REFRESH" -> 标题提示问题',
 ].join("\n");
@@ -161,7 +163,9 @@ function cleanModelTitle(value) {
 
 function isOperationTitle(value) {
   const text = sanitize(value);
-  return /^(?:please\s+)?(?:commit|push|stage)(?:$|\s+(?:all|the|these|those|this|our|my|your|current|local|focused|completed|only|just|it|everything|changes|work|files|branch|commit|to|as)\b)/i.test(text)
+  return /^(?:confirm(?:ed)?|yes|y|ok(?:ay)?|approve[ds]?)$/i.test(text)
+    || /^(?:确认|已确认|同意|好的|可以)$/.test(text)
+    || /^(?:please\s+)?(?:commit|push|stage)(?:$|\s+(?:all|the|these|those|this|our|my|your|current|local|focused|completed|only|just|it|everything|changes|work|files|branch|commit|to|as)\b)/i.test(text)
     || /^(?:please\s+)?(?:retry|continue|proceed|go ahead)\b/i.test(text)
     || /^(?:please\s+)?(?:run|rerun)\s+(?:the\s+)?(?:tests?|checks?|lint|build)\b/i.test(text)
     || /^(?:please\s+)?test\s+(?:it|this|that|the|these|those|all|current|our|my)\b/i.test(text)
@@ -487,6 +491,8 @@ function selfTest() {
   assert.equal(cleanModelTitle("认证 cache"), "认证 cache");
   assert.equal(cleanModelTitle("GPT 5 标题"), "GPT 5 标题");
   assert.equal(cleanModelTitle("缺陷报告"), "缺陷报告");
+  assert.equal(cleanModelTitle("确认"), "");
+  assert.equal(cleanModelTitle("确认流程"), "确认流程");
   // Connector-initial fragments are rejected, while compound phrases keep
   // their leading verb instead of being stripped into a fragment.
   assert.equal(cleanModelTitle("与运行指南"), "");
