@@ -1,5 +1,13 @@
 # 任务索引
 
+- [分组提交当前本地改动](tasks/group-alignment-changes-commits.md) — In Progress (2026-08-29 09:21)
+
+- [精简 Task Target 对齐设计](tasks/simplify-task-target-alignment-design.md) — Completed (2026-08-29 09:17)
+
+- [让非平凡任务始终展示 Task Target](tasks/make-task-target-visible.md) — Completed (2026-08-29 08:46)
+
+- [审查会话中的 Task Target 对齐](tasks/review-session-task-target-alignment.md) — Completed (2026-08-29 08:26)
+
 - [发布并验证 CSL Agent Kit 4.0.0](tasks/publish-csl-agent-kit-4-0-0.md) — Completed (2026-08-28 21:47)
 
 - [准备 CSL Agent Kit 4.0.0](tasks/prepare-csl-agent-kit-4-0-0.md) — Completed (2026-08-28 20:59)
