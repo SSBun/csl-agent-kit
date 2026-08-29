@@ -1,6 +1,6 @@
 ---
 name: create-app-icon
-description: Use when the user wants app-icon artwork, a transparent 1024×1024 PNG, or platform icon materials. Offers 10 styles, generates a green-screen source, waits for approval, removes it with Node.js sharp, and validates output. Exclude general images, vector-system edits, and background-removal-only requests.
+description: Use when the user wants app-icon artwork, a transparent 1024×1024 PNG, Chrome extension icons, or platform icon materials. Offers 10 styles, generates a green-screen source, waits for approval, removes it with Node.js sharp, and validates outputs. Exclude general images, vector-system edits, and background-removal-only requests.
 ---
 
 # Create App Icon
@@ -66,12 +66,13 @@ Show the transparent result and report its saved path and final generation promp
 
 Only after the transparent master passes validation, ask:
 
-> Generate standard icon materials now? Choose any of macOS, iOS, and Android, and provide a destination if it is not the current project.
+> Generate standard icon materials now? Choose any of Chrome Extension, macOS, iOS, and Android, and provide a destination if it is not the current project.
 
 Do not generate platform materials without that selection. For selected platforms:
 
-- preserve the project's asset catalog, Icon Composer, or Android `res/` convention;
+- preserve the project's Chrome manifest, asset catalog, Icon Composer, or Android `res/` convention;
 - use current platform documentation for sizes, manifests, opacity, masks, and densities;
+- for Chrome Extension, follow `references/chrome-extension-icons.md`; edit a manifest only when integration was requested, otherwise provide the files and manifest snippet;
 - treat the master as source artwork, not automatically as a valid store icon;
 - provide Icon Composer layer material, never a fake layered `.icon` from a flat PNG;
 - avoid overwriting unless explicitly requested.
