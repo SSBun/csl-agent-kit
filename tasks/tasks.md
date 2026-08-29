@@ -2,6 +2,8 @@
 
 - [让标签标题根据上下文生成有意义摘要](tasks/fix-contextual-tab-title-summary.md) — Completed (2026-08-29 23:14)
 
+- [按关注点分组提交当前全部本地改动](tasks/group-current-local-changes-into-commits.md) — In Progress (2026-08-29 23:05)
+
 - [实现 Queue 对齐与任务展示优化](tasks/plan-queue-alignment-and-task-display.md) — Completed (2026-08-29 22:59)
 
 - [发布并验证 CSL Agent Kit 4.1.0](tasks/publish-csl-agent-kit-4-1-0.md) — Completed (2026-08-29 21:44)
