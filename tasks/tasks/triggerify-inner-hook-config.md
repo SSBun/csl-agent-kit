@@ -35,7 +35,7 @@ Status: Completed (2026-07-27 18:22)
 - T4: `show inner:refresh-tab-title --host pi` 显示 enabled/valid/supported/active；`prompt-submit` 端到端执行 39ms、无诊断，原 global 规则已由 CLI 删除，其脚本按 Triggerify 安全约定保留。
 - T5: `npm run test:triggerify`、Node 语法检查和标题脚本 self-test 通过；local quality gate validate 的结构、lint、governance 均通过，唯一失败为允许记录的 initial-load token budget（1372 > 1000）。`npm test` 的 CLI 与 Triggerify 套件通过，task-files 套件仍因预存 `inner-scope-simple-rules.md` 只有 frontmatter status、索引写 `Completed` 而失败。
 - Review gate: Required — inner 配置会影响所有内置 hook 的全局 Agent 生命周期，且默认启用的标题 hook 会额外发送最新 prompt 给模型 provider。
-- Review: `APPROVED`（累计 2 轮）— [Triggerify inner hook 用户配置审查](../../reports/adversarial-review/triggerify-inner-hook-config.md)
+- Review: `APPROVED`（累计 2 轮）— [Triggerify inner hook 用户配置审查](../artifacts/triggerify-inner-hook-config/reports/adversarial-review.md)
 - T6: 配置校验接受可选 `hookSettings` 的 qualified inner ID → object 映射；live disable/enable 前后 `config.json` SHA-1 不变，证明模型设置未被 toggle 丢弃。
 - T7: 新集成测试由临时脚本同时回显 `TRIGGERIFY_HOOK_CONFIG` 与 stdin prompt，确认只传当前 hook object 且 `triggerify.event/v1` payload 保持原结构。
 - T8: `modelFromConfig` 聚焦测试覆盖用户模型、缺失配置、非法 model 和非法 JSON；live discover 解析到 `deepseek/deepseek-v4-flash`，端到端 `prompt-submit` 43ms、无诊断。

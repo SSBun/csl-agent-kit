@@ -12,7 +12,7 @@ Kind: Plan
 
 - Include the input-agnostic `tldr` skill, its routing fixtures, cross-host discovery, README entry, and deterministic validation.
 - Exclude deep research, code review, full repository analysis, recommendations, scripts, subagents, and automatic file output.
-- Preserve the approved design in `tasks/plans/2026-08-09-tldr-design.md` as the implementation handoff.
+- Preserve the approved design in `tasks/artifacts/create-tldr-skill/specs/2026-08-09-tldr-design.md` as the implementation handoff.
 
 ## Decisions
 

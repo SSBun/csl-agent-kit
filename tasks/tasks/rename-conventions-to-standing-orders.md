@@ -44,7 +44,7 @@ The skill name and the data filename are separate concerns. `conventions.md` is 
 
 ## Review
 
-- Prior adversarial review completed (2 cycles, APPROVED): [report](../../reports/adversarial-review/rename-conventions-to-standing-orders.md)
+- Prior adversarial review completed (2 cycles, APPROVED): [report](../artifacts/rename-conventions-to-standing-orders/reports/adversarial-review.md)
 
 Key finding (R4 BLOCKER, resolved): the initial commit kept the data file as `conventions.md` while the skill was `standing-orders`, creating a naming split with a weak justification. Fixed by renaming the data file to `standing-orders.md` and updating all 8 active references.
 

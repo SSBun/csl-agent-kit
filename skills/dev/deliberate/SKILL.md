@@ -14,7 +14,7 @@ description: Runs an uncapped Coordinator-mediated Synthesizer–Challenger loop
 - Process every related topic and visible issue per pass; never drip-feed known issues.
 - Set no round limit. Use `CONTINUE` only for a material open issue with a concrete next-pass change; otherwise stop or pause.
 - Without any Challenger role, disclose that the discussion cannot run. In `INLINE-FALLBACK`, a simulated Challenger may return `SUFFICIENT` only with `ISOLATION: simulated` disclosed; never present simulated convergence as independent sufficiency.
-- Persist every delivered result under the current workspace's `tasks/thinking/`; create other resources only when authorized.
+- Persist every delivered result under the owning task's `tasks/artifacts/<task-id>/discussions/`; create other resources only when authorized. If the owning canonical task ID is unavailable, return to task activation before writing.
 
 ## State
 
@@ -95,6 +95,6 @@ The Challenger must report every existing D-ID. Use `SUFFICIENT` only after ever
 
 At `SUFFICIENT`, return the complete Synthesizer answer plus limitations or resources. Coordinator edits require recheck. At a blocker or user stop, return the current answer with unresolved items and limitations.
 
-Before returning either result, create `tasks/thinking/` under the current workspace and write the user-facing deliverable to a new `YYYY-MM-DD-<topic-slug>.md` file there. If that path exists, append `-2`, `-3`, and so on; never overwrite an earlier result. Save only the final answer and user-relevant limitations, resources, or unresolved items — never role exchanges, private reasoning, the state packet, or the D-ID/T-ID ledger. Return the complete result in chat and include the saved file path.
+Before returning either result, create `tasks/artifacts/<task-id>/discussions/` under the current workspace and write the user-facing deliverable to a new `YYYY-MM-DD-<topic-slug>.md` file there. Resolve `<task-id>` from the owning canonical task; do not derive it from the discussion topic. If that path exists, append `-2`, `-3`, and so on; never overwrite an earlier result. Keep the same path when the result later becomes accepted or superseded. Save only the final answer and user-relevant limitations, resources, or unresolved items — never role exchanges, private reasoning, the state packet, or the D-ID/T-ID ledger. Return the complete result in chat and include the saved file path.
 
 After routing changes, rerun `evals/trigger_cases.json` with `evals/semantic_config.json`.

@@ -122,12 +122,15 @@
       "name": "persist_final_result",
       "given": "The deliberate loop reaches SUFFICIENT or stops with a current answer because of a blocker or user request.",
       "must": [
-        "create tasks/thinking under the current workspace when it is missing",
+        "resolve the owning canonical task ID before writing",
+        "create tasks/artifacts/<task-id>/discussions under the current workspace when it is missing",
         "save the user-facing deliverable to a new collision-safe dated topic file",
+        "keep the same file path when its lifecycle state changes",
         "return the complete result in chat and include the saved file path",
         "include user-relevant unresolved items when the loop did not reach SUFFICIENT"
       ],
       "must_not": [
+        "create an unowned discussion artifact",
         "overwrite an earlier result",
         "save role exchanges, private reasoning, the state packet, or the D-ID/T-ID ledger"
       ]

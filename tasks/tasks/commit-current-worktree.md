@@ -24,7 +24,7 @@
 - Scope: `b8c3c2d` 之后的全部本地改动与待创建 commit
 - Summary: 完整 checkpoint 已通过 INITIAL (1) 独立审查；保留 analyze-project 的未完成状态后创建本地 commit。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/commit-current-worktree.md)
+- Report: [Adversarial review report](../artifacts/commit-current-worktree/reports/adversarial-review.md)
 
 ## 复核
 

@@ -21,6 +21,17 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
 - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, or Block, run `sync <id>` and `check <id>`.
 - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
 
+## Task Artifacts
+
+Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:
+
+- `discussions`: user-visible discussion or synthesis; never private reasoning, role exchanges, or hidden state.
+- `specs`: RFCs, PRDs, ADRs, designs, and separately requested implementation or migration plans.
+- `reports`: research, analysis, review, and audit reports.
+- `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.
+
+The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.
+
 ## Activation and Ownership
 
 - Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
@@ -29,6 +40,7 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
 - Start a new task for every independently acceptable user outcome in the main session.
 - A delegated child must use the existing owning task named by the main session's current delegation packet. It must not create another task, present a user-facing checkpoint, or invent broader ownership; missing or out-of-Plan delegation returns to the main session under the shared protocol.
 - Reopen an existing task only when the request directly corrects, completes, or re-verifies the same outcome and leaving its Target or Result unchanged would be misleading.
+- When the user explicitly asks to execute an implementation-ready plan, resume that plan's exact record; the `task-plan` to `task` phase transition alone does not create new ownership.
 - Component, file, topic, or implementation overlap alone does not establish ownership. Create a new task when ownership is ambiguous.
 - Skip records only for simple factual answers and open-ended conversation that request no file mutation and establish no concrete outcome, read-only trivial deterministic operations, and routine Context or Lessons maintenance that is not itself the requested deliverable.
 
@@ -40,7 +52,7 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
 3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
 4. Immediately after creation, resume, or reopen succeeds, emit the real host tool call itself—for example, `task_focus(<id>)`—in the same reply as the lifecycle command; treat both calls as one atomic batch. Planning or listing `task_focus` without emitting it does not satisfy this step. If binding fails (for example, the record lives outside the session workspace), disclose that failure explicitly instead of silently skipping.
-5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it. A main session runs the user-facing gate; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user.
+5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it. A main session runs the user-facing gate; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming the same implementation-ready plan record, an explicit request to execute is execution authorization, not a new Target by itself; inherit a recoverable, materially equivalent accepted Target without another checkpoint.
 6. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
 7. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
 

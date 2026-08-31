@@ -49,13 +49,13 @@ Status (2026-07-29 16:11): Completed
 - T6: 空模型结果现在由 `buildTitle` 解析为 `null` 并跳过 OSC；Triggerify CLI 显示规则 `enabled`、`valid`、`supported`、`active`。
 - T7: 实际模型调用对 commit/push 型跟进和不改变主任务的解释请求返回 `KEEP_CURRENT_TITLE`，worker 将其解析为 `null` 并跳过 OSC 写入。
 - Review gate: Required — 全局 `prompt-submit` hook 会把最新用户任务额外发送给模型 provider，涉及隐私和全局 Agent 生命周期行为。
-- Review: `SUPERSEDED` — [快速模型终端标题 Hook 审查](../../reports/adversarial-review/refresh-terminal-tab-title.md)
+- Review: `SUPERSEDED` — [快速模型终端标题 Hook 审查](../artifacts/refresh-terminal-tab-title/reports/adversarial-review.md)
 - Follow-up review gate: Skipped — 仅调整既有模型输出协议和单脚本分支，隐私边界未变，且新标题与保持原标题均有确定性回归测试和实际模型样例。
 - T8: 脚本 self-test 与 Triggerify 回归测试确认模型返回空字符串时 `buildTitle` 返回 `null`，不再使用本地 prompt 摘要。
 - T9: Pi adapter 继续使用 `buildContextEntries()` 获取 compaction-aware 活跃分支，但只序列化全部 user 文本和 compaction/branch summary；回归测试确认普通 assistant 文本、assistant tool call、tool result、thinking 与 image 均不进入标题上下文。
 - T10: 新回归测试确认 12,000 字符上限同时保留会话开头和最新请求，并排除 assistant tool call、tool result、thinking 与 image 内容；`npm run test:all` 全部通过。
 - Current review gate: Required — Pi 会把最多 12,000 字符的活跃会话文本发送给独立标题模型，扩大了隐私边界并影响全局 Agent 生命周期行为。
-- Current review: `SUPERSEDED` — [快速模型终端标题 Hook 审查](../../reports/adversarial-review/refresh-terminal-tab-title.md)；用户报告现有标题仍会复制模型元标签并把 commit 操作误作主任务。
+- Current review: `SUPERSEDED` — [快速模型终端标题 Hook 审查](../artifacts/refresh-terminal-tab-title/reports/adversarial-review.md)；用户报告现有标题仍会复制模型元标签并把 commit 操作误作主任务。
 - T11: `buildTitle()` 恢复 `<project> · <core intent>` 格式，同时仍由 `cleanModelTitle()` 把核心意图限制在 24 个 Unicode 码点内；回归测试确认 `/tmp/app` 与 `Concise tab titles` 生成 `app · Concise tab titles`。
 - T12: `isRoutineFollowUp()` 在模型调用前识别截图中的完整 commit prompt，以及 push、stage、测试、重试、继续等纯操作型跟进；聚焦回归测试、脚本 self-test 与 `npm run test:all` 全部通过。
 - T13: 截图中的实际坏输出 `R1: NOTE:` 已加入脚本 self-test 与 Triggerify 回归测试；`cleanModelTitle()` 将纯 `R<n>: NOTE/BLOCKER/QUESTION` 标记视为 `KEEP_CURRENT_TITLE`，不会写入 OSC。

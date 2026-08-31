@@ -24,7 +24,7 @@
 - Scope: `/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki/code-review-graph-project-map.md`
 - Summary: Wiki 文件已原样保存，路径、文件类型、Markdown 完整性和字节一致性均已确认。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/save-code-review-graph-map-to-wiki.md)
+- Report: [Adversarial review report](../artifacts/save-code-review-graph-map-to-wiki/reports/adversarial-review.md)
 
 ## Results and verification
 

@@ -24,7 +24,7 @@
 - Scope: 独立任务文件迁移、索引、规则契约与报告互链
 - Summary: 131 条任务拆分、双向同-slug 互链、默认规则与防漂移测试已通过 RE-REVIEW (4)。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/split-task-records.md)
+- Report: [Adversarial review report](../artifacts/split-task-records/reports/adversarial-review.md)
 
 ## 复核
 

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "cases": [
     {
       "id": "no-intermediate-report-writes",
@@ -17,6 +17,7 @@
         "report_written_once_at_terminal_state": true,
         "frontmatter": [
           "created",
+          "task",
           "review_cycles"
         ],
         "required_body_labels": [
@@ -58,6 +59,7 @@
       "expect": {
         "created": "2026-07-21",
         "task": "Owning task slug",
+        "report_path": "tasks/artifacts/<task-id>/reports/adversarial-review.md",
         "review_cycles": 3,
         "final_decision_location": "Body"
       }
@@ -143,17 +145,17 @@
       "expect": {
         "task_created_for_report": false,
         "frontmatter_task": "Owning task slug",
-        "task_update": "Final decision and report link only",
+        "task_update": "Final decision and ../artifacts/<task-id>/reports/adversarial-review.md link only",
         "intermediate_task_updates": false
       }
     },
     {
-      "id": "no-owning-task",
-      "given": "No applicable workspace rule requires a task record.",
+      "id": "missing-owning-task",
+      "given": "The review reaches a pause or terminal state without an owning canonical task ID.",
       "expect": {
-        "task_created": false,
-        "frontmatter_task_omitted": true,
-        "report_created_at_pause_or_end": true
+        "report_created_or_updated": false,
+        "action": "Return to task activation.",
+        "unowned_artifact_created": false
       }
     }
   ]

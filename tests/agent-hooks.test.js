@@ -815,12 +815,15 @@ test("title hook ignores internal compaction continuation prompts", () => {
   assert.equal(titleHook.isInternalCompactionPrompt("Improve compaction behavior"), false);
 });
 
-test("title hook requires Chinese core-intent titles while allowing technical terms", () => {
+test("title hook requires context-backed Chinese titles while allowing technical terms", () => {
   assert.equal(titleHook.cleanModelTitle("KEEP_CURRENT_TITLE"), "");
+  assert.equal(titleHook.parseModelDecision("KEEP_CURRENT_TITLE"), "KEEP_CURRENT_TITLE");
   assert.equal(titleHook.cleanModelTitle("Commit these changes"), "");
   assert.equal(titleHook.cleanModelTitle("Run the tests again"), "");
   assert.equal(titleHook.cleanModelTitle("确认"), "");
+  assert.equal(titleHook.cleanModelTitle("登录页"), "");
   assert.equal(titleHook.cleanModelTitle("确认流程"), "确认流程");
+  assert.equal(titleHook.cleanModelTitle("登录页布局"), "登录页布局");
   assert.equal(titleHook.buildTitle({}, "/tmp/app", ""), null);
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "简洁会话标题"), "简洁会话标题");
   assert.equal(titleHook.buildTitle({}, "/tmp/app", "Concise tab titles"), null);
@@ -846,6 +849,8 @@ test("title hook requires Chinese core-intent titles while allowing technical te
     assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "");
     titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "Concise tab titles");
     assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "");
+    titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "确认");
+    assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "");
     titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "简洁会话标题");
     assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/app"), "简洁会话标题");
     titleHook.rememberTitle("/dev/ttys999", "/tmp/app", "认证 cache");
@@ -853,16 +858,33 @@ test("title hook requires Chinese core-intent titles while allowing technical te
     assert.equal(titleHook.preservedTitle("/dev/ttys999", "/tmp/other"), "");
     const input = { prompt: "fix title", tty: "/dev/ttys999", workspace: "/tmp/app" };
     assert.equal(titleHook.generatedTitleAction(input, ""), null);
-    assert.equal(titleHook.generatedTitleAction(input, "KEEP_CURRENT_TITLE"), null);
+    assert.deepEqual(titleHook.generatedTitleAction(input, "KEEP_CURRENT_TITLE"), {
+      title: "认证 cache",
+      remember: false,
+      changed: false,
+    });
     assert.equal(titleHook.generatedTitleAction(input, "Concise tab titles"), null);
     assert.deepEqual(titleHook.generatedTitleAction(input, "认证 cache"), {
       title: "认证 cache",
       remember: false,
+      changed: false,
     });
-    assert.equal(titleHook.titleModelInput(input), "User: fix title");
+    assert.deepEqual(titleHook.generatedTitleAction(input, "认证缓存策略"), {
+      title: "认证缓存策略",
+      remember: true,
+      changed: true,
+    });
+    assert.deepEqual(
+      titleHook.generatedTitleAction({ ...input, tty: "/dev/ttys998" }, "KEEP_CURRENT_TITLE"),
+      { title: "", remember: false, changed: false },
+    );
+    assert.equal(
+      titleHook.titleModelInput(input),
+      "Current saved title: 认证 cache\n\nConversation transcript (chronological):\n\nUser: fix title",
+    );
     assert.equal(
       titleHook.titleModelInput({ ...input, sessionContext: "User: Build auth\nAssistant: Working\nUser: commit" }),
-      "User: Build auth\nAssistant: Working\nUser: commit",
+      "Current saved title: 认证 cache\n\nConversation transcript (chronological):\n\nUser: Build auth\nAssistant: Working\nUser: commit",
     );
   } finally {
     if (previousHome === undefined) delete process.env.CSL_AGENT_KIT_HOME;

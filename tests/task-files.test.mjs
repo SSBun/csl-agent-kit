@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const taskDir = path.join(root, "tasks", "tasks");
-const reportDir = path.join(root, "reports", "adversarial-review");
+const artifactDir = path.join(root, "tasks", "artifacts");
 const skillsDir = path.join(root, "skills");
 const cslTasksDir = path.join(root, "skills", "meta");
 const cslTasksSharedDir = path.join(cslTasksDir, "csl-tasks", "shared");
@@ -20,6 +20,15 @@ function readMarkdown(dir) {
   return new Map(readdirSync(dir)
     .filter((file) => file.endsWith(".md"))
     .map((file) => [file, readFileSync(path.join(dir, file), "utf8")]));
+}
+
+function readReviewReports(dir) {
+  const reports = new Map();
+  for (const taskId of readdirSync(dir)) {
+    const report = path.join(dir, taskId, "reports", "adversarial-review.md");
+    if (existsSync(report)) reports.set(taskId, readFileSync(report, "utf8"));
+  }
+  return reports;
 }
 
 function writeTaskIndexFixture(t, { entry, status = "Status: In Progress (2026-07-29 13:43)", legacyEntry = "" }) {
@@ -38,13 +47,11 @@ function validateReviewReport(markdown, { task, cycles, dialogue = [] } = {}) {
   assert.ok(match, "missing report frontmatter");
 
   const metadata = Object.fromEntries(match[1].split("\n").map((line) => line.split(/:\s+/, 2)));
-  const expectedMetadata = task === undefined ? ["created", "review_cycles"] : ["created", "review_cycles", "task"];
-  assert.deepEqual(Object.keys(metadata).sort(), expectedMetadata);
+  assert.deepEqual(Object.keys(metadata).sort(), ["created", "review_cycles", "task"]);
   assert.match(metadata.created, /^\d{4}-\d{2}-\d{2}$/);
   assert.ok(Number.isInteger(Number(metadata.review_cycles)) && Number(metadata.review_cycles) > 0);
   if (cycles !== undefined) assert.equal(Number(metadata.review_cycles), cycles);
-  if (task === undefined) assert.equal("task" in metadata, false);
-  else assert.equal(metadata.task, task);
+  assert.equal(metadata.task, task);
 
   const body = match[2];
   assert.equal((body.match(/^---$/gm) ?? []).length, 1, "report must have one body divider");
@@ -127,20 +134,20 @@ function validateTaskGraph(index, tasks, reports) {
       ?? body.match(/^Status:\s*(.+)$/m)?.[1]
       ?? "未标注";
     assert.equal(entry.status, status.trim(), entry.file);
-    const reportLink = body.match(/^- .*\[[^\]]+]\(\.\.\/\.\.\/reports\/adversarial-review\/([a-z0-9-]+\.md)\)$/m);
+    const reportLink = body.match(/^- .*\[[^\]]+]\(\.\.\/artifacts\/([a-z0-9-]+)\/reports\/adversarial-review\.md\)$/m);
     if (reportLink) {
-      assert.equal(reportLink[1], entry.file, `task/report slug mismatch: ${entry.file}`);
+      assert.equal(`${reportLink[1]}.md`, entry.file, `task/report slug mismatch: ${entry.file}`);
       assert.ok(reports.has(reportLink[1]), `missing report: ${reportLink[1]}`);
       linkedReports.add(reportLink[1]);
     }
   }
 
   assert.deepEqual([...linkedReports].sort(), [...reports.keys()].sort());
-  for (const [reportFile, report] of reports) {
+  for (const [taskId, report] of reports) {
     const taskFile = report.match(/^task:\s*([a-z0-9-]+)$/m)?.[1]?.concat(".md")
-      ?? report.match(/^- Task: \[[^\]]+]\(\.\.\/\.\.\/tasks\/tasks\/([a-z0-9-]+\.md)\)/m)?.[1];
-    assert.ok(taskFile, `missing task link: ${reportFile}`);
-    assert.equal(taskFile, reportFile, `report/task slug mismatch: ${reportFile}`);
+      ?? report.match(/^- Task: \[[^\]]+]\(\.\.\/\.\.\/\.\.\/tasks\/([a-z0-9-]+\.md)\)/m)?.[1];
+    assert.ok(taskFile, `missing task link: ${taskId}`);
+    assert.equal(taskFile, `${taskId}.md`, `report/task slug mismatch: ${taskId}`);
     assert.ok(tasks.has(taskFile), `missing task: ${taskFile}`);
   }
 }
@@ -149,7 +156,7 @@ test("task index and review reports resolve to isolated same-slug files", () => 
   validateTaskGraph(
     readFileSync(path.join(root, "tasks", "tasks.md"), "utf8"),
     readMarkdown(taskDir),
-    readMarkdown(reportDir),
+    readReviewReports(artifactDir),
   );
 });
 
@@ -177,15 +184,35 @@ test("task index checker rejects incompatible paths and canonical mismatches", (
 
 test("task links to deleted reports fail validation", () => {
   const index = "# 任务索引\n\n- [任务 A](tasks/task-a.md) — 进行中\n";
-  const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../../reports/adversarial-review/task-a.md)\n"]]);
-  assert.throws(() => validateTaskGraph(index, tasks, new Map()), /missing report: task-a\.md/);
+  const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../artifacts/task-a/reports/adversarial-review.md)\n"]]);
+  assert.throws(() => validateTaskGraph(index, tasks, new Map()), /missing report: task-a/);
 });
 
 test("cross-linked task and report slugs fail validation", () => {
   const index = "# 任务索引\n\n- [任务 A](tasks/task-a.md) — 进行中\n";
-  const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../../reports/adversarial-review/report-b.md)\n"]]);
-  const reports = new Map([["report-b.md", "# Review\n\n- Task: [tasks/tasks/task-a.md](../../tasks/tasks/task-a.md) — 任务 A\n"]]);
+  const tasks = new Map([["task-a.md", "# 任务 A\n\n状态：进行中\n\n- Report: [Adversarial review report](../artifacts/report-b/reports/adversarial-review.md)\n"]]);
+  const reports = new Map([["report-b", "# Review\n\n- Task: [tasks/tasks/task-a.md](../../../tasks/task-a.md) — 任务 A\n"]]);
   assert.throws(() => validateTaskGraph(index, tasks, reports), /task\/report slug mismatch: task-a\.md/);
+});
+
+test("task artifact producers use stable task-owned paths", () => {
+  const task = readFileSync(path.join(root, "skills", "meta", "task", "SKILL.md"), "utf8");
+  const taskPlan = readFileSync(path.join(root, "skills", "meta", "task-plan", "SKILL.md"), "utf8");
+  const brainstorming = readFileSync(path.join(root, "skills", "dev", "brainstorming", "SKILL.md"), "utf8");
+  const deliberate = readFileSync(path.join(root, "skills", "dev", "deliberate", "SKILL.md"), "utf8");
+  const review = readFileSync(path.join(root, "skills", "dev", "adversarial-review", "references", "final-review-report.md"), "utf8");
+
+  assert.match(task, /tasks\/artifacts\/<task-id>\/<category>\/<name>/);
+  for (const category of ["discussions", "specs", "reports", "evidence"]) {
+    assert.ok(task.includes("- `" + category + "`:"));
+  }
+  assert.match(taskPlan, /do not create a `tasks\/artifacts\/` file merely to mirror/);
+  assert.match(brainstorming, /tasks\/artifacts\/<task-id>\/specs\/YYYY-MM-DD-<topic>-design\.md/);
+  assert.equal(brainstorming.includes("tasks/plans/"), false);
+  assert.match(deliberate, /tasks\/artifacts\/<task-id>\/discussions\//);
+  assert.equal(deliberate.includes("tasks/thinking/"), false);
+  assert.match(review, /tasks\/artifacts\/<task-id>\/reports\/adversarial-review\.md/);
+  assert.equal(review.includes("`reports/adversarial-review/"), false);
 });
 
 test("default agent instructions explain workspace records and route work to workflow skills", () => {
@@ -237,6 +264,8 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(rules, /independent safety boundary returns to the main session/);
   assert.match(rules, /materially different Target must name changed commitment dimensions and receive main-session change approval/);
   assert.match(rules, /do not repeat confirmation for an accepted unchanged Target/i);
+  assert.match(rules, /accepted equivalent `task-plan` Target remains unchanged across the handoff to `task`/);
+  assert.match(rules, /planning acceptance alone never authorizes execution/);
   assert.doesNotMatch(rules, /TASK_GO/);
   assert.doesNotMatch(rules, /`\*\*Task Target:\*\* <target>`/);
   assert.doesNotMatch(rules, /task_target_confirm/);
@@ -265,6 +294,8 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(alignmentProtocol, /^- \*\*Boundaries:\*\*/m);
   assert.match(alignmentProtocol, /Interaction Owner and Delegated Execution/);
   assert.match(alignmentProtocol, /Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation/);
+  assert.match(alignmentProtocol, /Changing from `task-plan` to `task` does not itself create a new Target/);
+  assert.match(alignmentProtocol, /Planning-phase acceptance aligns the Target but never authorizes execution/);
   assert.match(alignmentProtocol, /use `continue_delegated` without rendering a Task Target/);
   assert.match(alignmentProtocol, /use `return_to_main`/);
   assert.match(alignmentProtocol, /adding, removing, or reordering a child/);
@@ -302,7 +333,11 @@ test("default agent instructions explain workspace records and route work to wor
   const queueSkill = readFileSync(path.join(cslTasksDir, "task-queue", "SKILL.md"), "utf8");
   assert.match(taskSkill, /single-outcome Target meaning/);
   assert.match(taskSkill, /delegated child must use the existing owning task named by the main session's current delegation packet/);
-  assert.match(planSkill, /planning-handoff Target meaning/);
+  assert.match(taskSkill, /resume that plan's exact record/);
+  assert.match(taskSkill, /explicit request to execute is execution authorization, not a new Target by itself/);
+  assert.match(planSkill, /planned-task Target meaning/);
+  assert.match(planSkill, /accepting it does not authorize execution/);
+  assert.match(planSkill, /inherits that acceptance and does not present another checkpoint/);
   assert.match(queueSkill, /integration Target meaning/);
   assert.match(queueSkill, /parent, child, and sibling titles in one Queue must not normalize to the same text/);
   assert.match(queueSkill, /do not display another child checkpoint/);
@@ -357,6 +392,8 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Files, functions, algorithms, commands, and verification methods within an unchanged child node do not require realignment/);
   assert.match(contract, /main session shows the changed commitment dimensions and waits for explicit change approval/);
   assert.match(contract, /Do not repeat a checkpoint for an accepted unchanged Target/);
+  assert.match(contract, /accepted equivalent `task-plan` Target remains unchanged across the handoff to `task`/);
+  assert.match(contract, /planning acceptance alone never authorizes execution/);
   assert.match(contract, /handled only by the main session/);
   assert.match(contract, /At session start, resume, or compaction, establish and load the standard workspace Context before acting/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
@@ -804,7 +841,7 @@ test("workspace lesson CLI indexes v1 and legacy records and rejects malformed v
 
 test("adversarial review report presents compact human-readable dialogue", () => {
   const contract = readFileSync(path.join(root, "skills", "dev", "adversarial-review", "references", "final-review-report.md"), "utf8");
-  const report = readFileSync(path.join(reportDir, "optimize-workspace-capture-lessons.md"), "utf8");
+  const report = readFileSync(path.join(artifactDir, "optimize-workspace-capture-lessons", "reports", "adversarial-review.md"), "utf8");
   const cases = JSON.parse(readFileSync(path.join(root, "skills", "dev", "adversarial-review", "evals", "report_contract_cases.json"), "utf8"));
 
   for (const field of ["created", "task", "review_cycles"]) {
@@ -817,14 +854,14 @@ test("adversarial review report presents compact human-readable dialogue", () =>
   assert.match(contract, /Use one quote block and one `Conclusion` per topic/);
 
   const caseById = Object.fromEntries(cases.cases.map((item) => [item.id, item.expect]));
-  assert.deepEqual(caseById["terminal-report-shape"].frontmatter, ["created", "review_cycles"]);
+  assert.deepEqual(caseById["terminal-report-shape"].frontmatter, ["created", "task", "review_cycles"]);
   assert.equal(caseById["terminal-report-shape"].decision_in_frontmatter, false);
   assert.equal(caseById["material-discussion-only"].dialogue_uses_one_quote_block, true);
   assert.equal(caseById["material-discussion-only"].multiple_viewpoints_use_list, true);
   assert.equal(caseById["clean-approval"].invented_discussion, false);
   assert.equal(caseById["approval-invalidated"].created_preserved, true);
   assert.equal(caseById["approval-invalidated"].review_cycles_updated_cumulatively, true);
-  assert.equal(caseById["no-owning-task"].frontmatter_task_omitted, true);
+  assert.equal(caseById["missing-owning-task"].report_created_or_updated, false);
 
   validateReviewReport(report, {
     task: "optimize-workspace-capture-lessons",
@@ -834,6 +871,7 @@ test("adversarial review report presents compact human-readable dialogue", () =>
 
   validateReviewReport(`---
 created: 2026-07-21
+task: clean-review
 review_cycles: 1
 ---
 
@@ -848,7 +886,7 @@ No material discussion occurred.
 **Outcome:** The artifact satisfies the request.
 
 **Remaining:** \`none\`
-`, { cycles: 1 });
+`, { task: "clean-review", cycles: 1 });
 
   validateReviewReport(`---
 created: 2026-07-21

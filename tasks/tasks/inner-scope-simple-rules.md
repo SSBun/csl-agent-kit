@@ -53,7 +53,7 @@ Status: Completed
 
 Review gate: Skipped — triggerify 测试套件已覆盖核心逻辑；功能链路经端到端验证。
 
-- Review: APPROVED — [Triggerify inner scope + simple-rules 审查报告](../../reports/adversarial-review/inner-scope-simple-rules.md)
+- Review: APPROVED — [Triggerify inner scope + simple-rules 审查报告](../artifacts/inner-scope-simple-rules/reports/adversarial-review.md)
 
 ## Non-Goals
 

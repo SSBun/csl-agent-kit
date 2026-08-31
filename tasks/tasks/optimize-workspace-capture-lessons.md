@@ -51,4 +51,4 @@ Status: Completed (2026-07-21)
 - 验证：Skill 结构校验和定向契约测试通过。
 - 验证：13 项触发、排除和相邻路由用例全部通过。
 - 验证：`skill-quality` 规则审计和 `git diff --check` 通过。
-- 审查：APPROVED — [Adversarial review report](../../reports/adversarial-review/optimize-workspace-capture-lessons.md)
+- 审查：APPROVED — [Adversarial review report](../artifacts/optimize-workspace-capture-lessons/reports/adversarial-review.md)

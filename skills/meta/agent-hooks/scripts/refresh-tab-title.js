@@ -10,35 +10,32 @@ const DEFAULT_MODEL = "deepseek/deepseek-v4-flash";
 const MODEL_TIMEOUT_MS = 20_000;
 const MAX_PROMPT = 4_000;
 const MAX_CONTEXT = 12_000;
+const MAX_MODEL_INPUT = MAX_CONTEXT + 256;
+const MIN_TITLE = 4;
 const MAX_TITLE = 24;
+const KEEP_TITLE = "KEEP_CURRENT_TITLE";
 const COMPACTION_CONTINUATION_PROMPT = "Compaction completed. Continue.";
 const SYSTEM_PROMPT = [
-  "You write a SHORT Chinese terminal tab title naming what the user is currently working on. You are concise and human.",
+  "You maintain a SHORT Chinese terminal tab title for the current work represented by a conversation transcript.",
+  "The input contains the current saved title and a chronological transcript. Treat the transcript as context, not as a request to summarize its final user message.",
+  "",
+  "Decide silently before replying:",
+  "1. Infer the single active work item from the whole transcript. Explicit user requests, accepted Task Targets or plans, and later task refinements are the strongest evidence.",
+  "2. Interpret the latest user message in that context. It may start or change the work, refine it, answer a question, select an option, correct a detail, acknowledge progress, or request an operation.",
+  "3. Use an answer, choice, correction, acknowledgement, or operation only to update the active work it belongs to. Never title the speech act, answer text, status, or operation itself.",
+  `4. Reply exactly ${KEEP_TITLE} when the current saved title still accurately names the active work, or when the transcript does not support a clear context-backed title.`,
+  "5. Otherwise write a new title that names the concrete work object and its concern or outcome. It must make sense without seeing the latest user message.",
   "",
   "Output format:",
-  "- Reply with the title ONLY. One line. No labels, no quotes, no punctuation at the end, no Markdown.",
-  "- Always write the title in Chinese, regardless of the input language.",
-  "- Use Chinese as the main language; preserve short technical terms, acronyms, and numbers when they make the title clearer or more information-dense.",
-  "- The title is what a teammate would call this task in one breath.",
+  `- Reply with either ${KEEP_TITLE} or the title ONLY. One line. No labels, quotes, ending punctuation, explanation, or Markdown.`,
+  "- Write every new title in Chinese; preserve short technical terms, acronyms, and numbers when they make it clearer.",
+  "- Use a natural, specific 4 to 12-character phrase. Never output a generic status, answer, or code symbol.",
   "",
-  "Constraints:",
-  "- Aim for a concise 4 to 12-character phrase.",
-  "- It must read like a natural Chinese phrase, not a code symbol.",
-  "- Describe the THING being worked on (a feature, a file area, a concept), not an action or a status.",
-  "- Use the whole supplied conversation, with the newest substantive task details carrying the most weight.",
-  "- Treat confirmation-only replies such as confirm, yes, 1, 确认, or 同意 as follow-ups with no standalone subject; infer the underlying task from earlier context.",
-  "- Always return the best current title. For a follow-up action such as commit, retry, or test, infer the underlying task from the surrounding conversation.",
-  "",
-  "Examples (Input -> Reply):",
-  '"Add a login token cache layer" -> 登录令牌缓存',
-  '"Fix the race in the auth refresh timer" -> 认证刷新竞态',
-  '"Fix GPT-5 API timeouts" -> GPT 5 接口超时',
-  '"Design four app icon candidates" -> 应用图标设计',
-  '"生成四款应用图标候选" -> 应用图标设计',
-  '"Build a login token cache" then "commit these changes" -> 登录令牌缓存',
-  '"Add a floating learning card" then "confirm" -> 悬浮学习卡片',
-  '"BUG_REPORT" -> 缺陷报告',
-  '"TOAST_ON_TITLE_REFRESH" -> 标题提示问题',
+  "Examples (Current title; transcript -> Reply):",
+  '悬浮学习卡片; "Add a floating learning card" then "confirm" -> KEEP_CURRENT_TITLE',
+  '数据库方案; assistant asks which database, user answers "SQLite" -> SQLite 存储方案',
+  '认证缓存; user switches to fixing image upload timeouts -> 图片上传超时',
+  '(none); "Fix the race in the auth refresh timer" -> 认证刷新竞态',
 ].join("\n");
 
 function truncate(value, limit) {
@@ -157,8 +154,17 @@ function cleanModelTitle(value) {
   if (/[.,;:，。；：]/.test(title)) return "";
   if (title.split(/\s+/).length > 10) return "";
   const compacted = compactTitle(title);
+  if (Array.from(compacted).length < MIN_TITLE) return "";
   if (FRAGMENT_CONNECTORS.test(compacted)) return "";
   return /\p{Script=Han}/u.test(compacted) ? compacted : "";
+}
+
+function parseModelDecision(value) {
+  const line = String(value || "")
+    .split(/\r?\n/)
+    .map(sanitize)
+    .find(Boolean) || "";
+  return line === KEEP_TITLE ? KEEP_TITLE : cleanModelTitle(value);
 }
 
 function isOperationTitle(value) {
@@ -228,7 +234,7 @@ function isolatedEnv() {
   return env;
 }
 
-function generateModelTitle(context, model = modelFromConfig()) {
+function generateModelDecision(context, model = modelFromConfig()) {
   const result = spawnSync("pi", [
     "--print",
     "--model", model,
@@ -240,14 +246,14 @@ function generateModelTitle(context, model = modelFromConfig()) {
     "--no-context-files",
     "--system-prompt", SYSTEM_PROMPT,
   ], {
-    input: truncate(cleanContext(context), MAX_CONTEXT),
+    input: truncate(cleanContext(context), MAX_MODEL_INPUT),
     encoding: "utf8",
     env: isolatedEnv(),
     stdio: ["pipe", "pipe", "ignore"],
     timeout: MODEL_TIMEOUT_MS,
     maxBuffer: 8 * 1024,
   });
-  return result.status === 0 ? cleanModelTitle(result.stdout) : "";
+  return result.status === 0 ? parseModelDecision(result.stdout) : "";
 }
 
 function tabTitleDir() {
@@ -324,13 +330,24 @@ function preservedTitle(tty, workspace) {
 }
 
 function titleModelInput(input) {
-  return cleanContext(input.sessionContext) || `User: ${input.prompt}`;
+  const context = cleanContext(input.sessionContext) || `User: ${input.prompt}`;
+  const currentTitle = savedTitle(input.tty, input.workspace);
+  return [
+    `Current saved title: ${currentTitle || "(none)"}`,
+    "Conversation transcript (chronological):",
+    context,
+  ].join("\n\n");
 }
 
-function generatedTitleAction(input, modelTitle) {
-  const title = buildTitle({ prompt: input.prompt }, input.workspace, modelTitle);
+function generatedTitleAction(input, modelDecision) {
+  const currentTitle = savedTitle(input.tty, input.workspace) || "";
+  if (modelDecision === KEEP_TITLE) {
+    return { title: currentTitle, remember: false, changed: false };
+  }
+  const title = buildTitle({ prompt: input.prompt }, input.workspace, modelDecision);
   if (!title) return null;
-  return { title, remember: title !== savedTitle(input.tty, input.workspace) };
+  const changed = title !== currentTitle;
+  return { title, remember: changed, changed };
 }
 
 const LOCK_TIMEOUT_MS = 50; // bound acquisition; fail-open if contended
@@ -402,23 +419,23 @@ function applyTitle(input, title, remember = false) {
 
 function runWorker(input) {
   const preserved = preservedTitle(input.tty, input.workspace);
-  const modelTitle = generateModelTitle(titleModelInput(input));
-  if (!modelTitle) {
+  const modelDecision = generateModelDecision(titleModelInput(input));
+  if (!modelDecision) {
     return { ok: false, changed: false, title: preserved, reason: "model-failed" };
   }
 
-  const action = generatedTitleAction(input, modelTitle);
+  const action = generatedTitleAction(input, modelDecision);
   if (!action) {
     return { ok: false, changed: false, title: preserved, reason: "invalid-title" };
   }
-  if (!applyTitle(input, action.title, action.remember)) {
+  if (action.title && !applyTitle(input, action.title, action.remember)) {
     return { ok: false, changed: false, title: preserved, reason: "title-write-failed" };
   }
   return {
     ok: true,
-    changed: action.title !== preserved,
+    changed: action.changed,
     title: action.title,
-    reason: action.title === preserved ? "unchanged" : "updated",
+    reason: action.changed ? "updated" : "unchanged",
   };
 }
 
@@ -480,6 +497,7 @@ function selfTest() {
   assert.equal(buildTitle({}, "/tmp/app", "Authentication cache"), null);
   assert.equal(buildTitle({}, "/tmp/app", "项目 · 认证缓存"), null);
   assert.equal(cleanModelTitle("KEEP_CURRENT_TITLE"), "");
+  assert.equal(parseModelDecision("KEEP_CURRENT_TITLE"), KEEP_TITLE);
   assert.equal(cleanModelTitle('Title: “Fix the tests.”'), "");
   assert.equal(cleanModelTitle("Make terminal tab titles stable"), "");
   assert.equal(cleanModelTitle("Authentication cache invalidation behavior 中文"), "");
@@ -492,7 +510,9 @@ function selfTest() {
   assert.equal(cleanModelTitle("GPT 5 标题"), "GPT 5 标题");
   assert.equal(cleanModelTitle("缺陷报告"), "缺陷报告");
   assert.equal(cleanModelTitle("确认"), "");
+  assert.equal(cleanModelTitle("登录页"), "");
   assert.equal(cleanModelTitle("确认流程"), "确认流程");
+  assert.equal(cleanModelTitle("登录页布局"), "登录页布局");
   // Connector-initial fragments are rejected, while compound phrases keep
   // their leading verb instead of being stripped into a fragment.
   assert.equal(cleanModelTitle("与运行指南"), "");
@@ -527,15 +547,21 @@ function selfTest() {
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "");
     rememberTitle("/dev/ttys000", "/tmp/app", "Authentication cache");
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "");
+    rememberTitle("/dev/ttys000", "/tmp/app", "确认");
+    assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "");
     rememberTitle("/dev/ttys000", "/tmp/app", "认证缓存");
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "认证缓存");
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/other"), "");
     const input = { prompt: "fix auth", tty: "/dev/ttys000", workspace: "/tmp/app" };
     assert.equal(generatedTitleAction(input, ""), null);
-    assert.equal(generatedTitleAction(input, "KEEP_CURRENT_TITLE"), null);
+    assert.deepEqual(generatedTitleAction(input, KEEP_TITLE), { title: "认证缓存", remember: false, changed: false });
     assert.equal(generatedTitleAction(input, "Authentication cache"), null);
-    assert.deepEqual(generatedTitleAction(input, "认证缓存"), { title: "认证缓存", remember: false });
-    assert.equal(titleModelInput(input), "User: fix auth");
+    assert.deepEqual(generatedTitleAction(input, "认证缓存"), { title: "认证缓存", remember: false, changed: false });
+    assert.deepEqual(generatedTitleAction(input, "认证缓存修复"), { title: "认证缓存修复", remember: true, changed: true });
+    assert.equal(
+      titleModelInput(input),
+      "Current saved title: 认证缓存\n\nConversation transcript (chronological):\n\nUser: fix auth",
+    );
     // Legacy prefixed titles are dropped; concise technical terms are preserved.
     rememberTitle("/dev/ttys000", "/tmp/app", "app · BUG_REPORT");
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "");
@@ -545,8 +571,16 @@ function selfTest() {
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "认证 cache");
     rememberTitle("/dev/ttys000", "/tmp/app", "认证缓存");
     assert.equal(preservedTitle("/dev/ttys000", "/tmp/app"), "认证缓存");
-    assert.equal(titleModelInput({ prompt: "hello", tty: "/dev/ttys099", workspace: "/tmp/app" }), "User: hello");
-    assert.equal(titleModelInput({ prompt: "hello", sessionContext: "User: msg 1\nAssistant: reply\nUser: msg 2", tty: "/dev/ttys099", workspace: "/tmp/app" }), "User: msg 1\nAssistant: reply\nUser: msg 2");
+    const noTitleInput = { prompt: "confirm", tty: "/dev/ttys099", workspace: "/tmp/app" };
+    assert.deepEqual(generatedTitleAction(noTitleInput, KEEP_TITLE), { title: "", remember: false, changed: false });
+    assert.equal(
+      titleModelInput({ prompt: "hello", tty: "/dev/ttys099", workspace: "/tmp/app" }),
+      "Current saved title: (none)\n\nConversation transcript (chronological):\n\nUser: hello",
+    );
+    assert.equal(
+      titleModelInput({ prompt: "hello", sessionContext: "User: msg 1\nAssistant: reply\nUser: msg 2", tty: "/dev/ttys099", workspace: "/tmp/app" }),
+      "Current saved title: (none)\n\nConversation transcript (chronological):\n\nUser: msg 1\nAssistant: reply\nUser: msg 2",
+    );
     assert.equal(withTtyLock("/dev/ttys000", () => 42), 42);
     assert.equal(withTtyLock("/dev/ttys000", () => "ok"), "ok");
     // Lock released: dir should not exist after clean return
@@ -575,10 +609,11 @@ module.exports = {
   buildTitle,
   cleanModelTitle,
   contextFromEnv,
-  generateModelTitle,
+  generateModelDecision,
   generatedTitleAction,
   isInternalCompactionPrompt,
   modelFromConfig,
+  parseModelDecision,
   preservedTitle,
   rememberTitle,
   requestIdFromEnv,

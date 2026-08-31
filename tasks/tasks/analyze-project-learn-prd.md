@@ -37,7 +37,7 @@
 - Scope: `docs/analysis/analyze-project-v2-learn-prd.md`
 - Summary: `RE-REVIEW (5)` 已批准当前 PRD，R1–R10 全部解决。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/analyze-project-learn-prd.md)
+- Report: [Adversarial review report](../artifacts/analyze-project-learn-prd/reports/adversarial-review.md)
 
 ## 复核
 

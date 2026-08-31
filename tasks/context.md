@@ -135,7 +135,7 @@
 - Recheck: 当公开 skill identity、task activation timing、Task Target 对齐或确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
 
 ### Purpose and Boundaries
-- `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
+- `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，同时对齐计划任务最终要实现的 Target；该 Target 的接受不授权执行。`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
 
 ### Structure
 - 三个 workflow 直接位于 `skills/meta/`，进入或在上下文丢失后恢复时均须读取 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`；该普通 Markdown runtime contract 是全部 Target 对齐语义的唯一详细 Authority，不参与 skill discovery。各 consumer 只拥有激活时机、workflow-specific Target 含义、对齐前 lifecycle writes 与对齐后下一步。
@@ -144,11 +144,11 @@
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 初次执行前进入一次 L2 checkpoint，实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
+- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 初次执行前进入一次 L2 checkpoint，实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
 
 ### Decision and Verification Boundaries
 - User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
-- 新请求默认创建独立 task；只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。
+- 新请求默认创建独立 task；明确执行 implementation-ready plan 时 resume 该 plan 的 exact record，`task-plan` → `task` 阶段变化本身不产生新 ownership。其他情况下，只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。
 - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
@@ -250,8 +250,8 @@
 - `/title` 使用同类有界对话手动刷新，有参数时将参数作为最新用户请求追加；自动刷新非阻塞且不显示 toast；手动派发异常会立即显示原始错误且不启动结果监听，派发成功后通过 request ID 报告 refreshed、unchanged、failed 或 timed out。
 
 ### Decision and Verification Boundaries
-- 每次有效刷新都重新生成标题，不向模型提供已保存标题；生成模型负责用简洁中文表达当前任务，代码要求最终标题至少包含一个汉字，同时确定性清理模型元标签、目录前缀、纯操作型或无效输出，并把标题限制为最多 24 个 Unicode 码点。
-- 每个 TTY 按 workspace 只保存满足当前格式契约的成功标题，并用 token 与锁防止旧 worker 覆盖新结果；模型或写入失败不覆盖已有有效标题。
+- 标题模型同时接收当前已保存标题与有界会话文本：先从完整上下文识别当前工作，再判断最新消息是任务切换、细化、回答、确认还是操作；原标题仍准确或上下文不足时返回保持决定，否则生成脱离最新消息也有明确任务含义的新标题。
+- 代码要求新标题至少 4 个、最多 24 个 Unicode 码点且包含汉字，并确定性清理模型元标签、目录前缀、纯操作型或无效输出；保持决定会在 TTY 锁和 latest-token 检查内重新写入该 workspace 的最后成功标题，无历史标题时不写入，模型失败或无效输出也不覆盖已有有效标题。
 
 ## Components
 
@@ -260,7 +260,7 @@
 - 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/meta/agent-hooks/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 Hook Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `agent-hooks show` 为准。权威入口是该脚本与 `skills/meta/agent-hooks/SKILL.md`。
 
-- `skills/deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；路由依据是明确的迭代或全面多视角意图，不以裸角色名作为足够证据，普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。Agent 默认先内部批量处理全部相关主题与可见议题；循环不设硬轮次上限，但 `CONTINUE` 必须对应实质性开放 D-ID 与具体下一轮变化，且只有所有实质性 D-ID 关闭并复查所有固定 T-ID 后才可 `SUFFICIENT`。Pi 分发元数据必须查询 `pi-agent` 的 effective model，不得仅凭 `PI_MODEL` 推断；无 Challenger 时流程不能运行，INLINE-FALLBACK 则可在明确 `ISOLATION: simulated` caveat 下达到 `SUFFICIENT`；Synthesizer 的量化结论必须附可复现测量证据。每次交付只把面向用户的最终结果保存到当前工作区 `tasks/thinking/YYYY-MM-DD-<topic-slug>.md`，文件冲突时递增后缀，且不保存角色交换、私有推理、state packet 或 ledger。权威契约与复核入口为该 skill 的 `SKILL.md`、角色契约、共享 subagent dispatch reference 和 `evals/`。
+- `skills/deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；路由依据是明确的迭代或全面多视角意图，不以裸角色名作为足够证据，普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。Agent 默认先内部批量处理全部相关主题与可见议题；循环不设硬轮次上限，但 `CONTINUE` 必须对应实质性开放 D-ID 与具体下一轮变化，且只有所有实质性 D-ID 关闭并复查所有固定 T-ID 后才可 `SUFFICIENT`。Pi 分发元数据必须查询 `pi-agent` 的 effective model，不得仅凭 `PI_MODEL` 推断；无 Challenger 时流程不能运行，INLINE-FALLBACK 则可在明确 `ISOLATION: simulated` caveat 下达到 `SUFFICIENT`；Synthesizer 的量化结论必须附可复现测量证据。每次交付只把面向用户的最终结果保存到当前工作区 `tasks/artifacts/<task-id>/discussions/YYYY-MM-DD-<topic-slug>.md`，文件冲突时递增后缀，且不保存角色交换、私有推理、state packet 或 ledger。权威契约与复核入口为该 skill 的 `SKILL.md`、角色契约、共享 subagent dispatch reference 和 `evals/`。
 - `~/.agents/skills` 是 Codex 官方的 USER 级技能发现目录，也可作为多个 agent 共用的技能安装目录；按用户要求当前为空，`~/.agents/.skill-lock.json` 的技能映射也为空。未来从 `mattpocock/skills` 选择的技能应整合到 CSL Agent Kit，而非重新安装到该全局目录。
 - `~/Desktop/test/skills` 是 `mattpocock/skills` 的本地参考仓库；技能按 `engineering`、`productivity`、`misc`、`personal`、`in-progress`、`deprecated` 分桶。
 
@@ -284,7 +284,7 @@
 - `adversarial-review` 的 Finding 类型语义固定：`BLOCKER` 是满足四项成立条件的明确违规或实质风险，可通过满足 `Required Outcome` 或证明 Finding 不成立而关闭；`QUESTION` 只请求判断所需的缺失信息，不得隐含修改命令；`NOTE` 是非阻塞观察或可选改进，Editor 确认后即关闭，不得要求修改 artifact。纯偏好、顺手重构与推测性未来需求应省略。
 - `adversarial-review` 的 Reviewer 与 Editor 共同遵守以下优先级：用户意图，然后是正确性、安全、数据完整性与明确兼容要求，再是 `Required Outcome`、证据、最小改动、最小影响范围和最低的已证成本。当多个方案都满足 `Required Outcome` 时，必须选择影响范围更小、维护成本更低且新假设更少的方案；最终以测试或可观察证据判定，不以双方口头同意判定。
 - `tasks/tasks.md` 是 newest-first 导航索引，只保存任务标题、当前状态和 `tasks/tasks/<task-slug>.md` 的索引相对链接 `tasks/<task-slug>.md`；每个独立任务文件才是目标、计划、审查状态与复核历史的唯一权威记录。Agent 只能修改所属任务文件及其精确索引项，不能重写其他任务状态。
-- `adversarial-review` 在循环运行中只通过 Agent handoff 传递完整 finding ledger，不写中间报告或同步 task 状态；仅在审查结束或暂停时写一次 `reports/adversarial-review/<task-slug>.md`。最终文件只包含每个实质 finding 的讨论结果和一项最终决定，其中 `Reviewer position` 与 `Editor response` 用嵌套列表逐条展示核心观点；报告不含总体结论、主题清单、验证章节、Reviewer/轮次/fingerprint/round history 等技术附录。已有 owning task 时只追加最终决定和报告链接，不能为承载报告单独创建 task。
+- `adversarial-review` 在循环运行中只通过 Agent handoff 传递完整 finding ledger，不写中间报告或同步 task 状态；仅在审查结束或暂停时写一次 `tasks/artifacts/<task-id>/reports/adversarial-review.md`。最终文件只包含每个实质 finding 的讨论结果和一项最终决定，其中 `Reviewer position` 与 `Editor response` 用嵌套列表逐条展示核心观点；报告不含总体结论、主题清单、验证章节、Reviewer/轮次/fingerprint/round history 等技术附录。写入前必须已有 owning task；缺失时返回 Task 激活，写入后只向该 task 追加最终决定和报告链接。
 - 每次 adversarial-review pass 都必须覆盖固定的完整 scope：Reviewer 一次性报告当前可见的全部 `BLOCKER`、`QUESTION` 与 `NOTE`，并在复审中逐项说明全部既有 finding ID 已解决或未解决，不得故意分轮释放；Editor 一次性回答和处理整轮全部条目后才能请求普通复审。后续新 finding 必须指出使其此前不可行动的新 artifact、diff、证据或其他原因；需要用户决定时保持 `BLOCKED`，多个方案进入 Decision Consensus Gate，否则直接询问用户，不得用普通复审绕过决定。
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
 - `skills/meta/agent-sops/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。

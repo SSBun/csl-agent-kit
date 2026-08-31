@@ -29,4 +29,4 @@
 - T3: `context_value_cases.json` and its focused assertions accept a temporary entry only with current evidence, a responsible role or module, and every required exit event; normal entries still require an authoritative source. Contract assertions also pin promotion, authoritative-carrier migration, deletion, and same-work update/migration/removal.
 - T4: Both focused workspace-context tests passed; `quick_validate.py` passed; local quality gate validation passed syntax/frontmatter, lint, governance, and all other resource checks, with only the accepted `Estimated initial-load tokens exceed budget: 2353 > 1000` result.
 - Review gate: Required — this changes the global Agent context lifecycle and the facts injected into future sessions.
-- Review: `APPROVED` after two Reviewer passes; report: [optimize-workspace-maintain-context](../../reports/adversarial-review/optimize-workspace-maintain-context.md)
+- Review: `APPROVED` after two Reviewer passes; report: [optimize-workspace-maintain-context](../artifacts/optimize-workspace-maintain-context/reports/adversarial-review.md)

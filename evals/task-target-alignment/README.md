@@ -14,7 +14,7 @@ Main-session actions 为 `no_task`、`trivial_pass`、`show_checkpoint`、`clari
 
 ## 文件
 
-- `cases.json`：36 个 contrast scenarios、72 个展开 cases 和 provisional v3 oracle；覆盖 main／delegated session role、material／implementation-only Plan change，人工 adjudication 前固定为 `report-only`。
+- `cases.json`：37 个 contrast scenarios、74 个展开 cases 和 provisional v3 oracle；覆盖 main／delegated session role、task-plan → task Target 继承、material／implementation-only Plan change，人工 adjudication 前固定为 `report-only`。
 - `results/`：生成的 request／prediction JSONL 与报告；由根 `.gitignore` 排除。
 - `../scripts/evaluate-task-target-alignment.js`：离线 validator、request preparer、scorer 和 comparator。
 - `../skills/task-target-alignment-eval/SKILL.md`：当前项目专用的维护与运行工作流。

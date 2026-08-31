@@ -19,4 +19,4 @@
 - T1: `references/workspace-workflow-gates.md` now declares the approved five-step lifecycle order; the focused order test passed.
 - T2: The dispatcher explicitly loads the matching skill before the next action and states that each skill owns its current execution contract; the stale embedded permission detail was removed.
 - T3: local quality gate trigger evaluation passed all 37 positive, negative, and near-neighbor cases across the three workspace skills, and focused `git diff --check` passed. Unrelated worktree changes remain outside this task's scope.
-- Review: `APPROVED` in one pass; report: [optimize-workspace-workflow-gates](../../reports/adversarial-review/optimize-workspace-workflow-gates.md)
+- Review: `APPROVED` in one pass; report: [optimize-workspace-workflow-gates](../artifacts/optimize-workspace-workflow-gates/reports/adversarial-review.md)

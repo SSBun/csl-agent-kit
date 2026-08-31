@@ -28,4 +28,4 @@
 - T4: Skill Creator quick validation 通过；local quality gate 的 structure、lint、governance 和非预算 resource checks 通过，仅保留允许的 1302/1000 initial-load token 告警；`npm run check` 全部通过，包含 CLI、Triggerify、task、Pi 与 install dry-run。
 - Review gate: Required — 修改共享多 Agent 循环的终止和完成判定，属于全局 Agent lifecycle 风险。
 - Review decision: `APPROVED` — 独立 Reviewer 在 `INITIAL (1)` 完整检查后无未解决项。
-- Report: [Adversarial review report](../../reports/adversarial-review/close-adversarial-deliberate-gaps.md)
+- Report: [Adversarial review report](../artifacts/close-adversarial-deliberate-gaps/reports/adversarial-review.md)

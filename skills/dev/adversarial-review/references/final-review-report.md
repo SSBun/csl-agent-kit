@@ -1,14 +1,14 @@
 # Final Review Report Contract
 
-Maintain at most one Markdown report per review at `reports/adversarial-review/<task-slug>.md`.
+Maintain at most one Markdown report per review at `tasks/artifacts/<task-id>/reports/adversarial-review.md`, where `<task-id>` is the owning canonical task ID.
 
 ## Lifecycle
 
 1. Do not create or update a report during active Reviewer–Editor rounds. Carry the full ledger in agent handoffs.
 2. Write the report when the review reaches `APPROVED`, `NEEDS_USER`, `BLOCKED`, `STALLED`, or `USER_STOP`.
-3. On first write, set `created` to the current `YYYY-MM-DD`, include the owning task slug when one exists, and set `review_cycles` to the total Reviewer passes including the terminal or pause pass.
-4. Reuse the same file after a resumed review, preserve `created`, and update `review_cycles` cumulatively. If an approved artifact changes, mark the existing decision `SUPERSEDED` before resuming and do not present it as current.
-5. If applicable workspace rules already provide an owning task, add one final decision and report link there. Do not create a task solely for the report.
+3. Require the owning canonical task before writing. On first write, set `created` to the current `YYYY-MM-DD`, set `task` to its ID, and set `review_cycles` to the total Reviewer passes including the terminal or pause pass.
+4. Reuse the same file after a resumed review, preserve `created`, and update `review_cycles` cumulatively. Draft, pause, approval, supersession, or resume never moves the report. If an approved artifact changes, mark the existing decision `SUPERSEDED` before resuming and do not present it as current.
+5. Add one final decision and the relative `../artifacts/<task-id>/reports/adversarial-review.md` link to the owning task. If no owning task is available, return to task activation without writing a report.
 
 ## Required Format
 
@@ -44,7 +44,7 @@ Topic: <question or decision>
 **Remaining:** <none, exact user question, or objective resume condition>
 ```
 
-- Omit `task` when the review has no owning task.
+- Require `task`; it must equal the owning task directory name.
 - Treat `review_cycles` as metadata only; do not add round-history sections to the body.
 - Group the body by human-readable topics. Within each topic, use `En` for the Editor state presented to review pass `n` and `Rn` for that Reviewer's response.
 - Summarize every material exchange that changed, challenged, or confirmed the topic. Preserve disagreement without copying raw prompts or transcripts.

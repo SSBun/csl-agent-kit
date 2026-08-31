@@ -31,7 +31,7 @@
 - Scope: 完整 staged snapshot 与其验证证据
 - Summary: 完整 staged snapshot 与验证证据已通过提交前检查。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/commit-and-refresh-current-skills.md)
+- Report: [Adversarial review report](../artifacts/commit-and-refresh-current-skills/reports/adversarial-review.md)
 
 ## 复核
 

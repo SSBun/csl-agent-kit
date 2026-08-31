@@ -32,7 +32,7 @@
 - Scope: adversarial-review 用户优先报告结构、逐议题辩论结果及技术附录
 - Summary: 用户优先报告结构、边界状态契约及已确认的审查概念和共同原则保持一致。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/file-based-review-report.md)
+- Report: [Adversarial review report](../artifacts/file-based-review-report/reports/adversarial-review.md)
 
 ## 复核
 

@@ -56,4 +56,4 @@ Status: Completed (2026-07-21)
 - 验证：Skill 结构校验、JSON contract 校验、定向样例测试和 `git diff --check` 通过。
 - 验证：`skill-quality` 规则审计通过。
 - 限制：local quality gate 通用 `output-eval` 只接受 JSONL，项目 report contract 为结构化 JSON；本次由定向 Node 测试执行该契约验证。
-- 审查：APPROVED — [Adversarial review report](../../reports/adversarial-review/present-review-dialogue-clearly.md)
+- 审查：APPROVED — [Adversarial review report](../artifacts/present-review-dialogue-clearly/reports/adversarial-review.md)

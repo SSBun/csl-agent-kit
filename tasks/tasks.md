@@ -1,6 +1,22 @@
 # 任务索引
 
-- [让标签标题根据上下文生成有意义摘要](tasks/fix-contextual-tab-title-summary.md) — Completed (2026-08-29 23:14)
+- [提交当前全部本地改动](tasks/commit-all-local-changes-20260831.md) — Completed (2026-08-31 17:17)
+
+- [允许执行继承 task-plan 的 Target 确认](tasks/inherit-task-plan-target-acceptance.md) — Completed (2026-08-31 17:06)
+
+- [规划 tasks 目录结构优化](tasks/optimize-tasks-directory-structure-plan.md) — Completed (2026-08-31 16:54)
+
+- [重新设计 tasks 产物目录划分](tasks/redesign-tasks-artifact-folders.md) — Completed (2026-08-31 14:42)
+
+- [编写 Pi Task 系统完整流程文档](tasks/document-pi-task-system-workflow.md) — Completed (2026-08-31 13:27)
+
+- [归档 Task 系统执行流程对话](tasks/archive-task-system-flow-conversation.md) — Completed (2026-08-31 13:09)
+
+- [梳理 Task 系统流程与确认节点](tasks/explain-task-system-flow.md) — Completed (2026-08-31 11:38)
+
+- [分析 Task Target 重复确认原因](tasks/fix-redundant-task-target-confirmation.md) — Completed (2026-08-31 11:17)
+
+- [让标签标题根据上下文生成有意义摘要](tasks/fix-contextual-tab-title-summary.md) — Completed (2026-08-29 23:33)
 
 - [按关注点分组提交当前全部本地改动](tasks/group-current-local-changes-into-commits.md) — Completed (2026-08-29 23:16)
 

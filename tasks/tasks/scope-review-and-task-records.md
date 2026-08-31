@@ -23,7 +23,7 @@
 - Scope: `AGENTS.md`, `skills/super-agent/references/AGENTS.md`, `tasks/lessons.md`, `tasks/context.md`
 - Summary: 基础机械操作现已跳过 todo 和 adversarial review，同时保留直接验证和高风险排除条件。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/scope-review-and-task-records.md)
+- Report: [Adversarial review report](../artifacts/scope-review-and-task-records/reports/adversarial-review.md)
 
 ## Results and verification
 

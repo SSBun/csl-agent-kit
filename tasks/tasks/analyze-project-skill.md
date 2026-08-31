@@ -39,4 +39,4 @@ Status: Aborted (2026-07-26 16:30)
 - Scope: `skills/analyze-project/**`、README 条目与 repo-map 相邻边界
 - Summary: 初审发现契约 fixture、output eval 与 Develop unborn 语义三个阻塞项，等待整批修复。
 - Unresolved: R1, R2, R3
-- Report: [Adversarial review report](../../reports/adversarial-review/analyze-project-skill.md)
+- Report: [Adversarial review report](../artifacts/analyze-project-skill/reports/adversarial-review.md)

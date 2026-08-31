@@ -63,6 +63,8 @@ A Target is ready only when the request supports one concrete, independently acc
 
 The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. Its first ready non-trivial L2 Target receives one checkpoint before substantive execution; an accepted unchanged Target does not receive another one.
 
+Target acceptance follows the accepted result semantics, not the task-family consumer. Changing from `task-plan` to `task` does not itself create a new Target. When the same canonical plan record is handed off in the same recoverable conversation state, the interaction owner continues without another checkpoint only when the user has explicitly authorized execution and the accepted outcome, Done when conditions, and boundaries remain materially equivalent. Planning-phase acceptance aligns the Target but never authorizes execution; without a later execution request, do not implement. If acceptance evidence cannot be recovered or the execution Target differs, apply the normal L2-L4 procedure.
+
 A child session or child task is delegated only when the main session supplies a session-local delegation packet containing:
 
 - the main task ID;
@@ -190,7 +192,7 @@ After task activation, continue without waiting when the request is solely a tri
 - A question, hesitation, unrelated reply, or ambiguous acknowledgment is not acceptance. Answer or clarify only within the pre-alignment boundary, then present the current checkpoint again when ready.
 - A user response that adds, removes, or changes a commitment revises authorization instead of accepting the old Target. Update the canonical Target as needed, run required consistency commands, regenerate the candidate, and recompute the level.
 - Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint, including a normalized Target produced after an explicit user revision or a material Plan distribution change.
-- Once accepted, an unchanged main Target must not be presented for redundant confirmation in the same recoverable conversation state; delegated children covered by its current Plan inherit that acceptance.
+- Once accepted, an unchanged main Target must not be presented for redundant confirmation in the same recoverable conversation state. This includes an explicitly authorized `task-plan` to `task` handoff of the same canonical record; delegated children covered by its current Plan also inherit that acceptance.
 - After main-session resume or compaction, if explicit acceptance evidence cannot be recovered, present the checkpoint again rather than assuming acceptance. A delegated child without a complete current packet returns to the main session instead.
 
 ## Realignment
@@ -217,7 +219,7 @@ L2 or L4 acceptance never clears S1. At the actual action boundary, the main ses
 ## Consumer Responsibilities
 
 - `task` supplies the intended outcome and observable completion condition for one independently acceptable result, or activates the exact existing record named by a valid delegation packet.
-- `task-plan` supplies the intended planning outcome and observable condition for an implementation-ready handoff.
+- `task-plan` supplies the planned task's eventual outcome and observable acceptance conditions for an implementation-ready handoff while keeping execution unauthorized until a later explicit user request.
 - `task-queue` supplies the parent integration outcome, creates and names the child graph, and provides each child or subagent with the current delegation packet.
 - Each consumer names its permitted lifecycle writes before alignment and its next step after alignment. Consumers must not copy the level table or detailed delegation semantics.
 - Default Agent rules and lifecycle dispatchers retain stable routing, activation order, checkpoint, stop, and skip boundaries while deferring detail to this protocol.

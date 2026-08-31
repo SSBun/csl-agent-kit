@@ -53,7 +53,7 @@ Both roles apply [Shared Principles and Review Lenses](references/review-lenses.
 
 ### 3. Finalize the record
 
-When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Confirm the artifact and available diff before recording `APPROVED`. If applicable workspace rules already provide an owning task, add only the final decision and report link there; never create a task solely to host the report. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
+When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Require the owning canonical task ID before writing; if it is unavailable, return to task activation instead of creating an unowned report. Confirm the artifact and available diff before recording `APPROVED`, then add only the final decision and report link to the owning task. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
 
 ## Maintenance
 

@@ -9,7 +9,7 @@ Kind: Task
 
 ## Result
 
-- T1: Deliberate Synthesizer–Challenger loop resolved D1–D3 and reached SUFFICIENT; the complete recommendation was saved to tasks/thinking/2026-08-27-task-target-direct-execution.md.
+- T1: Deliberate Synthesizer–Challenger loop resolved D1–D3 and reached SUFFICIENT; the complete recommendation was saved to tasks/artifacts/deliberate-task-target-bypass/discussions/2026-08-27-task-target-direct-execution.md.
 - T2: Current protocol and every TASK_GO reference were inspected; the recommendation removes magic markers, treats semantically complete user instructions as authorization, and keeps confirmation only for material deltas or unresolved user choices.
 - Review gate: Skipped — The user requested design advice, not an approval-gated adversarial review.
 

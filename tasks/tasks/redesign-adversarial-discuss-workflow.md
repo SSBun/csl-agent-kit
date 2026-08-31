@@ -33,7 +33,7 @@
 - Scope: adversarial-discuss 角色、内部优先决策门、完整批处理、触发/行为评测、README 与上下文记录
 - Summary: 角色、内部优先决策门、完整批处理与路由边界均已实现并验证。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/redesign-adversarial-discuss-workflow.md)
+- Report: [Adversarial review report](../artifacts/redesign-adversarial-discuss-workflow/reports/adversarial-review.md)
 
 ## 复核
 

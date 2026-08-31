@@ -26,7 +26,7 @@
 - Scope: adversarial-review 共同原则、Finding 契约、Editor 独立审计与报告评测
 - Summary: 共同原则、Finding 有效性门槛、Editor 独立审计、议题式报告和契约案例已完成并通过复审。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/principled-adversarial-review.md)
+- Report: [Adversarial review report](../artifacts/principled-adversarial-review/reports/adversarial-review.md)
 
 ## 复核
 

@@ -25,7 +25,7 @@
 - Scope: `/tmp/code-review-graph-analysis.0NhNlp/docs/analysis/project-map.md`
 - Summary: 项目地图准确区分 Tree-sitter、文件级增量、图存储与两条 review tool 调用链，全部审查问题已关闭。
 - Unresolved: none
-- Report: [Adversarial review report](../../reports/adversarial-review/analyze-code-review-graph.md)
+- Report: [Adversarial review report](../artifacts/analyze-code-review-graph/reports/adversarial-review.md)
 
 ## Results and verification
 

@@ -27,4 +27,4 @@ Status: Completed (2026-07-26 18:14)
 
 Review gate: Required — user-level extension installation changes global Pi agent behavior and executes third-party code in every applicable Pi session.
 
-- Review: APPROVED（用户授权 `ISOLATION: simulated` fallback）— [审查报告](../../reports/adversarial-review/replace-pi-example-subagent-extension.md)
+- Review: APPROVED（用户授权 `ISOLATION: simulated` fallback）— [审查报告](../artifacts/replace-pi-example-subagent-extension/reports/adversarial-review.md)
