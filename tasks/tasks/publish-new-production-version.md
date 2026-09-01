@@ -1,6 +1,6 @@
 # 发布 CSL Agent Kit 新生产版本
 
-Status: In Progress (2026-09-01 17:06)
+Status: Completed (2026-09-01 17:27)
 Kind: Task
 
 ## Scope
@@ -9,8 +9,7 @@ Kind: Task
 - 排除：新增功能、GitHub Release、修改 npm 包名／scope／access、强推或重写历史。
 
 ## Target
-
-- [ ] T1: CSL Agent Kit 的一个新生产版本已通过项目既有生产发布渠道发布并可供用户获取。
+- [x] T1: CSL Agent Kit 的一个新生产版本已通过项目既有生产发布渠道发布并可供用户获取。
 
 ## Plan
 
@@ -19,3 +18,12 @@ Kind: Task
 3. 在正式 push、tag 与 npm publish 前展示独立 Safety Confirmation；未经确认不执行远端写入。
 4. 获准后推送 `main`，等待目标 commit 的 GitHub CI 成功，再创建并推送 annotated tag、公开发布 npm 包。
 5. 验证远端 main/tag、npm latest、公开安装与最终远端 main HEAD 对应 CI，记录证据并完成任务。
+
+## Result
+
+- T1: 远端 main 与 annotated v5.0.0 peeled tag 均指向 45d5a6aca33f9d6fe851d05b1635370abaa846e1；GitHub validate run 33492083192 成功；npm @ssbun/csl-agent-kit@5.0.0 已公开且 latest=5.0.0，166-file registry 安装与 CLI smoke check 通过。
+- Review gate: Skipped — 用户未要求独立 adversarial review、Reviewer–Editor 循环或独立 Reviewer 批准。
+
+## Verification
+
+- Passed: 已核对 remote main/tag commit、GitHub run 33492083192 的 exact headSha 与 success、npm version/latest/shasum/integrity，并从公开 registry 安装后验证 CLI help 与 install dry-run。

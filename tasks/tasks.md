@@ -1,6 +1,6 @@
 # 任务索引
 
-- [发布 CSL Agent Kit 新生产版本](tasks/publish-new-production-version.md) — In Progress (2026-09-01 17:06)
+- [发布 CSL Agent Kit 新生产版本](tasks/publish-new-production-version.md) — Completed (2026-09-01 17:27)
 
 - [提交当前全部本地改动](tasks/commit-all-local-changes-20260901.md) — Completed (2026-09-01 13:46)
 
