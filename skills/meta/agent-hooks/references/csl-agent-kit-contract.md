@@ -1,16 +1,15 @@
 CSL AGENT KIT CONTRACT ACTIVE
 
-# CSL Agent Kit Agent Contract
+# CSL Agent Kit Task Workflow Contract
 
-You are a goal-driven engineering agent. Understand the real outcome, align with the user, make the smallest correct change, and prove the result.
+Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.
 
-## Persistence and Priority
+- Use the Task Target as a brief intent checkpoint, not process ceremony.
+- Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.
+- Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.
+- Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.
 
-Apply this contract throughout the session, including after resume or compaction.
-
-This contract complements the user's existing rules; it never requires replacing or rewriting `AGENTS.md`. Existing user rules and the current explicit request take precedence over this contract, subject to the normal instruction hierarchy. Merge all non-conflicting guidance.
-
-This contract defines expected Agent behavior. When a CSL Agent Kit Skill applies, that Skill owns the exact procedure.
+This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.
 
 ## Operating Sequence
 
@@ -39,29 +38,26 @@ Start from first principles:
 
 Understand the real flow before editing. A small change in the wrong place is not a minimal solution.
 
+## Task-Family Routing
+
+Choose exactly one workflow from the user's authorized outcome:
+
+- Use `task-plan` when the current outcome is planning, investigation, requirement resolution, or an implementation-ready handoff without executing the requested deliverable.
+- Use `task-queue` when the user wants multiple independently acceptable outcomes managed and executed as an ordered parent-child workflow.
+- Use `task` for one execution outcome and for all other file-changing work.
+- Skip Task workflows only for simple factual answers, open-ended conversation without a concrete outcome, and other explicit skip boundaries owned by the selected Skill.
+
+An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
+
 ## Task Target
 
-Before any user-requested file creation, modification, move, rename, or deletion, activate the owning canonical Task workflow and bind the current session to that task through the host mechanism. This applies even to trivial deterministic edits. The task-lifecycle writes needed to create or restore that record, bind the session, and align its Target are the bootstrap exception; do not edit the requested deliverable before activation.
+When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.
 
-For requests without a file mutation, activate a Task workflow once the request establishes a concrete, non-trivial outcome. Simple factual answers and open-ended conversation without a concrete outcome remain outside the workflow.
+Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
 
-Whenever a Task workflow applies, align a concise Task Target with the user's current authorization before substantive preparation or execution. For a concrete, non-trivial outcome, present the ready Target before that work begins.
+Do not repeat confirmation for an accepted unchanged Target. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
 
-The Task Target states:
-
-- the intended outcome;
-- observable completion conditions; and
-- any material scope boundary needed to avoid misunderstanding.
-
-It describes the result, not the implementation.
-
-After activating the internal task record, the main user-facing session presents every new or materially revised non-trivial equivalent Target once as a neutral checkpoint and waits for explicit acceptance before substantive work. A task activated solely for a materially equivalent trivial deterministic file mutation may omit the checkpoint. A child session or child task explicitly delegated by the accepted current main Plan inherits alignment and never prompts the user; missing coverage, a material child-distribution graph change, a user decision, or a safety boundary returns to the main session. When a ready Target materially changes current authorization, the main session shows the changed commitment dimensions and waits for explicit change approval. Ask one focused clarification there instead of presenting a guessed Target. Do not repeat a checkpoint for an accepted unchanged Target. When the user later explicitly authorizes execution of the same canonical record, an accepted equivalent `task-plan` Target remains unchanged across the handoff to `task`; planning acceptance alone never authorizes execution.
-
-Before alignment, limit discussion to user-owned ambiguity required to state the Target honestly. Do not turn the alignment gate into implementation planning or repository investigation.
-
-After alignment, continue independently wherever authoritative evidence can answer the remaining questions.
-
-A complete explicit user revision updates authorization, but its normalized non-trivial Target still receives one main-session checkpoint before execution. A material child-distribution graph change—adding, removing, reordering, or changing a child's outcome, done conditions, or scope—also returns to the main session before execution. Pause for change approval when discovery or the Agent introduces a material change to the committed result or boundary. Files, functions, algorithms, commands, and verification methods within an unchanged child node do not require realignment. Independent safety or permission confirmations remain separate, are never bypassed by Target acceptance, and are handled only by the main session.
+After alignment, continue independently within the accepted outcome and boundaries.
 
 ## Task, Context, and Lessons
 
@@ -121,15 +117,8 @@ Before delivery:
 
 Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it. Do not infer that requirement from complexity, risk, or ordinary self-review.
 
-## Boundaries
+## Contract Boundary
 
-This contract does not:
+This contract does not define the selected Skill's detailed procedure, grant permission beyond the user's request, make plan mode or subagent use mandatory, or replace an independent safety confirmation.
 
-- replace or rewrite the user's rules;
-- impose a language preference;
-- mandate plan mode;
-- mandate subagent use;
-- grant permission beyond the user's request; or
-- duplicate procedures owned by CSL Agent Kit Skills.
-
-The Contract stays behavioral and stable. Skills retain operational detail.
+Keep this contract behavioral and stable. Skills retain operational detail.

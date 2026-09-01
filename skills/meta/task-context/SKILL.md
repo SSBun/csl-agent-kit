@@ -1,6 +1,6 @@
 ---
 name: task-context
-description: Load, establish, and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, when Context is missing or lacks a valid Project Core, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Ensure a standard Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, and cached live values.
+description: Load, establish, and maintain dispatch-ready workspace context in `tasks/context.md`. Use at session start, after resume or compaction, when Context is missing or lacks a valid Project Core, before a concrete task needs project orientation, and before ending when confirmed durable project facts changed. Ensure a standard Project Core first, then query only task-relevant Context Packs. Exclude task progress, correction lessons, rules, procedures, speculation, secrets, cached live values, and explicit cross-record historical cleanup handled by task-maintenance.
 ---
 
 # Maintain Workspace Context
@@ -93,7 +93,7 @@ At session start, after resume, or after compaction:
 4. If `tasks/context.md` is missing, perform Missing Context Bootstrap and stop for confirmation before writing it.
 5. Use the valid Core to form the initial project vocabulary and system model.
 
-Outside Standard Context Bootstrap, do not read the whole Context file for orientation.
+Outside Standard Context Bootstrap, do not read the whole Context file for orientation. An explicitly invoked `$task-maintenance` run may read the complete canonical file after loading this contract because the file itself is then the task-direct maintenance target; that exception does not apply to ordinary orientation.
 
 ### Task Gate
 
@@ -166,7 +166,7 @@ Context states the durable fact and decision effect; the other carrier owns enfo
 - Stop and ask before a source conflict, user-owned business judgment, unverified fact, or any write to another workspace.
 - If validation fails, restore the pre-write content and report the diagnostics.
 - Rewrite current truth in place. Do not append history or retain superseded tombstones unless an old state still constrains compatibility.
-- Do not create a global periodic audit or individual Context owner; the work that changes a fact owns its maintenance.
+- The work that changes a fact owns its same-work maintenance. Do not create a scheduler, automatic periodic audit, or persistent Context owner. Explicit user-requested cross-record cleanup belongs to `$task-maintenance`, whose exact change-set confirmation gate is stricter than ordinary source-backed Pack writes.
 
 ## Mutable Information
 

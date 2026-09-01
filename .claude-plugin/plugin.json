@@ -60,6 +60,7 @@
     "./skills/meta/task-plan",
     "./skills/meta/task-queue",
     "./skills/meta/task-lessons",
+    "./skills/meta/task-maintenance",
     "./skills/meta/agent-rules",
     "./skills/meta/agent-hooks",
     "./skills/meta/agent-sops",

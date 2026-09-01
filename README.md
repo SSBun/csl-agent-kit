@@ -23,6 +23,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
 | task-lessons | `/csl:task-lessons` | `/task-lessons` | Query, apply, and maintain reusable workspace lessons. |
+| task-maintenance | `/csl:task-maintenance` | `/task-maintenance` | 显式删除 Context/Lessons 中已证实失效的历史内容，并在统一确认后合并可安全合并的项。 |
 | agent-rules | `/csl:agent-rules` | `/agent-rules` | 管理 Built-in、User 与 Project 三层持久 Agent Rules。 |
 | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
 | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |
@@ -33,7 +34,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:workspace-workflow-gates` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
 
 ## Canonical source and duplicates
 
@@ -92,22 +93,20 @@ csl-agent-kit install
 - Cursor local plugin
 - Codex plugin (shared skills and lifecycle hooks)
 - Pi package
-- Default agent instructions（仅显式选择；会备份普通文件后创建全局 symlink）
 
-交互式确认后会把勾选项保存到 `~/.csl-agent-kit/install-selection.json`，下次运行会自动预选这些项；`Default agent instructions` 除外，它每次运行都必须主动勾选。显式的 `--target`、`--all` 与 `--yes` 保持一次性命令语义，不会改写这份记录。
+交互式确认后会把勾选项保存到 `~/.csl-agent-kit/install-selection.json`，下次运行会自动预选这些项。显式的 `--target`、`--all` 与 `--yes` 保持一次性命令语义，不会改写这份记录。
 
 Non-interactive examples:
 
 ```bash
 csl-agent-kit install --yes
 csl-agent-kit install --target cursor,codex-plugin
-csl-agent-kit install --target super-agent
 csl-agent-kit install --all --dry-run
 csl-agent-kit install --all --verbose
 csl-agent-kit install --all --json
 ```
 
-The default human-readable output streams colored details for every integration, symlink, and external command. `--verbose` (`-v`) remains accepted with the same behavior. Use `--no-color` or `NO_COLOR=1` to disable colors; `--color` explicitly enables them. JSON output always stays color-free. `super-agent` 仅在显式选择时运行；选中后会重置现有 Agent instruction symlink，普通文件会先备份再替换。Codex、Claude Code 与 Pi 的自包含 CSL Agent Kit 行为契约由内置 Agent Hooks 注入，不依赖替换用户的 Agent 指令文件；Cursor 暂不支持 injected context，默认安装不再用指令文件替换回退。 The legacy `./scripts/install.sh` entry is a thin wrapper around this npm CLI and forwards the same options.
+The default human-readable output streams colored details for every integration, symlink, and external command. `--verbose` (`-v`) remains accepted with the same behavior. Use `--no-color` or `NO_COLOR=1` to disable colors; `--color` explicitly enables them. JSON output always stays color-free. Codex、Claude Code 与 Pi 的自包含 CSL Agent Kit Contract 由内置 Agent Hooks 注入，不依赖替换用户的 Agent 指令文件；Cursor 暂不支持 injected context，也不提供文件替换回退。 The legacy `./scripts/install.sh` entry is a thin wrapper around this npm CLI and forwards the same options.
 
 ### npx skills (Cursor, Codex, and other agents)
 
@@ -303,7 +302,7 @@ csl-agent-kit install --all
 skills/                  # Shared skill source (all platforms)
 skills/meta/{task,task-plan,task-queue}/ # Cross-host task workflow skills
 skills/meta/csl-tasks/shared/           # Shared task-state core
-skills/meta/{task-context,task-lessons}/ # Context and lessons workflow skills
+skills/meta/{task-context,task-lessons,task-maintenance}/ # Context and lessons workflow skills
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest
 .cursor-plugin/          # Cursor plugin manifest

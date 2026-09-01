@@ -21,5 +21,4 @@ node_modules/
 
 # Project agent rules are tracked even if a global gitignore ignores AGENTS.md.
 !/AGENTS.md
-!/super-agent/AGENTS.md
 .deliberate/

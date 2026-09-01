@@ -1,0 +1,23 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Clean stale historical entries from tasks/context.md and merge duplicate Context Packs.",
+    "Run task maintenance on Context and Lessons; show the exact deletions and merges before writing.",
+    "Consolidate overlapping lessons and remove rules whose failure mechanisms no longer exist.",
+    "Audit accumulated Context and Lessons history for evidence-backed Delete or Merge candidates.",
+    "Use task-maintenance to clean only tasks/lessons.md."
+  ],
+  "should_not_trigger": [
+    "Add this newly confirmed fact to tasks/context.md.",
+    "Capture this correction as a reusable lesson.",
+    "Archive completed canonical task records.",
+    "Automatically run this cleanup every month.",
+    "Migrate every legacy lesson to the v1 format."
+  ],
+  "near_neighbor": [
+    "At session start, load the Project Core before acting.",
+    "Merge this current correction with one existing lesson after I approve the exact diff.",
+    "Update a Context Pack because its authoritative source changed during this task.",
+    "Clean old task records and their artifacts."
+  ]
+}

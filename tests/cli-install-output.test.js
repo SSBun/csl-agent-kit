@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const { spawn, spawnSync } = require("node:child_process");
-const { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, symlinkSync, writeFileSync } = require("node:fs");
+const { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } = require("node:fs");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
@@ -10,7 +10,6 @@ const cli = path.join(root, "bin/csl-agent-kit.js");
 const {
   buildInstallChoices,
   loadInstallSelection,
-  saveInstallSelection,
 } = require(cli);
 const { loadSops } = require(path.join(root, "skills", "meta", "agent-sops", "scripts", "sop-candidates.js"));
 
@@ -247,7 +246,7 @@ test("root hook commands execute bundled resources from plugin root variables", 
   const postCompactHooks = hookManifest.PostCompact.flatMap((entry) => entry.hooks);
   const hook = hooks.find(({ command }) => command.includes("sop-summaries.sh")).command;
   assert.ok(hookManifest.SessionStart.some(({ matcher }) => matcher.split("|").includes("compact")));
-  assert.equal([...hooks, ...postCompactHooks].some(({ command }) => command.includes("workspace-workflow-gates.md")), false);
+  assert.equal([...hooks, ...postCompactHooks].some(({ command }) => command.includes("csl-agent-kit-contract.md")), false);
   assert.ok(hooks.some(({ command }) => command.includes("skills/meta/agent-hooks/scripts/agent-hooks.js")));
   try {
     for (const [fakeRoot, output] of [[pluginRoot, "plugin-root"], [claudePluginRoot, "claude-plugin-root"]]) {
@@ -365,13 +364,13 @@ test("JSON output remains valid and color-free when --color is passed", () => {
   assert.doesNotMatch(result.stdout, /\u001b\[/);
 });
 
-test("interactive checklist reuses remembered selections except opt-in super-agent", () => {
+test("obsolete super-agent selections retain only current install targets", () => {
   const dataDir = mkdtempSync(path.join(tmpdir(), "csl-install-selection-"));
   const selectionFile = path.join(dataDir, "install-selection.json");
   try {
-    saveInstallSelection(["codex-plugin", "pi", "super-agent"], selectionFile);
+    writeFileSync(selectionFile, `${JSON.stringify({ version: 1, selectedTargets: ["codex-plugin", "pi", "super-agent"] })}\n`);
 
-    assert.deepEqual(loadInstallSelection(selectionFile), ["codex-plugin", "pi", "super-agent"]);
+    assert.deepEqual(loadInstallSelection(selectionFile), ["codex-plugin", "pi"]);
     assert.deepEqual(
       buildInstallChoices(loadInstallSelection(selectionFile))
         .filter((choice) => choice.selected)
@@ -603,77 +602,18 @@ test("explicit target installs do not overwrite the saved interactive selection"
   }
 });
 
-test("super-agent always relinks instructions, backs up files, and keeps dry-run non-mutating", () => {
-  const directory = mkdtempSync(path.join(tmpdir(), "csl-super-agent-"));
-  const home = path.join(directory, "home");
-  const source = path.join(root, "super-agent", "AGENTS.md");
-  const codex = path.join(home, ".codex", "AGENTS.md");
-  const claude = path.join(home, ".claude", "CLAUDE.md");
-  const pi = path.join(home, ".pi", "agent", "AGENTS.md");
-  const agents = path.join(home, ".agents", "AGENTS.md");
-  const currentLegacyTarget = path.join(root, "references", "agents.md");
-  const legacyTarget = path.join(root, "skills", "super-agent", "references", "AGENTS.md");
-  const externalTarget = path.join(directory, "other", "references", "agents.md");
-  mkdirSync(path.dirname(codex), { recursive: true });
-  mkdirSync(path.dirname(claude), { recursive: true });
-  mkdirSync(path.dirname(pi), { recursive: true });
-  symlinkSync(currentLegacyTarget, codex);
-  symlinkSync(legacyTarget, pi);
+test("super-agent install surface is removed without compatibility entrypoints", () => {
+  const target = run(["install", "--target", "super-agent", "--dry-run"]);
+  const option = run(["install", "--no-super-agent", "--dry-run"]);
+  const help = run(["install", "--help"]);
+  const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
 
-  try {
-    const first = run(["install", "--target", "super-agent", "--json"], { HOME: home });
-    assert.equal(first.status, 0, first.stderr);
-    const byTarget = Object.fromEntries(
-      JSON.parse(first.stdout).results[0].changes.map((change) => [change.target, change])
-    );
-
-    assert.equal(byTarget[codex].action, "symlink");
-    assert.equal(byTarget[codex].relinked, true);
-    assert.equal(lstatSync(codex).isSymbolicLink(), true);
-    assert.equal(readlinkSync(codex), source);
-
-    assert.equal(byTarget[claude].action, "symlink");
-    assert.equal(lstatSync(claude).isSymbolicLink(), true);
-
-    assert.equal(byTarget[pi].action, "symlink");
-    assert.equal(byTarget[pi].relinked, true);
-
-    assert.equal(byTarget[agents].action, "symlink");
-
-    rmSync(claude);
-    writeFileSync(claude, "overwrite me");
-    rmSync(agents);
-    mkdirSync(path.dirname(externalTarget), { recursive: true });
-    writeFileSync(externalTarget, "external");
-    symlinkSync(externalTarget, agents);
-    const dryRun = run(["install", "--target", "super-agent", "--dry-run", "--json"], { HOME: home });
-    const dryRunChanges = JSON.parse(dryRun.stdout).results[0].changes;
-    const dryRunClaude = dryRunChanges.find((change) => change.target === claude);
-    const dryRunAgent = dryRunChanges.find((change) => change.target === agents);
-    assert.equal(dryRunClaude.action, "symlink");
-    assert.match(dryRunClaude.backup, /\.backup-<ts>$/);
-    assert.equal(dryRunAgent.action, "symlink");
-    assert.equal(dryRunAgent.forced, true);
-    assert.equal(dryRunAgent.dryRun, true);
-    assert.equal(readFileSync(claude, "utf8"), "overwrite me");
-    assert.equal(readlinkSync(agents), externalTarget);
-
-    const defaultInstall = run(["install", "--target", "super-agent", "--json"], { HOME: home });
-    const defaultChanges = JSON.parse(defaultInstall.stdout).results[0].changes;
-    const forced = defaultChanges.find((change) => change.target === claude);
-    const forcedAgent = defaultChanges.find((change) => change.target === agents);
-    assert.equal(forced.action, "symlink");
-    assert.match(forced.backup, /\.backup-/);
-    assert.equal(lstatSync(claude).isSymbolicLink(), true);
-    assert.equal(readFileSync(forced.backup, "utf8"), "overwrite me");
-    assert.equal(forcedAgent.action, "symlink");
-    assert.equal(forcedAgent.forced, true);
-    assert.equal(readlinkSync(agents), source);
-
-    const idempotent = run(["install", "--target", "super-agent", "--json"], { HOME: home });
-    const codexAgain = JSON.parse(idempotent.stdout).results[0].changes.find((change) => change.target === codex);
-    assert.equal(codexAgain.action, "unchanged");
-  } finally {
-    rmSync(directory, { recursive: true, force: true });
-  }
+  assert.equal(target.status, 2);
+  assert.match(target.stderr, /Unknown target: super-agent/);
+  assert.equal(option.status, 2);
+  assert.match(option.stderr, /Unknown install option: --no-super-agent/);
+  assert.equal(help.status, 0, help.stderr);
+  assert.doesNotMatch(help.stdout, /super-agent|Default agent instructions|--no-super-agent/);
+  assert.equal(manifest.files.includes("super-agent/"), false);
+  assert.equal(existsSync(path.join(root, "super-agent")), false);
 });

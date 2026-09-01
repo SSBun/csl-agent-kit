@@ -732,7 +732,7 @@ Task Target 详细语义只有一份权威来源：
 - [`skills/meta/task-queue/SKILL.md`](../../skills/meta/task-queue/SKILL.md)
 - [`skills/meta/task-context/SKILL.md`](../../skills/meta/task-context/SKILL.md)
 - [`skills/meta/task-lessons/SKILL.md`](../../skills/meta/task-lessons/SKILL.md)
-- [`super-agent/workspace-workflow-gates.md`](../../super-agent/workspace-workflow-gates.md)
+- [`skills/meta/agent-hooks/references/csl-agent-kit-contract.md`](../../../../skills/meta/agent-hooks/references/csl-agent-kit-contract.md)
 
 Pi 适配来源：
 

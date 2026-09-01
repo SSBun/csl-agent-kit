@@ -3,7 +3,7 @@
 ## Project Core
 
 ### Purpose
-- CSL Agent Kit 为 Codex、Claude Code、Cursor 与 Pi 分发共享的 skills、rules、hooks 和 extensions，使同一套 Agent 工作流可跨宿主使用；权威入口为 `package.json`、`README.md` 与 `super-agent/AGENTS.md`。
+- CSL Agent Kit 为 Codex、Claude Code、Cursor 与 Pi 分发共享的 skills、rules、hooks 和 extensions，使同一套 Agent 工作流可跨宿主使用；权威入口为 `package.json`、`README.md` 与 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`。
 
 ### Global Vocabulary
 - Skill package 是以 `SKILL.md` 为运行时契约的可发现能力；共享包位于 `skills/`，项目专用包位于 `.agents/skills/`。
@@ -11,7 +11,7 @@
 - Canonical task 是 `tasks/tasks/<task-slug>.md` 中的权威任务记录，`tasks/tasks.md` 仅是 newest-first 导航索引；权威实现为 `skills/meta/csl-tasks/shared/lib/task-core.js`。
 
 ### System Map
-- `super-agent/` 提供显式 opt-in 的默认 Agent rules，以及由受支持宿主自动注入的稳定 CSL Agent Kit 行为契约；具体操作流程由对应 Skills 和共享协议持有。
+- `skills/meta/agent-hooks/` 提供受支持宿主自动注入的稳定 CSL Agent Kit Contract；具体操作流程由对应 Skills 和共享协议持有。
 - `skills/` 提供可分发 skills；`skills/meta/task/`、`skills/meta/task-plan/` 与 `skills/meta/task-queue/` 管理任务生命周期，`skills/meta/task-context/` 与 `skills/meta/task-lessons/` 管理 Context 与 Lessons。
 - `pi/extensions/` 提供 Pi 宿主集成；`bin/`、`scripts/` 与各宿主 manifest 负责安装、发现和分发。
 - `tasks/` 保存 workspace-local Context、Lessons、canonical task records 与任务产出的 reports。
@@ -20,13 +20,13 @@
 - Skill package 的 `SKILL.md`、runtime references、prompts、templates 与 eval-facing prose 使用英文；用户回答和生成报告使用用户语言；权威约定记录在本文件的 Decisions and Conventions。
 - Context 只承载已确认、项目特有、稳定且会改变未来决策的事实；任务进度归 canonical task，纠错规则归 Lessons，实时值不得缓存；权威契约为 `skills/meta/task-context/SKILL.md`。
 - Context 用于跳过宽泛项目探索，不取代任务直接相关源码、测试和 Authority 验证；Authority 与 Context 冲突时以 Authority 为准。
-- 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `super-agent/AGENTS.md` 与 `skills/meta/task/SKILL.md`。
+- 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 与 `skills/meta/task/SKILL.md`。
 
 ## CTX-task-context — Workspace Context dispatch and maintenance
 - Scope: Workspace Context loading, task-relevant retrieval, source-backed maintenance, and default lifecycle consumers.
-- Paths: `tasks/context.md`, `skills/meta/task-context/`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
+- Paths: `tasks/context.md`, `skills/meta/task-context/`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
 - Keywords: task context, workspace context, project core, context pack, task fingerprint, dispatch, authority
-- Authority: `skills/meta/task-context/SKILL.md`, `skills/meta/task-context/scripts/context.js`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
+- Authority: `skills/meta/task-context/SKILL.md`, `skills/meta/task-context/scripts/context.js`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
 - Recheck: When the Context schema, task activation order, query lifecycle, write permissions, or default consumer wording changes.
 
 ### Purpose and Boundaries
@@ -38,7 +38,7 @@
 - `scripts/context.js` 只读解析标准 Core 与正式 `CTX-*` Packs，提供 `core/index/show/validate/--self-test`；非标准顶层内容不进入 Pack 索引，Agent 负责 Task Fingerprint、语义匹配、Authority 验证和写入判断。
 
 ### Relationships
-- `super-agent/AGENTS.md` 保留显式安装时的完整默认规则；自动注入的 `super-agent/workspace-workflow-gates.md` 改为稳定的行为契约，要求 session 边界恢复 Context、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
+- `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 是自动注入的稳定行为契约，要求 session 边界恢复 Context、先按 outcome 选择 task family、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
 - Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是非平凡等价 Target 展示一次并等待 checkpoint 确认、实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
@@ -153,10 +153,10 @@
 - `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则与记录契约。
 
 ## CTX-agent-hooks — Agent Hooks runtime and built-in hooks
-- Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, three-level Agent Rules injection, data migration, and host lifecycle adapters.
-- Paths: `skills/meta/agent-hooks/`, `skills/meta/agent-rules/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `super-agent/workspace-workflow-gates.md`, `tests/agent-hooks.test.js`, `tests/pi-context-hooks.test.mjs`
-- Keywords: agent hooks, agent rules, inner hook, session-start, inject-output, workspace workflow gates, compaction, host adapter
-- Authority: `skills/meta/agent-hooks/scripts/agent-hooks.js`, `skills/meta/agent-hooks/scripts/lib/store.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `skills/meta/agent-hooks/scripts/read-agent-rules.js`, `skills/meta/agent-rules/SKILL.md`, `hooks/hooks.json`
+- Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, three-level Agent Rules injection, CSL Agent Kit Contract injection, data migration, and host lifecycle adapters.
+- Paths: `skills/meta/agent-hooks/`, `skills/meta/agent-rules/`, `hooks/hooks.json`, `pi/extensions/csl-context-hooks.ts`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `tests/agent-hooks.test.js`, `tests/pi-context-hooks.test.mjs`
+- Keywords: agent hooks, agent rules, inner hook, session-start, inject-output, CSL Agent Kit contract, compaction, host adapter
+- Authority: `skills/meta/agent-hooks/scripts/agent-hooks.js`, `skills/meta/agent-hooks/scripts/lib/store.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `skills/meta/agent-hooks/scripts/read-agent-rules.js`, `skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `skills/meta/agent-rules/SKILL.md`, `hooks/hooks.json`
 - Recheck: 当 Agent Hooks rule schema、存储路径、inner hook override、built-in Agent Rules 来源、宿主 capability 或 session/compaction lifecycle mapping 变化时复核。
 
 ### Purpose and Boundaries
@@ -167,7 +167,7 @@
 - `skills/meta/agent-hooks/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/hooks/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
 - `inner:agent-rules` 依次合并 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md` 三个同格式单文件来源；`AGENTS.md` / `CLAUDE.md` 不属于该系统，禁用 inner hook 会同时停止三个来源的注入。
 - Hook 规则、配置、事件与脚本环境协议分别使用 `agent-hooks/v1`、`agent-hooks.config/v1`、`agent-hooks.event/v1` 与 `AGENT_HOOKS_*`。
-- `inner:workspace-workflow-gates` 在 `session-start` 运行 bundled script 并注入 `super-agent/workspace-workflow-gates.md` 的自包含行为契约，使目标对齐、Context、Lessons、最小与手术式执行及验证边界不依赖用户替换默认 Super Agent。
+- `inner:csl-agent-kit-contract` 在 `session-start` 运行 bundled script 并注入 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 的自包含行为契约，使 task-family 路由、目标对齐、Context、Lessons、最小与手术式执行及验证边界不依赖替换用户的 Agent 指令文件。
 
 ### Relationships
 - `hooks/hooks.json` 的 SessionStart dispatcher 处理 startup、resume 与 compact 来源，Pi adapter 在每次 `before_agent_start` 重建 session prompts；同一 Contract prompt 不再由 manifest 直接 `cat`，避免重复注入。
@@ -217,23 +217,38 @@
 - `scripts/lessons.js` 只负责确定性只读解析、索引、按 ID 查询与 schema 校验；Agent 负责语义匹配、载体选择、冲突处理、Rule 应用和 Check 证据。Legacy records 渐进兼容，已选 IDs 不持久缓存。
 - 聚焦契约与回归入口为主 Skill、查询脚本、`evals/query_cases.json`、`evals/trigger_cases.json` 和 `tests/task-files.test.mjs`。
 
-## CTX-install — Installer target selection and workflow delivery
-- Scope: `csl-agent-kit install` 的默认、已保存与显式目标选择，以及 `super-agent` 指令文件安装和内置 Agent Hooks 行为契约注入边界。
-- Paths: `bin/csl-agent-kit.js`, `README.md`, `super-agent/AGENTS.md`, `super-agent/workspace-workflow-gates.md`, `skills/meta/agent-hooks/`, `tests/cli-install-output.test.js`
-- Keywords: install, default targets, saved selection, super-agent, Default agent instructions, Agent Hooks, Cursor
-- Authority: `bin/csl-agent-kit.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `skills/meta/agent-hooks/scripts/read-workspace-workflow-gates.js`, `tests/cli-install-output.test.js`
-- Recheck: 当 install target 的 `default` 标记、selection persistence、Agent instruction targets 或 Agent Hooks host capabilities 变化时复核。
+## CTX-task-maintenance — Context and Lessons historical cleanup
+- Scope: 用户显式发起、统一确认的 Context/Lessons 失效历史删除与同载体语义合并。
+- Paths: `skills/meta/task-maintenance/`, `skills/meta/task-context/`, `skills/meta/task-lessons/`, `tasks/context.md`, `tasks/lessons.md`
+- Keywords: task maintenance, context cleanup, lessons cleanup, stale history, merge
+- Authority: `skills/meta/task-maintenance/SKILL.md`, `skills/meta/task-context/SKILL.md`, `skills/meta/task-lessons/SKILL.md`
+- Recheck: 当删除或合并证据门、统一确认行为、Context/Lessons schema 或三者职责边界变化时复核。
 
 ### Purpose and Boundaries
-- 新安装或无有效已保存选择时，默认 checklist 与 `--yes` 只选择 `codex-plugin`；除 `super-agent` 外，已保存 checklist 选择仍代表用户先前确认，显式 `--target` 与 `--all` 继续按用户选择执行。
-- `super-agent` 每次交互运行都必须主动选择，已保存选择不自动预选；`--no-super-agent` 为兼容 no-op，不新增第二次外部命令确认。
+- `task-maintenance` 是内容产生方即时维护之外的显式兜底，只删除 Authority 已证明失效的历史内容并合并不会丢失有效约束的同载体项；它不负责调度、任务归档、格式迁移、一般重写或内容重路由。
 
 ### Relationships
-- 显式安装 `super-agent` 时，安装器把 `super-agent/AGENTS.md` 链接到 Codex、Claude Code、Pi 与通用 Agent 的全局指令路径；普通文件先备份，既有 symlink 重置，dry-run 不写入。
-- Codex、Claude Code 与 Pi 通过默认启用的 `inner:workspace-workflow-gates` 获得自包含的 CSL Agent Kit 行为契约，不依赖替换用户默认指令文件；Cursor 在宿主支持 injected context 前保持 unsupported，默认安装不提供文件替换回退。
+- `task-context` 继续负责 Project Core、按需 Pack 检索及事实变化时的 source-backed 维护；`task-lessons` 继续负责纠正驱动的 Lesson 检索与持久写入；跨记录历史清理由 `task-maintenance` 编排并复用两者现有只读 CLI 与 schema。
 
 ### Decision and Verification Boundaries
-- 交互 multiselect 的提交已构成安装授权，不再追加通用确认；默认边界以 `buildInstallChoices(null)` 与 `install --yes --json` 验证，显式 `super-agent` 行为以隔离 HOME 验证，宿主注入能力以 `agent-hooks show inner:workspace-workflow-gates --host <host>` 验证。
+- 每个 Delete/Merge 候选都必须展示 Authority 证据和精确最终内容并获得一次明确确认；两个载体不得互相合并，legacy 或日期久本身不证明失效，获批变更按文件独立校验并在失败时恢复原文。
+
+## CTX-install — Installer target selection and workflow delivery
+- Scope: `csl-agent-kit install` 的默认、已保存与显式 integration target 选择，以及内置 Agent Hooks 行为契约的独立注入边界。
+- Paths: `bin/csl-agent-kit.js`, `README.md`, `skills/meta/agent-hooks/`, `tests/cli-install-output.test.js`
+- Keywords: install, default targets, saved selection, Codex plugin, Pi package, Agent Hooks, Cursor
+- Authority: `bin/csl-agent-kit.js`, `skills/meta/agent-hooks/scripts/lib/runtime.js`, `skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js`, `tests/cli-install-output.test.js`
+- Recheck: 当 install target 集合、`default` 标记、selection persistence 或 Agent Hooks host capabilities 变化时复核。
+
+### Purpose and Boundaries
+- 新安装或无有效已保存选择时，默认 checklist 与 `--yes` 只选择 `codex-plugin`；已保存 checklist 选择代表用户先前确认，显式 `--target` 与 `--all` 继续按用户选择执行。
+- Installer 只暴露 `cursor`、`codex-plugin` 与 `pi` integration targets；不再安装或替换全局 Agent instruction 文件，旧 `super-agent` target 与 `--no-super-agent` option 被拒绝。
+
+### Relationships
+- Codex、Claude Code 与 Pi 通过默认启用的 `inner:csl-agent-kit-contract` 获得自包含行为契约，不依赖替换用户默认指令文件；Cursor 在宿主支持 injected context 前保持 unsupported，且不提供文件替换回退。
+
+### Decision and Verification Boundaries
+- 交互 multiselect 的提交已构成安装授权，不再追加通用确认；默认和已保存选择由 `buildInstallChoices()` 与 selection helpers 约束，旧安装入口以负向拒绝断言验证，宿主注入能力以 `agent-hooks show inner:csl-agent-kit-contract --host <host>` 验证。
 
 ## CTX-tab-title — Pi terminal tab title refresh
 - Scope: Pi 终端标签标题的自动与手动刷新、生成边界、持久化和并发保护。
@@ -257,11 +272,8 @@
 
 - Agent Hooks 的分发 `SKILL.md` 使用英文，以 bundled CLI 作为 accepted-behavior authority，不把项目 RFC 当作 runtime guidance。
 - `pi/extensions/csl-context-hooks.ts` 是 Agent Hooks 的 Pi adapter：通过 facade 的 `createEvent()` / `runEvent()` 生成以 `ctx.cwd` 为工作区的标准事件；它按 `toolCallId` 记录 `write` / `edit` 调用前状态，成功结果提供工作区相对的 `changed_files`（`created` / `modified`），失败或工作区外文件提供空数组，其他工具保持 unknown。权威实现与回归测试为该 extension 和 `tests/pi-context-hooks.test.mjs`。
-- 主分支的 `csl-agent-kit` CLI 不包含 benchmark 命令；benchmark 实现仍是未合入且已中止的独立工作，不应在 `bin/csl-agent-kit.js` 中保留失效的 `scripts/benchmark-cli.js` 依赖。
 - `skills/meta/agent-hooks/scripts/validate-rules.js` 复用 V1 `parseMarkdown()` 校验一个或多个候选 Hook Markdown 的 frontmatter 与规则语义；已存储脚本的可执行性和宿主 effective 状态仍以 `agent-hooks show` 为准。权威入口是该脚本与 `skills/meta/agent-hooks/SKILL.md`。
 
-- `skills/deliberate/` 以 Coordinator 中转的 Synthesizer–Challenger 循环生成问题、主题、想法、决策或计划的综合答案；路由依据是明确的迭代或全面多视角意图，不以裸角色名作为足够证据，普通 brainstorming、逐题 grilling 和需要 `APPROVED` 的交付物审查不进入该 skill。Agent 默认先内部批量处理全部相关主题与可见议题；循环不设硬轮次上限，但 `CONTINUE` 必须对应实质性开放 D-ID 与具体下一轮变化，且只有所有实质性 D-ID 关闭并复查所有固定 T-ID 后才可 `SUFFICIENT`。Pi 分发元数据必须查询 `pi-agent` 的 effective model，不得仅凭 `PI_MODEL` 推断；无 Challenger 时流程不能运行，INLINE-FALLBACK 则可在明确 `ISOLATION: simulated` caveat 下达到 `SUFFICIENT`；Synthesizer 的量化结论必须附可复现测量证据。每次交付只把面向用户的最终结果保存到当前工作区 `tasks/artifacts/<task-id>/discussions/YYYY-MM-DD-<topic-slug>.md`，文件冲突时递增后缀，且不保存角色交换、私有推理、state packet 或 ledger。权威契约与复核入口为该 skill 的 `SKILL.md`、角色契约、共享 subagent dispatch reference 和 `evals/`。
-- `~/.agents/skills` 是 Codex 官方的 USER 级技能发现目录，也可作为多个 agent 共用的技能安装目录；按用户要求当前为空，`~/.agents/.skill-lock.json` 的技能映射也为空。未来从 `mattpocock/skills` 选择的技能应整合到 CSL Agent Kit，而非重新安装到该全局目录。
 - `~/Desktop/test/skills` 是 `mattpocock/skills` 的本地参考仓库；技能按 `engineering`、`productivity`、`misc`、`personal`、`in-progress`、`deprecated` 分桶。
 
 ## Relationships
@@ -270,13 +282,13 @@
 - Codex 对每条非 managed command hook 按定义 hash 单独保存 trust；CSL Agent Kit 的 Agent Hooks `PostToolUse` dispatcher 必须先在 `/hooks` 中信任才会运行。
 - 用户跨会话持久指令以单条全局 Agent Hooks `session-start` / `inject-prompt` 规则存放在 `<data-root>/hooks/`；Codex 与 Claude Code 通过 `SessionStart` dispatcher 注入，Pi 在每次 `before_agent_start` 重新加载。规则不按用户 prompt 关键词匹配。
 - hook-only 客户端的 `UserPromptSubmit` 只运行 SOP candidates；持久指令通过 Agent Hooks `SessionStart` 规则注入。Pi 在 `before_agent_start` 重建 Agent Hooks session prompts 与 SOP context。
-- 持久指令只在用户明确要求跨会话保存时创建，每条使用独立的 `global:directive-<subject>` 规则并保留高优先级指令和当前请求优先的边界；个人化内容不进入可分发的 `super-agent/AGENTS.md`。
+- 持久指令只在用户明确要求跨会话保存时创建，每条使用独立的 `global:directive-<subject>` 规则并保留高优先级指令和当前请求优先的边界；个人化内容不进入可分发的 CSL Agent Kit Contract。
 
 ## Decisions and Conventions
 
 - Skill packages use English for `SKILL.md`, runtime references, prompts, templates, and eval-facing prose; generated reports and user responses still follow the user's language. A task that modifies one skill does not bulk-translate unrelated existing packages unless the user explicitly requests a repository-wide migration — authoritative source: user confirmation on 2026-08-07; review when that language convention changes.
 - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
-- 可分发默认 `AGENTS.md` 保留稳定的通用原则与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证；只有用户明确要求 `$adversarial-review`、双 Agent Reviewer–Editor 循环或独立 Reviewer 批准时才进入独立审查，风险、复杂度、验证缺口、其他规则或工作流都不会自动触发，未明确要求时记录 `Skipped` 并在常规验证通过后直接完成。
+- 自动注入的 CSL Agent Kit Contract 保留稳定的通用原则、task-family 路由与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。非简单交付物改动进入 task 记录，所有结果按风险验证；只有用户明确要求 `$adversarial-review`、双 Agent Reviewer–Editor 循环或独立 Reviewer 批准时才进入独立审查，风险、复杂度、验证缺口、其他规则或工作流都不会自动触发，未明确要求时记录 `Skipped` 并在常规验证通过后直接完成。
 - `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。
 - `adversarial-review` 的 `BLOCKER` 必须同时说明被违反的要求或原则、可观察证据、不处理的实际风险与 `Required Outcome`；缺少任一项时不得作为阻塞性 Finding，应降级为 `QUESTION`、`NOTE` 或省略。`Suggested Remedy` 不能代替这四项成立条件。
 - `adversarial-review` 的 Editor 对每个 Finding 必须依次审计 `Current Adequacy`、`Minimal Resolution`、`Blast Radius` 与 `Proportionality`，再选择接受、缩小、拒绝、确认无需修改或需要用户决定。当前方案已满足 `Required Outcome` 时默认保留，除非正确性、安全、数据完整性或明确需求提供了必须变更的证据。
@@ -289,4 +301,4 @@
 - `adversarial-review` 对代码、PRD、RFC、设计文档及其他交付物执行同一 fail-closed 双 Agent 流程；不设总轮次上限，只保留单调递增的 `INITIAL (1)` 与 `RE-REVIEW (n)` 审计编号。流程仅按 `APPROVED`、需要用户、客观阻塞、连续无实质进展或用户停止等状态结束或暂停；不同交付物只切换 review lens。
 - `skills/meta/agent-sops/references/code-style/swift-style.md` 只保留按主题分组的 Swift 具体规则：类型与状态、可选值与失败路径、控制流、enum 与 MARK、extension 组织、方法布局、文档注释和改动边界；覆盖 `T!` 边界、强制操作、`guard`、`for ... where`、`@unknown default`、类型简写和公开声明 summary。只有需要展示精确语法或布局的规则才附最小代码块，适用边界和使用顺序放在 `code-style.md`。
 - 默认 agent 规则不规定 plan mode 或 subagent 策略；agent 可以按任务需要自行使用这些能力。d
-- `super-agent/` 纳入 npm 发布白名单，包含默认 `AGENTS.md` 与 workspace lifecycle dispatcher；它是运行时规则资产目录，不是 skill。
+- CSL Agent Kit Contract 位于 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 并随 Agent Hooks skill 分发；仓库不再发布或安装独立的 `super-agent` 规则资产。

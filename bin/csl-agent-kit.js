@@ -7,18 +7,6 @@ const agentHooks = require("../skills/meta/agent-hooks/scripts/agent-hooks.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
-const AGENTS_INSTRUCTIONS_SOURCE = path.join(repoRoot, "super-agent", "AGENTS.md");
-const LEGACY_AGENTS_SOURCES = [
-  path.join(repoRoot, "references", "agents.md"),
-  path.join(repoRoot, "skills", "super-agent", "references", "AGENTS.md"),
-];
-const AGENTS_INSTRUCTION_TARGETS = [
-  path.join(home(), ".codex", "AGENTS.md"),
-  path.join(home(), ".claude", "CLAUDE.md"),
-  path.join(home(), ".pi", "agent", "AGENTS.md"),
-  path.join(home(), ".agents", "AGENTS.md"),
-];
-
 const targets = {
   cursor: {
     title: "Cursor local plugin",
@@ -40,13 +28,6 @@ const targets = {
     default: false,
     external: true,
     run: installPi,
-  },
-  "super-agent": {
-    title: "Default agent instructions",
-    description: "Symlink super-agent/AGENTS.md into each agent client's global config.",
-    default: false,
-    external: false,
-    run: installSuperAgent,
   },
 };
 
@@ -82,7 +63,6 @@ function parseInstallArgs(args) {
     dryRun: false,
     force: false,
     json: false,
-    noSuperAgent: false,
     verbose: true,
     yes: false,
     targets: [],
@@ -104,8 +84,6 @@ function parseInstallArgs(args) {
       options.verbose = true;
     } else if (arg === "--yes" || arg === "-y") {
       options.yes = true;
-    } else if (arg === "--no-super-agent") {
-      options.noSuperAgent = true;
     } else if (arg === "--force") {
       options.force = true;
     } else if (arg === "--target" || arg === "--targets") {
@@ -139,7 +117,7 @@ async function resolveInstallTargets(options) {
   }
   if (options.yes) {
     return Object.entries(targets)
-      .filter(([name, spec]) => spec.default && !(options.noSuperAgent && name === "super-agent"))
+      .filter(([, spec]) => spec.default)
       .map(([name]) => name);
   }
   if (!process.stdin.isTTY || process.env.CI) {
@@ -184,7 +162,6 @@ function buildInstallChoices(savedSelection) {
   const selected = new Set(savedSelection || Object.entries(targets)
     .filter(([, spec]) => spec.default)
     .map(([name]) => name));
-  selected.delete("super-agent");
   return Object.entries(targets).map(([name, spec]) => ({
     title: spec.title,
     description: spec.description,
@@ -298,21 +275,12 @@ function installPi(options) {
   return changes;
 }
 
-function installSuperAgent(options) {
-  return AGENTS_INSTRUCTION_TARGETS.map((target) =>
-    linkAgentInstruction(target, AGENTS_INSTRUCTIONS_SOURCE, { ...options, force: true })
-  );
-}
-
 function linkAgentInstruction(target, source, options) {
   const sourceReal = fs.realpathSync(source);
   const parent = path.dirname(target);
   const change = { action: "symlink", target, source: sourceReal };
 
   if (options.dryRun) {
-    if (isSymlink(target) && isLegacyAgentLink(target, parent)) {
-      return { ...change, dryRun: true, relinked: true };
-    }
     if (isSymlink(target)) {
       const linked = fs.readlinkSync(target);
       const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
@@ -335,11 +303,10 @@ function linkAgentInstruction(target, source, options) {
     const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
     const linkedReal = fs.existsSync(linkedPath) ? fs.realpathSync(linkedPath) : linkedPath;
     if (linkedReal === sourceReal) return { action: "unchanged", target, source: sourceReal };
-    const legacy = isLegacyAgentSource(linkedPath) || isLegacyAgentSource(linkedReal);
-    if (legacy || options.force) {
+    if (options.force) {
       fs.unlinkSync(target);
       fs.symlinkSync(sourceReal, target);
-      return { ...change, relinked: true, ...(!legacy && options.force ? { forced: true } : {}) };
+      return { ...change, relinked: true, forced: true };
     }
     return { action: "skip", reason: "Existing symlink points elsewhere (use --force to override)", target };
   }
@@ -356,17 +323,6 @@ function linkAgentInstruction(target, source, options) {
 
   fs.symlinkSync(sourceReal, target);
   return change;
-}
-
-function isLegacyAgentSource(candidate) {
-  if (!candidate) return false;
-  return LEGACY_AGENTS_SOURCES.includes(path.resolve(candidate));
-}
-
-function isLegacyAgentLink(target, parent) {
-  const linked = fs.readlinkSync(target);
-  const linkedPath = path.isAbsolute(linked) ? linked : path.resolve(parent, linked);
-  return isLegacyAgentSource(linkedPath);
 }
 
 function timestamp() {
@@ -547,7 +503,7 @@ function summarizeChanges(changes, dryRun) {
 
 function printChangeDetails(changes, colors) {
   for (const change of changes) {
-    if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}${change.forced ? " (force-relinked)" : change.relinked ? " (relinked from legacy path)" : ""}${change.backup ? ` (backed up to ${change.backup})` : ""}`));
+    if (change.action === "symlink") console.log(colors.dim(`    ↳ ${change.target} → ${change.source}${change.forced ? " (force-relinked)" : change.relinked ? " (relinked)" : ""}${change.backup ? ` (backed up to ${change.backup})` : ""}`));
     if (change.action === "unchanged") console.log(colors.dim(`    ↳ ${change.target} (up to date)`));
     if (change.action === "command") console.log(colors.dim(`    ↳ ${change.command}${change.dryRun ? " (dry run)" : ""}`));
     if (change.action === "remove") console.log(colors.dim(`    ↳ remove ${change.target} → ${change.source}${change.dryRun ? " (dry run)" : ""}`));
@@ -581,7 +537,7 @@ function printHelp() {
 }
 
 function printInstallHelp() {
-  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --no-super-agent    Compatibility no-op; super-agent is opt-in.\n  --force             Force instruction relinking (already default for super-agent).\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show detailed progress (already the default).\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
+  console.log(`Usage:\n  csl-agent-kit install\n  csl-agent-kit install --target cursor,codex-plugin\n  csl-agent-kit install --all --dry-run\n\nTargets:\n${Object.entries(targets).map(([name, spec]) => `  ${name.padEnd(14)} ${spec.description}`).join("\n")}\n\nOptions:\n  --target <list>     Comma-separated target list.\n  --all               Select every target.\n  --yes, -y           Select default targets without prompting.\n  --force             Allow supported links to replace existing files or symlinks.\n  --dry-run           Print planned actions without changing files.\n  --verbose, -v       Show detailed progress (already the default).\n  --color             Force ANSI colors.\n  --no-color          Disable ANSI colors.\n  --json              Print machine-readable result JSON.\n`);
 }
 
 function die(message) {

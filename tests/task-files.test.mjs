@@ -215,8 +215,8 @@ test("task artifact producers use stable task-owned paths", () => {
   assert.equal(review.includes("`reports/adversarial-review/"), false);
 });
 
-test("default agent instructions explain workspace records and route work to workflow skills", () => {
-  const rules = readFileSync(path.join(root, "super-agent", "AGENTS.md"), "utf8");
+test("task workflow skills own canonical records and routes", () => {
+  const contract = readFileSync(path.join(root, "skills", "meta", "agent-hooks", "references", "csl-agent-kit-contract.md"), "utf8");
   const expected = {
     "task-context": [path.join(cslTasksDir, "task-context"), "tasks/context.md"],
     "task": [path.join(cslTasksDir, "task"), "tasks/tasks.md"],
@@ -228,49 +228,27 @@ test("default agent instructions explain workspace records and route work to wor
     assert.match(skill, new RegExp(`^name: ${name}$`, "m"));
     assert.ok(skill.includes(ownedPath), `${name} missing owned path`);
     assert.equal(skill.includes("TODO"), false, `${name} contains scaffold text`);
-    assert.ok(rules.includes(`$${name}`), `default instructions missing route: ${name}`);
-    assert.ok(rules.includes(ownedPath), `default instructions missing mechanism path: ${ownedPath}`);
   }
 
   for (const name of ["task", "task-plan", "task-queue"]) {
     assert.ok(existsSync(path.join(cslTasksDir, name, "SKILL.md")), `missing ${name}`);
-    assert.ok(rules.includes(`$${name}`), `default instructions missing route: ${name}`);
+    assert.ok(contract.includes(`\`${name}\``), `contract missing route: ${name}`);
   }
   for (const name of ["csl-task", "csl-task-plan", "csl-task-auto"]) {
     assert.equal(existsSync(path.join(cslTasksDir, name)), false, `legacy skill still exists: ${name}`);
-    assert.equal(rules.includes(`$${name}`), false, `legacy route still exists: ${name}`);
+    assert.equal(contract.includes(`\`${name}\``), false, `legacy route still exists: ${name}`);
   }
   assert.equal(existsSync(path.join(skillsDir, "workspace-manage-task")), false);
   assert.equal(existsSync(path.join(skillsDir, "workspace-maintain-context")), false);
   assert.equal(existsSync(path.join(skillsDir, "workspace-context")), false);
   assert.equal(existsSync(path.join(skillsDir, "workspace-lessons")), false);
 
-  assert.match(rules, /load `\$task-context` and use it to establish and load a standard Project Core before acting/);
-  assert.match(rules, /Rewrite an existing nonstandard Context through the skill/);
-  assert.match(rules, /obtain explicit confirmation for the exact minimal file before creating it/);
-  assert.equal(rules.includes("$workspace-maintain-context"), false);
-  assert.equal(rules.includes("$workspace-context"), false);
-  assert.match(rules, /query only the relevant Context Packs, normally one to three/);
-  assert.equal(rules.includes("Read `tasks/context.md` first"), false);
-  assert.match(rules, /asks to create, modify, move, rename, or delete any file—even when the requested edit is trivial/);
-  assert.match(rules, /load `\$task` and follow its `SKILL\.md` to create, resume, or reopen the owning record before substantive discussion/);
-  assert.match(rules, /task lifecycle writes needed for activation, focus, and Target alignment are the bootstrap exception/);
-  assert.match(rules, /apply the selected task-family skill's shared Task Target Alignment Protocol/);
-  assert.match(rules, /sole detailed authority/);
-  assert.match(rules, /materially equivalent trivial deterministic file edit may continue/);
-  assert.match(rules, /In the main user-facing session, every new or materially revised non-trivial equivalent Target must be displayed once as a checkpoint and explicitly accepted/);
-  assert.match(rules, /child session or child task explicitly delegated by the main session's accepted current Plan inherits that alignment and must not prompt the user/);
-  assert.match(rules, /material child-distribution graph change/);
-  assert.match(rules, /independent safety boundary returns to the main session/);
-  assert.match(rules, /materially different Target must name changed commitment dimensions and receive main-session change approval/);
-  assert.match(rules, /do not repeat confirmation for an accepted unchanged Target/i);
-  assert.match(rules, /accepted equivalent `task-plan` Target remains unchanged across the handoff to `task`/);
-  assert.match(rules, /planning acceptance alone never authorizes execution/);
-  assert.doesNotMatch(rules, /TASK_GO/);
-  assert.doesNotMatch(rules, /`\*\*Task Target:\*\* <target>`/);
-  assert.doesNotMatch(rules, /task_target_confirm/);
-  assert.match(rules, /Skip task records only for simple factual answers and open-ended conversation that request no file mutation/);
-  assert.match(rules, /read-only trivial deterministic operations/);
+  assert.match(contract, /## Task-Family Routing/);
+  assert.match(contract, /Use `task-plan` when the current outcome is planning/);
+  assert.match(contract, /Use `task-queue` when the user wants multiple independently acceptable outcomes/);
+  assert.match(contract, /Use `task` for one execution outcome/);
+  assert.match(contract, /Complexity, step count, or file count alone does not make a Queue/);
+  assert.doesNotMatch(contract, /TASK_GO|task_target_confirm/);
 
   const alignmentProtocolPath = path.join(cslTasksSharedDir, "protocols", "task-target-alignment.md");
   assert.ok(existsSync(alignmentProtocolPath), "missing shared Task Target alignment protocol");
@@ -342,12 +320,9 @@ test("default agent instructions explain workspace records and route work to wor
   assert.match(queueSkill, /parent, child, and sibling titles in one Queue must not normalize to the same text/);
   assert.match(queueSkill, /do not display another child checkpoint/);
   assert.match(queueSkill, /material child-distribution graph change/);
-  assert.match(rules, /before substantive preparation or execution, load `\$task-lessons` and follow its `SKILL\.md`/);
-  assert.equal(rules.includes("$workspace-capture-lessons"), false);
-  assert.equal(rules.includes("$workspace-lessons"), false);
-  assert.match(rules, /Do not wait for the user to request/);
-  assert.match(rules, /Use an independent review workflow only when the user explicitly requests/);
-  assert.equal(rules.includes("applicable task requirement"), false);
+  assert.match(contract, /Before substantive work, apply every relevant Lesson/);
+  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it/);
+  assert.equal(contract.includes("applicable task requirement"), false);
 
   const projectRules = readFileSync(path.join(root, "AGENTS.md"), "utf8");
   assert.match(projectRules, /After modifying any \*\*skill package\*\* under `skills\/` or `\.agents\/skills\/`/);
@@ -362,7 +337,10 @@ test("default agent instructions explain workspace records and route work to wor
 });
 
 test("injected CSL Agent Kit contract defines behavior without runtime mechanics", () => {
-  const contract = readFileSync(path.join(root, "super-agent", "workspace-workflow-gates.md"), "utf8");
+  const contract = readFileSync(path.join(root, "skills", "meta", "agent-hooks", "references", "csl-agent-kit-contract.md"), "utf8");
+  assert.equal(existsSync(path.join(root, "super-agent")), false);
+  assert.ok(existsSync(path.join(root, "skills", "meta", "agent-hooks", "hooks", "csl-agent-kit-contract.md")));
+  assert.equal(existsSync(path.join(root, "skills", "meta", "agent-hooks", "hooks", "workspace-workflow-gates.md")), false);
   const order = [
     "1. **Orient**",
     "2. **Align**",
@@ -379,28 +357,32 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   }
 
   assert.match(contract, /^CSL AGENT KIT CONTRACT ACTIVE/);
-  assert.match(contract, /never requires replacing or rewriting `AGENTS\.md`/);
-  assert.match(contract, /Existing user rules and the current explicit request take precedence/);
-  assert.match(contract, /Before any user-requested file creation, modification, move, rename, or deletion/);
-  assert.match(contract, /This applies even to trivial deterministic edits/);
-  assert.match(contract, /task-lifecycle writes needed to create or restore that record, bind the session, and align its Target are the bootstrap exception/);
-  assert.match(contract, /Whenever a Task workflow applies, align a concise Task Target/);
-  assert.match(contract, /For a concrete, non-trivial outcome, present the ready Target before that work begins/);
-  assert.match(contract, /main user-facing session presents every new or materially revised non-trivial equivalent Target once as a neutral checkpoint/);
-  assert.match(contract, /child session or child task explicitly delegated by the accepted current main Plan inherits alignment and never prompts the user/);
-  assert.match(contract, /material child-distribution graph change/);
-  assert.match(contract, /Files, functions, algorithms, commands, and verification methods within an unchanged child node do not require realignment/);
-  assert.match(contract, /main session shows the changed commitment dimensions and waits for explicit change approval/);
-  assert.match(contract, /Do not repeat a checkpoint for an accepted unchanged Target/);
-  assert.match(contract, /accepted equivalent `task-plan` Target remains unchanged across the handoff to `task`/);
-  assert.match(contract, /planning acceptance alone never authorizes execution/);
-  assert.match(contract, /handled only by the main session/);
+  assert.match(contract, /# CSL Agent Kit Task Workflow Contract/);
+  assert.match(contract, /owns only stable task-family routing and cross-workflow gates/);
+  assert.doesNotMatch(contract, /Persistence and Priority|AGENTS\.md/);
+  assert.doesNotMatch(contract, /## Task Workflow Adoption/);
+  assert.match(contract, /Use Task workflows automatically for every eligible request/);
+  assert.match(contract, /users should not need to know Skill names or internal lifecycle mechanics/);
+  assert.match(contract, /Use the Task Target as a brief intent checkpoint, not process ceremony/);
+  assert.match(contract, /do not narrate routine internal bookkeeping/);
+  assert.match(contract, /## Task-Family Routing/);
+  assert.match(contract, /Use `task-plan` when the current outcome is planning/);
+  assert.match(contract, /Use `task-queue` when the user wants multiple independently acceptable outcomes/);
+  assert.match(contract, /Complexity, step count, or file count alone does not make a Queue/);
+  assert.match(contract, /activate and focus its owning record before task-direct exploration or requested deliverable changes/);
+  assert.match(contract, /Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution/);
+  assert.match(contract, /Apply the selected task-family Skill, including its required Task Target alignment gate/);
+  assert.match(contract, /Only the main interaction owner handles user-facing alignment and independent safety gates/);
+  assert.match(contract, /Do not repeat confirmation for an accepted unchanged Target/);
+  assert.match(contract, /Delegated work covered by the accepted current Plan inherits alignment/);
+  assert.match(contract, /missing coverage, material changes, user decisions, or safety boundaries return to the main session/);
+  assert.doesNotMatch(contract, /The Task Target states:|L0|L1|L2|L3|L4|Authorization Ledger|Changes requiring approval/);
   assert.match(contract, /At session start, resume, or compaction, establish and load the standard workspace Context before acting/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
   assert.match(contract, /Implement the minimum solution that fully satisfies the aligned outcome/);
   assert.match(contract, /Touch only what the aligned outcome requires/);
   assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it/);
-  assert.match(contract, /The Contract stays behavioral and stable\. Skills retain operational detail\./);
+  assert.match(contract, /Keep this contract behavioral and stable\. Skills retain operational detail\./);
   assert.doesNotMatch(contract, /\$(?:task|task-plan|task-queue|task-context|task-lessons)/);
   assert.doesNotMatch(contract, /Task Target Alignment Protocol/);
   assert.doesNotMatch(contract, /task_focus/);

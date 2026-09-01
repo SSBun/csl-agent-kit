@@ -1,0 +1,46 @@
+{
+  "positive_concepts": {
+    "context_lessons_history_cleanup": {
+      "weight": 1.0,
+      "phrases": [
+        "clean stale context",
+        "stale historical entries",
+        "merge duplicate context packs",
+        "consolidate overlapping lessons",
+        "remove obsolete lessons",
+        "task maintenance",
+        "delete or merge candidates"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "ordinary_context_update": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "newly confirmed fact",
+        "update a context pack",
+        "load the project core"
+      ]
+    },
+    "correction_driven_lesson": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "capture this correction",
+        "current correction",
+        "one existing lesson"
+      ]
+    },
+    "other_maintenance_work": {
+      "weight": 0.7,
+      "exclusive": true,
+      "phrases": [
+        "archive completed tasks",
+        "clean old task records",
+        "automatically every month",
+        "migrate every legacy lesson"
+      ]
+    }
+  }
+}

@@ -621,8 +621,8 @@ test("inner scope injects built-in, user, and project agent-rules.md in order", 
   }
 });
 
-test("inner workspace workflow gates inject the CSL Agent Kit contract on supported session starts", { concurrency: false }, () => {
-  const data = fs.mkdtempSync(path.join(os.tmpdir(), "agent-hooks-workspace-gates-"));
+test("inner CSL Agent Kit contract injects on supported session starts", { concurrency: false }, () => {
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "agent-hooks-csl-contract-"));
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = data;
   const io = { log() {}, error() {} };
@@ -630,13 +630,25 @@ test("inner workspace workflow gates inject the CSL Agent Kit contract on suppor
     for (const host of ["codex", "claude-code", "pi"]) {
       const payload = agentHooks.createEvent({ event: "session-start", host, workspace: data });
       const result = agentHooks.runEvent(payload, { host, workspace: data });
-      const prompt = result.prompts.find((item) => item.id === "inner:workspace-workflow-gates");
+      const prompt = result.prompts.find((item) => item.id === "inner:csl-agent-kit-contract");
       assert.ok(prompt, `expected CSL Agent Kit contract for ${host}`);
       assert.match(prompt.content, /^CSL AGENT KIT CONTRACT ACTIVE/);
-      assert.match(prompt.content, /Existing user rules and the current explicit request take precedence/);
-      assert.match(prompt.content, /Before any user-requested file creation, modification, move, rename, or deletion/);
-      assert.match(prompt.content, /task-lifecycle writes .* are the bootstrap exception/);
-      assert.match(prompt.content, /align a concise Task Target with the user/);
+      assert.match(prompt.content, /# CSL Agent Kit Task Workflow Contract/);
+      assert.match(prompt.content, /owns only stable task-family routing and cross-workflow gates/);
+      assert.doesNotMatch(prompt.content, /Persistence and Priority|AGENTS\.md/);
+      assert.doesNotMatch(prompt.content, /## Task Workflow Adoption/);
+      assert.match(prompt.content, /Use Task workflows automatically for every eligible request/);
+      assert.match(prompt.content, /users should not need to know Skill names or internal lifecycle mechanics/);
+      assert.match(prompt.content, /Use the Task Target as a brief intent checkpoint, not process ceremony/);
+      assert.match(prompt.content, /## Task-Family Routing/);
+      assert.match(prompt.content, /Use `task-plan` when the current outcome is planning/);
+      assert.match(prompt.content, /Use `task-queue` when the user wants multiple independently acceptable outcomes/);
+      assert.match(prompt.content, /Complexity, step count, or file count alone does not make a Queue/);
+      assert.match(prompt.content, /activate and focus its owning record before task-direct exploration or requested deliverable changes/);
+      assert.match(prompt.content, /Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution/);
+      assert.match(prompt.content, /Only the main interaction owner handles user-facing alignment and independent safety gates/);
+      assert.match(prompt.content, /Do not repeat confirmation for an accepted unchanged Target/);
+      assert.match(prompt.content, /Delegated work covered by the accepted current Plan inherits alignment/);
       assert.match(prompt.content, /consult only the Context relevant to the current outcome/);
       assert.match(prompt.content, /apply every relevant Lesson/);
       assert.match(prompt.content, /Implement the minimum solution/);
@@ -645,13 +657,13 @@ test("inner workspace workflow gates inject the CSL Agent Kit contract on suppor
       assert.doesNotMatch(prompt.content, /\$(?:task|task-plan|task-queue|task-context|task-lessons)/);
     }
 
-    assert.equal(agentHooks.runCli(["disable", "inner:workspace-workflow-gates"], io), 0);
+    assert.equal(agentHooks.runCli(["disable", "inner:csl-agent-kit-contract"], io), 0);
     const payload = agentHooks.createEvent({ event: "session-start", host: "pi", workspace: data });
     assert.equal(
-      agentHooks.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:workspace-workflow-gates"),
+      agentHooks.runEvent(payload, { host: "pi", workspace: data }).prompts.some((item) => item.id === "inner:csl-agent-kit-contract"),
       false,
     );
-    assert.equal(agentHooks.runCli(["enable", "inner:workspace-workflow-gates"], io), 0);
+    assert.equal(agentHooks.runCli(["enable", "inner:csl-agent-kit-contract"], io), 0);
 
     const cursorPayload = agentHooks.createEvent({ event: "session-start", host: "cursor", workspace: data });
     const cursor = agentHooks.runEvent(cursorPayload, { host: "cursor", workspace: data });

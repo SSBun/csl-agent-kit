@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Maintenance"
+  short_description: "Clean stale Context and Lessons history"
+  default_prompt: "Use $task-maintenance to propose evidence-backed deletions and merges for accumulated Context and Lessons, then apply only the exact change set I approve."

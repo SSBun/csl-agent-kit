@@ -26,7 +26,6 @@
     "prompts/",
     "scripts/install.sh",
     "skills/",
-    "super-agent/",
     ".agents/plugins/",
     ".claude-plugin/",
     ".codex-plugin/",

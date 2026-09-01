@@ -18,6 +18,7 @@
   "near_neighbor": [
     "Create the task record in tasks/tasks.md before implementation.",
     "Capture this user correction in tasks/lessons.md.",
+    "Clean stale historical content and merge duplicate entries across tasks/context.md and tasks/lessons.md.",
     "Run adversarial review on the completed change.",
     "Save this tip for future Markdown requests."
   ]
