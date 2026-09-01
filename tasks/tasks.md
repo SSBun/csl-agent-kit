@@ -1,5 +1,11 @@
 # 任务索引
 
+- [提交当前全部本地改动](tasks/commit-all-local-changes-20260901.md) — In Progress (2026-09-01 13:33)
+
+- [以统一注入契约替代 super-agent](tasks/replace-super-agent-with-injected-contract.md) — Completed (2026-09-01 11:50)
+
+- [实现 Task Context/Lessons 维护 Skill](tasks/design-task-maintenance-skill.md) — Completed (2026-08-31 20:26)
+
 - [提交当前全部本地改动](tasks/commit-all-local-changes-20260831.md) — Completed (2026-08-31 17:17)
 
 - [允许执行继承 task-plan 的 Target 确认](tasks/inherit-task-plan-target-acceptance.md) — Completed (2026-08-31 17:06)
