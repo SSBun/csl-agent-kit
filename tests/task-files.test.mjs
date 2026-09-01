@@ -284,7 +284,7 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(alignmentProtocol, /This Target changes your current authorization/);
   assert.match(alignmentProtocol, /Ask one focused question about the exact user-owned ambiguity/);
   assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint/);
-  assert.match(alignmentProtocol, /delegated children covered by its current Plan inherit that acceptance/);
+  assert.match(alignmentProtocol, /delegated children covered by its current Plan also inherit that acceptance/);
   assert.match(alignmentProtocol, /A delegated child reaching that boundary returns to the main session/);
   assert.match(alignmentProtocol, /trimmed content is exactly `1` or case-insensitively equals `y`/);
   assert.match(alignmentProtocol, /S0 NONE/);
