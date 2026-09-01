@@ -4,6 +4,33 @@
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-09-01
+
+### Added
+
+- 新增 `task-maintenance`，用于在统一确认后删除 Context／Lessons 中已证实失效的内容，并合并可安全合并的记录。
+
+### Changed
+
+- Task 工作流现在由 main session 统一处理 Target 与 Safety Confirmation；`task-plan` 执行交接和 Queue 委派可继承已接受的等价 Target，避免子任务重复确认。
+- Canonical task 的持久产物统一存放到 `tasks/artifacts/<task-id>/` 下的 `discussions`、`specs`、`reports` 或 `evidence` 分类目录。
+- 默认工作流规则改由 Agent Hooks 注入的 `inner:csl-agent-kit-contract` 提供，安装器不再替换用户的全局 Agent 指令文件。
+
+### Fixed
+
+- Queue 现在拒绝与 parent 或 sibling 规范化后同名的 child task，避免任务图歧义。
+- 终端标签标题在数字或简短确认回复后继续使用前序上下文，不再退化成确认词摘要。
+
+### Removed
+
+- 移除 `super-agent` 安装目标、`--no-super-agent` 选项及其全局 `AGENTS.md`／`CLAUDE.md` 软链接机制。
+- 移除旧的 `inner:workspace-workflow-gates` Hook 身份。
+
+### Breaking Changes
+
+- `csl-agent-kit install --target super-agent` 与 `--no-super-agent` 不再受支持；Codex、Claude Code 与 Pi 改由内置 Agent Hooks 获取 CSL Agent Kit Contract，Cursor 不提供指令文件替换回退。
+- 如配置引用 `inner:workspace-workflow-gates`，需改用 `inner:csl-agent-kit-contract`；旧身份不保留迁移兼容层。
+
 ## [4.1.0] - 2026-08-29
 
 ### Added
@@ -132,7 +159,8 @@
 - 旧 `~/.ssbun-skills/` 路径不再读取；用户数据只使用 `~/.csl-agent-kit/`。
 - 旧 `inject-may-agents` invocation 不再存在；改用 `super-agent`。
 
-[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/SSBun/csl-agent-kit/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/SSBun/csl-agent-kit/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/SSBun/csl-agent-kit/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/SSBun/csl-agent-kit/compare/v3.2.0...v4.0.0
 [3.2.0]: https://github.com/SSBun/csl-agent-kit/releases/tag/v3.2.0
