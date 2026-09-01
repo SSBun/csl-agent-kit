@@ -188,8 +188,8 @@ test("rebuilds Pi Agent Hooks context before every agent turn", async () => {
     assert.ok(first.systemPrompt.indexOf("User Agent Rule") < first.systemPrompt.indexOf("Project Agent Rule"));
     assert.match(first.systemPrompt, /deploy-production/);
     assert.match(first.systemPrompt, /CSL AGENT KIT CONTRACT ACTIVE/);
-    assert.match(first.systemPrompt, /Before any user-requested file creation, modification, move, rename, or deletion/);
-    assert.match(first.systemPrompt, /align a concise Task Target with the user/);
+    assert.match(first.systemPrompt, /Use Task workflows automatically for every eligible request/);
+    assert.match(first.systemPrompt, /activate and focus its owning record before task-direct exploration or requested deliverable changes/);
     assert.match(first.systemPrompt, /apply every relevant Lesson/);
     assert.doesNotMatch(first.systemPrompt, /Task Target Alignment Protocol/);
 
