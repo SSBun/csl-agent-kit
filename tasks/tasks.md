@@ -1,5 +1,7 @@
 # 任务索引
 
+- [诊断云效 MQTT 订阅失败](tasks/diagnose-yunxiao-mqtt-subscription-failure.md) — Completed (2026-09-02 13:40)
+
 - [发布 CSL Agent Kit 新生产版本](tasks/publish-new-production-version.md) — Completed (2026-09-01 17:27)
 
 - [提交当前全部本地改动](tasks/commit-all-local-changes-20260901.md) — Completed (2026-09-01 13:46)

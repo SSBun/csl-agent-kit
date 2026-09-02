@@ -45,6 +45,7 @@ const REQUEST_TIMEOUT_MS = 30_000;
 const GIT_TIMEOUT_MS = 10 * 60_000;
 const MQTT_BROKER_URL = "wss://mqtt-internal.in.zhihu.com/ws";
 const MQTT_TOPIC_PREFIX = "zhihu/egon/prod/private/";
+const MQTT_RETRY_INTERVAL_MS = 30_000;
 const DAEMON_LABEL = "com.csl-agent-kit.yunxiao-auto-approve";
 const DAEMON_PORT = 4319;
 const DAEMON_STATE_DIR = join(homedir(), "Library/Application Support/yunxiao");
@@ -1115,7 +1116,7 @@ function dashboardHtml() {
 </head>
 <body>
 <main class="page">
-<header><div><h1>云效自动审批</h1><div id="meta" class="muted">正在连接本地守护进程…</div></div><span id="mqtt" class="badge">MQTT —</span></header>
+<header><div><h1>云效自动审批</h1><div id="meta" class="muted">正在连接本地守护进程…</div><div id="mqtt-detail" class="muted"></div></div><span id="mqtt" class="badge">MQTT —</span></header>
 <section class="cards"><div class="card"><span class="muted">已批准</span><b id="approved">0</b></div><div class="card"><span class="muted">需复核</span><b id="partial">0</b></div><div class="card"><span class="muted">失败</span><b id="failed">0</b></div><div class="card"><span class="muted">已跳过</span><b id="skipped">0</b></div><div class="card"><span class="muted">处理中</span><b id="approving">0</b></div></section>
 <section class="panel scroll"><table><thead><tr><th>时间</th><th>结果</th><th>MR</th><th>标题</th><th>作者</th><th>分支</th><th>详情</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty">暂无审批记录</div></section>
 </main>
@@ -1130,6 +1131,10 @@ async function refresh(){
   const data=await response.json();
   document.getElementById("mqtt").textContent="MQTT "+data.daemon.mqtt;
   document.getElementById("meta").textContent=(data.daemon.currentUser||"未知用户")+" · 启动于 "+new Date(data.daemon.startedAt).toLocaleString();
+  const failureAt=data.daemon.lastSubscriptionFailureAt;
+  document.getElementById("mqtt-detail").textContent=failureAt
+   ?"最近订阅失败："+new Date(failureAt).toLocaleString()+" · error="+(data.daemon.lastSubscriptionError||"none")+" · grants="+JSON.stringify(data.daemon.lastSubscriptionGrants||[])
+   :"";
   const approvals=data.history.filter(item=>item.kind==="approval");
   for(const status of ["approved","partial","failed","skipped","approving"]){document.getElementById(status).textContent=approvals.filter(item=>item.status===status).length}
   const rows=document.getElementById("rows");rows.replaceChildren();
@@ -1192,15 +1197,25 @@ async function runApprovalDaemon() {
 		lastScanAt: null,
 		lastEventAt: null,
 		lastError: null,
+		lastSubscriptionFailureAt: null,
+		lastSubscriptionError: null,
+		lastSubscriptionGrants: [],
 	};
 	await recoverInterruptedApprovals(initialContext, store, state);
 	const server = await startDashboardServer(state, store);
 	let mqttClient;
+	let subscriptionAttempt = 0;
+	let subscriptionRetryTimer;
+	const clearSubscriptionRetry = () => {
+		clearTimeout(subscriptionRetryTimer);
+		subscriptionRetryTimer = undefined;
+		subscriptionAttempt += 1;
+	};
 	try {
 		await scanDaemonApprovalNotices(initialContext.currentUser, "startup", store, state);
 		const { connect } = await import("mqtt");
 		const topic = `${MQTT_TOPIC_PREFIX}${initialContext.currentUser.id}/`;
-		mqttClient = connect(MQTT_BROKER_URL, { keepalive: 30, reconnectPeriod: 30_000 });
+		mqttClient = connect(MQTT_BROKER_URL, { keepalive: 30, reconnectPeriod: MQTT_RETRY_INTERVAL_MS });
 		let work = Promise.resolve();
 		const enqueue = (operation) => {
 			work = work.then(operation).catch((error) => {
@@ -1218,17 +1233,34 @@ async function runApprovalDaemon() {
 				}
 			});
 		};
+		const subscribeToTopic = () => {
+			clearSubscriptionRetry();
+			const attempt = subscriptionAttempt;
+			mqttClient.subscribe(topic, (error, grants) => {
+				if (attempt !== subscriptionAttempt) return;
+				const subscriptionGrants = grants?.map(({ topic: grantTopic, qos }) => ({ topic: grantTopic, qos })) || [];
+				if (error || subscriptionGrants.length === 0 || subscriptionGrants[0].qos === 128) {
+					const firstFailure = state.mqtt !== "subscription-failed";
+					state.mqtt = "subscription-failed";
+					state.lastError = error?.message || "MQTT Topic 订阅被拒绝";
+					state.lastSubscriptionFailureAt = new Date().toISOString();
+					state.lastSubscriptionError = error?.message || null;
+					state.lastSubscriptionGrants = subscriptionGrants;
+					if (firstFailure) process.stderr.write(`${state.lastSubscriptionFailureAt} ${state.lastError}; grants=${JSON.stringify(subscriptionGrants)}\n`);
+					if (mqttClient.connected && state.status === "running") {
+						subscriptionRetryTimer = setTimeout(subscribeToTopic, MQTT_RETRY_INTERVAL_MS);
+					}
+					return;
+				}
+				state.mqtt = "connected";
+				state.lastError = null;
+				enqueue(() => scanDaemonApprovalNotices(initialContext.currentUser, "startup-or-reconnect", store, state));
+			});
+		};
 		mqttClient.on("connect", () => {
 			state.mqtt = "connected";
 			state.lastError = null;
-			mqttClient.subscribe(topic, (error, grants) => {
-				if (error || !grants?.length || grants[0].qos === 128) {
-					state.mqtt = "subscription-failed";
-					state.lastError = error?.message || "MQTT Topic 订阅被拒绝";
-					return;
-				}
-				enqueue(() => scanDaemonApprovalNotices(initialContext.currentUser, "startup-or-reconnect", store, state));
-			});
+			subscribeToTopic();
 		});
 		mqttClient.on("message", (_topic, payload) => {
 			const notice = parseMqttNotice(payload);
@@ -1239,9 +1271,9 @@ async function runApprovalDaemon() {
 				await processDaemonApproval(context, notice, "mqtt", store, state);
 			});
 		});
-		mqttClient.on("reconnect", () => { state.mqtt = "reconnecting"; });
-		mqttClient.on("offline", () => { state.mqtt = "offline"; });
-		mqttClient.on("close", () => { state.mqtt = "closed"; });
+		mqttClient.on("reconnect", () => { clearSubscriptionRetry(); state.mqtt = "reconnecting"; });
+		mqttClient.on("offline", () => { clearSubscriptionRetry(); state.mqtt = "offline"; });
+		mqttClient.on("close", () => { clearSubscriptionRetry(); state.mqtt = "closed"; });
 		mqttClient.on("error", (error) => { state.lastError = error.message; });
 		await new Promise((resolve) => {
 			let stopping = false;
@@ -1249,6 +1281,7 @@ async function runApprovalDaemon() {
 				if (stopping) return;
 				stopping = true;
 				state.status = "stopping";
+				clearSubscriptionRetry();
 				mqttClient.end(true);
 				server.close(resolve);
 			};
@@ -1256,6 +1289,7 @@ async function runApprovalDaemon() {
 			process.once("SIGINT", stop);
 		});
 	} catch (error) {
+		clearSubscriptionRetry();
 		mqttClient?.end(true);
 		server.close();
 		throw error;
