@@ -1,6 +1,24 @@
 # 任务索引
 
+- [按关注点提交全部本地改动](tasks/group-local-changes-into-commits-20260903.md) — Completed (2026-09-03 19:31)
+
+- [修复全部本地审查问题](tasks/fix-all-local-review-findings.md) — Completed (2026-09-03 18:16)
+
+- [添加 Task Review 停滞保护](tasks/add-task-review-stall-protection.md) — Completed (2026-09-03 15:12)
+
+- [分析 ADHD Skill 与 CSL Contract 的融合可能](tasks/analyze-adhd-skill-contract-integration.md) — Completed (2026-09-03 10:31)
+
+- [强制 Task Review 修复循环](tasks/require-task-review-loop.md) — Completed (2026-09-03 11:27)
+
+- [修复 Yunxiao 守护进程生命周期](tasks/fix-yunxiao-daemon-lifecycle.md) — Completed (2026-09-02 17:47)
+
+- [扩展 Task Maintenance 架构迁移清理](tasks/extend-task-maintenance-architecture-migration.md) — Completed (2026-09-02 17:23)
+
+- [移除 Yunxiao Zip 并审查脚本设计](tasks/remove-yunxiao-zip-review-script-design.md) — Completed (2026-09-02 17:11)
+
 - [诊断云效 MQTT 订阅失败](tasks/diagnose-yunxiao-mqtt-subscription-failure.md) — Completed (2026-09-02 13:40)
+
+- [优化 CLI 帮助与版本更新检查](tasks/improve-cli-help-version-check.md) — Completed (2026-09-02 10:52)
 
 - [发布 CSL Agent Kit 新生产版本](tasks/publish-new-production-version.md) — Completed (2026-09-01 17:27)
 
