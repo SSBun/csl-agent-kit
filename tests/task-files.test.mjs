@@ -807,6 +807,78 @@ test("workspace task-review stall cases block after two per-finding no-progress 
   assert.equal(ledgerById["progress-resets-only-one-finding"].expected_action, "Blocked");
 });
 
+test("task maintenance separates safe structure operations and protects stable-ID consumers", () => {
+  const skillDir = path.join(cslTasksDir, "task-maintenance");
+  const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
+  const fixture = JSON.parse(readFileSync(path.join(skillDir, "evals", "structure_operation_cases.json"), "utf8"));
+
+  assert.deepEqual(fixture.transaction_invariants.destructive_structure_operations, ["Migrate", "Duplicate Delete", "Empty Directory Delete"]);
+  assert.equal(fixture.transaction_invariants.pre_delete_recheck, true);
+  assert.equal(fixture.transaction_invariants.atomic_no_replace_verified_before_writes, true);
+  assert.equal(fixture.transaction_invariants.same_filesystem_sibling_quarantine, true);
+  assert.equal(fixture.transaction_invariants.quarantine_manifest_verified_after_rename, true);
+  assert.equal(fixture.transaction_invariants.quarantine_retained_until_postconditions_pass, true);
+  assert.equal(fixture.transaction_invariants.final_recheck_before_quarantine_cleanup, true);
+  assert.equal(fixture.transaction_invariants.final_cleanup_rechecks_source_absent, true);
+  assert.equal(fixture.transaction_invariants.rollback_restores_from_quarantine, true);
+  assert.equal(fixture.transaction_invariants.rollback_requires_source_absent, true);
+  assert.equal(fixture.transaction_invariants.rollback_uses_atomic_no_replace_rename, true);
+  assert.equal(fixture.transaction_invariants.rollback_conflict_retains_source_and_quarantine, true);
+  for (const item of fixture.rollback_cases) {
+    const actual = item.source_path_absent && !item.source_exists_at_rename ? "Restore From Quarantine" : "Unresolved Recovery Conflict";
+    assert.equal(actual, item.expected, item.id);
+    assert.equal(item.overwrite_source, false, item.id);
+    assert.equal(item.delete_source, false, item.id);
+  }
+  const rollbackById = Object.fromEntries(fixture.rollback_cases.map((item) => [item.id, item]));
+  assert.equal(rollbackById["source-reappeared-at-no-replace-rename"].expected, "Unresolved Recovery Conflict");
+  assert.equal(rollbackById["source-reappeared-at-no-replace-rename"].retain_quarantine, true);
+
+  for (const section of ["Migrate Gate", "Byte-Identical Duplicate Delete Gate", "Empty Directory Delete Gate", "Apply Migrate", "Apply Duplicate Delete", "Apply Empty Directory Delete"]) {
+    assert.ok(skill.includes(`### ${section}`), `missing structure operation section: ${section}`);
+  }
+  assert.match(skill, /inventory every current non-historical consumer in Task-owned and non-Task sources/);
+  assert.match(skill, /Any non-empty historical path that is not a verified byte-identical duplicate must use Migrate/);
+  assert.match(skill, /Duplicate Delete candidate requires a non-empty source/);
+  assert.match(skill, /Empty Directory Delete candidate has no destination and exclusively owns every empty-source case/);
+  assert.match(skill, /neither may contain the other/);
+  assert.match(skill, /same-filesystem atomic no-replace rename primitive is available and verified/);
+  assert.match(skill, /otherwise Defer before writing/);
+  assert.match(skill, /Each empty parent directory requires its own approved Empty Directory Delete candidate/);
+  assert.match(skill, /Immediately recheck both manifests/);
+  assert.match(skill, /atomically rename the source to a unique absent sibling quarantine path/);
+  assert.match(skill, /Recompute the quarantine manifest and require it to match/);
+  assert.match(skill, /Immediately recheck source absence, quarantine and destination identity, and rewritten references/);
+  assert.match(skill, /delete quarantine only after every postcondition passes/);
+  assert.match(skill, /Quarantine is transaction-local rollback state, not a persistent ledger/);
+  assert.match(skill, /immediately require source absence and use an atomic no-replace rename/);
+  assert.match(skill, /source exists at the call boundary/);
+  assert.match(skill, /report an unresolved recovery conflict/);
+
+  for (const item of fixture.cases) {
+    let actual;
+    if (item.scope === "data-delete") {
+      actual = item.staleness_proven && item.live_consumers_remain_valid ? "Data Delete" : "Defer";
+    } else if (item.empty) {
+      actual = "Empty Directory Delete";
+    } else if (item.byte_identical_destination && !item.has_unique_content) {
+      actual = "Duplicate Delete";
+    } else if (item.has_unique_content && item.canonical_destination === "absent") {
+      actual = "Migrate";
+    } else {
+      actual = "Defer";
+    }
+    assert.equal(actual, item.expected, item.id);
+  }
+  const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+  assert.equal(byId["empty-directory-deletes-without-destination"].expected, "Empty Directory Delete");
+  assert.equal(byId["empty-directory-with-identical-destination-still-uses-empty-delete"].expected, "Empty Directory Delete");
+  assert.equal(byId["identical-copy-deletes"].empty, false);
+  assert.equal(byId["stable-id-with-live-consumer-defers"].staleness_proven, true);
+  assert.equal(byId["stable-id-with-live-consumer-defers"].live_consumers_remain_valid, false);
+  assert.equal(byId["stable-id-with-live-consumer-defers"].expected, "Defer");
+});
+
 test("workspace lesson contract queries before work and confirms every persistent write", () => {
   const skillDir = path.join(cslTasksDir, "task-lessons");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");

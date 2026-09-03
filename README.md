@@ -23,7 +23,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
 | task-lessons | `/csl:task-lessons` | `/task-lessons` | Query, apply, and maintain reusable workspace lessons. |
-| task-maintenance | `/csl:task-maintenance` | `/task-maintenance` | 显式删除 Context/Lessons 中已证实失效的历史内容，并在统一确认后合并可安全合并的项。 |
+| task-maintenance | `/csl:task-maintenance` | `/task-maintenance` | 整理 Context/Lessons 数据，并按当前权威架构安全清理或迁移 Task 系统拥有的历史文件与目录。 |
 | agent-rules | `/csl:agent-rules` | `/agent-rules` | 管理 Built-in、User 与 Project 三层持久 Agent Rules。 |
 | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
 | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |

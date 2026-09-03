@@ -1,4 +1,4 @@
 interface:
   display_name: "Task Maintenance"
-  short_description: "Clean stale Context and Lessons history"
-  default_prompt: "Use $task-maintenance to propose evidence-backed deletions and merges for accumulated Context and Lessons, then apply only the exact change set I approve."
+  short_description: "Clean and migrate Task workspace history"
+  default_prompt: "Use $task-maintenance to propose evidence-backed Context/Lessons cleanup and safe migrations from historical Task-owned paths to the current authoritative architecture, then apply only the exact change set I approve."

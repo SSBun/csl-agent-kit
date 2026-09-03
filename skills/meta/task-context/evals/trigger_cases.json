@@ -19,6 +19,7 @@
     "Create the task record in tasks/tasks.md before implementation.",
     "Capture this user correction in tasks/lessons.md.",
     "Clean stale historical content and merge duplicate entries across tasks/context.md and tasks/lessons.md.",
+    "Migrate Task-owned legacy files and directories to the current canonical Task architecture.",
     "Run adversarial review on the completed change.",
     "Save this tip for future Markdown requests."
   ]

@@ -17,6 +17,7 @@
     "At session start, read tasks/context.md.",
     "Create the task record in tasks/tasks.md before implementation.",
     "Clean stale historical content and merge overlapping entries across tasks/context.md and tasks/lessons.md.",
+    "Migrate Task-owned legacy files and directories to the current canonical Task architecture.",
     "Run adversarial review on the completed change.",
     "Update the confirmed component relationship in the workspace context."
   ]

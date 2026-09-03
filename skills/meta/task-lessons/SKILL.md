@@ -1,6 +1,6 @@
 ---
 name: task-lessons
-description: Query and apply relevant `tasks/lessons.md` preventive controls when entering substantive work, restoring an interrupted thread, materially changing an active request, or receiving a user correction, and maintain reusable correction lessons with explicit write approval. Use to retrieve, apply, add, merge, refine, replace, or remove workspace lessons. Do not use for ordinary preferences, one-off request details, execution status, durable repository facts, secrets, or explicit cross-record historical cleanup handled by task-maintenance.
+description: Query and apply relevant `tasks/lessons.md` preventive controls when entering substantive work, restoring an interrupted thread, materially changing an active request, or receiving a user correction, and maintain reusable correction lessons with explicit write approval. Use to retrieve, apply, add, merge, refine, replace, or remove workspace lessons. Do not use for ordinary preferences, one-off request details, execution status, durable repository facts, secrets, or explicit Task-workspace historical cleanup or architecture migration handled by task-maintenance.
 ---
 
 # Prevent Repeated Mistakes
@@ -18,7 +18,7 @@ Route information to its proper owner. Prefer eliminating the failure or enforci
 - Procedures belong in an SOP or runbook.
 - Speculation, secrets, duplicates, and one-off details are not stored.
 
-Explicit requests to scan accumulated Context or Lessons history for stale deletions or cross-record consolidation belong to `$task-maintenance`; correction-driven maintenance of an individual Lesson remains here.
+Explicit requests to scan accumulated Task workspace history for stale deletion, cross-record consolidation, or legacy path migration belong to `$task-maintenance`; correction-driven maintenance of an individual Lesson remains here.
 
 Routine lesson maintenance does not create a task record.
 

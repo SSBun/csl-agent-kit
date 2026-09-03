@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "transaction_invariants": {
+    "destructive_structure_operations": [
+      "Migrate",
+      "Duplicate Delete",
+      "Empty Directory Delete"
+    ],
+    "pre_delete_recheck": true,
+    "atomic_no_replace_verified_before_writes": true,
+    "same_filesystem_sibling_quarantine": true,
+    "quarantine_manifest_verified_after_rename": true,
+    "quarantine_retained_until_postconditions_pass": true,
+    "final_recheck_before_quarantine_cleanup": true,
+    "final_cleanup_rechecks_source_absent": true,
+    "rollback_restores_from_quarantine": true,
+    "rollback_requires_source_absent": true,
+    "rollback_uses_atomic_no_replace_rename": true,
+    "rollback_conflict_retains_source_and_quarantine": true
+  },
+  "rollback_cases": [
+    {
+      "id": "source-reappeared-after-quarantine",
+      "source_path_absent": false,
+      "expected": "Unresolved Recovery Conflict",
+      "overwrite_source": false,
+      "delete_source": false,
+      "retain_quarantine": true
+    },
+    {
+      "id": "source-reappeared-at-no-replace-rename",
+      "source_path_absent": true,
+      "source_exists_at_rename": true,
+      "expected": "Unresolved Recovery Conflict",
+      "overwrite_source": false,
+      "delete_source": false,
+      "retain_quarantine": true
+    },
+    {
+      "id": "source-remains-absent-after-quarantine",
+      "source_path_absent": true,
+      "source_exists_at_rename": false,
+      "expected": "Restore From Quarantine",
+      "overwrite_source": false,
+      "delete_source": false,
+      "retain_quarantine": false
+    }
+  ],
+  "cases": [
+    {
+      "id": "unique-content-migrates",
+      "scope": "structure",
+      "source_type": "directory",
+      "empty": false,
+      "byte_identical_destination": false,
+      "has_unique_content": true,
+      "canonical_destination": "absent",
+      "expected": "Migrate"
+    },
+    {
+      "id": "identical-copy-deletes",
+      "scope": "structure",
+      "source_type": "directory",
+      "empty": false,
+      "byte_identical_destination": true,
+      "has_unique_content": false,
+      "canonical_destination": "identical",
+      "expected": "Duplicate Delete"
+    },
+    {
+      "id": "empty-directory-deletes-without-destination",
+      "scope": "structure",
+      "source_type": "directory",
+      "empty": true,
+      "byte_identical_destination": false,
+      "has_unique_content": false,
+      "canonical_destination": "not-applicable",
+      "expected": "Empty Directory Delete"
+    },
+    {
+      "id": "empty-directory-with-identical-destination-still-uses-empty-delete",
+      "scope": "structure",
+      "source_type": "directory",
+      "empty": true,
+      "byte_identical_destination": true,
+      "has_unique_content": false,
+      "canonical_destination": "identical",
+      "expected": "Empty Directory Delete"
+    },
+    {
+      "id": "unique-content-cannot-delete",
+      "scope": "structure",
+      "source_type": "directory",
+      "empty": false,
+      "byte_identical_destination": false,
+      "has_unique_content": true,
+      "canonical_destination": "unavailable",
+      "expected": "Defer"
+    },
+    {
+      "id": "stable-id-with-live-consumer-defers",
+      "scope": "data-delete",
+      "stable_id": true,
+      "live_consumers_remain_valid": false,
+      "staleness_proven": true,
+      "expected": "Defer"
+    },
+    {
+      "id": "unreferenced-stale-stable-id-deletes",
+      "scope": "data-delete",
+      "stable_id": true,
+      "live_consumers_remain_valid": true,
+      "staleness_proven": true,
+      "expected": "Data Delete"
+    }
+  ]
+}

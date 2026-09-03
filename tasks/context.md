@@ -219,21 +219,22 @@
 - `scripts/lessons.js` 只负责确定性只读解析、索引、按 ID 查询与 schema 校验；Agent 负责语义匹配、载体选择、冲突处理、Rule 应用和 Check 证据。Legacy records 渐进兼容，已选 IDs 不持久缓存。
 - 聚焦契约与回归入口为主 Skill、查询脚本、`evals/query_cases.json`、`evals/trigger_cases.json` 和 `tests/task-files.test.mjs`。
 
-## CTX-task-maintenance — Context and Lessons historical cleanup
-- Scope: 用户显式发起、统一确认的 Context/Lessons 失效历史删除与同载体语义合并。
-- Paths: `skills/meta/task-maintenance/`, `skills/meta/task-context/`, `skills/meta/task-lessons/`, `tasks/context.md`, `tasks/lessons.md`
-- Keywords: task maintenance, context cleanup, lessons cleanup, stale history, merge
-- Authority: `skills/meta/task-maintenance/SKILL.md`, `skills/meta/task-context/SKILL.md`, `skills/meta/task-lessons/SKILL.md`
-- Recheck: 当删除或合并证据门、统一确认行为、Context/Lessons schema 或三者职责边界变化时复核。
+## CTX-task-maintenance — Task workspace data and architecture maintenance
+- Scope: 用户显式发起、统一确认的 Context/Lessons 数据整理，以及按当前权威架构执行的 Task-owned 历史文件与目录清理迁移。
+- Paths: `skills/meta/task-maintenance/`, `skills/meta/task/`, `skills/meta/task-context/`, `skills/meta/task-lessons/`, `skills/meta/archive/`, `tasks/`
+- Keywords: task maintenance, context cleanup, lessons cleanup, stable ID consumers, task architecture, historical paths, Migrate, Duplicate Delete, Empty Directory Delete
+- Authority: `skills/meta/task-maintenance/SKILL.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-context/SKILL.md`, `skills/meta/task-lessons/SKILL.md`, `skills/meta/archive/SKILL.md`
+- Recheck: 当数据清理证据门、Task workspace canonical layout、artifact ownership、Conversation archive 路径、统一 Safety Confirmation 或迁移恢复边界变化时复核。
 
 ### Purpose and Boundaries
-- `task-maintenance` 是内容产生方即时维护之外的显式兜底，只删除 Authority 已证明失效的历史内容并合并不会丢失有效约束的同载体项；它不负责调度、任务归档、格式迁移、一般重写或内容重路由。
+- `task-maintenance` 是内容产生方即时维护之外的显式兜底：既能删除或合并 Authority 已证明失效／重叠的 Context/Lessons 数据，也能将唯一归属的 Task-owned 历史路径无损迁移到当前 canonical layout；它不负责整个仓库的架构整理、历史正文现代化、自动调度或兼容层。
 
 ### Relationships
-- `task-context` 继续负责 Project Core、按需 Pack 检索及事实变化时的 source-backed 维护；`task-lessons` 继续负责纠正驱动的 Lesson 检索与持久写入；跨记录历史清理由 `task-maintenance` 编排并复用两者现有只读 CLI 与 schema。
+- `task-context` 与 `task-lessons` 继续负责日常数据生命周期，`task` 定义 canonical records、artifacts 与结构维护所需 lifecycle，`archive` 定义逐字 Conversation 载体；`task-maintenance` 每次从这些 live Authorities 与当前 path producers 建立架构图，不缓存目录清单。仅数据整理沿用 routine-maintenance 例外，结构迁移先进入 canonical task。
 
 ### Decision and Verification Boundaries
-- 每个 Delete/Merge 候选都必须展示 Authority 证据和精确最终内容并获得一次明确确认；两个载体不得互相合并，legacy 或日期久本身不证明失效，获批变更按文件独立校验并在失败时恢复原文。
+- Data Delete 在移除稳定 ID 前必须证明全部当前非历史 consumers 仍有效。Structure operations 分为 Migrate、仅限 non-empty byte-identical source 的 Duplicate Delete 与独占全部 empty-source cases、无 destination 的 Empty Directory Delete：含唯一内容的非空路径只能 Migrate，source／destination 不得互相包含。删除前必须立即重验 manifest／引用并把 source 原子移到同文件系统 sibling quarantine；rename 后和最终 cleanup 前都重新验证 source absence、quarantine manifest／mode、destination 与引用，全部 postconditions 通过后才最终删除，Structure candidate 在写入前必须验证同文件系统 atomic no-replace primitive 可用，否则 Defer。失败恢复在 rename 调用边界再次确认 source absent，并使用该 no-replace primitive；primitive 不可用或 source 已重建时禁止覆盖／删除，保留 source、quarantine 与 destination 并报告 unresolved recovery conflict。每个候选都需 Task-system ownership、唯一 owner、适用时的 canonical destination、完整 manifest／引用边界与一次精确 `Safety Confirmation`。
+- `skills/meta/task-maintenance/evals/structure_operation_cases.json` 与 `tests/task-files.test.mjs` 共同固定三类 structure operation、unique-content Defer 及 stable-ID live-consumer gate。
 
 ## CTX-install — Installer target selection and workflow delivery
 - Scope: `csl-agent-kit install` 的默认、已保存与显式 integration target 选择，以及内置 Agent Hooks 行为契约的独立注入边界。

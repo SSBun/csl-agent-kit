@@ -2,22 +2,26 @@
   "recommended_threshold": 0.5,
   "should_trigger": [
     "Clean stale historical entries from tasks/context.md and merge duplicate Context Packs.",
-    "Run task maintenance on Context and Lessons; show the exact deletions and merges before writing.",
     "Consolidate overlapping lessons and remove rules whose failure mechanisms no longer exist.",
-    "Audit accumulated Context and Lessons history for evidence-backed Delete or Merge candidates.",
-    "Use task-maintenance to clean only tasks/lessons.md."
+    "Compare the current Task architecture with old Task-owned directories and propose safe migrations.",
+    "Migrate legacy Task artifacts from old plans and reports directories to the current task-owned artifact layout without losing data.",
+    "Clean obsolete Task directories after verifying their contents were migrated and every live link resolves.",
+    "Use task-maintenance to remove byte-identical historical Task files and empty legacy directories.",
+    "Audit accumulated Task workspace data and paths for evidence-backed Delete, Merge, or Migrate candidates."
   ],
   "should_not_trigger": [
     "Add this newly confirmed fact to tasks/context.md.",
     "Capture this correction as a reusable lesson.",
-    "Archive completed canonical task records.",
-    "Automatically run this cleanup every month.",
-    "Migrate every legacy lesson to the v1 format."
+    "Reorganize src/components to match the application's new architecture.",
+    "Scan the entire repository and migrate every old directory.",
+    "Automatically run Task cleanup every month.",
+    "Rewrite every historical task record into the latest schema."
   ],
   "near_neighbor": [
-    "At session start, load the Project Core before acting.",
-    "Merge this current correction with one existing lesson after I approve the exact diff.",
+    "Archive this exact conversation to tasks/conversations.",
+    "Create a canonical task record before implementing this feature.",
+    "Move product documentation into its new project-owned directory.",
     "Update a Context Pack because its authoritative source changed during this task.",
-    "Clean old task records and their artifacts."
+    "Merge this current correction with one existing lesson after I approve the exact diff."
   ]
 }

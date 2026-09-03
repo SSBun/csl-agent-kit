@@ -1,45 +1,58 @@
 {
   "positive_concepts": {
-    "context_lessons_history_cleanup": {
+    "task_data_cleanup": {
       "weight": 1.0,
       "phrases": [
         "clean stale context",
         "stale historical entries",
         "merge duplicate context packs",
         "consolidate overlapping lessons",
-        "remove obsolete lessons",
-        "task maintenance",
-        "delete or merge candidates"
+        "remove obsolete lessons"
+      ]
+    },
+    "task_structure_migration": {
+      "weight": 1.0,
+      "phrases": [
+        "current task architecture",
+        "task-owned directories",
+        "migrate legacy task artifacts",
+        "old task paths",
+        "obsolete task directories",
+        "historical task files",
+        "delete merge or migrate candidates"
       ]
     }
   },
   "negative_concepts": {
-    "ordinary_context_update": {
+    "ordinary_context_or_lesson_update": {
       "weight": 0.7,
       "exclusive": true,
       "phrases": [
         "newly confirmed fact",
-        "update a context pack",
-        "load the project core"
-      ]
-    },
-    "correction_driven_lesson": {
-      "weight": 0.7,
-      "exclusive": true,
-      "phrases": [
         "capture this correction",
         "current correction",
-        "one existing lesson"
+        "update a context pack"
       ]
     },
-    "other_maintenance_work": {
+    "non_task_architecture_work": {
+      "weight": 0.8,
+      "exclusive": true,
+      "phrases": [
+        "src components",
+        "application architecture",
+        "entire repository",
+        "product documentation",
+        "project-owned directory"
+      ]
+    },
+    "excluded_task_work": {
       "weight": 0.7,
       "exclusive": true,
       "phrases": [
-        "archive completed tasks",
-        "clean old task records",
+        "archive this exact conversation",
         "automatically every month",
-        "migrate every legacy lesson"
+        "rewrite every historical task record",
+        "latest schema"
       ]
     }
   }
