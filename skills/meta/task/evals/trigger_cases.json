@@ -9,7 +9,8 @@
     "Activate this concrete task and apply its shared Task Target Alignment Protocol before research.",
     "Resume the existing task and finish its remaining targets.",
     "Cancel this task for now; I may continue it later.",
-    "Verify and complete the current workspace task."
+    "Verify and complete the current workspace task.",
+    "Implement this file change and finish its mandatory task-review remediation loop."
   ],
   "should_not_trigger": [
     "Answer this simple factual question.",

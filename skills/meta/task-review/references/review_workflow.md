@@ -2,6 +2,8 @@
 
 ## Resolve the Target
 
+An owning-task mandatory dispatch is a complete review request. Use its named task and packet without asking the user to request review again.
+
 Use the first complete target already available:
 
 1. A user-named canonical task record.
@@ -30,6 +32,7 @@ Include only:
 - current artifact, result, and relevant diff
 - applicable rules and spec
 - checks already observed and known limitations
+- for an owning-task re-review, the current `task-review-ledger/v1` `## Review` ledger and next unused `TR-<n>` ID
 
 Exclude the author's reasoning, defense, desired verdict, and suggested Reviewer response. The Reviewer may inspect additional surrounding evidence and run non-destructive checks, but must not edit or delegate.
 
@@ -37,4 +40,4 @@ Exclude the author's reasoning, defense, desired verdict, and suggested Reviewer
 
 A confirmed finding needs an observable issue and practical impact. Put material uncertainty caused by missing evidence under Unverified Risks instead of presenting it as fact. Omit preference-only feedback and unrelated cleanup.
 
-When a location has no file and line, cite the narrowest available section, Target ID, Result evidence, or result claim. Report only checks actually run and never turn the result into approval or completion authorization.
+When a location has no file and line, cite the narrowest available section, Target ID, Result evidence, or result claim. Preserve a prior `TR-<n>` ID whenever the root problem and required outcome remain materially the same, even if wording, location, or severity changes. Report only checks actually run and never turn the result into approval or completion authorization.

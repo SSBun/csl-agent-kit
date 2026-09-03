@@ -18,8 +18,11 @@ const TIMESTAMP_PATTERN = "\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]) (?:
 const STATUS_PATTERN = new RegExp(`^Status: (${Object.values(STATE_DISPLAY).join("|")}) \\((${TIMESTAMP_PATTERN})\\)$`, "m");
 const TARGET_PATTERN = /^\s*- \[([ xX])] (T\d+):\s*(.+)$/;
 const RESULT_PATTERN = /^\s*- (T\d+):\s*(.+)$/;
-const REVIEW_PATTERN = /^\s*- Review gate: (Skipped|Required|Approved) — (.+)$/m;
+const REVIEW_PATTERN = /^\s*- Review gate: (Skipped|Required|Passed|Approved) — (.+)$/m;
 const VERIFICATION_PATTERN = /^\s*- (Passed|Failed):\s*(.+)$/m;
+const REVIEW_LEDGER_SCHEMA = "task-review-ledger/v1";
+const REVIEW_LEDGER_ENTRY_PATTERN = /^- `(TR-([1-9]\d*))` \| no-progress=([012]) \| (.+) \| (.+)$/;
+const HTML_BLOCK_TAGS = new Set("address article aside base basefont blockquote body caption center col colgroup dd details dialog dir div dl dt fieldset figcaption figure footer form frame frameset h1 h2 h3 h4 h5 h6 head header hr html iframe legend li link main menu menuitem nav noframes ol optgroup option p param search section summary table tbody td tfoot th thead title tr track ul".split(" "));
 
 function tasksDir(workspace) {
   return path.join(path.resolve(workspace), "tasks", "tasks");
@@ -76,13 +79,167 @@ function fieldOf(text, name) {
   return text.match(new RegExp(`^${name}: (.+)$`, "m"))?.[1]?.trim();
 }
 
-function section(text, name) {
+function markdownLineContext(source) {
+  let outerColumns = 0;
+  let offset = 0;
+  while (source[offset] === " " || source[offset] === "\t") {
+    outerColumns = source[offset] === " " ? outerColumns + 1 : outerColumns + 4 - (outerColumns % 4);
+    offset += 1;
+  }
+  let line = source.slice(offset);
+  let quoteDepth = 0;
+  while (line.startsWith(">")) {
+    quoteDepth += 1;
+    line = line.slice(1).replace(/^[ \t]?/, "");
+  }
+  let innerColumns = 0;
+  let innerOffset = 0;
+  while (line[innerOffset] === " " || line[innerOffset] === "\t") {
+    innerColumns = line[innerOffset] === " " ? innerColumns + 1 : innerColumns + 4 - (innerColumns % 4);
+    innerOffset += 1;
+  }
+  line = line.slice(innerOffset);
+  const columns = quoteDepth > 0 ? innerColumns : outerColumns;
+  let payload = line;
+  let listIndent;
+  let listMarker = false;
+  const list = payload.match(/^([-+*]|\d{1,9}[.)])([ \t]+)(.*)$/);
+  if (list) {
+    listMarker = true;
+    listIndent = columns + list[1].length;
+    for (const character of list[2]) {
+      listIndent = character === " " ? listIndent + 1 : listIndent + 4 - (listIndent % 4);
+    }
+    payload = list[3];
+  }
+  return { columns, container: quoteDepth > 0 || listMarker, line, listIndent, listMarker, outerColumns, payload, quoteDepth };
+}
+
+function visibleMarkdownLines(lines) {
+  const visible = [];
+  let activeLists = [];
+  let fence;
+  let html;
+  for (let index = 0; index < lines.length; index += 1) {
+    const context = markdownLineContext(lines[index]);
+    if (fence) {
+      let closing;
+      if (fence.listIndent !== undefined) {
+        if (context.quoteDepth === fence.quoteDepth && !context.listMarker && context.columns >= fence.listIndent && context.columns <= fence.listIndent + 3) {
+          closing = context.line.match(/^(`{3,}|~{3,})[ \t]*$/);
+        } else if (context.quoteDepth < fence.quoteDepth
+          || (context.quoteDepth === fence.quoteDepth && context.columns < fence.listIndent && context.line.trim())
+          || (context.quoteDepth > fence.quoteDepth && context.outerColumns < fence.listIndent && context.line.trim())) {
+          fence = undefined;
+          index -= 1;
+          continue;
+        }
+      } else if (context.quoteDepth === fence.quoteDepth && !context.listMarker && context.columns <= 3) {
+        closing = context.payload.match(/^(`{3,}|~{3,})[ \t]*$/);
+      } else if (fence.quoteDepth > 0 && context.quoteDepth < fence.quoteDepth && context.line.trim()) {
+        fence = undefined;
+        index -= 1;
+        continue;
+      }
+      if (closing && closing[1][0] === fence.character && closing[1].length >= fence.length) fence = undefined;
+      continue;
+    }
+    if (html) {
+      if (html.listIndent !== undefined
+        && (context.quoteDepth < html.quoteDepth
+          || (context.quoteDepth === html.quoteDepth && context.columns < html.listIndent && context.line.trim())
+          || (context.quoteDepth > html.quoteDepth && context.outerColumns < html.listIndent && context.line.trim()))) {
+        html = undefined;
+        index -= 1;
+        continue;
+      }
+      if (html.listIndent === undefined && html.quoteDepth > 0
+        && context.quoteDepth < html.quoteDepth && context.line.trim()) {
+        html = undefined;
+        index -= 1;
+        continue;
+      }
+      const sameContainer = context.quoteDepth === html.quoteDepth && !context.listMarker
+        && (html.listIndent === undefined || context.columns >= html.listIndent);
+      if (html.untilBlank ? !context.payload.trim() : sameContainer && html.end.test(context.payload)) html = undefined;
+      continue;
+    }
+    if (context.columns >= 4 && activeLists.length === 0) continue;
+    activeLists = activeLists.filter(({ indent, quoteDepth }) => quoteDepth <= context.quoteDepth
+      && (quoteDepth === context.quoteDepth || context.outerColumns >= indent));
+    let effectiveListIndent;
+    if (context.listMarker) {
+      activeLists = activeLists.filter(({ indent, quoteDepth }) => quoteDepth !== context.quoteDepth || indent <= context.columns);
+      activeLists.push({ indent: context.listIndent, quoteDepth: context.quoteDepth });
+      effectiveListIndent = context.listIndent;
+    } else {
+      effectiveListIndent = activeLists
+        .filter(({ indent, quoteDepth }) => quoteDepth === context.quoteDepth && indent <= context.columns)
+        .reduce((deepest, { indent }) => Math.max(deepest, indent), 0) || undefined;
+      if (context.line.trim()) {
+        activeLists = activeLists.filter(({ indent, quoteDepth }) => quoteDepth < context.quoteDepth
+          || (quoteDepth === context.quoteDepth && indent <= context.columns));
+      }
+    }
+    const opening = context.payload.match(/^(`{3,}|~{3,})(.*)$/);
+    if (opening && !(opening[1][0] === "`" && opening[2].includes("`"))) {
+      fence = {
+        character: opening[1][0],
+        length: opening[1].length,
+        listIndent: effectiveListIndent,
+        quoteDepth: context.quoteDepth,
+      };
+      continue;
+    }
+    if (/^<!--/.test(context.payload)) {
+      if (!context.payload.includes("-->")) html = {
+        end: /-->/,
+        listIndent: effectiveListIndent,
+        quoteDepth: context.quoteDepth,
+      };
+      continue;
+    }
+    const rawTag = context.payload.match(/^<(pre|script|style|textarea)(?:[ \t>]|$)/i)?.[1];
+    if (rawTag) {
+      const end = new RegExp(`</${rawTag}[ \t]*>`, "i");
+      if (!end.test(context.payload)) html = {
+        end,
+        listIndent: effectiveListIndent,
+        quoteDepth: context.quoteDepth,
+      };
+      continue;
+    }
+    const blockTag = context.payload.match(/^<\/?([A-Za-z][A-Za-z0-9-]*)(?:[ \t/>]|$)/)?.[1]?.toLowerCase();
+    if (HTML_BLOCK_TAGS.has(blockTag)) {
+      html = {
+        listIndent: effectiveListIndent,
+        quoteDepth: context.quoteDepth,
+        untilBlank: true,
+      };
+      continue;
+    }
+    visible.push({ ...context, index });
+  }
+  return visible;
+}
+
+function sectionsOf(text, name) {
   const lines = text.replace(/\s+$/, "").split(/\r?\n/);
-  const start = lines.findIndex((line) => line.trim().toLowerCase() === `## ${name.toLowerCase()}`);
-  if (start === -1) return undefined;
-  let end = lines.findIndex((line, index) => index > start && /^##\s+/.test(line));
-  if (end === -1) end = lines.length;
-  return { lines, start, end, body: lines.slice(start + 1, end).filter((line) => line.trim()) };
+  const headings = visibleMarkdownLines(lines).flatMap(({ columns, container, line, index }) => {
+    if (columns !== 0 || container) return [];
+    const match = line.match(/^(#{1,6})(?:[ \t]+(.*))?$/);
+    if (!match || match[1].length !== 2) return [];
+    const title = (match[2] || "").replace(/[ \t]+#+[ \t]*$/, "").trim().toLowerCase();
+    return [{ index, title }];
+  });
+  return headings.filter(({ title }) => title === name.toLowerCase()).map(({ index: start }) => {
+    const end = headings.find(({ index }) => index > start)?.index ?? lines.length;
+    return { lines, start, end, body: lines.slice(start + 1, end).filter((line) => line.trim()) };
+  });
+}
+
+function section(text, name) {
+  return sectionsOf(text, name)[0];
 }
 
 function replaceSection(text, name, bodyLines) {
@@ -134,6 +291,84 @@ function resultsOf(text) {
   return map;
 }
 
+function invalidateReviewGate(text, evidence) {
+  const review = text.match(REVIEW_PATTERN);
+  if (!review || !["Passed", "Approved"].includes(review[1])) return text;
+  const updated = text.replace(REVIEW_PATTERN, `- Review gate: Required — ${evidence}`);
+  return replaceSection(updated, "Verification", undefined);
+}
+
+function reviewLedgerOf(text) {
+  const reviewSections = sectionsOf(text, "Review");
+  if (reviewSections.length > 1) throw new Error("duplicate Review section");
+  const found = reviewSections[0];
+  if (!found) return undefined;
+  const visibleBody = visibleMarkdownLines(found.lines.slice(found.start + 1, found.end))
+    .filter(({ line }) => line.trim());
+  const body = visibleBody.map(({ line }) => line);
+  const activeItems = [];
+  const listItems = [];
+  for (const { columns, line, listIndent, outerColumns, quoteDepth } of visibleBody) {
+    for (let index = activeItems.length - 1; index >= 0; index -= 1) {
+      const item = activeItems[index];
+      if (item.quoteDepth < quoteDepth && outerColumns < item.contentIndent) activeItems.splice(index, 1);
+    }
+    const marker = line.match(/^(?:[-+*]|\d{1,9}[.)])(?:[ \t]+(.*)|[ \t]*)$/);
+    if (marker) {
+      for (let index = activeItems.length - 1; index >= 0; index -= 1) {
+        const item = activeItems[index];
+        if (item.quoteDepth > quoteDepth
+          || (item.quoteDepth === quoteDepth && item.contentIndent > columns)) activeItems.splice(index, 1);
+      }
+      const item = { contentIndent: listIndent ?? columns + 2, quoteDepth, text: marker[1] || "" };
+      activeItems.push(item);
+      listItems.push(item);
+    } else {
+      const item = activeItems
+        .filter(({ contentIndent, quoteDepth: itemQuoteDepth }) => itemQuoteDepth === quoteDepth && contentIndent <= columns)
+        .sort((left, right) => right.contentIndent - left.contentIndent)[0];
+      if (item) item.text += `\n${line}`;
+      if (line.trim()) {
+        for (let index = activeItems.length - 1; index >= 0; index -= 1) {
+          const active = activeItems[index];
+          if (active.quoteDepth > quoteDepth
+            || (active.quoteDepth === quoteDepth && active.contentIndent > columns)) activeItems.splice(index, 1);
+        }
+      }
+    }
+  }
+  const schemaLines = body.filter((line) => /^- Schema: task-review-ledger\//.test(line));
+  const hasSchema = listItems.some(({ text }) => /\bSchema\b/i.test(text) && /task-review-ledger(?:\/|\b)/i.test(text));
+  const hasPass = listItems.some(({ text }) => /^\s*Pass\b/i.test(text));
+  const hasNextFinding = listItems.some(({ text }) => /^\s*Next\s+finding\b/i.test(text));
+  const hasFinding = listItems.some(({ text }) => /\bTR-[1-9]\d*\b/i.test(text) && /\bno-progress\b/i.test(text));
+  if (!hasSchema && !(hasPass && hasNextFinding) && !hasFinding) return undefined;
+  if (schemaLines.length !== 1) throw new Error("invalid task-review ledger schema marker");
+  if (schemaLines[0] !== `- Schema: ${REVIEW_LEDGER_SCHEMA}`) throw new Error(`unsupported Review ledger schema: ${schemaLines[0].slice("- Schema: ".length)}`);
+
+  const passes = body.map((line) => line.match(/^- Pass: ([1-9]\d*)$/)).filter(Boolean);
+  const nextFindings = body.map((line) => line.match(/^- Next finding: ([1-9]\d*)$/)).filter(Boolean);
+  const entries = body.map((line) => line.match(REVIEW_LEDGER_ENTRY_PATTERN)).filter(Boolean).map((match) => ({
+    id: match[1],
+    number: Number(match[2]),
+    noProgress: Number(match[3]),
+    location: match[4],
+    requiredOutcome: match[5],
+  }));
+  if (passes.length !== 1 || nextFindings.length !== 1 || entries.length === 0
+    || 1 + passes.length + nextFindings.length + entries.length !== body.length) {
+    throw new Error("invalid task-review-ledger/v1 Review section");
+  }
+  if (new Set(entries.map(({ id }) => id)).size !== entries.length) throw new Error("duplicate Review finding ID");
+  const nextFinding = Number(nextFindings[0][1]);
+  if (nextFinding <= Math.max(...entries.map(({ number }) => number))) throw new Error("Next finding must exceed every Review finding ID");
+  return { pass: Number(passes[0][1]), nextFinding, entries };
+}
+
+function stalledReviewIds(task) {
+  return task.reviewLedger?.entries.filter(({ noProgress }) => noProgress >= 2).map(({ id }) => id) || [];
+}
+
 function childrenOf(text) {
   const found = section(text, "Children");
   if (!found) return [];
@@ -172,6 +407,7 @@ function parseTask(id, text, file) {
     targets: targetsOf(text),
     results: resultsOf(text),
     review: text.match(REVIEW_PATTERN),
+    reviewLedger: reviewLedgerOf(text),
     verification: text.match(VERIFICATION_PATTERN),
   };
 }
@@ -226,8 +462,13 @@ function updatedIndex(workspace, task, timestamp, existingText) {
 
 function syncIndex(workspace, id) {
   const task = readTask(workspace, id);
-  atomicWrite(indexPath(workspace), updatedIndex(workspace, task));
-  return task;
+  if (task.status.state === "completed") throw new Error("reopen a Completed task before syncing specification changes");
+  let text = task.text;
+  text = invalidateReviewGate(text, "Task record changed before sync; rerun the applicable review");
+  text = replaceSection(text, "Verification", undefined);
+  const synced = parseTask(task.id, text, task.file);
+  writeMany([[task.file, text], [indexPath(workspace), updatedIndex(workspace, synced)]]);
+  return readTask(workspace, id);
 }
 
 function createTask(workspace, options) {
@@ -287,12 +528,20 @@ function setState(workspace, id, requested) {
     cancelled: new Set(["in_progress"]),
     completed: new Set(),
   };
+  if (state === "in_progress") {
+    const stalled = stalledReviewIds(task);
+    if (stalled.length) throw new Error(`reset stalled Review findings after the unblock condition before continuing: ${stalled.join(", ")}`);
+  }
   if (task.status.state === state) return task;
   if (!allowed[task.status.state].has(state)) throw new Error(`cannot move ${task.status.display} to ${STATE_DISPLAY[state]}`);
   if (state === "in_progress" && task.targets.length === 0) throw new Error("In Progress requires at least one Target");
   if (state === "in_review" && task.review?.[1] !== "Required") throw new Error("In Review requires a required review gate");
   if (state === "blocked" && !section(task.text, "Block")) throw new Error("Blocked requires an active Block section");
   let text = replaceStatus(task.text, state);
+  if (task.status.state === "in_review" && state !== "in_review") {
+    text = invalidateReviewGate(text, "Task left In Review; rerun the applicable review after revisions");
+    text = replaceSection(text, "Verification", undefined);
+  }
   if (task.status.state === "blocked" && state !== "blocked") text = replaceSection(text, "Block", undefined);
   return writeTaskAndIndex(workspace, task, text);
 }
@@ -308,9 +557,26 @@ function resumeTask(workspace, id) {
 function reopenTask(workspace, id) {
   const task = readTask(workspace, id);
   if (task.status.state !== "completed") throw new Error("only Completed tasks can be reopened");
+  const parent = task.parent ? readTask(workspace, task.parent) : undefined;
+  if (parent?.status.state === "completed") throw new Error(`reopen parent ${parent.id} before reopening child ${id}`);
+  if (parent && !["in_progress", "in_review"].includes(parent.status.state)) {
+    throw new Error(`resume parent ${parent.id} before reopening child ${id}`);
+  }
+
   let text = replaceStatus(task.text, "in_progress");
+  text = invalidateReviewGate(text, "Task reopened; rerun the applicable review after revisions");
   text = replaceSection(text, "Verification", undefined);
-  return writeTaskAndIndex(workspace, task, text);
+  if (!parent) return writeTaskAndIndex(workspace, task, text);
+
+  let parentText = invalidateReviewGate(parent.text, `Child ${id} reopened; rerun the applicable integration review`);
+  parentText = replaceSection(parentText, "Verification", undefined);
+  if (parent.status.state === "in_review") parentText = replaceStatus(parentText, "in_progress");
+  const reopened = parseTask(task.id, text, task.file);
+  const invalidatedParent = parseTask(parent.id, parentText, parent.file);
+  let index = updatedIndex(workspace, reopened);
+  index = updatedIndex(workspace, invalidatedParent, undefined, index);
+  writeMany([[task.file, text], [parent.file, parentText], [indexPath(workspace), index]]);
+  return readTask(workspace, id);
 }
 
 function recordResult(workspace, id, targetId, evidence) {
@@ -332,6 +598,7 @@ function recordResult(workspace, id, targetId, evidence) {
   if (reviewIndex === -1) lines.push(result);
   else lines.splice(reviewIndex, 0, result);
   text = replaceSection(text, "Result", lines);
+  text = invalidateReviewGate(text, "Result evidence changed after review; rerun the applicable review");
   text = replaceSection(text, "Verification", undefined);
   atomicWrite(task.file, text);
   return readTask(workspace, id);
@@ -340,9 +607,22 @@ function recordResult(workspace, id, targetId, evidence) {
 function setReviewGate(workspace, id, decision, evidence) {
   const task = readTask(workspace, id);
   if (task.status.state === "completed") throw new Error("reopen the task before changing the review gate");
-  const values = { skipped: "Skipped", required: "Required", approved: "Approved" };
+  const values = { skipped: "Skipped", required: "Required", passed: "Passed", approved: "Approved" };
   const key = String(decision || "").toLowerCase();
   if (!values[key]) throw new Error(`invalid review gate: ${decision}`);
+  if (["passed", "approved"].includes(key) && task.status.state !== "in_review") {
+    throw new Error(`${values[key]} review gate requires In Review`);
+  }
+  if (key === "passed" && task.review?.[1] !== "Required") {
+    throw new Error("Passed review gate requires a pending Required review");
+  }
+  if (key === "approved" && !["Required", "Passed"].includes(task.review?.[1])) {
+    throw new Error("Approved review gate requires a Required or Passed review");
+  }
+  if (["passed", "approved"].includes(key) && task.reviewLedger) {
+    throw new Error("remove the active Review ledger before recording a terminal review gate");
+  }
+  if (key === "skipped" && task.status.state === "in_review") throw new Error("In Review cannot skip its review gate");
   const value = String(evidence || "").trim();
   if (!value || /[\r\n]/.test(value)) throw new Error("review evidence must be one line");
   const found = section(task.text, "Result");
@@ -393,6 +673,7 @@ function linkChild(workspace, parentId, childId) {
     ? parent.children
     : [...parent.children, { id: childId, title: child.title }];
   let parentText = replaceSection(parent.text, "Children", children.map((item, index) => `${index + 1}. [${item.title}](${item.id}.md)`));
+  parentText = invalidateReviewGate(parentText, "Queue graph changed after review; rerun the applicable review");
   parentText = replaceSection(parentText, "Verification", undefined);
   const childText = setField(child.text, "Parent", parentId);
   writeMany([[parent.file, parentText], [child.file, childText]]);
@@ -417,9 +698,14 @@ function completeTask(workspace, id) {
   if (unchecked) throw new Error(`unchecked Target: ${unchecked.id}`);
   const missing = task.targets.find((target) => !task.results.has(target.id));
   if (missing) throw new Error(`missing Result evidence: ${missing.id}`);
-  if (!task.review || !["Skipped", "Approved"].includes(task.review[1])) throw new Error("completion requires a skipped or approved review gate");
-  if (task.status.state === "in_review" && task.review[1] !== "Approved") throw new Error("In Review completion requires approval");
+  if (!task.review || !["Skipped", "Passed", "Approved"].includes(task.review[1])) {
+    throw new Error("completion requires a skipped, passed, or approved review gate");
+  }
+  const completedReview = ["Passed", "Approved"].includes(task.review[1]);
+  if (task.status.state === "in_review" && !completedReview) throw new Error("In Review completion requires a passed or approved review gate");
+  if (completedReview && task.status.state !== "in_review") throw new Error("passed or approved review must complete from In Review");
   if (!task.verification || task.verification[1] !== "Passed") throw new Error("completion requires passed verification evidence");
+  if (task.reviewLedger) throw new Error("an active Review ledger blocks completion");
   if (section(task.text, "Block")) throw new Error("a blocked task cannot be completed");
   if (task.kind === "queue") {
     if (task.children.length === 0) throw new Error("a Queue task needs at least one child");

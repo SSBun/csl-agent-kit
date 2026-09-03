@@ -5,6 +5,8 @@
     "Review task replace-cache-layer and only give me feedback.",
     "Review this pull request for bugs, security issues, and missing tests.",
     "Use task-review to inspect the current diff.",
+    "Run task-review for the owning task's mandatory deliverable-change review pass.",
+    "执行当前文件改动任务的强制 task-review 单次审查。",
     "Review this architecture proposal once and list concrete issues.",
     "Review the result of this research task; it did not change any files.",
     "Check whether this completed task's Result and evidence satisfy its Target.",

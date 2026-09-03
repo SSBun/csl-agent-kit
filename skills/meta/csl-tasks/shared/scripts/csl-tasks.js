@@ -20,7 +20,7 @@ Commands:
   link <parent-id> <child-id>
   next <queue-id> [--json]
   result <id> <Tn> --evidence <text>
-  review <id> <skipped|required|approved> --evidence <text>
+  review <id> <skipped|required|passed|approved> --evidence <text>
   verify <id> <passed|failed> --evidence <text>
   complete <id>`;
 

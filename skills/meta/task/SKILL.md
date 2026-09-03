@@ -1,6 +1,6 @@
 ---
 name: task
-description: Create, resume, update, cancel, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and align its Task Target before substantive work. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
+description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and align its Task Target before substantive work. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
 ---
 
 # Task
@@ -18,7 +18,7 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
 - `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
 - `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
 - Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
-- Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, or Block, run `sync <id>` and `check <id>`.
+- Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively clears Verification and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
 - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
 
 ## Task Artifacts
@@ -58,7 +58,7 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
 
 ## Record Contract
 
-Keep `# Title`, the core-owned `Status:` line, and `Kind:`. New records use these sections as needed:
+Keep `# Title`, the core-owned `Status:` line, and `Kind:`. Canonical `#` and `##` record headings start at column zero; indented or container-nested headings are content, not record sections. New records use these sections as needed:
 
 ### Scope
 
@@ -80,11 +80,33 @@ Use an ordered list without checkboxes. Keep only current result nodes, dependen
 The core records one evidence line per Target. Evidence must name what was checked, how, and the observed result. Update evidence when it becomes stale; changing a Target or relevant deliverable invalidates verification.
 
 Record the review gate through `review <id> ... --evidence ...`:
-- `skipped` unless the user explicitly asks for adversarial review, a two-Agent Reviewer-Editor loop, or independent Reviewer approval;
-- `required` when explicitly requested; then move to In Review before invoking that workflow;
-- `approved` only after that review approves, with its report link or decision evidence. If review changes the deliverable, return to In Progress and replace stale Result and verification evidence before reviewing again.
 
-Do not infer review from risk, complexity, verification gaps, another rule, or Agent judgment. Ordinary review, testing, proofreading, and self-review do not request the independent review workflow.
+- `skipped` only when the task changed no requested deliverable files. Canonical task, Context, and Lessons lifecycle writes alone do not count as deliverable changes.
+- `required` before every review pass for a task that changed requested deliverable files. Record current Result evidence and preliminary checks, then set `required` and move to In Review before invoking `task-review`.
+- `passed` only after that `task-review` pass reports no Critical Finding, no Concern, and no Unverified Risk that prevents Target verification. The interaction owner records this value; the read-only Reviewer never writes task state or grants approval.
+- `approved` only after an explicitly requested `adversarial-review` approves. A task with deliverable changes first completes the mandatory `task-review`; `approved` evidence must identify both outcomes.
+
+When `task-review` finds a problem, return to In Progress, remediate it, refresh stale Result and verification evidence, set the gate to `required`, re-enter In Review, and invoke a new one-pass `task-review`. Apply the Review tracking and stall guard below on every pass. Repeat without a fixed total round limit until the gate can be recorded as `passed`, the task becomes Blocked, or the user stops. Any reviewed deliverable change, Result change, or Queue graph change invalidates `passed` or `approved` evidence.
+
+Independent adversarial review, a two-Agent Reviewer-Editor loop, and independent approval remain opt-in and run only when the user explicitly requests them. They do not replace the mandatory `task-review` pass.
+
+### Review
+
+Use exactly one temporary `## Review` section with the exact `task-review-ledger/v1` marker while a mandatory review loop has unresolved items or is stalled. Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate Markdown list markers or whitespace fail closed; one unmarked historical free-form Review section remains compatible. Keep only the current ledger, not a pass transcript:
+
+```markdown
+## Review
+- Schema: task-review-ledger/v1
+- Pass: <positive integer>
+- Next finding: <positive integer>
+- `TR-<n>` | no-progress=<0|1|2> | <location> | <required outcome>
+```
+
+- Give each Critical Finding, Concern, and Target-blocking Unverified Risk a stable `TR-<n>` ID. Advance `Next finding` monotonically so an ID is never reused within the active loop. A first appearance starts at `no-progress=0`; a new finding never resets another finding's streak.
+- Give every prior ID to the next fresh Reviewer. The Reviewer must classify it as `resolved`, `substantive progress`, or `no progress` with current evidence. Keep the same ID when wording, location, or severity changes but the root problem and required outcome remain materially the same.
+- Increment only a `no progress` item. Reset it to `0` for evidence-backed artifact progress, a valid evidence-backed reclassification, or newly actionable evidence; remove it when resolved. Text churn, restatement, unchanged checks, or unsupported relabeling is not progress.
+- When any item reaches `no-progress=2`, stop dispatching review passes. Add `## Block` with the stalled IDs and evidence as `Reason`, name the user decision or material artifact/evidence change as `Unblock when`, then set the task Blocked. Never convert a stall to `passed`.
+- Resume only after the unblock condition occurs. Reset affected streaks to `0` only when new evidence demonstrates substantive progress; the core rejects resume while any ledger item remains at `no-progress=2`. Remove `## Review` before recording `passed` once no blocking item remains.
 
 ### Verification
 
@@ -96,15 +118,16 @@ Add only while Blocked, with `Reason` and observable `Unblock when`. Add the sec
 
 ## Completion
 
-1. Confirm every current Target has Result evidence.
-2. Run proportionate verification and record it as passed.
-3. Record `skipped` or an actual `approved` review gate.
-4. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
-5. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, or unfinished Queue children.
-6. Run `check <id>` and `validate` before delivery.
+1. Confirm every current Target has Result evidence and run proportionate preliminary checks.
+2. For requested deliverable file changes, execute the mandatory `required` → In Review → `task-review` loop, apply its per-finding stall guard, and record `passed`; if adversarial review was explicitly requested, run it separately and replace the gate with `approved` evidence that also names the completed task-review pass.
+3. For a task with no requested deliverable file changes, record `skipped` with that exact boundary as evidence and remain In Progress. If the user explicitly requested adversarial review of that no-file result, instead set `required`, enter In Review, run `adversarial-review` without a mandatory `task-review`, and record `approved`.
+4. After the final review decision, rerun proportionate verification and record it as passed because every review-gate write invalidates prior Verification evidence.
+5. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
+6. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
+7. Run `check <id>` and `validate` before delivery.
 
 Do not retrofit untouched historical record bodies. All records share the new paths, while the stricter `Kind:` contract applies to new or reopened work.
 
 ## Maintainer Validation
 
-Keep the routing fixtures in `evals/` aligned, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.
+Keep the routing fixtures and `evals/review_stall_cases.json` aligned, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.

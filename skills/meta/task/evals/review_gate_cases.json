@@ -1,46 +1,86 @@
 {
   "cases": [
     {
-      "id": "simple-without-request",
+      "id": "no-file-result",
+      "task": "Complete a research result without changing requested deliverable files.",
+      "deliverable_files_changed": false,
+      "user_requested_adversarial_review": false,
+      "expected_entry": "Skipped",
+      "expected_task_review": false,
+      "expected_terminal": "Skipped"
+    },
+    {
+      "id": "simple-file-change",
       "task": "Rename one verified local file.",
+      "deliverable_files_changed": true,
       "user_requested_adversarial_review": false,
-      "expected": "Skipped"
+      "expected_entry": "Required",
+      "expected_task_review": true,
+      "expected_terminal": "Passed"
     },
     {
-      "id": "complex-gap-without-request",
-      "task": "Migrate persistent directives across three hosts when one host cannot be tested.",
+      "id": "complex-file-change",
+      "task": "Migrate persistent directives across three hosts.",
+      "deliverable_files_changed": true,
       "user_requested_adversarial_review": false,
-      "expected": "Skipped"
+      "expected_entry": "Required",
+      "expected_task_review": true,
+      "expected_terminal": "Passed"
     },
     {
-      "id": "critical-without-request",
+      "id": "critical-file-change",
       "task": "Change production authentication and permission behavior.",
+      "deliverable_files_changed": true,
       "user_requested_adversarial_review": false,
-      "expected": "Skipped"
+      "expected_entry": "Required",
+      "expected_task_review": true,
+      "expected_terminal": "Passed"
     },
     {
-      "id": "workflow-mandate-without-user-request",
-      "task": "A workflow marks independent review as required, but the user did not request it.",
+      "id": "workflow-mandated-review",
+      "task": "Finish a file-changing task under the mandatory task-review policy.",
+      "deliverable_files_changed": true,
       "user_requested_adversarial_review": false,
-      "expected": "Skipped"
+      "expected_entry": "Required",
+      "expected_task_review": true,
+      "expected_terminal": "Passed"
     },
     {
       "id": "ordinary-one-pass-review",
-      "task": "Review this pull request for bugs and security issues.",
+      "task": "Review this pull request once without modifying it.",
+      "deliverable_files_changed": false,
       "user_requested_adversarial_review": false,
-      "expected": "Skipped"
+      "expected_entry": "Skipped",
+      "expected_task_review": false,
+      "expected_terminal": "Skipped"
     },
     {
-      "id": "explicit-adversarial-review",
-      "task": "Run adversarial-review with an independent Reviewer and Editor before completion.",
+      "id": "explicit-adversarial-file-change",
+      "task": "Change files, then run adversarial-review before completion.",
+      "deliverable_files_changed": true,
       "user_requested_adversarial_review": true,
-      "expected": "Required"
+      "expected_entry": "Required",
+      "expected_task_review": true,
+      "expected_terminal": "Approved"
     },
     {
-      "id": "explicit-two-agent-review",
-      "task": "Use a two-agent Reviewer–Editor loop and block completion until approval.",
+      "id": "explicit-adversarial-no-file-queue",
+      "task": "Run adversarial-review on a Queue parent's no-file integration result.",
+      "kind": "queue",
+      "deliverable_files_changed": false,
       "user_requested_adversarial_review": true,
-      "expected": "Required"
+      "expected_entry": "Required",
+      "expected_task_review": false,
+      "expected_terminal": "Approved"
+    },
+    {
+      "id": "explicit-adversarial-no-file-result",
+      "task": "Run adversarial-review on this no-file research result.",
+      "deliverable_files_changed": false,
+      "user_requested_adversarial_review": true,
+      "expected_entry": "Required",
+      "expected_task_review": false,
+      "expected_terminal": "Approved"
     }
   ]
 }

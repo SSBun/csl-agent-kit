@@ -10,7 +10,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | archive | `/csl:archive` | `/archive` | 将当前 Pi Session 中指定范围的 User 与 Agent 可见文本逐字保存到 `tasks/conversations/`。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
-| task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查。 |
+| task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查，并作为文件改动 Task 的强制完成前审查。 |
 | skill-quality | `/csl:skill-quality` | `/skill-quality` | Validate Skill packages with the repository-owned deterministic quality gate. |
 | git-conflict | `/csl:git-conflict` | `/git-conflict` | 按双方意图谨慎解决进行中的 Git merge 或 rebase 冲突。 |
 | beautiful-mermaid | `/csl:beautiful-mermaid` | `/beautiful-mermaid` | Render Mermaid diagrams as beautiful SVG with built-in themes. |

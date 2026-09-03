@@ -250,11 +250,18 @@ test("ships task-review as the only ordinary review skill", () => {
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
   const contract = JSON.parse(readFileSync(path.join(skillDir, "evals", "contract_cases.json"), "utf8"));
   const findingContract = contract.cases.find(({ id }) => id === "confirmed-finding");
+  const mandatoryEntry = contract.cases.find(({ id }) => id === "mandatory-task-entry");
+  const owningTaskHandoff = contract.cases.find(({ id }) => id === "owning-task-handoff");
+  const stagnationHandoff = contract.cases.find(({ id }) => id === "stagnation-handoff");
 
   assert.equal(existsSync(path.join(root, "skills", "dev", "code-review")), false);
   assert.equal(existsSync(path.join(root, "skills", "code-reviewer")), false);
   assert.equal(existsSync(path.join(root, "skills", "mattpocock", "code-review")), false);
   assert.match(skill, /^name: task-review$/m);
+  assert.match(skill, /explicit mandatory review dispatch from the owning `task` workflow/);
+  assert.match(skill, /The owning task handles every transition, fix, and later pass/);
+  assert.match(skill, /current `task-review-ledger\/v1` `## Review` ledger and its next unused finding ID/);
+  assert.match(skill, /This Skill never loops, decides that the task is stalled, or records `Passed` itself/);
   for (const lens of ["Code", "Documents and designs", "Configuration and assets", "No-file results"]) {
     assert.ok(skill.includes(lens), `missing ${lens} review lens`);
   }
@@ -266,6 +273,15 @@ test("ships task-review as the only ordinary review skill", () => {
     "impact",
     "suggested next step",
   ]);
+  assert.equal(mandatoryEntry.expect.review_starts, true);
+  assert.equal(mandatoryEntry.expect.user_must_request_review_again, false);
+  assert.equal(owningTaskHandoff.expect.reviewer_changes_task_state, false);
+  assert.equal(owningTaskHandoff.expect.owner_records_passed, true);
+  assert.equal(stagnationHandoff.expect.ledger_schema, "task-review-ledger/v1");
+  assert.equal(stagnationHandoff.expect.same_root_and_required_outcome_keep_id, true);
+  assert.deepEqual(stagnationHandoff.expect.progress_values, ["resolved", "substantive progress", "no progress"]);
+  assert.equal(stagnationHandoff.expect.reviewer_decides_stall, false);
+  assert.equal(stagnationHandoff.expect.owner_updates_streak_and_block_state, true);
 });
 
 test("root hook commands execute bundled resources from plugin root variables", () => {

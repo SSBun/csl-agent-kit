@@ -315,13 +315,23 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(taskSkill, /explicit request to execute is execution authorization, not a new Target by itself/);
   assert.match(planSkill, /planned-task Target meaning/);
   assert.match(planSkill, /accepting it does not authorize execution/);
+  assert.match(planSkill, /planning-only task-record writes do not trigger the deliverable-change review loop/);
   assert.match(planSkill, /inherits that acceptance and does not present another checkpoint/);
   assert.match(queueSkill, /integration Target meaning/);
+  assert.match(queueSkill, /mandatory `task-review` loop for deliverable file changes/);
+  assert.match(queueSkill, /no parent-owned deliverable changes use `skipped`/);
+  assert.match(queueSkill, /explicitly requested adversarial review of a no-file parent/);
+  assert.match(queueSkill, /without mandatory `task-review`/);
+  assert.match(queueSkill, /Reopening a completed child requires an active parent/);
+  assert.match(queueSkill, /invalidates the active parent's terminal review and Verification evidence/);
+  assert.match(queueSkill, /stall guard independently to each child and to any parent-owned deliverable review/);
+  assert.match(queueSkill, /A stalled child or parent becomes Blocked/);
   assert.match(queueSkill, /parent, child, and sibling titles in one Queue must not normalize to the same text/);
   assert.match(queueSkill, /do not display another child checkpoint/);
   assert.match(queueSkill, /material child-distribution graph change/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
-  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it/);
+  assert.match(contract, /Every task that changes requested deliverable files must use the existing In Review state/);
+  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
   assert.equal(contract.includes("applicable task requirement"), false);
 
   const projectRules = readFileSync(path.join(root, "AGENTS.md"), "utf8");
@@ -333,6 +343,8 @@ test("task workflow skills own canonical records and routes", () => {
   const reviewSkill = readFileSync(path.join(root, "skills", "dev", "adversarial-review", "SKILL.md"), "utf8");
   assert.match(reviewSkill, /Use only when the user explicitly requests adversarial review/);
   assert.match(reviewSkill, /Enter only from an explicit user request/);
+  assert.match(reviewSkill, /start only after its mandatory one-pass `task-review` is recorded as `Passed`/);
+  assert.match(reviewSkill, /replace its `Passed` gate with `Approved` evidence/);
   assert.equal(reviewSkill.includes("applicable requirement mandates"), false);
 });
 
@@ -347,6 +359,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
     "3. **Prepare**",
     "4. **Execute**",
     "5. **Verify**",
+    "6. **Review**",
   ];
 
   let previous = -1;
@@ -381,7 +394,20 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
   assert.match(contract, /Implement the minimum solution that fully satisfies the aligned outcome/);
   assert.match(contract, /Touch only what the aligned outcome requires/);
-  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it/);
+  assert.match(contract, /## Mandatory Modification Review/);
+  assert.match(contract, /mark review required, then enter In Review and dispatch one read-only `task-review` pass/);
+  assert.match(contract, /Direct edits to an active task specification must use its sync lifecycle/);
+  assert.match(contract, /sync invalidates terminal review and Verification evidence/);
+  assert.match(contract, /Any confirmed finding returns the task to In Progress for remediation/);
+  assert.match(contract, /Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger/);
+  assert.match(contract, /Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed/);
+  assert.match(contract, /At two, stop reviewing, Block the task/);
+  assert.match(contract, /Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it/);
+  assert.match(contract, /Resume is rejected while any stalled item remains at two/);
+  assert.match(contract, /The Reviewer remains feedback-only and never grants approval or changes task state/);
+  assert.match(contract, /adversarial review of that no-file result was explicitly requested/);
+  assert.match(contract, /records Approved without running the mandatory `task-review`/);
+  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
   assert.match(contract, /Keep this contract behavioral and stable\. Skills retain operational detail\./);
   assert.doesNotMatch(contract, /\$(?:task|task-plan|task-queue|task-context|task-lessons)/);
   assert.doesNotMatch(contract, /Task Target Alignment Protocol/);
@@ -611,6 +637,11 @@ test("current workspace Context has a valid Core and formal Packs", () => {
   const packs = JSON.parse(indexResult.stdout).packs;
   assert.ok(packs.some(({ id, format }) => id === "CTX-task-context" && format === "v1"));
   assert.ok(packs.every(({ format }) => format === "v1"));
+  const context = readFileSync(path.join(root, "tasks", "context.md"), "utf8");
+  assert.match(context, /所有请求交付物文件改动（包括 trivial edits）进入 task 记录/);
+  assert.match(context, /产生请求交付物文件改动的 Task 默认执行 mandatory `task-review` 并以 `Passed` 完成/);
+  assert.doesNotMatch(context, /非简单交付物改动进入 task 记录/);
+  assert.doesNotMatch(context, /未明确要求时记录 `Skipped` 并在常规验证通过后直接完成/);
 });
 
 test("CSL task contract keeps acceptance, evidence, and review gates explicit", () => {
@@ -620,24 +651,42 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
   }
-  for (const section of ["Scope", "Target", "Plan", "Result", "Verification", "Block"]) {
+  for (const section of ["Scope", "Target", "Plan", "Result", "Review", "Verification", "Block"]) {
     assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
   }
   assert.equal(skill.includes("### Checklist"), false);
   assert.match(skill, /tasks\/tasks\.md/);
   assert.match(skill, /tasks\/tasks\/<slug>\.md/);
   assert.match(skill, /Do not hand-edit status or index lines/);
+  assert.match(skill, /`sync` conservatively clears Verification and invalidates `Passed` or `Approved`/);
+  assert.match(skill, /reopen a Completed task before changing its specification/);
   assert.match(skill, /Load Project Core, then read only the newest index entries/);
   assert.match(skill, /After the protocol aligns the current Target, query task-relevant Context Packs/);
   assert.match(skill, /Start a new task for every independently acceptable user outcome/);
   assert.match(skill, /directly corrects, completes, or re-verifies the same outcome/);
   assert.match(skill, /Component, file, topic, or implementation overlap alone does not establish ownership/);
+  assert.match(skill, /Canonical `#` and `##` record headings start at column zero/);
+  assert.match(skill, /indented or container-nested headings are content, not record sections/);
   assert.match(skill, /This is the only checkbox list/);
   assert.match(skill, /Do not put implementation steps, commands, workflow gates, or review state here/);
   assert.match(skill, /Never check a Target manually/);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
-  assert.match(skill, /Do not infer review from risk, complexity, verification gaps, another rule, or Agent judgment/);
-  assert.match(skill, /Ordinary review, testing, proofreading, and self-review do not request the independent review workflow/);
+  assert.match(skill, /`skipped` only when the task changed no requested deliverable files/);
+  assert.match(skill, /`required` before every review pass for a task that changed requested deliverable files/);
+  assert.match(skill, /`passed` only after that `task-review` pass reports no Critical Finding/);
+  assert.match(skill, /return to In Progress, remediate it/);
+  assert.match(skill, /Use exactly one temporary `## Review` section with the exact `task-review-ledger\/v1` marker/);
+  assert.match(skill, /Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate Markdown list markers or whitespace fail closed/);
+  assert.match(skill, /one unmarked historical free-form Review section remains compatible/);
+  assert.match(skill, /Advance `Next finding` monotonically/);
+  assert.match(skill, /no-progress=2/);
+  assert.match(skill, /core rejects resume while any ledger item remains at `no-progress=2`/);
+  assert.match(skill, /stop dispatching review passes/);
+  assert.match(skill, /Never convert a stall to `passed`/);
+  assert.match(skill, /Repeat without a fixed total round limit/);
+  assert.match(skill, /adversarial review of that no-file result/);
+  assert.match(skill, /without a mandatory `task-review`/);
+  assert.match(skill, /Independent adversarial review, a two-Agent Reviewer-Editor loop, and independent approval remain opt-in/);
   assert.match(skill, /Use `cancel <id>` for a reversible soft stop/);
   assert.match(skill, /This is the only route to Completed and fails closed/);
   assert.match(skill, /Do not retrofit untouched historical record bodies/);
@@ -675,24 +724,87 @@ test("workspace task ownership defaults independent and ambiguous outcomes to ne
   assert.equal(byId["ambiguous-relationship"].expected, "New");
 });
 
-test("workspace review-gate cases require an explicit user request", () => {
+test("workspace review-gate cases require task-review for deliverable file changes", () => {
   const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "review_gate_cases.json"), "utf8"));
-  const outcomes = new Set();
+  const terminalOutcomes = new Set();
 
   for (const item of fixture.cases) {
-    const actual = item.user_requested_adversarial_review ? "Required" : "Skipped";
-    assert.equal(actual, item.expected, item.id);
-    outcomes.add(actual);
+    const entry = item.deliverable_files_changed || item.user_requested_adversarial_review ? "Required" : "Skipped";
+    const taskReview = item.deliverable_files_changed;
+    const terminal = item.user_requested_adversarial_review ? "Approved" : taskReview ? "Passed" : "Skipped";
+    assert.equal(entry, item.expected_entry, `${item.id}: entry`);
+    assert.equal(taskReview, item.expected_task_review, `${item.id}: task-review`);
+    assert.equal(terminal, item.expected_terminal, `${item.id}: terminal`);
+    terminalOutcomes.add(terminal);
   }
 
-  assert.deepEqual([...outcomes].sort(), ["Required", "Skipped"]);
+  assert.deepEqual([...terminalOutcomes].sort(), ["Approved", "Passed", "Skipped"]);
   const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
-  assert.equal(byId["critical-without-request"].expected, "Skipped");
-  assert.equal(byId["complex-gap-without-request"].expected, "Skipped");
-  assert.equal(byId["workflow-mandate-without-user-request"].expected, "Skipped");
-  assert.equal(byId["ordinary-one-pass-review"].expected, "Skipped");
-  assert.equal(byId["explicit-adversarial-review"].expected, "Required");
-  assert.equal(byId["explicit-two-agent-review"].expected, "Required");
+  assert.equal(byId["simple-file-change"].expected_terminal, "Passed");
+  assert.equal(byId["critical-file-change"].expected_task_review, true);
+  assert.equal(byId["workflow-mandated-review"].expected_entry, "Required");
+  assert.equal(byId["ordinary-one-pass-review"].expected_terminal, "Skipped");
+  assert.equal(byId["explicit-adversarial-file-change"].expected_terminal, "Approved");
+  assert.equal(byId["explicit-adversarial-no-file-result"].expected_task_review, false);
+  assert.equal(byId["explicit-adversarial-no-file-result"].expected_terminal, "Approved");
+  assert.equal(byId["explicit-adversarial-no-file-queue"].expected_task_review, false);
+  assert.equal(byId["explicit-adversarial-no-file-queue"].expected_terminal, "Approved");
+});
+
+test("workspace task-review stall cases block after two per-finding no-progress re-reviews", () => {
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "review_stall_cases.json"), "utf8"));
+  const actions = new Set();
+
+  for (const item of fixture.cases) {
+    let noProgress;
+    let action;
+    if (!item.tracked) {
+      noProgress = null;
+      action = "Ignore";
+    } else if (item.resolved) {
+      noProgress = null;
+      action = "Remove";
+    } else {
+      noProgress = !item.same_required_outcome || item.substantive_progress
+        ? 0
+        : item.previous_no_progress + 1;
+      action = noProgress >= fixture.stall_threshold ? "Blocked" : "In Progress";
+    }
+    assert.equal(noProgress, item.expected_no_progress, `${item.id}: streak`);
+    assert.equal(action, item.expected_action, `${item.id}: action`);
+    actions.add(action);
+  }
+
+  assert.equal(fixture.stall_threshold, 2);
+  assert.deepEqual([...actions].sort(), ["Blocked", "Ignore", "In Progress", "Remove"]);
+
+  for (const item of fixture.ledger_cases) {
+    const ledger = new Map(item.previous.map(({ id, no_progress: noProgress }) => [id, noProgress]));
+    for (const update of item.updates) {
+      if (update.progress === "new" || update.progress === "substantive progress") ledger.set(update.id, 0);
+      else if (update.progress === "no progress") ledger.set(update.id, (ledger.get(update.id) || 0) + 1);
+      else if (update.progress === "resolved") ledger.delete(update.id);
+      else assert.fail(`${item.id}: unknown progress ${update.progress}`);
+    }
+    const actual = [...ledger].sort(([left], [right]) => left.localeCompare(right)).map(([id, noProgress]) => ({ id, no_progress: noProgress }));
+    const action = actual.some(({ no_progress: noProgress }) => noProgress >= fixture.stall_threshold) ? "Blocked" : "In Progress";
+    assert.deepEqual(actual, item.expected, `${item.id}: ledger`);
+    assert.equal(action, item.expected_action, `${item.id}: action`);
+  }
+
+  const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+  assert.equal(byId["first-appearance"].expected_no_progress, 0);
+  assert.equal(byId["second-no-progress-re-review"].expected_action, "Blocked");
+  assert.equal(byId["artifact-progress-resets"].expected_no_progress, 0);
+  assert.equal(byId["unsupported-reclassification-does-not-reset"].expected_action, "Blocked");
+  assert.equal(byId["nonblocking-risk-is-not-tracked"].expected_action, "Ignore");
+  const ledgerById = Object.fromEntries(fixture.ledger_cases.map((item) => [item.id, item]));
+  assert.deepEqual(ledgerById["new-finding-preserves-stalled-peer"].expected, [
+    { id: "TR-1", no_progress: 2 },
+    { id: "TR-2", no_progress: 0 },
+  ]);
+  assert.equal(ledgerById["new-finding-preserves-stalled-peer"].expected_action, "Blocked");
+  assert.equal(ledgerById["progress-resets-only-one-finding"].expected_action, "Blocked");
 });
 
 test("workspace lesson contract queries before work and confirms every persistent write", () => {

@@ -31,19 +31,21 @@ Do not duplicate a child's Target, Plan, Result, or status in the parent. The pa
 
 1. Confirm the parent is In Progress.
 2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
-3. Resume and execute that child under the full `task` lifecycle, including Result, review, verification, completion, and index check. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
+3. Resume and execute that child under the full `task` lifecycle, including the mandatory `task-review` loop for deliverable file changes, Result, final verification, completion, and index check. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
 4. Run `next` again only after the current child completes.
 5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
 
-On resume, inspect the parent and the task returned by `next`; verify workspace reality before trusting old evidence. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
+On resume, inspect the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
 
 ## Parent Final Gate
 
 Completed children do not prove the integrated outcome. After `next` returns no child:
 
 1. Verify the parent's own integration Targets against the assembled deliverable.
-2. Record parent Result evidence, review gate, and host-native integration verification.
+2. Record parent Result evidence and preliminary integration checks. Apply exactly one branch: parent-owned deliverable file changes require the mandatory `task-review` loop and `passed`; no parent-owned deliverable changes use `skipped`; an explicitly requested adversarial review of a no-file parent instead uses `required` → In Review → `approved` without mandatory `task-review`. For a file-changing parent, run explicit adversarial review only after `passed` and upgrade the same gate to `approved`.
 3. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
 4. Run `check <parent-id>` and `validate`.
+
+Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
 
 Keep the workflow interactive. If the session must pause, leave canonical status and evidence sufficient for a later Codex or Pi Agent to resume deterministically. Routing fixtures are in `evals/`.

@@ -2,11 +2,20 @@
   "version": 1,
   "cases": [
     {
-      "id": "explicit-entry",
-      "given": "risk, task state, or another workflow suggests review but the user did not request it",
+      "id": "bounded-entry",
+      "given": "risk or task state suggests review without a user request or an owning-task mandatory dispatch",
       "expect": {
         "review_starts": false,
         "inferred_from_risk": false
+      }
+    },
+    {
+      "id": "mandatory-task-entry",
+      "given": "the owning task explicitly dispatches its required deliverable-change review pass",
+      "expect": {
+        "review_starts": true,
+        "user_must_request_review_again": false,
+        "single_pass_only": true
       }
     },
     {
@@ -59,6 +68,34 @@
         "inline_review_runs": true,
         "required_disclosure": "Review mode: non-independent self-review",
         "dispatch_metadata_table": false
+      }
+    },
+    {
+      "id": "owning-task-handoff",
+      "given": "a mandatory task-review pass returns to its owning task",
+      "expect": {
+        "critical_or_concern_requires_remediation": true,
+        "unverified_risk_blocks_only_when_target_verification_is_prevented": true,
+        "reviewer_changes_task_state": false,
+        "owner_records_passed": true,
+        "owner_dispatches_each_later_pass_fresh": true
+      }
+    },
+    {
+      "id": "stagnation-handoff",
+      "given": "an owning-task re-review receives a current Review ledger",
+      "expect": {
+        "ledger_schema": "task-review-ledger/v1",
+        "every_prior_finding_id_accounted_for": true,
+        "same_root_and_required_outcome_keep_id": true,
+        "progress_values": [
+          "resolved",
+          "substantive progress",
+          "no progress"
+        ],
+        "new_findings_use_supplied_next_id": true,
+        "reviewer_decides_stall": false,
+        "owner_updates_streak_and_block_state": true
       }
     },
     {

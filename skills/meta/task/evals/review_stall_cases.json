@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "stall_threshold": 2,
+  "cases": [
+    {
+      "id": "first-appearance",
+      "tracked": true,
+      "same_required_outcome": false,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 0,
+      "expected_no_progress": 0,
+      "expected_action": "In Progress"
+    },
+    {
+      "id": "first-no-progress-re-review",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 0,
+      "expected_no_progress": 1,
+      "expected_action": "In Progress"
+    },
+    {
+      "id": "second-no-progress-re-review",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 1,
+      "expected_no_progress": 2,
+      "expected_action": "Blocked"
+    },
+    {
+      "id": "text-churn-does-not-reset",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 0,
+      "expected_no_progress": 1,
+      "expected_action": "In Progress"
+    },
+    {
+      "id": "unsupported-reclassification-does-not-reset",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 1,
+      "expected_no_progress": 2,
+      "expected_action": "Blocked"
+    },
+    {
+      "id": "artifact-progress-resets",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": true,
+      "resolved": false,
+      "previous_no_progress": 1,
+      "expected_no_progress": 0,
+      "expected_action": "In Progress"
+    },
+    {
+      "id": "valid-reclassification-resets",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": true,
+      "resolved": false,
+      "previous_no_progress": 1,
+      "expected_no_progress": 0,
+      "expected_action": "In Progress"
+    },
+    {
+      "id": "resolved-item-leaves-ledger",
+      "tracked": true,
+      "same_required_outcome": true,
+      "substantive_progress": true,
+      "resolved": true,
+      "previous_no_progress": 1,
+      "expected_no_progress": null,
+      "expected_action": "Remove"
+    },
+    {
+      "id": "new-finding-starts-independently",
+      "tracked": true,
+      "same_required_outcome": false,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 2,
+      "expected_no_progress": 0,
+      "expected_action": "In Progress"
+    },
+    {
+      "id": "nonblocking-risk-is-not-tracked",
+      "tracked": false,
+      "same_required_outcome": true,
+      "substantive_progress": false,
+      "resolved": false,
+      "previous_no_progress": 1,
+      "expected_no_progress": null,
+      "expected_action": "Ignore"
+    }
+  ],
+  "ledger_cases": [
+    {
+      "id": "new-finding-preserves-stalled-peer",
+      "previous": [
+        { "id": "TR-1", "no_progress": 2 }
+      ],
+      "updates": [
+        { "id": "TR-2", "progress": "new" }
+      ],
+      "expected": [
+        { "id": "TR-1", "no_progress": 2 },
+        { "id": "TR-2", "no_progress": 0 }
+      ],
+      "expected_action": "Blocked"
+    },
+    {
+      "id": "progress-resets-only-one-finding",
+      "previous": [
+        { "id": "TR-1", "no_progress": 1 },
+        { "id": "TR-2", "no_progress": 1 }
+      ],
+      "updates": [
+        { "id": "TR-1", "progress": "substantive progress" },
+        { "id": "TR-2", "progress": "no progress" }
+      ],
+      "expected": [
+        { "id": "TR-1", "no_progress": 0 },
+        { "id": "TR-2", "no_progress": 2 }
+      ],
+      "expected_action": "Blocked"
+    },
+    {
+      "id": "resolved-finding-does-not-reset-peer",
+      "previous": [
+        { "id": "TR-1", "no_progress": 1 },
+        { "id": "TR-2", "no_progress": 1 }
+      ],
+      "updates": [
+        { "id": "TR-1", "progress": "resolved" }
+      ],
+      "expected": [
+        { "id": "TR-2", "no_progress": 1 }
+      ],
+      "expected_action": "In Progress"
+    }
+  ]
+}
