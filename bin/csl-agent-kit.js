@@ -4,6 +4,7 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const agentHooks = require("../skills/meta/agent-hooks/scripts/agent-hooks.js");
+const packageManifest = require("../package.json");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -53,7 +54,9 @@ async function main() {
     process.exit(results.every((item) => item.ok) ? 0 : 1);
   }
 
-  printHelp();
+  const helpArgs = [command, ...args];
+  const colorMode = helpArgs.includes("--no-color") ? "never" : helpArgs.includes("--color") ? "always" : "auto";
+  printHelp(colorMode);
 }
 
 function parseInstallArgs(args) {
@@ -532,8 +535,35 @@ function flatten(value) {
   return Array.isArray(value) ? value.flatMap(flatten) : [value];
 }
 
-function printHelp() {
-  console.log(`CSL Agent Kit CLI\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit agent-hooks <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit agent-hooks help\" for details.`);
+function latestPublishedVersion() {
+  const result = spawnSync("npm", ["view", `${packageManifest.name}@latest`, "version", "--json"], {
+    encoding: "utf8",
+    timeout: 3000,
+  });
+  if (result.status !== 0) return null;
+
+  try {
+    const version = JSON.parse(result.stdout);
+    return typeof version === "string" ? version : null;
+  } catch {
+    return null;
+  }
+}
+
+function printHelp(colorMode = "auto") {
+  const colors = createColors(colorMode);
+  const latestVersion = latestPublishedVersion();
+  let update = colors.yellow("check unavailable");
+
+  if (latestVersion) {
+    // ponytail: releases use stable x.y.z versions; use semver if prerelease publishing is introduced.
+    const comparison = latestVersion.localeCompare(packageManifest.version, "en", { numeric: true });
+    if (comparison > 0) update = colors.yellow(`v${latestVersion} available`);
+    else if (comparison < 0) update = colors.cyan(`ahead of npm latest v${latestVersion}`);
+    else update = colors.green("up to date");
+  }
+
+  console.log(`${colors.bold(colors.cyan("CSL Agent Kit CLI"))} ${colors.dim(`v${packageManifest.version}`)}\n${colors.bold("Update")}  ${update}\n\nUsage:\n  csl-agent-kit install [options]\n\nRun \"csl-agent-kit install --help\" for details.`);
 }
 
 function printInstallHelp() {

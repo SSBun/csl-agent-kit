@@ -52,6 +52,37 @@ function stripAnsi(text) {
   return text.replace(/\u001b\[[0-9;]*m/g, "");
 }
 
+test("top-level help reports version and updates without advertising agent-hooks", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "csl-help-"));
+  const bin = path.join(directory, "bin");
+  const npm = path.join(bin, "npm");
+  const currentVersion = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8")).version;
+  const newerVersion = `${Number(currentVersion.split(".")[0]) + 1}.0.0`;
+  mkdirSync(bin);
+  writeFileSync(npm, `#!/bin/sh\nprintf '\"${newerVersion}\"\\n'\n`);
+  chmodSync(npm, 0o755);
+  const env = { PATH: `${bin}${path.delimiter}${process.env.PATH || ""}` };
+
+  try {
+    const result = run([], { ...env, NO_COLOR: undefined });
+    const plainResult = run(["--no-color"], env);
+    const hooksResult = run(["agent-hooks", "help"], env);
+    const help = stripAnsi(result.stdout);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /\u001b\[/);
+    assert.equal(help.includes(`CSL Agent Kit CLI v${currentVersion}`), true);
+    assert.match(help, new RegExp(`Update\\s+v${newerVersion.replaceAll(".", "\\.")} available`));
+    assert.match(help, /csl-agent-kit install \[options\]/);
+    assert.doesNotMatch(help, /agent-hooks/);
+    assert.equal(plainResult.status, 0, plainResult.stderr);
+    assert.doesNotMatch(plainResult.stdout, /\u001b\[/);
+    assert.equal(hooksResult.status, 0, hooksResult.stderr);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 function createFakeCodex(directory) {
   const bin = path.join(directory, "bin");
   const executable = path.join(bin, "codex");
