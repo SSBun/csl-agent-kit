@@ -1017,6 +1017,7 @@ async function processDaemonApproval(context, notice, trigger, store, state) {
 		});
 		return;
 	}
+	if (state.status !== "running") return;
 
 	const operationId = randomUUID();
 	appendDaemonHistory(store, state, {
@@ -1078,6 +1079,7 @@ async function scanDaemonApprovalNotices(expectedUser, trigger, store, state) {
 		if (!existing || notice.createTime > existing.createTime) targets.set(key, notice);
 	}
 	for (const notice of targets.values()) {
+		if (state.status !== "running") break;
 		await processDaemonApproval(context, notice, trigger, store, state);
 	}
 	state.lastScanAt = new Date().toISOString();
@@ -1090,6 +1092,13 @@ function parseMqttNotice(payload) {
 	} catch {
 		return null;
 	}
+}
+
+function subscriptionGrantDetails(grants, packet) {
+	return grants?.map(({ topic, qos }, index) => ({
+		topic,
+		qos: packet?.granted?.[index] ?? qos,
+	})) || [];
 }
 
 function sendDashboardResponse(response, statusCode, contentType, body) {
@@ -1204,21 +1213,55 @@ async function runApprovalDaemon() {
 	await recoverInterruptedApprovals(initialContext, store, state);
 	const server = await startDashboardServer(state, store);
 	let mqttClient;
+	let work = Promise.resolve();
+	let stopping = false;
 	let subscriptionAttempt = 0;
 	let subscriptionRetryTimer;
+	let serverClosePromise;
+	let resolveStopped;
+	const stopped = new Promise((resolve) => {
+		resolveStopped = resolve;
+	});
 	const clearSubscriptionRetry = () => {
 		clearTimeout(subscriptionRetryTimer);
 		subscriptionRetryTimer = undefined;
 		subscriptionAttempt += 1;
 	};
+	const closeServer = () => {
+		serverClosePromise ||= new Promise((resolve) => server.close(resolve));
+		return serverClosePromise;
+	};
+	const stop = () => {
+		if (stopping) return;
+		stopping = true;
+		state.status = "stopping";
+		clearSubscriptionRetry();
+		mqttClient?.end(true);
+		Promise.all([work.catch(() => {}), closeServer()]).then(resolveStopped);
+	};
+	process.once("SIGTERM", stop);
+	process.once("SIGINT", stop);
 	try {
-		await scanDaemonApprovalNotices(initialContext.currentUser, "startup", store, state);
+		work = scanDaemonApprovalNotices(initialContext.currentUser, "startup", store, state);
+		await work;
+		if (state.status !== "running") {
+			await stopped;
+			return;
+		}
 		const { connect } = await import("mqtt");
+		if (state.status !== "running") {
+			await stopped;
+			return;
+		}
 		const topic = `${MQTT_TOPIC_PREFIX}${initialContext.currentUser.id}/`;
-		mqttClient = connect(MQTT_BROKER_URL, { keepalive: 30, reconnectPeriod: MQTT_RETRY_INTERVAL_MS });
-		let work = Promise.resolve();
+		mqttClient = connect(MQTT_BROKER_URL, {
+			keepalive: 30,
+			reconnectPeriod: MQTT_RETRY_INTERVAL_MS,
+			resubscribe: false,
+		});
 		const enqueue = (operation) => {
-			work = work.then(operation).catch((error) => {
+			if (state.status !== "running") return;
+			work = work.then(() => state.status === "running" ? operation() : undefined).catch((error) => {
 				state.lastError = error.message;
 				try {
 					appendDaemonHistory(store, state, {
@@ -1236,9 +1279,9 @@ async function runApprovalDaemon() {
 		const subscribeToTopic = () => {
 			clearSubscriptionRetry();
 			const attempt = subscriptionAttempt;
-			mqttClient.subscribe(topic, (error, grants) => {
+			mqttClient.subscribe(topic, (error, grants, packet) => {
 				if (attempt !== subscriptionAttempt) return;
-				const subscriptionGrants = grants?.map(({ topic: grantTopic, qos }) => ({ topic: grantTopic, qos })) || [];
+				const subscriptionGrants = subscriptionGrantDetails(grants, packet);
 				if (error || subscriptionGrants.length === 0 || subscriptionGrants[0].qos === 128) {
 					const firstFailure = state.mqtt !== "subscription-failed";
 					state.mqtt = "subscription-failed";
@@ -1275,24 +1318,17 @@ async function runApprovalDaemon() {
 		mqttClient.on("offline", () => { clearSubscriptionRetry(); state.mqtt = "offline"; });
 		mqttClient.on("close", () => { clearSubscriptionRetry(); state.mqtt = "closed"; });
 		mqttClient.on("error", (error) => { state.lastError = error.message; });
-		await new Promise((resolve) => {
-			let stopping = false;
-			const stop = () => {
-				if (stopping) return;
-				stopping = true;
-				state.status = "stopping";
-				clearSubscriptionRetry();
-				mqttClient.end(true);
-				server.close(resolve);
-			};
-			process.once("SIGTERM", stop);
-			process.once("SIGINT", stop);
-		});
+		await stopped;
 	} catch (error) {
+		stopping = true;
+		state.status = "stopping";
 		clearSubscriptionRetry();
 		mqttClient?.end(true);
-		server.close();
+		await closeServer();
 		throw error;
+	} finally {
+		process.removeListener("SIGTERM", stop);
+		process.removeListener("SIGINT", stop);
 	}
 }
 
@@ -2131,6 +2167,28 @@ async function runSelfTest() {
 	);
 	assert.deepEqual(parseMqttNotice(Buffer.from('{"notice":{"id":8}}')), { id: 8 });
 	assert.equal(parseMqttNotice(Buffer.from("invalid")), null);
+	assert.deepEqual(
+		subscriptionGrantDetails([{ topic: "example/topic", qos: 0 }], { granted: [128] }),
+		[{ topic: "example/topic", qos: 128 }],
+	);
+	let daemonApprovalWrites = 0;
+	await processDaemonApproval({
+		currentUser: { id: 1 },
+		client: {
+			fetchMergeRequest: async () => ({
+				...pendingApprovalMr,
+				targetRepoNameWithNamespace: "Team/Repo",
+				repoId: 1,
+				mrIid: 7,
+				sha: "abc",
+			}),
+			approveMergeRequest: async () => { daemonApprovalWrites += 1; },
+		},
+	}, {
+		id: 8,
+		url: `${API_BASE}/repos/Team/Repo/merge_requests/7`,
+	}, "mqtt", { records: [], processed: new Set() }, { status: "stopping" });
+	assert.equal(daemonApprovalWrites, 0);
 	const notificationCalls = [];
 	const notificationRequest = {
 		repository: "Team/Repo",
