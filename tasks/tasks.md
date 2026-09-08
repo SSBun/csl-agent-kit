@@ -1,5 +1,7 @@
 # 任务索引
 
+- [按关注点提交当前全部本地改动](tasks/group-local-changes-into-commits-20260908.md) — Completed (2026-09-08 15:05)
+
 - [实现 Perch macOS 语言学习应用](tasks/plan-pi-language-learning-macos-app.md) — In Progress (2026-09-08 13:47)
 
 - [让 L2 Task Target Guard 更智能](tasks/recommend-smarter-l2-task-target-guard.md) — Completed (2026-09-08 14:55)
