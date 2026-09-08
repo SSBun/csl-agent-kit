@@ -56,7 +56,7 @@ When a Task workflow applies, activate and focus its owning record before task-d
 
 Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
 
-Do not repeat confirmation for an accepted unchanged Target. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
+Do not repeat confirmation for an accepted unchanged Target or still-applicable commitments explicitly supplied or accepted by the user. Apply the shared protocol's confirmation-coverage check: preserve the complete Target and inherited constraints, check only unsettled interpretations, and retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
 
 After alignment, continue independently within the accepted outcome and boundaries.
 

@@ -41,7 +41,7 @@
 - `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 是自动注入的稳定行为契约，要求 session 边界恢复 Context、先按 outcome 选择 task family、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是非平凡等价 Target 展示一次并等待 checkpoint 确认、实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
+- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是保留非平凡等价 Target 的完整展示，按当前有效用户依据覆盖决定继续或核对剩余项，同时保留强制 checkpoint；实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
 
 ### Decision and Verification Boundaries
 - Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，已有文件缺少有效 Core 时可自动重写，缺失文件的创建及其他有效 Project Core 持久变更必须先展示精确内容并取得用户确认。
@@ -82,7 +82,7 @@
 - `.agents/skills/task-target-alignment-eval` 是指向 canonical skill source 的唯一相对 symlink 发现入口。Pi 会跟随 project `.agents/skills` 目录链接，共享 CLI 只枚举根 `skills/`，因此该 skill 只在受信任的当前项目中激活。
 
 ### Workflows
-- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`／`--self-test`、针对 symlink package 的 Skill Quality 和 Context validation。v3 模型请求由 `prepare` 生成且不含 oracle；score／compare 分别评测 main-session L0–L4、delegated child handoff、L2 checkpoint、L3／L4 mode、S0／S1 overlay、child confirmation leak、stale-plan continue、reason 和 transition，并在 provisional labels 下保持 report-only。
+- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`、针对 symlink package 的 Skill Quality 和 Context validation；`--self-test` 与项目测试须当前请求明确授权。v4 `prepare` 请求不含 oracle；prediction 区分 `show_continue`、等待与条款来源／待核对项／原因。score／compare 分别评测可见性、重复确认、错误复用、覆盖遗漏与展示 Target 一致性，以及原有 main-session L0–L4、delegated handoff、Safety、reason 和 transition；comparison 要求相同 v4 dataset hash，provisional 精确 reference 匹配不证明语义蕴含或真实模型表现，结果保持 report-only。
 
 ### Decision and Verification Boundaries
 - Oracle cases、schema、固定 prediction samples 和确定性脚本可提交；当前 Task Target labels 在人工 adjudication 前保持 provisional／report-only。付费模型 run 需要当前用户明确授权，prediction／报告默认写入 ignored `results/`。不得保存 chain-of-thought、凭据、客户数据或未脱敏完整会话。
@@ -144,7 +144,7 @@
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 初次执行前进入一次 L2 checkpoint，实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
+- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 先通过完整承诺等价检查，再按 L2 条目依据覆盖决定展示后继续或只核对未定项。首次明确请求、完整修订与澄清收敛的条款均有有效用户依据时使用 `show_continue`；用户要求、material Plan graph 和无法恢复对齐依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权，复用必须检查来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
 - 产生请求交付物文件改动的 Task 在完成前必须记录当前 Result 和初步检查、将 Review gate 设为 `Required`、进入现有 `In Review` 并执行一次只读 `task-review`；任何确认问题或阻止 Target 验证的证据缺口都会返回 In Progress 修复并以新 pass 复审，直至 interaction owner 记录 `Passed`。无交付物文件改动且未显式要求 adversarial review 时才使用 `Skipped`；显式 adversarial review 仍是独立可选门：文件改动 Task 的 `Approved` 证据同时包含 ordinary pass，无文件改动 Task 则可直接从 `Required`／In Review 进入 `Approved`。Active task 的直接规范编辑必须调用 `sync`，该入口会保守失效终态 review 与 Verification，防止修改 Target 后沿用旧证据。
 - Mandatory review 用带 `task-review-ledger/v1` marker 的唯一 task-local `## Review` current ledger 持久化单调 `TR-n` IDs 与逐 finding no-progress streak；Core 只把 fenced／indented／list-container code 与 HTML block/comment 之外的 column-zero H2 当作 record section；重复 Review sections、未知 ledger schema 与使用 alternate list markers／whitespace 的 ledger-like malformed 内容 fail closed，单个无 marker 的历史自由格式 Review 保持可读。Finding 初见为 0，同一根因／required outcome 的 fresh re-review 连续无实质 artifact／evidence 进展时递增，到 2 即保留 ledger、写入精确 Block／Unblock 条件并进入 Blocked，请求用户决策且不得自动 `Passed`；对应 streak 在新证据下重置前，Core 拒绝 resume。有效进展、证据化重分类或解决会重置／移除对应 finding，不设总 pass 上限。
 

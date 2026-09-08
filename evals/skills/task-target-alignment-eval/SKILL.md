@@ -17,11 +17,11 @@ Operate this project-local suite without shared Skill distribution.
 ## Workflow
 
 1. Run `node <workspace>/evals/scripts/check-project-evals.js`, then run the evaluator's `validate` command before relying on the suite.
-2. For fixture work, keep stable ASCII case IDs, versioned schemas, provisional oracle labels, two-variant contrast scenarios, main/delegated session roles, Plan change classification, `allowedDecisions`, risk, commitment-difference dimensions, reason requirements, and Safety Overlay. Keep `gateMode` report-only until human adjudication.
+2. For fixture work, keep stable ASCII case IDs, versioned schemas, provisional oracle labels, two-variant contrast scenarios, main/delegated session roles, Plan change classification, `allowedDecisions`, risk, commitment-difference dimensions, reason requirements, and Safety Overlay. The v4 `oracle.confirmation` labels clause-level `settledClauses` with source indexes, `confirmationItems`, and `checkpointReason`; distinguish `show_continue` from required waits and unchanged continuation. Keep `gateMode` report-only until human adjudication.
 3. Keep deterministic validation and scoring separate from model execution. Use `prepare` to create oracle-free request JSONL and `score` or `compare` only with observed prediction/report files; never fabricate eval results.
 4. For Pi model runs, use one parent-owned async `workflowScript` with the exact model under test and fresh-context evaluator children. Split the oracle-free corpus into unrelated batches of at most four and run three fresh repeats, using waves when the effective spawn or concurrency cap is lower. Randomize batch order; never let one child process the entire corpus or expose gold labels.
 5. Save generated predictions and reports only under the suite's ignored `results/` directory unless the user explicitly approves a durable artifact.
-6. Report under-guard, over-guard, L2 checkpoint, L3/L4 mismatch, Safety Overlay, child confirmation leak, stale-plan continue, reason completeness, transition, family, and stability metrics separately; never hide opposing regressions behind one aggregate score or present a provisional report as release approval.
+6. Report under-guard, over-guard, L2 waiting and visibility, redundant clause checks, false source reuse, missing settled/pending coverage, displayed-Target mismatch, L3/L4 mismatch, Safety Overlay, child confirmation leak, stale-plan continue, reason completeness, transition, family, and stability separately. Compare only v4 reports with the same dataset hash. Source indexes and exact reference matching do not prove semantic entailment; review alternative valid evidence during human adjudication. Never hide opposing regressions behind one aggregate score or present a provisional report as release approval.
 
 ## Commands
 
@@ -52,4 +52,4 @@ node <workspace>/skills/meta/task-context/scripts/context.js --workspace <worksp
 git -C <workspace> diff --check
 ```
 
-Run project tests or paid model evaluations only when the current request explicitly authorizes them.
+Run self-tests, project tests, or paid model evaluations only when the current request explicitly authorizes them. Otherwise use layout/fixture validation, request preparation, syntax checks, Skill Quality, and Context validation, and disclose the unrun behavioral checks.

@@ -283,7 +283,20 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(alignmentProtocol, /Changes requiring approval/);
   assert.match(alignmentProtocol, /This Target changes your current authorization/);
   assert.match(alignmentProtocol, /Ask one focused question about the exact user-owned ambiguity/);
-  assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint/);
+  assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session passes the L2 confirmation-coverage check/);
+  assert.match(alignmentProtocol, /### Settled Commitments/);
+  assert.match(alignmentProtocol, /`direct_user`/);
+  assert.match(alignmentProtocol, /`accepted_target`/);
+  assert.match(alignmentProtocol, /both the proposal and the user's acceptance/);
+  assert.match(alignmentProtocol, /wording, formatting, mechanical restatement, or generic low confidence alone cannot create one/);
+  assert.match(alignmentProtocol, /Repository facts may establish what exists, but do not authorize what to change/);
+  assert.match(alignmentProtocol, /independently accepted clauses must not be combined into an unapproved effect/);
+  assert.match(alignmentProtocol, /changed objects\/environments, or expired conditions/);
+  assert.match(alignmentProtocol, /If all commitments are settled, use `show_continue`/);
+  assert.match(alignmentProtocol, /empty `confirmationItems`, and null `checkpointReason`/);
+  for (const reason of ["unsettled_interpretation", "user_requested", "plan_graph_change", "acceptance_unavailable", "trivial_display"]) assert.match(alignmentProtocol, new RegExp("`" + reason + "`"));
+  assert.match(alignmentProtocol, /Preserve settled constraints in the complete Target without asking the user to reconfirm them/);
+  assert.match(alignmentProtocol, /only the currently displayed L2 or L4 check that is waiting for a reply/);
   assert.match(alignmentProtocol, /delegated children covered by its current Plan also inherit that acceptance/);
   assert.match(alignmentProtocol, /A delegated child reaching that boundary returns to the main session/);
   assert.match(alignmentProtocol, /trimmed content is exactly `1` or case-insensitively equals `y`/);
@@ -291,7 +304,8 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(alignmentProtocol, /S1 REQUIRED/);
   assert.match(alignmentProtocol, /\*\*Safety Confirmation\*\*/);
   assert.match(alignmentProtocol, /does not persist guard levels or acceptance/);
-  assert.doesNotMatch(alignmentProtocol, /continue immediately without waiting for a user response/);
+  assert.match(alignmentProtocol, /render the complete Target without a confirmation footer and continue immediately in the same turn/);
+  assert.doesNotMatch(alignmentProtocol, /must pass one L2 checkpoint/);
   assert.doesNotMatch(alignmentProtocol, /task_target_confirm/);
 
   for (const name of ["task", "task-plan", "task-queue"]) {

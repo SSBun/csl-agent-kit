@@ -1,5 +1,7 @@
 # 任务索引
 
+- [让 L2 Task Target Guard 更智能](tasks/recommend-smarter-l2-task-target-guard.md) — Completed (2026-09-08 14:55)
+
 - [按关注点提交全部本地改动](tasks/group-local-changes-into-commits-20260903.md) — Completed (2026-09-03 19:31)
 
 - [修复全部本地审查问题](tasks/fix-all-local-review-findings.md) — Completed (2026-09-03 18:16)

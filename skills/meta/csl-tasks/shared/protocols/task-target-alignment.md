@@ -48,6 +48,20 @@ Material equivalence is bidirectional. Both counterfactuals must be false for `p
 
 `unknown` cannot mean generic model uncertainty. Name the exact atom and a plausible counterfactual difference. If such a difference exists, treat the candidate as materially different. If no concrete semantic difference can be stated, do not escalate merely because confidence is low.
 
+### Settled Commitments
+
+After material equivalence passes, classify each candidate commitment's confirmation basis:
+
+- `direct_user`: the user explicitly supplied this result, condition, or boundary in the current request or a focused answer/revision.
+- `accepted_target`: recoverable user acceptance covers this commitment in the same task scope or an explicitly delegated scope.
+- Otherwise it remains an unsettled interpretation. Name the exact interpretation still requiring a check; wording, formatting, mechanical restatement, or generic low confidence alone cannot create one. If it actually introduces a user-owned ambiguity or a commitment difference, use L3 or L4 instead.
+
+For every settled commitment retain its source message(s) and applicable object, environment, scope, and conditions in the session-local Ledger. An assistant proposal, an assistant-authored task record, a completion checkbox, an untraceable summary, or a `confirmed=true` flag is not acceptance evidence. An accepted-target basis must identify both the proposal and the user's acceptance, not just the assistant's claim that it was accepted.
+
+Recheck applicability before reuse. A later explicit user revision supersedes the affected commitment; missing evidence, conflicting facts, changed objects/environments, or expired conditions invalidate only affected commitments and their dependencies. Compare the whole Target again: independently accepted clauses must not be combined into an unapproved effect. Permission to export locally and permission to upload test data do not authorize uploading production exports.
+
+Repository facts may establish what exists, but do not authorize what to change. Keep implementation facts in Context or Plan unless the user made their preservation an explicit commitment. Do not ask the user to certify facts the Agent can verify after alignment; do not read task-direct sources early to manufacture authorization.
+
 ## Readiness and Pre-Alignment Boundary
 
 A Target is ready only when the request supports one concrete, independently acceptable outcome and an honest observable completion condition.
@@ -61,7 +75,7 @@ A Target is ready only when the request supports one concrete, independently acc
 
 ## Interaction Owner and Delegated Execution
 
-The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. Its first ready non-trivial L2 Target receives one checkpoint before substantive execution; an accepted unchanged Target does not receive another one.
+The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. Its first ready non-trivial L2 Target is visible before substantive execution; the L2 confirmation-coverage check below determines whether to wait. An accepted unchanged Target does not receive another checkpoint.
 
 Target acceptance follows the accepted result semantics, not the task-family consumer. Changing from `task-plan` to `task` does not itself create a new Target. When the same canonical plan record is handed off in the same recoverable conversation state, the interaction owner continues without another checkpoint only when the user has explicitly authorized execution and the accepted outcome, Done when conditions, and boundaries remain materially equivalent. Planning-phase acceptance aligns the Target but never authorizes execution; without a later execution request, do not implement. If acceptance evidence cannot be recovered or the execution Target differs, apply the normal L2-L4 procedure.
 
@@ -88,11 +102,11 @@ The table below applies only to the interaction owner; delegated children use th
 | --- | --- | --- | --- | --- |
 | L0 | `NO_TASK` | No file mutation and no concrete non-trivial outcome | No Target | Answer or continue conversation |
 | L1 | `TRIVIAL_PASS` | Task exists solely for a trivial deterministic file mutation and Target is materially equivalent | Target display may be omitted | Continue after lifecycle activation |
-| L2 | `VISIBLE_CHECKPOINT` | Ready non-trivial Target; every authorized atom is preserved and no candidate atom is untraceable | Display Target and wait for one acknowledgment | Explicit acceptance of the displayed Target |
+| L2 | `VISIBLE_CHECKPOINT` | Ready non-trivial Target; every authorized atom is preserved and no candidate atom is untraceable | Display Target; continue when confirmation coverage is complete, otherwise wait only for the remaining check | Complete valid confirmation coverage or explicit acceptance of the pending check |
 | L3 | `CLARIFICATION_HOLD` | User-owned ambiguity prevents an honest Target | Ask exactly one focused question; do not present a guessed Target | User answer makes a Target ready |
 | L4 | `TARGET_CHANGE_APPROVAL` | Target is ready but adds, omits, weakens, changes, or cannot rule out a concrete commitment difference | Display Target, name changed dimensions, and wait for approval | Explicit acceptance adds the Target to authorization |
 
-L2 and L4 both pause, but their authority semantics differ: L2 verifies that the Agent understood existing authorization; L4 requests approval for a changed commitment.
+L2 checks the interpretation of existing authorization; it may continue without a reply. L4 always requests approval for a changed commitment. Neither clears an independent Safety Overlay.
 
 ## Deterministic Decision Procedure
 
@@ -105,7 +119,7 @@ Apply this order:
 5. Run both material-equivalence counterfactuals across every commitment atom.
 6. If any relation is `add`, `omit`, `weaken`, `change`, or concrete `unknown`, choose L4.
 7. If every relation is `preserve` and the task exists solely for a trivial deterministic file mutation, choose L1.
-8. Otherwise choose L2.
+8. Otherwise choose L2 and apply the confirmation-coverage check below.
 9. Independently compute the Safety Overlay described below.
 
 L2 is valid only when all of these hold:
@@ -118,6 +132,20 @@ untraceableCandidateAtoms = []
 differences = []
 unresolvedUserDecisions = []
 ```
+
+### L2 Confirmation-Coverage Check
+
+Run this only after the whole Target passes material equivalence. Coverage is not a substitute for preserving all authorized atoms.
+
+1. Preserve mandatory holds: a material Plan distribution change uses `plan_graph_change`; unrecoverable alignment evidence on resume/compaction uses `acceptance_unavailable`; an unfulfilled explicit user instruction to check before proceeding uses `user_requested`. These use `show_checkpoint` even when Target commitments are settled. Returning to the main session and checking the graph are still required. If several holds apply, keep them all active: use `user_requested` when it names items to check, otherwise `plan_graph_change` before `acceptance_unavailable`, and identify the other holds in `reasonCodes`. Satisfying one never clears the others.
+2. Otherwise keep `continue_unchanged` for an already aligned, unchanged Target under the existing same-session/handoff rules. Do not use it for a new or revised Target.
+3. For a main-session initial request, complete explicit user revision, or the Target made ready by focused clarification, collect valid settled commitments and the remaining interpretations. If all commitments are settled, use `show_continue`: render the complete Target once and continue in the same turn without asking for acknowledgment. This is alignment based on existing user authorization, not acceptance inferred from silence.
+4. Otherwise use `show_checkpoint` with `unsettled_interpretation`, name only the remaining interpretation(s), and wait. Preserve settled constraints in the complete Target without asking the user to reconfirm them. A reply that settles the last item does not create another checkpoint merely because the Target is reworded.
+5. Do not extend this exception to unsupported scopes, lost acceptance, or delegated sessions. At any new user-owned ambiguity, commitment delta, or safety action boundary, use the existing L3, L4, delegated handback, or S1 path.
+
+`show_continue` establishes alignment from the cited user commitments. Later unchanged continuation may inherit it only while the displayed Target and its direct-user or accepted-target sources remain recoverable; do not invent a separate acceptance reply. This changes no execution-phase or delegated-scope permission.
+
+The optional L2 display for an otherwise L1 trivial edit retains its existing wait behavior (`trivial_display`). Do not turn it into an exemption from any other gate.
 
 ## Compact Decision Packet
 
@@ -132,9 +160,17 @@ changedDimensions
 unresolvedQuestion
 safetyOverlay
 reasonCodes
+action
+settledClauses
+confirmationItems
+checkpointReason
 ```
 
-Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all difference and unresolved fields are empty. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 names the governing safety rule or action boundary.
+For an L2 shown Target, `settledClauses` contains `{ clause, basis, sources }` entries with basis `direct_user` or `accepted_target` and source message references. `confirmationItems` identifies only clauses still being checked. For evaluation, address clauses as `outcome`, `doneWhen.0`, `doneWhen.1`, etc., and optional `boundaries`; source references are zero-based indexes into the supplied authorization messages. Each clause must contain a single confirmation unit; split mixed settled/unsettled conditions before evaluation. A mechanical summary may cite the same explicit sources as its Done when items.
+
+`show_continue` requires complete settled coverage, empty `confirmationItems`, and null `checkpointReason`. `show_checkpoint` uses `unsettled_interpretation`, `user_requested`, `plan_graph_change`, `acceptance_unavailable`, or `trivial_display`. For `unsettled_interpretation`, the non-empty confirmation items and settled clauses partition the Target without overlap; a user-requested check names only the item(s) the user asked to inspect. Graph/acceptance/trivial holds explain the governing event rather than inventing unsettled clauses. Other actions use empty lists and null reason. For a combined hold, the primary reason follows the priority above; the complete packet and user-facing explanation must retain every active hold. These fields contain bounded evidence and requested checks, never private reasoning.
+
+Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Unsettled equivalent interpretations are not new user-owned decisions. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 names the governing safety rule or action boundary.
 
 A delegated child instead uses a compact session-local packet with `sessionRole`, `mainTaskId`, `owningTaskId` or `planNode`, `action`, `changedDimensions`, and `reasonCodes`. Its action is exactly `continue_delegated` or `return_to_main`; it has no user-facing L-code.
 
@@ -155,11 +191,13 @@ Keep the title exactly `**Task Target**`. Localize the labels to the conversatio
 
 ### L2 Checkpoint
 
-After the Target body, append a neutral localized Checkpoint footer with this meaning:
+For `show_continue`, render the complete Target without a confirmation footer and continue immediately in the same turn. Do not end the turn merely because the Target was displayed.
 
-`Please confirm that the Target above accurately expresses your intent, or state what should change. I will begin substantive work only after confirmation.`
+For `show_checkpoint`, keep the complete Target visible, including settled constraints. When only some interpretations are unsettled, append a localized `Items to check` section containing exactly those items; state that the other constraints remain in force and are not being asked again. For a mandatory graph, acceptance-recovery, trivial-display, or user-requested hold, explain that specific reason instead of pretending known facts are uncertain. Then append a neutral localized footer with this meaning:
 
-Do not show a difference list or imply that the user expanded authorization. Stop and wait. Creating or focusing the internal task record does not bypass this checkpoint.
+`Please confirm the items identified above, or state what should change. I will begin substantive work only after confirmation.`
+
+Do not show a commitment difference list or imply that the user expanded authorization. Stop and wait. Creating or focusing the internal task record does not bypass a required checkpoint.
 
 ### L4 Change Approval
 
@@ -185,15 +223,15 @@ After task activation, continue without waiting when the request is solely a tri
 
 ## Confirmation and Revision
 
-- A response whose trimmed content is exactly `1` or case-insensitively equals `y` accepts the currently displayed L2 or L4 Target. These shortcuts are implicit; never advertise them.
+- A response whose trimmed content is exactly `1` or case-insensitively equals `y` accepts only the currently displayed L2 or L4 check that is waiting for a reply. These shortcuts are implicit; never advertise them. A `show_continue` Target is not waiting, so a later shortcut cannot approve another action.
 - Any other unambiguous affirmative response that accepts the displayed Target also confirms it.
-- L2 acceptance records that the displayed interpretation is correct; it does not expand authorization.
+- L2 acceptance settles the identified interpretation/check while retaining the complete Target and inherited constraints; it does not expand authorization or grant execution of a planning-only task.
 - L4 acceptance adds the displayed Target to current authorization.
 - A question, hesitation, unrelated reply, or ambiguous acknowledgment is not acceptance. Answer or clarify only within the pre-alignment boundary, then present the current checkpoint again when ready.
 - A user response that adds, removes, or changes a commitment revises authorization instead of accepting the old Target. Update the canonical Target as needed, run required consistency commands, regenerate the candidate, and recompute the level.
-- Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint, including a normalized Target produced after an explicit user revision or a material Plan distribution change.
+- Every new or materially revised non-trivial equivalent Target owned by the main session passes the L2 confirmation-coverage check. An explicit user revision updates authorization first: directly specified changed clauses and still-valid settled clauses need no second acknowledgment. Recompute L3/L4 when appropriate; a material Plan distribution change still requires its checkpoint.
 - Once accepted, an unchanged main Target must not be presented for redundant confirmation in the same recoverable conversation state. This includes an explicitly authorized `task-plan` to `task` handoff of the same canonical record; delegated children covered by its current Plan also inherit that acceptance.
-- After main-session resume or compaction, if explicit acceptance evidence cannot be recovered, present the checkpoint again rather than assuming acceptance. A delegated child without a complete current packet returns to the main session instead.
+- After main-session resume or compaction, if the prior alignment evidence cannot be recovered (explicit acceptance, or a displayed `show_continue` Target with valid cited user commitments), present the checkpoint again rather than assuming acceptance. A delegated child without a complete current packet returns to the main session instead.
 
 ## Realignment
 
@@ -227,4 +265,4 @@ L2 or L4 acceptance never clears S1. At the actual action boundary, the main ses
 
 ## Maintainer Validation
 
-Keep the shared protocol, stable Agent rules, task-family consumers, project-local level fixtures and scorer, Context, and focused contract assertions aligned. Run authorized focused tests, the built-in Skill Quality gate for changed Skill packages, project eval validation and self-test, Context validation, and `git diff --check`. Quality failures block completion; context-budget warnings never justify removing required workflow guidance.
+Keep the shared protocol, stable Agent rules, task-family consumers, project-local level fixtures and scorer, Context, and focused contract assertions aligned. Cover explicit requests, complete revisions, clarification convergence, partial checks, user-requested holds, stale/cross-scope evidence, combined effects, and unchanged graph/Safety gates. Report visibility, redundant checks, false reuse, and inherited-boundary omissions separately; deterministic reference checks cannot prove semantic entailment or model reliability. Run authorized focused tests, the built-in Skill Quality gate for changed Skill packages, project eval validation and self-test, Context validation, and `git diff --check`. Quality failures block completion; context-budget warnings never justify removing required workflow guidance.
