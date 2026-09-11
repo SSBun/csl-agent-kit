@@ -43,8 +43,9 @@ Completed children do not prove the integrated outcome. After `next` returns no 
 
 1. Verify the parent's own integration Targets against the assembled deliverable.
 2. Record parent Result evidence and preliminary integration checks. Apply exactly one branch: parent-owned deliverable file changes require the mandatory `task-review` loop and `passed`; no parent-owned deliverable changes use `skipped`; an explicitly requested adversarial review of a no-file parent instead uses `required` → In Review → `approved` without mandatory `task-review`. For a file-changing parent, run explicit adversarial review only after `passed` and upgrade the same gate to `approved`.
-3. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
-4. Run `check <parent-id>` and `validate`.
+3. After the final review-gate write, confirm any reviewed scope still matches the assembled deliverable, rerun proportionate final integration checks, and record `verify <parent-id> passed --evidence <observation>` only when they pass. Every review-gate write clears prior Verification; preliminary checks cannot replace this final record. Scope drift returns to self-check and fresh review; failed verification Blocks completion.
+4. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
+5. Run `check <parent-id>` and `validate`.
 
 Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
 

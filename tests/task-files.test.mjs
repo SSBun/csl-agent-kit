@@ -336,6 +336,14 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(queueSkill, /no parent-owned deliverable changes use `skipped`/);
   assert.match(queueSkill, /explicitly requested adversarial review of a no-file parent/);
   assert.match(queueSkill, /without mandatory `task-review`/);
+  const parentFinalGate = queueSkill.split("## Parent Final Gate")[1];
+  assert.match(parentFinalGate, /After the final review-gate write/);
+  assert.match(parentFinalGate, /Every review-gate write clears prior Verification/);
+  assert.match(parentFinalGate, /confirm any reviewed scope still matches the assembled deliverable/);
+  assert.match(parentFinalGate, /failed verification Blocks completion/);
+  const finalVerify = parentFinalGate.indexOf("`verify <parent-id> passed --evidence <observation>`");
+  const completeParent = parentFinalGate.indexOf("`complete <parent-id>`");
+  assert.ok(finalVerify !== -1 && finalVerify < completeParent, "parent verification must follow the final review gate and precede completion");
   assert.match(queueSkill, /Reopening a completed child requires an active parent/);
   assert.match(queueSkill, /invalidates the active parent's terminal review and Verification evidence/);
   assert.match(queueSkill, /stall guard independently to each child and to any parent-owned deliverable review/);
