@@ -1,0 +1,47 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 4590167..a8c4944 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -22,6 +22,7 @@
+ - 云效 MQTT 订阅被拒绝时定时重试，并在 dashboard 显示订阅失败详情。
+ - 云效守护进程退出时停止派发新审批、等待在途工作并清理连接、重试计时器与信号监听。
+ - Task 解析区分真实章节与代码块、列表及 HTML 中的示例，拒绝重复或畸形的 Review ledger，避免绕过审查门禁。
++- Queue 父任务在最终审查后重新记录集成验证，避免完成时因缺少 Verification 被拒绝。
+ 
+ ### Removed
+ 
+diff --git a/skills/meta/task-queue/SKILL.md b/skills/meta/task-queue/SKILL.md
+index f97e383..a216c47 100644
+--- a/skills/meta/task-queue/SKILL.md
++++ b/skills/meta/task-queue/SKILL.md
+@@ -43,8 +43,9 @@ Completed children do not prove the integrated outcome. After `next` returns no
+ 
+ 1. Verify the parent's own integration Targets against the assembled deliverable.
+ 2. Record parent Result evidence and preliminary integration checks. Apply exactly one branch: parent-owned deliverable file changes require the mandatory `task-review` loop and `passed`; no parent-owned deliverable changes use `skipped`; an explicitly requested adversarial review of a no-file parent instead uses `required` → In Review → `approved` without mandatory `task-review`. For a file-changing parent, run explicit adversarial review only after `passed` and upgrade the same gate to `approved`.
+-3. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
+-4. Run `check <parent-id>` and `validate`.
++3. After the final review-gate write, confirm any reviewed scope still matches the assembled deliverable, rerun proportionate final integration checks, and record `verify <parent-id> passed --evidence <observation>` only when they pass. Every review-gate write clears prior Verification; preliminary checks cannot replace this final record. Scope drift returns to self-check and fresh review; failed verification Blocks completion.
++4. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
++5. Run `check <parent-id>` and `validate`.
+ 
+ Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
+ 
+diff --git a/tests/task-files.test.mjs b/tests/task-files.test.mjs
+index ccc2824..38f935e 100644
+--- a/tests/task-files.test.mjs
++++ b/tests/task-files.test.mjs
+@@ -336,6 +336,14 @@ test("task workflow skills own canonical records and routes", () => {
+   assert.match(queueSkill, /no parent-owned deliverable changes use `skipped`/);
+   assert.match(queueSkill, /explicitly requested adversarial review of a no-file parent/);
+   assert.match(queueSkill, /without mandatory `task-review`/);
++  const parentFinalGate = queueSkill.split("## Parent Final Gate")[1];
++  assert.match(parentFinalGate, /After the final review-gate write/);
++  assert.match(parentFinalGate, /Every review-gate write clears prior Verification/);
++  assert.match(parentFinalGate, /confirm any reviewed scope still matches the assembled deliverable/);
++  assert.match(parentFinalGate, /failed verification Blocks completion/);
++  const finalVerify = parentFinalGate.indexOf("`verify <parent-id> passed --evidence <observation>`");
++  const completeParent = parentFinalGate.indexOf("`complete <parent-id>`");
++  assert.ok(finalVerify !== -1 && finalVerify < completeParent, "parent verification must follow the final review gate and precede completion");
+   assert.match(queueSkill, /Reopening a completed child requires an active parent/);
+   assert.match(queueSkill, /invalidates the active parent's terminal review and Verification evidence/);
+   assert.match(queueSkill, /stall guard independently to each child and to any parent-owned deliverable review/);

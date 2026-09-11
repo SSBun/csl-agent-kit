@@ -1,6 +1,8 @@
 # 任务索引
 
-- [提交全部本地改动并发布 CSL Agent Kit 新版本](tasks/commit-and-publish-csl-agent-kit-20260911.md) — In Progress (2026-09-11 15:16)
+- [记录可分享的当前 Pi 插件与配置环境](tasks/document-current-pi-environment.md) — In Progress (2026-09-11 15:28)
+
+- [提交全部本地改动并发布 CSL Agent Kit 新版本](tasks/commit-and-publish-csl-agent-kit-20260911.md) — In Review (2026-09-11 15:28)
 
 - [编写 CSL Agent Kit Task 系统宣讲大纲 Wiki](tasks/write-csl-agent-kit-task-talk-outline-mywiki.md) — Completed (2026-09-11 13:33)
 
