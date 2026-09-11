@@ -1,0 +1,394 @@
+{
+  "记录时间": "2026-09-11T15:40:28",
+  "交付物": "/Users/caishilin/Desktop/personal/skills/tasks/artifacts/document-current-pi-environment/reports/pi-environment.md",
+  "sha256": "36fb50b1283dc7f1cb4d8cefdfaa23848c95f3185a9a501f8b28348b30bcf602",
+  "检查": [
+    {
+      "检查": "13个JSON代码块可解析",
+      "通过": true
+    },
+    {
+      "检查": "非包全局配置精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "presets.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "openai-codex-fast.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "language-learn.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "flashcards-settings.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "web-search.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "pi-codex-compaction.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "config.json精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "模型兼容性精确匹配",
+      "通过": true
+    },
+    {
+      "检查": "Notes审批列表匹配",
+      "通过": true
+    },
+    {
+      "检查": "KiCad24项白名单匹配",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 skills",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 @ssbun/csl-agent-kit",
+      "通过": true
+    },
+    {
+      "检查": "并行提交未改变所查源文件 package.json",
+      "通过": true
+    },
+    {
+      "检查": "并行提交未改变所查源文件 pi/extensions/openai-codex-fast.ts",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-language-tutor",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 pi-language-tutor",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-mcp-adapter",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 pi-mcp-adapter",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-web-access",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 pi-web-access",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-subagents",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 pi-subagents",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-codex-image-gen",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 pi-codex-image-gen",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-codex-compaction",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 @ogulcancelik/pi-codex-compaction",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 pi-extension",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 vibe-island-pi-extension",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 diagram-design",
+      "通过": true
+    },
+    {
+      "检查": "Git revision已记录 diagram-design",
+      "通过": true
+    },
+    {
+      "检查": "包目录存在 i-have-adhd",
+      "通过": true
+    },
+    {
+      "检查": "包版本已记录 i-have-adhd",
+      "通过": true
+    },
+    {
+      "检查": "Git revision已记录 i-have-adhd",
+      "通过": true
+    },
+    {
+      "检查": "10项包",
+      "通过": true
+    },
+    {
+      "检查": "43项失效链接与清单一致",
+      "通过": true
+    },
+    {
+      "检查": "28项CSL技能已列出",
+      "通过": true
+    },
+    {
+      "检查": "无作者绝对路径",
+      "通过": true
+    },
+    {
+      "检查": "无常见密钥或JWT",
+      "通过": true
+    },
+    {
+      "检查": "原配置敏感字面量未导出",
+      "通过": true
+    },
+    {
+      "检查": "27个绝对模板链接匹配",
+      "通过": true
+    },
+    {
+      "检查": "无尾随空白",
+      "通过": true
+    },
+    {
+      "检查": "分享配置为ask且不覆盖packages",
+      "通过": true
+    }
+  ],
+  "包快照": [
+    {
+      "来源": "local:csl-agent-kit",
+      "name": "@ssbun/csl-agent-kit",
+      "version": "5.1.0",
+      "pi": {
+        "extensions": [
+          "./pi/extensions"
+        ],
+        "skills": [
+          "./skills"
+        ],
+        "prompts": [
+          "./prompts"
+        ]
+      },
+      "当前HEAD": "0f14393430bcae1bb8d807542f2841151c2619e4",
+      "盘点时HEAD": "1ac923f76c03fe9db6a42dd8ed3150a0c7222ef2"
+    },
+    {
+      "来源": "npm:pi-language-tutor",
+      "name": "pi-language-tutor",
+      "version": "0.4.1",
+      "pi": {
+        "extensions": [
+          "./language-learn.ts"
+        ]
+      }
+    },
+    {
+      "来源": "npm:pi-mcp-adapter",
+      "name": "pi-mcp-adapter",
+      "version": "2.32.1",
+      "pi": {
+        "extensions": [
+          "./index.ts"
+        ],
+        "skills": [
+          "./skills"
+        ],
+        "video": "https://github.com/nicobailon/pi-mcp-adapter/raw/refs/heads/main/pi-mcp.mp4"
+      }
+    },
+    {
+      "来源": "npm:pi-web-access",
+      "name": "pi-web-access",
+      "version": "0.28.0",
+      "pi": {
+        "extensions": [
+          "./index.ts"
+        ],
+        "video": "https://github.com/nicobailon/pi-web-access/raw/refs/heads/main/pi-web-fetch-demo.mp4"
+      }
+    },
+    {
+      "来源": "npm:pi-subagents",
+      "name": "pi-subagents",
+      "version": "0.66.0",
+      "pi": {
+        "extensions": [
+          "./index.ts"
+        ],
+        "skills": [
+          "./skills"
+        ],
+        "prompts": [
+          "./prompts"
+        ]
+      }
+    },
+    {
+      "来源": "npm:pi-codex-image-gen",
+      "name": "pi-codex-image-gen",
+      "version": "0.1.12",
+      "pi": {
+        "extensions": [
+          "./index.ts"
+        ],
+        "skills": [
+          "./skills"
+        ]
+      }
+    },
+    {
+      "来源": "npm:@ogulcancelik/pi-codex-compaction",
+      "name": "@ogulcancelik/pi-codex-compaction",
+      "version": "0.1.5",
+      "pi": {
+        "extensions": [
+          "./index.ts"
+        ]
+      }
+    },
+    {
+      "来源": "local:vibe-island",
+      "name": "vibe-island-pi-extension",
+      "version": "1.0.0",
+      "pi": {
+        "extensions": [
+          "./dist/index.js"
+        ]
+      }
+    },
+    {
+      "来源": "https://github.com/cathrynlavery/diagram-design",
+      "当前HEAD": "2724fd2efd8c6737f6fa704fbf5da52d67375497"
+    },
+    {
+      "来源": "https://github.com/ayghri/i-have-adhd",
+      "name": "i-have-adhd",
+      "version": "0.2.0",
+      "pi": {
+        "extensions": [
+          "./extensions/i-have-adhd.ts"
+        ],
+        "skills": [
+          "./skills"
+        ]
+      },
+      "当前HEAD": "58494af57962b2d7a996b4d419474380a299af5e"
+    }
+  ],
+  "源文件摘要": [
+    {
+      "路径": "/Users/caishilin/.pi/agent/settings.json",
+      "sha256": "9f0b195fb048109535194b88c7814bd7ce5c92a0a8c2c2b01c7627717307ebab"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/presets.json",
+      "sha256": "94d839d34c0c2ecc2fd380f3c8667de73aeb26c20133ee964199a558c89edb40"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/csl/openai-codex-fast.json",
+      "sha256": "aa014142a0168313a765dd1211c4c605eb3f15107ab0e1a27ec472170a5fbeca"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/language-learn.json",
+      "sha256": "5cd40fbedfc36de623d77bd3a61df56b443a59dace43168256f1c8dcab0ffa20"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/flashcards-settings.json",
+      "sha256": "995783181423aac89ee4606f04a1682bb6f0dde0c3eb2f41a7e598536b515ddf"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/web-search.json",
+      "sha256": "d1caa4aa67da790d5cfce4be54b212e5b421c3696a372941876198d05c31d5f3"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/pi-codex-compaction.json",
+      "sha256": "bedd9519fbae9adb983866002067210a14dbf05d305212a26eddd22976f389f5"
+    },
+    {
+      "路径": "/Users/caishilin/.csl-agent-kit/hooks/config.json",
+      "sha256": "784ee6ad98c48523368171a2dacb72e73f8a38d80c039fbfc265ce1ba99fa005"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/models.json",
+      "sha256": "f5e788961d6d4c7be9cedb7311f54c16c68bbdde1e8cc3b375d4d85d45ac1d62"
+    },
+    {
+      "路径": "/Users/caishilin/.config/mcp/mcp.json",
+      "sha256": "07040c563be740bdd21037e63c187dfbe299e5d7aeba3db8def9843391c4df5d"
+    },
+    {
+      "路径": "/Users/caishilin/Desktop/personal/skills/pi/extensions/openai-codex-fast.ts",
+      "sha256": "338017af13db35a96f2d131c9e58d4519d5d13419bd929549d83514e09a04032"
+    },
+    {
+      "路径": "/Users/caishilin/Desktop/personal/skills/package.json",
+      "sha256": "993c5ed370a4dd391b316c24a69e55a5ff38408e3e713b426b9dc4a73fa1761a"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/npm/node_modules/pi-language-tutor/package.json",
+      "sha256": "bdea28f4e464ab6bb227ba1ab303ea0de7de44673aee2f6385133820e0b1b6aa"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/npm/node_modules/pi-mcp-adapter/package.json",
+      "sha256": "43c22297f4e9d28c9e77438eaf3f757c57c46be6214bc96df4b1db6cd0555f8e"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/npm/node_modules/pi-web-access/package.json",
+      "sha256": "f7b70f59eb857868d8a86d39345f4db22dce49d66baeb0992e3d3c8004b47ca5"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/npm/node_modules/pi-subagents/package.json",
+      "sha256": "e9b166c2287a3938206fc1824226ca1cf137eb1b0a3da6f988a2bb9b74e28faf"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/npm/node_modules/pi-codex-image-gen/package.json",
+      "sha256": "6ee25b3cb81a6ee67234ce1fcb9eeee64eb18177e4562e7b5b3f75d99f83037d"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/npm/node_modules/@ogulcancelik/pi-codex-compaction/package.json",
+      "sha256": "3d64ee66df98c717cdd2779ecd9791dd82c18c3abe8cc1973a7e08599da60fd6"
+    },
+    {
+      "路径": "/Users/caishilin/.vibe-island/pi-extension/package.json",
+      "sha256": "6925b44fce64d853e4b4471474b17df0d92a15967c1a11551756b037daad5282"
+    },
+    {
+      "路径": "/Users/caishilin/.pi/agent/git/github.com/ayghri/i-have-adhd/package.json",
+      "sha256": "39dd7300d29120ad2af7436232909a036c2b4f8baf278e219f8e4df669509f63"
+    }
+  ],
+  "限制": [
+    "未运行单元测试或项目测试套件",
+    "未做空白机器安装",
+    "未连接全部MCP或调用付费模型",
+    "未读取或导出auth、sessions、trust、模型认证存储"
+  ],
+  "环境并发说明": "其他会话提交导致仓库HEAD推进；盘点时revision仍可解析，所查package及Fast Mode源码内容未变；不以当前HEAD替换既有快照。"
+}

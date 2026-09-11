@@ -12,7 +12,7 @@ description: Run a fail-closed, uncapped Reviewer–Editor loop for code, PRDs, 
 - Prefer real isolated subagents for the Reviewer and Editor when the host can dispatch them; fall back to inline role-play with `ISOLATION: simulated` disclosed. Follow [Subagent Dispatch](references/subagent-dispatch.md).
 - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.
 - `APPROVED` is review evidence, not external-action authorization.
-- When reviewing a file-changing task at completion, start only after its mandatory one-pass `task-review` is recorded as `Passed`; adversarial approval upgrades the same Review gate and its evidence names both reviews.
+- When reviewing an R2 task at completion, start only after its mandatory one-pass `task-review` is recorded as `Passed`; adversarial approval upgrades the same Review gate and its evidence names both reviews. R0/R1 tasks may enter Required → In Review → Approved directly on an explicit adversarial request, without an automatic ordinary pass. Use the owning Task's current assessment under [Task Review Grading](../../meta/csl-tasks/shared/protocols/task-review-grading.md); do not classify or downgrade it here.
 - Set no total round or cycle limit. Continue by review state under [Review Loop Contract](references/review-loop.md).
 - Keep the active finding ledger in Reviewer–Editor handoffs; do not write report files during intermediate rounds.
 - Reviewed artifact changes invalidate `APPROVED`; return to `BLOCKED` and resume the same numbered review history.
@@ -54,7 +54,7 @@ Both roles apply [Shared Principles and Review Lenses](references/review-lenses.
 
 ### 3. Finalize the record
 
-When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Require the owning canonical task ID before writing; if it is unavailable, return to task activation instead of creating an unowned report. Confirm the artifact and available diff before recording `APPROVED`, then add only the final decision and report link to the owning task. For a file-changing task, replace its `Passed` gate with `Approved` evidence that retains the completed `task-review` result and adds this report. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
+When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Require the owning canonical task ID before writing; if it is unavailable, return to task activation instead of creating an unowned report. Confirm the artifact and available diff before recording `APPROVED`, then add only the final decision and report link to the owning task. For an R2 task, replace its `Passed` gate with `Approved` evidence that retains the completed `task-review` result and adds this report. For R0/R1, record `Approved` from its explicit Required obligation. Relevant artifact or evidence changes return to the owning Task for refreshed self-check, assessment and any mandatory ordinary pass before final approval is recorded. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
 
 ## Maintenance
 

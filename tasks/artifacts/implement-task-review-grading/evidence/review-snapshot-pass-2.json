@@ -1,0 +1,229 @@
+{
+  "repo": "/Users/caishilin/Desktop/personal/skills",
+  "branch": "main",
+  "head": "0f14393430bcae1bb8d807542f2841151c2619e4",
+  "files": [
+    {
+      "path": "skills/dev/adversarial-review/SKILL.md",
+      "sha256": "576096fd434cadaca61fc166a50d034802be6785cd69de7b9d1ee025cddcdf52",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "6c47de810314edbc1a552e0063937de1639c260e2fbfb01fec81f7187b0a4da5",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "83cd2d05f19d6f635dd6e754b383901fe5ab26c069ddf5fca8e7b609caccf398",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "sha256": "8e3a3440ea59dcba5b94a58d3ccb8314194dd757f179b9b8a29bc947904fa3b4",
+      "mode": "0o755"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "sha256": "89f64886c17fe7681fee729d89b2e9cfe1e149bb471a992b9e3c85158b530fe3",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "68bb105755702e8d3cf0aff95e1b024649822dd9fa7d9b4f8b26c5b8332662db",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/task-review/SKILL.md",
+      "sha256": "d1008447e39f06c6f7f1dd0b6ba863f83b92177ee294f63c63b8cdfa1e6b9d2a",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "52e5396e949c5cc96a3c5ad4cebdad625710f94753c4a8a141aed978556e6a91",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/task-review/evals/contract_cases.json",
+      "sha256": "321397800e591b1dc0e15c3ed62a5894c8d536fcc0f21a43277e8f365a986b80",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "7d8bd6dcd3165928cbb262139c298dbceac2ce85cf7a655d8611cde3db0a489a",
+      "mode": "0o644"
+    },
+    {
+      "path": "skills/meta/task/evals/review_gate_cases.json",
+      "sha256": "45ad87c61b439935d49949fcb3c8a2ef0177d9267e12df18f01f25937bf59e71",
+      "mode": "0o644"
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "d30a3fceeefab79ef6a70c92a25156498e9ec5d1c62fe7dfa507269a6f1f99f2",
+      "mode": "0o644"
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "f9f63a8c3b5954ef78cc3b1dcca056ec1b7e479a552ea57827a59f806d6b797e",
+      "mode": "0o644"
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "82f11379a4a09f5ac0c50bc06aad32486046720e8433baf97698cbc4f480e79e",
+      "mode": "0o644"
+    }
+  ],
+  "scopedStatus": " M skills/dev/adversarial-review/SKILL.md\n M skills/meta/agent-hooks/references/csl-agent-kit-contract.md\n M skills/meta/csl-tasks/shared/lib/task-core.js\n M skills/meta/csl-tasks/shared/scripts/csl-tasks.js\n M skills/meta/task-queue/SKILL.md\n M skills/meta/task-review/SKILL.md\n M skills/meta/task-review/evals/contract_cases.json\n M skills/meta/task-review/references/review_workflow.md\n M skills/meta/task/SKILL.md\n M skills/meta/task/evals/review_gate_cases.json\n M tasks/context.md\n M tests/csl-tasks-core.test.mjs\n M tests/task-files.test.mjs\n?? skills/meta/csl-tasks/shared/protocols/task-review-grading.md\n",
+  "stagedDiff": "",
+  "patchSha256": "3c9167dab6875e3dccc12926b0a9e8c6dcf399948f059fba8324d7b73286e50d",
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "skills/meta/csl-tasks/shared/lib/task-core.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "skills/meta/csl-tasks/shared/scripts/csl-tasks.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/csl-tasks-core.test.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/task-files.test.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/task"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m task — /Users/caishilin/Desktop/personal/skills/skills/meta/task\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 5528.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/task-review"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m task-review — /Users/caishilin/Desktop/personal/skills/skills/meta/task-review\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1979.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/task-queue"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m task-queue — /Users/caishilin/Desktop/personal/skills/skills/meta/task-queue\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1994.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/agent-hooks"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m agent-hooks — /Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1311.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/dev/adversarial-review"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m adversarial-review — /Users/caishilin/Desktop/personal/skills/skills/dev/adversarial-review\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1345.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/task-context/scripts/context.js",
+        "--workspace",
+        ".",
+        "validate"
+      ],
+      "exitCode": 0,
+      "stdout": "{\n  \"schema\": \"csl-context.validation/v1\",\n  \"valid\": true,\n  \"errors\": [],\n  \"warnings\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+        "--workspace",
+        ".",
+        "validate"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"valid\":true}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+        "--help"
+      ],
+      "exitCode": 0,
+      "stdout": "Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]\n\nCommands:\n  create <id> --title <title> --kind task|plan|queue --target \"T1: ...\" [--target ...]\n  list [--json]\n  show <id> [--json]\n  validate [id]\n  check <id|task-file>\n  sync <id>\n  status <id> <pending|in-progress|in-review|blocked|cancelled>\n  cancel <id>\n  resume <id>\n  reopen <id>\n  link <parent-id> <child-id>\n  next <queue-id> [--json]\n  result <id> <Tn> --evidence <text>\n  assess-review <id> <R0|R1|R2> --reason <text> --snapshot <identity> --evidence <text>\n    R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>\n  review <id> <skipped|required|passed|approved> --evidence <text>\n    passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve\n  verify <id> <passed|failed> --evidence <text>\n  complete <id>\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "未运行单元测试或项目测试。",
+    "新协议为 untracked 文件；其完整内容以 files 的 SHA256 与当前文件读取绑定，不在 git diff 中。",
+    "本快照不包含其他会话的交付物及任务记录；任务本身的生命周期和 Result 由 task fingerprint 绑定。"
+  ],
+  "previousSnapshot": "10d5393bd846e683f2a36531246f9f1bd6ad4c70edc2d767f69e82101479fe1a",
+  "priorReviewRun": "46f8ebe2-f32a-4722-a213-53325d34c3d0",
+  "priorSnapshotRechecked": {
+    "fileHashDrift": [],
+    "modeDrift": [],
+    "patchMatches": true
+  },
+  "snapshotId": "2e0bcce1e95a8527cbded54cf79f4b0feb4706fbb5b48e402beead12fe8a6701"
+}

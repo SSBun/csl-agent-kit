@@ -332,8 +332,9 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(planSkill, /planning-only task-record writes do not trigger the deliverable-change review loop/);
   assert.match(planSkill, /inherits that acceptance and does not present another checkpoint/);
   assert.match(queueSkill, /integration Target meaning/);
-  assert.match(queueSkill, /mandatory `task-review` loop for deliverable file changes/);
-  assert.match(queueSkill, /no parent-owned deliverable changes use `skipped`/);
+  assert.match(queueSkill, /mandatory `task-review` loop for R2 or explicit ordinary review/);
+  assert.match(queueSkill, /No parent-owned deliverable changes is R0/);
+  assert.match(queueSkill, /R0\/R1 use `skipped` only without explicit or existing review obligations/);
   assert.match(queueSkill, /explicitly requested adversarial review of a no-file parent/);
   assert.match(queueSkill, /without mandatory `task-review`/);
   const parentFinalGate = queueSkill.split("## Parent Final Gate")[1];
@@ -345,14 +346,15 @@ test("task workflow skills own canonical records and routes", () => {
   const completeParent = parentFinalGate.indexOf("`complete <parent-id>`");
   assert.ok(finalVerify !== -1 && finalVerify < completeParent, "parent verification must follow the final review gate and precede completion");
   assert.match(queueSkill, /Reopening a completed child requires an active parent/);
-  assert.match(queueSkill, /invalidates the active parent's terminal review and Verification evidence/);
+  assert.match(queueSkill, /invalidates the active parent's assessment, terminal review and Verification evidence/);
   assert.match(queueSkill, /stall guard independently to each child and to any parent-owned deliverable review/);
   assert.match(queueSkill, /A stalled child or parent becomes Blocked/);
   assert.match(queueSkill, /parent, child, and sibling titles in one Queue must not normalize to the same text/);
   assert.match(queueSkill, /do not display another child checkpoint/);
   assert.match(queueSkill, /material child-distribution graph change/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
-  assert.match(contract, /Every task that changes requested deliverable files must use the existing In Review state/);
+  assert.match(contract, /Every task must classify its actual result before the completion review gate/);
+  assert.match(contract, /R2 covers complex, high-risk or materially uncertain changes and must use the existing In Review state/);
   assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
   assert.equal(contract.includes("applicable task requirement"), false);
 
@@ -425,7 +427,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Bind self-check, review, and final verification to the actual reviewed content/);
   assert.match(contract, /a suspected false positive needs counterevidence checked by a fresh pass/);
   assert.match(contract, /Direct edits to an active task specification must use its sync lifecycle/);
-  assert.match(contract, /sync invalidates terminal review and Verification evidence/);
+  assert.match(contract, /sync invalidates the assessment, terminal review and Verification evidence/);
   assert.match(contract, /Any confirmed finding returns the task to In Progress for remediation/);
   assert.match(contract, /Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger/);
   assert.match(contract, /Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed/);
@@ -433,7 +435,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it/);
   assert.match(contract, /Resume is rejected while any stalled item remains at two/);
   assert.match(contract, /The Reviewer remains feedback-only and never grants approval or changes task state/);
-  assert.match(contract, /adversarial review of that no-file result was explicitly requested/);
+  assert.match(contract, /adversarial review of that no-file result or an R1 result was explicitly requested/);
   assert.match(contract, /records Approved without running the mandatory `task-review`/);
   assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
   assert.match(contract, /Keep this contract behavioral and stable\. Skills retain operational detail\./);
@@ -667,7 +669,8 @@ test("current workspace Context has a valid Core and formal Packs", () => {
   assert.ok(packs.every(({ format }) => format === "v1"));
   const context = readFileSync(path.join(root, "tasks", "context.md"), "utf8");
   assert.match(context, /所有请求交付物文件改动（包括 trivial edits）进入 task 记录/);
-  assert.match(context, /产生请求交付物文件改动的 Task 默认执行 mandatory `task-review` 并以 `Passed` 完成/);
+  assert.match(context, /R2 执行 mandatory `task-review` 并以 `Passed` 完成/);
+  assert.match(context, /R1 包括满足全部条件的小范围逻辑修改/);
   assert.doesNotMatch(context, /非简单交付物改动进入 task 记录/);
   assert.doesNotMatch(context, /未明确要求时记录 `Skipped` 并在常规验证通过后直接完成/);
 });
@@ -679,14 +682,14 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
   }
-  for (const section of ["Scope", "Target", "Plan", "Result", "Review", "Verification", "Block"]) {
+  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Verification", "Block"]) {
     assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
   }
   assert.equal(skill.includes("### Checklist"), false);
   assert.match(skill, /tasks\/tasks\.md/);
   assert.match(skill, /tasks\/tasks\/<slug>\.md/);
   assert.match(skill, /Do not hand-edit status or index lines/);
-  assert.match(skill, /`sync` conservatively clears Verification and invalidates `Passed` or `Approved`/);
+  assert.match(skill, /`sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`/);
   assert.match(skill, /reopen a Completed task before changing its specification/);
   assert.match(skill, /Load Project Core, then read only the newest index entries/);
   assert.match(skill, /After the protocol aligns the current Target, query task-relevant Context Packs/);
@@ -704,11 +707,11 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /untracked, deleted, and renamed content, not merely HEAD or filenames/);
   assert.match(skill, /Do not substitute inline self-review or silently switch execution modes/);
   assert.match(skill, /Infrastructure failures do not increment finding no-progress streaks/);
-  assert.match(skill, /Prepare the mandatory review handoff only for requested deliverable file changes/);
-  assert.match(skill, /core validates recorded state and evidence text, not actual subagent isolation/);
+  assert.match(skill, /Prepare the mandatory review handoff for R2 or explicit ordinary review/);
+  assert.match(skill, /core validates assessment structure, level\/gate consistency, task-record fingerprint and evidence text, not semantic risk/);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
-  assert.match(skill, /`skipped` only when the task changed no requested deliverable files/);
-  assert.match(skill, /`required` before every review pass for a task that changed requested deliverable files/);
+  assert.match(skill, /`skipped` only with a current R0 or R1 assessment and no explicit or existing review obligation/);
+  assert.match(skill, /`required` before every R2 or explicitly requested review pass/);
   assert.match(skill, /`passed` only after that `task-review` pass reports no Critical Finding/);
   assert.match(skill, /return to In Progress, remediate it/);
   assert.match(skill, /Use exactly one temporary `## Review` section with the exact `task-review-ledger\/v1` marker/);
@@ -718,6 +721,9 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /no-progress=2/);
   assert.match(skill, /core rejects resume while any ledger item remains at `no-progress=2`/);
   assert.match(skill, /stop dispatching review passes/);
+  assert.match(skill, /passed --resolve-ledger --snapshot/);
+  assert.match(skill, /remove the ledger and record Passed atomically/);
+  assert.match(skill, /Do not manually delete the resolved ledger then `sync`/);
   assert.match(skill, /Never convert a stall to `passed`/);
   assert.match(skill, /Repeat without a fixed total round limit/);
   assert.match(skill, /adversarial review of that no-file result/);
@@ -760,14 +766,17 @@ test("workspace task ownership defaults independent and ambiguous outcomes to ne
   assert.equal(byId["ambiguous-relationship"].expected, "New");
 });
 
-test("workspace review-gate cases require task-review for deliverable file changes", () => {
+test("workspace review-gate cases distinguish R0, R1, R2 and explicit review", () => {
   const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "review_gate_cases.json"), "utf8"));
   const terminalOutcomes = new Set();
 
   for (const item of fixture.cases) {
-    const entry = item.deliverable_files_changed || item.user_requested_adversarial_review ? "Required" : "Skipped";
-    const taskReview = item.deliverable_files_changed;
+    const exempt = item.simple && ["clarity", "impact", "risk", "verification"].every((key) => item.r1_grounds?.[key] === true);
+    const level = !item.deliverable_files_changed ? "R0" : exempt ? "R1" : "R2";
+    const taskReview = level === "R2" || Boolean(item.user_requested_ordinary_review);
+    const entry = taskReview || item.user_requested_adversarial_review ? "Required" : "Skipped";
     const terminal = item.user_requested_adversarial_review ? "Approved" : taskReview ? "Passed" : "Skipped";
+    assert.equal(level, item.expected_level, `${item.id}: level`);
     assert.equal(entry, item.expected_entry, `${item.id}: entry`);
     assert.equal(taskReview, item.expected_task_review, `${item.id}: task-review`);
     assert.equal(terminal, item.expected_terminal, `${item.id}: terminal`);
@@ -776,7 +785,12 @@ test("workspace review-gate cases require task-review for deliverable file chang
 
   assert.deepEqual([...terminalOutcomes].sort(), ["Approved", "Passed", "Skipped"]);
   const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
-  assert.equal(byId["simple-file-change"].expected_terminal, "Passed");
+  assert.equal(byId["simple-file-change"].expected_terminal, "Skipped");
+  assert.equal(byId["small-logic-change"].expected_level, "R1");
+  assert.equal(byId["many-mechanical-files"].expected_level, "R1");
+  assert.equal(byId["uncertain-consumers"].expected_level, "R2");
+  assert.equal(byId["syntax-only-evidence"].completion_requires_missing_evidence, true);
+  assert.equal(byId["explicit-adversarial-low-risk"].expected_task_review, false);
   assert.equal(byId["critical-file-change"].expected_task_review, true);
   assert.equal(byId["workflow-mandated-review"].expected_entry, "Required");
   assert.equal(byId["ordinary-one-pass-review"].expected_terminal, "Skipped");
@@ -785,6 +799,25 @@ test("workspace review-gate cases require task-review for deliverable file chang
   assert.equal(byId["explicit-adversarial-no-file-result"].expected_terminal, "Approved");
   assert.equal(byId["explicit-adversarial-no-file-queue"].expected_task_review, false);
   assert.equal(byId["explicit-adversarial-no-file-queue"].expected_terminal, "Approved");
+});
+
+test("review grading has one shared authority and keeps evidence and safety boundaries", () => {
+  const protocol = readFileSync(path.join(cslTasksSharedDir, "protocols", "task-review-grading.md"), "utf8");
+  assert.match(protocol, /R1 may include small logic changes/);
+  assert.match(protocol, /All four conditions must have concrete, task-specific grounds/);
+  assert.match(protocol, /A missing required check or unproven Target blocks completion/);
+  assert.match(protocol, /never replace it with Skipped/);
+  assert.match(protocol, /does not select a semantic level, inspect the supplied external snapshot/);
+  assert.match(protocol, /Historical records without an assessment remain readable/);
+  assert.match(protocol, /no parent-owned changes is R0, not a waiver of integration verification/);
+  assert.match(protocol, /Changing a Completed child's relationship requires explicitly reopening/);
+  assert.match(protocol, /fully identical reciprocal `link` is a no-op/);
+  assert.match(protocol, /core atomically removes the marked ledger and records Passed/);
+  for (const name of ["task", "task-queue"]) {
+    const skill = readFileSync(path.join(cslTasksDir, name, "SKILL.md"), "utf8");
+    assert.match(skill, /task-review-grading\.md/);
+    assert.match(skill, /assess-review/);
+  }
 });
 
 test("workspace task-review stall cases block after two per-finding no-progress re-reviews", () => {

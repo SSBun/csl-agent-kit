@@ -31,7 +31,7 @@ The main Agent combines the fixed prompt below with one factual packet:
 - original request and effective revisions, current Target, and accepted constraints with recoverable sources; never just the author's requirement summary
 - actual artifacts, relevant diff, and a review-scope snapshot identity
 - applicable rules/spec, allowed checks, prohibited actions, and known material limitations
-- applicable Result/Verification and per-Target self-check evidence: requirement, observation, check and checked version, what it proves, and limitations
+- applicable Result/Verification, the current Review Assessment (level, grounds, snapshot identity), and per-Target self-check evidence: requirement, observation, check and checked version, what it proves, and limitations
 - for an owning-task re-review, the current `task-review-ledger/v1` `## Review` ledger and next unused `TR-<n>` ID; for an initial owning-task pass, an empty ledger and next ID 1
 
 Keep original requirements, constraints, scope, and important limitations visible at entry. Prefer exact, accessible references for detailed author check results so the Reviewer can inspect them after examining requirements and artifacts in the same pass. Missing or inaccessible evidence remains an explicit gap; do not fabricate it or strip constraints to shorten the packet. A standalone request without author evidence still receives a bounded review.
@@ -42,7 +42,7 @@ Exclude the author's private reasoning, defense, confidence scores, desired verd
 
 The owner freezes its review-scope edits while the Reviewer works. Identify a clean Git artifact with an exact revision; for a dirty workspace also capture the scoped staged/unstaged diff and content identities of relevant untracked files, deletions, and renames. HEAD, timestamps, or a filename list alone are insufficient. Use equivalent content/version identities for non-Git results. Do not include unrelated workspace changes or demand a clean whole repository.
 
-Check the reviewed scope before and after the pass and again before completion. Drift invalidates current-snapshot conclusions; return the mismatch as a Target-blocking Unverified Risk to the owner for refreshed self-check and fresh review. Reuse existing evidence carriers; this procedure adds no snapshot service or Task schema.
+Check the reviewed scope before and after the pass and again before completion. Drift invalidates current-snapshot conclusions; return the mismatch as a Target-blocking Unverified Risk to the owner for refreshed self-check and fresh review. Reuse the owning task's assessment and existing evidence carriers; this procedure adds no snapshot service. The assessment's snapshot is an owner-attested external identity, not proof that the core monitored the files. An R2 obligation cannot be downgraded because the Reviewer fails.
 
 The host must actually select fresh context and read-only tools; this file neither registers an Agent nor establishes isolation. Do not fork the author's session. Source facts and accepted constraints are shared, but the author's implementation conversation and preferred verdict are not. Read requirements/artifacts before detailed author evidence; this is an anti-anchoring procedure, not strict blind review or a guarantee against shared-model bias. A mandatory failure returns to the owner under the Skill's failure policy, not a different execution mode.
 

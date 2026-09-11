@@ -1,6 +1,30 @@
 # 任务索引
 
-- [记录可分享的当前 Pi 插件与配置环境](tasks/document-current-pi-environment.md) — In Progress (2026-09-11 15:28)
+- [修复 A01–A20 全部 Skill 审计问题](tasks/fix-skill-audit-findings.md) — Pending (2026-09-11 18:15)
+
+- [提交审计修复前的全部本地改动](tasks/save-pre-audit-fix-baseline.md) — In Progress (2026-09-11 18:16)
+
+- [先保存本地基线再完成全部 Skill 审计修复](tasks/commit-baseline-and-fix-skill-audit.md) — In Progress (2026-09-11 18:14)
+
+- [审计全部 Skills 的价值、问题与精简机会](tasks/audit-all-skill-portfolio.md) — Completed (2026-09-11 18:09)
+
+- [将当前 Astra 上下文配置调整为 1050k](tasks/configure-astra-context-1050k.md) — Completed (2026-09-11 17:23)
+
+- [生成完整标准 Task 记录样例](tasks/generate-full-standard-task-record-example.md) — Completed (2026-09-11 17:31)
+
+- [实现 Task Review 三级判定与低风险免审](tasks/implement-task-review-grading.md) — Completed (2026-09-11 17:43)
+
+- [讨论 Task Review 分级与强制审查边界](tasks/decide-task-review-grading.md) — Completed (2026-09-11 17:07)
+
+- [修复 Pi 子 Agent 启动时 pi-tui 依赖解析失败](tasks/fix-pi-subagents-pi-tui-resolution.md) — Blocked (2026-09-11 16:02)
+
+- [编写 Task Target 对齐系统 Markdown 报告](tasks/write-task-target-alignment-report.md) — Completed (2026-09-11 17:01)
+
+- [精简用户级 AGENTS 中与注入 Contract 重复的规则](tasks/deduplicate-user-agents-contract.md) — Blocked (2026-09-11 15:45)
+
+- [分析当前 Task Target 对齐系统](tasks/analyze-current-task-target-alignment.md) — Completed (2026-09-11 15:36)
+
+- [记录可分享的当前 Pi 插件与配置环境](tasks/document-current-pi-environment.md) — Completed (2026-09-11 15:59)
 
 - [提交全部本地改动并发布 CSL Agent Kit 新版本](tasks/commit-and-publish-csl-agent-kit-20260911.md) — In Review (2026-09-11 15:28)
 

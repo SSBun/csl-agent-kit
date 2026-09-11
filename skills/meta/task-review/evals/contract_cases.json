@@ -11,11 +11,20 @@
     },
     {
       "id": "mandatory-task-entry",
-      "given": "the owning task explicitly dispatches its required deliverable-change review pass",
+      "given": "the owning task explicitly dispatches its required R2 review pass",
       "expect": {
         "review_starts": true,
         "user_must_request_review_again": false,
         "single_pass_only": true
+      }
+    },
+    {
+      "id": "explicit-r1-review",
+      "given": "the user explicitly requests ordinary review of an R1 result",
+      "expect": {
+        "review_starts": true,
+        "r1_exemption_cancels_request": false,
+        "reviewer_changes_assessment": false
       }
     },
     {
@@ -45,6 +54,7 @@
           "original request and effective revisions with recoverable sources",
           "accepted constraints",
           "review-scope snapshot identity",
+          "current Review Assessment level and grounds",
           "allowed checks and prohibited actions",
           "per-Target self-check evidence references"
         ],
@@ -89,6 +99,7 @@
         "owner_records_passed": false,
         "owner_blocks_with_recovery_condition": true,
         "self_check_evidence_preserved": true,
+        "r2_downgraded": false,
         "finding_no_progress_incremented": false
       }
     },

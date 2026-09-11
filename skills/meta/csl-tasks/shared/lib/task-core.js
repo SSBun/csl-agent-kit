@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
 
 const STATE_DISPLAY = {
   pending: "Pending",
@@ -292,10 +293,92 @@ function resultsOf(text) {
 }
 
 function invalidateReviewGate(text, evidence) {
+  const assessment = section(text, "Review Assessment");
+  if (assessment) {
+    text = replaceSection(text, "Review Assessment", assessment.body.map((line) =>
+      line === "- State: Current" ? "- State: Stale" : line));
+  }
   const review = text.match(REVIEW_PATTERN);
-  if (!review || !["Passed", "Approved"].includes(review[1])) return text;
-  const updated = text.replace(REVIEW_PATTERN, `- Review gate: Required — ${evidence}`);
-  return replaceSection(updated, "Verification", undefined);
+  if (review?.[1] === "Skipped") {
+    const result = section(text, "Result");
+    text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
+  } else if (["Passed", "Approved"].includes(review?.[1])) {
+    text = text.replace(REVIEW_PATTERN, `- Review gate: Required — ${evidence}`);
+  }
+  return replaceSection(text, "Verification", undefined);
+}
+
+const REVIEW_ASSESSMENT_SCHEMA = "task-review-assessment/v1";
+const REVIEW_ASSESSMENT_FIELDS = {
+  reason: "Reason", snapshot: "Snapshot", evidence: "Evidence",
+  clarity: "Result clarity", impact: "Bounded impact", risk: "Low risk", verification: "Sufficient verification",
+};
+
+function reviewAssessmentOf(text) {
+  const sections = sectionsOf(text, "Review Assessment");
+  if (sections.length > 1) throw new Error("duplicate Review Assessment section");
+  if (!sections.length) return undefined;
+  const fields = new Map();
+  const allowed = new Set(["Schema", "Level", "State", "Task fingerprint", ...Object.values(REVIEW_ASSESSMENT_FIELDS)]);
+  for (const line of sections[0].body) {
+    const match = line.match(/^- ([A-Za-z ]+): (\S.*)$/);
+    if (!match || !allowed.has(match[1]) || fields.has(match[1])) throw new Error("invalid Review Assessment field");
+    fields.set(match[1], match[2].trim());
+  }
+  if (fields.get("Schema") !== REVIEW_ASSESSMENT_SCHEMA) throw new Error("unsupported Review Assessment schema");
+  const level = fields.get("Level");
+  if (!["R0", "R1", "R2"].includes(level)) throw new Error("invalid Review Assessment level");
+  if (!["Current", "Stale"].includes(fields.get("State"))) throw new Error("invalid Review Assessment state");
+  if (!/^[a-f0-9]{64}$/.test(fields.get("Task fingerprint") || "")) throw new Error("invalid Review Assessment fingerprint");
+  for (const key of level === "R1" ? Object.keys(REVIEW_ASSESSMENT_FIELDS) : ["reason", "snapshot", "evidence"]) {
+    if (!fields.get(REVIEW_ASSESSMENT_FIELDS[key])) throw new Error(`Review Assessment requires ${REVIEW_ASSESSMENT_FIELDS[key]}`);
+  }
+  return {
+    level,
+    state: fields.get("State"),
+    fingerprint: fields.get("Task fingerprint"),
+    ...Object.fromEntries(Object.entries(REVIEW_ASSESSMENT_FIELDS).map(([key, label]) => [key, fields.get(label)])),
+  };
+}
+
+function reviewTaskFingerprint(text) {
+  for (const name of ["Review Assessment", "Review", "Verification", "Block"]) text = replaceSection(text, name, undefined);
+  const result = section(text, "Result");
+  if (result) text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
+  text = text.replace(STATUS_PATTERN, "").replace(/\n{3,}/g, "\n\n").trim();
+  return createHash("sha256").update(text).digest("hex");
+}
+
+function requireCurrentReviewAssessment(task) {
+  const assessment = task.reviewAssessment;
+  if (!assessment) throw new Error("record a Review Assessment with assess-review before a terminal review gate or completion");
+  if (assessment.state !== "Current" || assessment.fingerprint !== reviewTaskFingerprint(task.text)) {
+    throw new Error("stale Review Assessment; refresh self-check, snapshot, and assess-review");
+  }
+  return assessment;
+}
+
+function recordReviewAssessment(workspace, id, level, options = {}) {
+  const task = readTask(workspace, id);
+  if (task.status.state !== "in_progress") throw new Error("assess-review requires In Progress");
+  const value = String(level || "").toUpperCase();
+  if (!["R0", "R1", "R2"].includes(value)) throw new Error(`invalid review level: ${level}`);
+  if (value !== "R2" && (task.reviewLedger || (task.reviewAssessment?.level === "R2" && ["Required", "Passed", "Approved"].includes(task.review?.[1])))) {
+    throw new Error("cannot downgrade an existing R2 review obligation or unresolved Review ledger");
+  }
+  const fields = [];
+  for (const [key, label] of Object.entries(REVIEW_ASSESSMENT_FIELDS)) {
+    const content = String(options[key] || "").trim();
+    if (/[\r\n]/.test(content)) throw new Error(`${label} must be one line`);
+    if (!content && (value === "R1" || ["reason", "snapshot", "evidence"].includes(key))) throw new Error(`Review Assessment requires ${label}`);
+    if (content) fields.push(`- ${label}: ${content}`);
+  }
+  let text = invalidateReviewGate(task.text, "Review assessment changed; rerun the applicable review");
+  text = replaceSection(text, "Review Assessment", [
+    `- Schema: ${REVIEW_ASSESSMENT_SCHEMA}`, `- Level: ${value}`, "- State: Current",
+    ...fields, `- Task fingerprint: ${reviewTaskFingerprint(text)}`,
+  ]);
+  return writeTaskAndIndex(workspace, task, text);
 }
 
 function reviewLedgerOf(text) {
@@ -407,6 +490,7 @@ function parseTask(id, text, file) {
     targets: targetsOf(text),
     results: resultsOf(text),
     review: text.match(REVIEW_PATTERN),
+    reviewAssessment: reviewAssessmentOf(text),
     reviewLedger: reviewLedgerOf(text),
     verification: text.match(VERIFICATION_PATTERN),
   };
@@ -604,7 +688,7 @@ function recordResult(workspace, id, targetId, evidence) {
   return readTask(workspace, id);
 }
 
-function setReviewGate(workspace, id, decision, evidence) {
+function setReviewGate(workspace, id, decision, evidence, options = {}) {
   const task = readTask(workspace, id);
   if (task.status.state === "completed") throw new Error("reopen the task before changing the review gate");
   const values = { skipped: "Skipped", required: "Required", passed: "Passed", approved: "Approved" };
@@ -619,16 +703,33 @@ function setReviewGate(workspace, id, decision, evidence) {
   if (key === "approved" && !["Required", "Passed"].includes(task.review?.[1])) {
     throw new Error("Approved review gate requires a Required or Passed review");
   }
-  if (["passed", "approved"].includes(key) && task.reviewLedger) {
-    throw new Error("remove the active Review ledger before recording a terminal review gate");
+  const resolveLedger = options.resolveLedger === true;
+  if (resolveLedger && (key !== "passed" || !task.reviewLedger)) {
+    throw new Error("resolve-ledger requires Passed and an active Review ledger");
+  }
+  if (options.snapshot !== undefined && !resolveLedger) throw new Error("review snapshot requires resolve-ledger");
+  if (resolveLedger && stalledReviewIds(task).length) throw new Error("cannot resolve a stalled Review ledger before its unblock condition");
+  if (["passed", "approved"].includes(key) && task.reviewLedger && !resolveLedger) {
+    throw new Error("remove the active Review ledger through passed --resolve-ledger after fresh review resolves every finding");
   }
   if (key === "skipped" && task.status.state === "in_review") throw new Error("In Review cannot skip its review gate");
+  if (key !== "required") {
+    const assessment = requireCurrentReviewAssessment(task);
+    if (resolveLedger && options.snapshot !== assessment.snapshot) throw new Error("resolve-ledger requires the current reviewed assessment snapshot");
+    if (key === "skipped" && (assessment.level === "R2" || task.reviewLedger || ["Required", "Passed", "Approved"].includes(task.review?.[1]))) {
+      throw new Error("cannot skip R2, an existing review obligation, or an unresolved Review ledger");
+    }
+    if (key === "approved" && assessment.level === "R2" && task.review?.[1] !== "Passed") {
+      throw new Error("R2 adversarial approval requires Passed task-review first");
+    }
+  }
   const value = String(evidence || "").trim();
   if (!value || /[\r\n]/.test(value)) throw new Error("review evidence must be one line");
   const found = section(task.text, "Result");
   const lines = found ? found.body.filter((line) => !/^\s*- Review gate:/.test(line)) : [];
   lines.push(`- Review gate: ${values[key]} — ${value}`);
-  let text = replaceSection(task.text, "Result", lines);
+  let text = resolveLedger ? replaceSection(task.text, "Review", undefined) : task.text;
+  text = replaceSection(text, "Result", lines);
   text = replaceSection(text, "Verification", undefined);
   atomicWrite(task.file, text);
   return readTask(workspace, id);
@@ -649,8 +750,11 @@ function linkChild(workspace, parentId, childId) {
   const parent = readTask(workspace, parentId);
   const child = readTask(workspace, childId);
   if (parent.kind !== "queue") throw new Error("parent must be a Queue task");
-  if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
   if (child.parent && child.parent !== parentId) throw new Error(`${childId} already belongs to ${child.parent}`);
+  const existingChild = parent.children.find(({ id }) => id === childId);
+  if (existingChild?.title === child.title && child.parent === parentId) return { parent, child };
+  if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
+  if (child.status.state === "completed") throw new Error(`reopen Completed child ${childId} before changing its relationship`);
 
   const childTitle = normalizedTitle(child.title);
   if (childTitle === normalizedTitle(parent.title)) throw new Error("Queue parent and children need distinct titles");
@@ -675,7 +779,7 @@ function linkChild(workspace, parentId, childId) {
   let parentText = replaceSection(parent.text, "Children", children.map((item, index) => `${index + 1}. [${item.title}](${item.id}.md)`));
   parentText = invalidateReviewGate(parentText, "Queue graph changed after review; rerun the applicable review");
   parentText = replaceSection(parentText, "Verification", undefined);
-  const childText = setField(child.text, "Parent", parentId);
+  const childText = invalidateReviewGate(setField(child.text, "Parent", parentId), "Parent link changed; refresh assessment and review");
   writeMany([[parent.file, parentText], [child.file, childText]]);
   return { parent: readTask(workspace, parentId), child: readTask(workspace, childId) };
 }
@@ -707,6 +811,8 @@ function completeTask(workspace, id) {
   if (!task.verification || task.verification[1] !== "Passed") throw new Error("completion requires passed verification evidence");
   if (task.reviewLedger) throw new Error("an active Review ledger blocks completion");
   if (section(task.text, "Block")) throw new Error("a blocked task cannot be completed");
+  const assessment = requireCurrentReviewAssessment(task);
+  if (assessment.level === "R2" && task.review[1] === "Skipped") throw new Error("R2 cannot complete with skipped review");
   if (task.kind === "queue") {
     if (task.children.length === 0) throw new Error("a Queue task needs at least one child");
     const unfinished = task.children.map(({ id: childId }) => readTask(workspace, childId)).find((child) => child.status.state !== "completed");
@@ -795,6 +901,7 @@ module.exports = {
   nextChild,
   readTask,
   recordResult,
+  recordReviewAssessment,
   recordVerification,
   reopenTask,
   resumeTask,

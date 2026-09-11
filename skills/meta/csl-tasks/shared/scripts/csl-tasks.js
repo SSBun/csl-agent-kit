@@ -20,7 +20,10 @@ Commands:
   link <parent-id> <child-id>
   next <queue-id> [--json]
   result <id> <Tn> --evidence <text>
+  assess-review <id> <R0|R1|R2> --reason <text> --snapshot <identity> --evidence <text>
+    R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>
   review <id> <skipped|required|passed|approved> --evidence <text>
+    passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve
   verify <id> <passed|failed> --evidence <text>
   complete <id>`;
 
@@ -47,6 +50,7 @@ function summary(task) {
     status: task.status.display,
     parent: task.parent || null,
     children: task.children.map(({ id }) => id),
+    reviewAssessment: task.reviewAssessment || null,
   };
 }
 
@@ -143,11 +147,22 @@ function run(argv, io = console) {
         output = summary(core.recordResult(workspace, id, targetId, evidence));
         break;
       }
+      case "assess-review": {
+        const [id, level] = args.splice(0, 2);
+        const options = Object.fromEntries(["reason", "snapshot", "evidence", "clarity", "impact", "risk", "verification"]
+          .map((key) => [key, takeOption(args, `--${key}`)]));
+        if (!id || !level || args.length) throw new Error("assess-review needs a task id, R0|R1|R2, and assessment evidence options");
+        output = summary(core.recordReviewAssessment(workspace, id, level, options));
+        break;
+      }
       case "review": {
         const [id, decision] = args.splice(0, 2);
         const evidence = takeOption(args, "--evidence");
+        const snapshot = takeOption(args, "--snapshot");
+        const resolveLedger = args.includes("--resolve-ledger");
+        if (resolveLedger) args.splice(args.indexOf("--resolve-ledger"), 1);
         if (!id || !decision || args.length) throw new Error("review needs a task id, decision, and --evidence");
-        output = summary(core.setReviewGate(workspace, id, decision, evidence));
+        output = summary(core.setReviewGate(workspace, id, decision, evidence, { resolveLedger, snapshot }));
         break;
       }
       case "verify": {

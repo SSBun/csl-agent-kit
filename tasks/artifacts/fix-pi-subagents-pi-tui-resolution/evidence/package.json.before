@@ -1,0 +1,12 @@
+{
+  "name": "pi-extensions",
+  "private": true,
+  "dependencies": {
+    "@ogulcancelik/pi-codex-compaction": "^0.1.5",
+    "pi-codex-image-gen": "^0.1.12",
+    "pi-language-tutor": "^0.4.1",
+    "pi-mcp-adapter": "^2.32.1",
+    "pi-subagents": "^0.66.0",
+    "pi-web-access": "^0.28.0"
+  }
+}
