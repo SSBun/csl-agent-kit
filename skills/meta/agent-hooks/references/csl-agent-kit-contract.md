@@ -19,8 +19,8 @@ Work in this order:
 2. **Align** — Establish and align the intended outcome before substantive work.
 3. **Prepare** — Consult only relevant Context, Lessons, and authoritative sources.
 4. **Execute** — Make the minimum correct and surgical change.
-5. **Verify** — Prove the observable outcome before review.
-6. **Review** — For deliverable file changes, run the mandatory task-review remediation loop before completion.
+5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.
+6. **Review** — For deliverable file changes, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the mandatory task-review remediation loop before completion.
 
 Do not skip alignment or verification merely because the implementation appears obvious.
 
@@ -106,9 +106,12 @@ Touch only what the aligned outcome requires:
 
 Every task that changes requested deliverable files must use the existing In Review state and complete a `task-review` pass before completion. Task, Context, and Lessons lifecycle records alone do not count as deliverable changes.
 
-- Record current Result evidence and preliminary checks, mark review required, then enter In Review and dispatch one read-only `task-review` pass.
+- The main Agent first compares original requirements, effective revisions, and accepted constraints against the actual result, fixes known failures, and records per-Target observations and limitations. Do not outsource known unfinished fixes to review or claim unperformed checks.
+- Record current Result evidence and preliminary checks, mark review required, then enter In Review and dispatch one read-only `task-review` pass using an actual fresh subagent. Give it factual requirements, artifacts, and accessible evidence rather than the author's implementation conversation or desired verdict. The Reviewer checks requirements and artifacts before detailed author evidence, and may inspect previously checked behavior for omissions.
+- Mandatory independent review that is unavailable or fails Blocks the task with a concrete recovery condition; self-review cannot substitute for it or justify passed. Follow host failure rules and never silently switch execution modes. A prompt alone does not establish independence.
+- Bind self-check, review, and final verification to the actual reviewed content. Stop changing the review scope during the pass; relevant content or evidence drift invalidates its conclusions and requires refreshed self-check and fresh review.
 - Direct edits to an active task specification must use its sync lifecycle; sync invalidates terminal review and Verification evidence. Reopen a Completed task before changing its specification.
-- Any confirmed finding returns the task to In Progress for remediation. A missing-evidence risk also returns it when the gap prevents Target verification. Refresh stale evidence and repeat with a fresh pass without a fixed total round limit.
+- Any confirmed finding returns the task to In Progress for remediation. A missing-evidence risk also returns it when the gap prevents Target verification. The main Agent verifies findings against actual evidence; a suspected false positive needs counterevidence checked by a fresh pass, not unilateral removal. Refresh affected self-check and stale evidence and repeat with a fresh pass without a fixed total round limit.
 - Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger. Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed; a single unmarked historical free-form Review remains compatible. A first finding starts at zero; each consecutive re-review with the same root problem and required outcome but no substantive artifact or evidence progress increments it. At two, stop reviewing, Block the task with the stalled IDs and an observable unblock condition, and ask the user; never convert a stall to passed.
 - Resolved findings leave the ledger, while evidence-backed progress or valid reclassification resets that finding to zero. Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it. Resume is rejected while any stalled item remains at two.
 - When a pass has no confirmed finding or blocking evidence gap, the interaction owner records the review as passed. The Reviewer remains feedback-only and never grants approval or changes task state.
@@ -133,6 +136,6 @@ Independent adversarial review, a two-Agent Reviewer–Editor loop, or independe
 
 ## Contract Boundary
 
-This contract does not define the selected Skill's detailed procedure, grant permission beyond the user's request, make plan mode or subagent use mandatory, or replace an independent safety confirmation.
+This contract does not define the selected Skill's detailed procedure, grant permission beyond the user's request, require plan mode or subagents outside explicit workflow requirements, or replace an independent safety confirmation.
 
 Keep this contract behavioral and stable. Skills retain operational detail.

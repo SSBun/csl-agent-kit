@@ -1,5 +1,21 @@
 # 任务索引
 
+- [提交全部本地改动并发布 CSL Agent Kit 新版本](tasks/commit-and-publish-csl-agent-kit-20260911.md) — In Progress (2026-09-11 15:16)
+
+- [编写 CSL Agent Kit Task 系统宣讲大纲 Wiki](tasks/write-csl-agent-kit-task-talk-outline-mywiki.md) — Completed (2026-09-11 13:33)
+
+- [实现主 Agent 自检与独立遗漏审查协作流程](tasks/optimize-task-review-self-check-and-independent-review.md) — Completed (2026-09-11 12:00)
+
+- [准备、发布并验证 Perch 0.2.0](tasks/publish-perch-0-2-0.md) — Completed (2026-09-11 11:11)
+
+- [提交 Perch 当前工作区改动](tasks/commit-perch-current-changes.md) — Completed (2026-09-10 17:45)
+
+- [提交 Perch 全部改动并发布次版本](tasks/publish-perch-minor-version.md) — Completed (2026-09-11 11:12)
+
+- [让 Perch 在下次解析前保留上次内容](tasks/retain-last-perch-parsed-content.md) — Completed (2026-09-10 14:19)
+
+- [让 Perch 设置窗口可调整大小](tasks/make-perch-settings-window-resizable.md) — Completed (2026-09-08 17:43)
+
 - [按关注点提交当前全部本地改动](tasks/group-local-changes-into-commits-20260908.md) — Completed (2026-09-08 15:05)
 
 - [实现 Perch macOS 语言学习应用](tasks/plan-pi-language-learning-macos-app.md) — In Progress (2026-09-08 13:47)

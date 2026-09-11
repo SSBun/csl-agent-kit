@@ -1,0 +1,295 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "scripts/install.sh"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "bin/csl-agent-kit.js"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "evals/scripts/evaluate-task-target-alignment.js"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "skills/domain/yunxiao/scripts/yunxiao.mjs"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "skills/meta/csl-tasks/shared/lib/task-core.js"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "skills/meta/csl-tasks/shared/scripts/csl-tasks.js"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "tests/cli-install-output.test.js"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "tests/csl-tasks-core.test.mjs"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "tests/task-files.test.mjs"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/dev/adversarial-review",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING adversarial-review — /Users/caishilin/Desktop/personal/skills/skills/dev/adversarial-review\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1215.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/domain/yunxiao",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "PASS yunxiao — /Users/caishilin/Desktop/personal/skills/skills/domain/yunxiao\nSummary: 1 passed, 0 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/agent-hooks",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING agent-hooks — /Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1311.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task — /Users/caishilin/Desktop/personal/skills/skills/meta/task\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 4817.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task-context",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task-context — /Users/caishilin/Desktop/personal/skills/skills/meta/task-context\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 3651.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task-lessons",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task-lessons — /Users/caishilin/Desktop/personal/skills/skills/meta/task-lessons\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 2511.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task-maintenance",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task-maintenance — /Users/caishilin/Desktop/personal/skills/skills/meta/task-maintenance\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 5302.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task-plan",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task-plan — /Users/caishilin/Desktop/personal/skills/skills/meta/task-plan\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1512.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task-queue",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task-queue — /Users/caishilin/Desktop/personal/skills/skills/meta/task-queue\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1736.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/skill-quality/scripts/check.js",
+      "skills/meta/task-review",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "WARNING task-review — /Users/caishilin/Desktop/personal/skills/skills/meta/task-review\n  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1922.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/task-context/scripts/context.js",
+      "--workspace",
+      "/Users/caishilin/Desktop/personal/skills",
+      "validate"
+    ],
+    "exitCode": 0,
+    "stdout": "{\n  \"schema\": \"csl-context.validation/v1\",\n  \"valid\": true,\n  \"errors\": [],\n  \"warnings\": []\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "check",
+      "commit-and-publish-csl-agent-kit-20260911"
+    ],
+    "exitCode": 0,
+    "stdout": "{\"valid\":true}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "validate"
+    ],
+    "exitCode": 0,
+    "stdout": "{\"valid\":true}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "bin/csl-agent-kit.js",
+      "--help",
+      "--no-color"
+    ],
+    "exitCode": 0,
+    "stdout": "CSL Agent Kit CLI v5.1.0\nUpdate  ahead of npm latest v5.0.0\n\nUsage:\n  csl-agent-kit install [options]\n\nRun \"csl-agent-kit install --help\" for details.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "bin/csl-agent-kit.js",
+      "install",
+      "--target",
+      "cursor,codex-plugin,pi",
+      "--yes",
+      "--dry-run",
+      "--json"
+    ],
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"results\": [\n    {\n      \"target\": \"cursor\",\n      \"ok\": true,\n      \"changes\": [\n        {\n          \"action\": \"symlink\",\n          \"target\": \"/Users/caishilin/.cursor/plugins/local/csl\",\n          \"source\": \"/Users/caishilin/Desktop/personal/skills\",\n          \"dryRun\": true\n        }\n      ]\n    },\n    {\n      \"target\": \"codex-plugin\",\n      \"ok\": true,\n      \"changes\": [\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin remove csl-agent-kit@csl-agent-market --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin remove csl@CSL --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin remove csl@csl --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin marketplace remove csl-agent-market --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin marketplace remove CSL --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin marketplace remove csl --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin marketplace add /Users/caishilin/Desktop/personal/skills --json\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"command\",\n          \"command\": \"codex plugin add csl-agent-kit@csl-agent-market --json\",\n          \"dryRun\": true\n        }\n      ]\n    },\n    {\n      \"target\": \"pi\",\n      \"ok\": true,\n      \"changes\": [\n        {\n          \"action\": \"command\",\n          \"command\": \"pi install /Users/caishilin/Desktop/personal/skills\",\n          \"dryRun\": true\n        },\n        {\n          \"action\": \"unchanged\",\n          \"target\": \"/Users/caishilin/.pi/agent/agents/pi-agent.md\",\n          \"source\": \"/Users/caishilin/Desktop/personal/skills/references/agents/pi-agent.md\",\n          \"dryRun\": true\n        }\n      ]\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "npm",
+      "pack",
+      "--dry-run",
+      "--json"
+    ],
+    "exitCode": 0,
+    "stdout": "[\n  {\n    \"id\": \"@ssbun/csl-agent-kit@5.1.0\",\n    \"name\": \"@ssbun/csl-agent-kit\",\n    \"version\": \"5.1.0\",\n    \"size\": 1359546,\n    \"unpackedSize\": 1997089,\n    \"shasum\": \"0c19252b9ea5e9a47ff66f2a5e5531431fb47b5d\",\n    \"integrity\": \"sha512-zPo/yS5iEf7K0sT42FUr61n/IhTTq27y/OB9GWnF7p1BRLPEZWQKqvQKHdFX5zf5oe6N/eojeX+TdRI5Df6AzA==\",\n    \"filename\": \"ssbun-csl-agent-kit-5.1.0.tgz\",\n    \"files\": [\n      {\n        \"path\": \".agents/plugins/marketplace.json\",\n        \"size\": 1124,\n        \"mode\": 420\n      },\n      {\n        \"path\": \".claude-plugin/marketplace.json\",\n        \"size\": 884,\n        \"mode\": 420\n      },\n      {\n        \"path\": \".claude-plugin/plugin.json\",\n        \"size\": 1701,\n        \"mode\": 420\n      },\n      {\n        \"path\": \".codex-plugin/plugin.json\",\n        \"size\": 1192,\n        \"mode\": 420\n      },\n      {\n        \"path\": \".cursor-plugin/marketplace.json\",\n        \"size\": 884,\n        \"mode\": 420\n      },\n      {\n        \"path\": \".cursor-plugin/plugin.json\",\n        \"size\": 700,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"CHANGELOG.md\",\n        \"size\": 10539,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"LICENSE\",\n        \"size\": 1060,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"README.md\",\n        \"size\": 17102,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"bin/csl-agent-kit.js\",\n        \"size\": 21863,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"commands/doc-sync.md\",\n        \"size\": 2712,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"commands/sop-activate.md\",\n        \"size\": 3557,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"hooks/hooks.json\",\n        \"size\": 6950,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"package.json\",\n        \"size\": 2557,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"pi/extensions/csl-context-hooks.ts\",\n        \"size\": 15890,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"pi/extensions/csl-model-presets.ts\",\n        \"size\": 5954,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"pi/extensions/csl-skill-commands.ts\",\n        \"size\": 4745,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"pi/extensions/csl-task-overlay.ts\",\n        \"size\": 19833,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"pi/extensions/openai-codex-fast.ts\",\n        \"size\": 8681,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"prompts/yx-approve-all.md\",\n        \"size\": 1021,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"scripts/install.sh\",\n        \"size\": 221,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/evals/report_contract_cases.json\",\n        \"size\": 5415,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/evals/semantic_config.json\",\n        \"size\": 2499,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/evals/trigger_cases.json\",\n        \"size\": 2412,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/examples/agents/adversarial-editor.md\",\n        \"size\": 2991,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/examples/agents/adversarial-reviewer.md\",\n        \"size\": 2702,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/references/decision-consensus.md\",\n        \"size\": 2197,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/references/final-review-report.md\",\n        \"size\": 3202,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/references/review-lenses.md\",\n        \"size\": 2427,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/references/review-loop.md\",\n        \"size\": 6669,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/references/subagent-dispatch.md\",\n        \"size\": 13971,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/adversarial-review/SKILL.md\",\n        \"size\": 4872,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/align/references/align-method.md\",\n        \"size\": 2096,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/align/SKILL.md\",\n        \"size\": 1798,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/beautiful-mermaid/SKILL.md\",\n        \"size\": 2251,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/brainstorming/SKILL.md\",\n        \"size\": 2782,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/bug-fix/SKILL.md\",\n        \"size\": 3695,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/evals/semantic_config.json\",\n        \"size\": 1933,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/evals/trigger_cases.json\",\n        \"size\": 2790,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/evals/workflow_cases.json\",\n        \"size\": 5545,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/examples/agents/adversarial-challenger.md\",\n        \"size\": 2272,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/examples/agents/adversarial-synthesizer.md\",\n        \"size\": 2136,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/references/resource-handoff.md\",\n        \"size\": 941,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/deliberate/SKILL.md\",\n        \"size\": 6707,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/eli5/SKILL.md\",\n        \"size\": 346,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/git-conflict/SKILL.md\",\n        \"size\": 1788,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/project-index/scripts/project-index.js\",\n        \"size\": 20956,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/dev/project-index/SKILL.md\",\n        \"size\": 3199,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/repo-map/references/repo-map-android-example.md\",\n        \"size\": 2884,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/repo-map/references/repo-map-apple-example.md\",\n        \"size\": 3158,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/repo-map/references/repo-map-backend-example.md\",\n        \"size\": 2967,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/repo-map/references/repo-map-web-example.md\",\n        \"size\": 3237,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/repo-map/references/repo-map-workflow.md\",\n        \"size\": 3555,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/repo-map/SKILL.md\",\n        \"size\": 2871,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/tldr/evals/semantic_config.json\",\n        \"size\": 3124,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/tldr/evals/trigger_cases.json\",\n        \"size\": 2045,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/dev/tldr/SKILL.md\",\n        \"size\": 3263,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/create-app-icon/assets/icon-style-catalog.png\",\n        \"size\": 1071072,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/create-app-icon/references/chrome-extension-icons.md\",\n        \"size\": 3916,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/create-app-icon/references/icon-styles.md\",\n        \"size\": 3347,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/create-app-icon/scripts/remove-green-background.mjs\",\n        \"size\": 7722,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/create-app-icon/SKILL.md\",\n        \"size\": 4204,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/figma-describe/references/tree-output-format.md\",\n        \"size\": 1468,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/figma-describe/SKILL.md\",\n        \"size\": 1944,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/venom-cli/SKILL.md\",\n        \"size\": 3821,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/evals/semantic_config.json\",\n        \"size\": 2595,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/evals/trigger_cases.json\",\n        \"size\": 1910,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/references/approval-workflow.md\",\n        \"size\": 1924,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/references/daemon-workflow.md\",\n        \"size\": 2997,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/references/manifest-schema.md\",\n        \"size\": 5879,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/scripts/yunxiao.mjs\",\n        \"size\": 88658,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/domain/yunxiao/SKILL.md\",\n        \"size\": 3996,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/agents/openai.yaml\",\n        \"size\": 251,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/evals/semantic_config.json\",\n        \"size\": 1096,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/evals/trigger_cases.json\",\n        \"size\": 663,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/hooks/agent-rules.md\",\n        \"size\": 225,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/hooks/csl-agent-kit-contract.md\",\n        \"size\": 245,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/hooks/refresh-tab-title.md\",\n        \"size\": 226,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/references/codex-protocol.json\",\n        \"size\": 3732,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/references/csl-agent-kit-contract.md\",\n        \"size\": 12108,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/references/session-start-protocols.json\",\n        \"size\": 1032,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/agent-hooks.js\",\n        \"size\": 791,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/lib/cli.js\",\n        \"size\": 10611,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/lib/native-hook.js\",\n        \"size\": 4552,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/lib/rule.js\",\n        \"size\": 14830,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/lib/runtime.js\",\n        \"size\": 10329,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/lib/store.js\",\n        \"size\": 14317,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/read-agent-rules.js\",\n        \"size\": 934,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js\",\n        \"size\": 312,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/refresh-tab-title.js\",\n        \"size\": 27151,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/scripts/validate-rules.js\",\n        \"size\": 2011,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-hooks/SKILL.md\",\n        \"size\": 5043,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-rules/agent-rules.md\",\n        \"size\": 212,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-rules/SKILL.md\",\n        \"size\": 2479,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/code-style/swift-style.md\",\n        \"size\": 4219,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-build-run-debug/project-discovery-and-run-loop.md\",\n        \"size\": 5583,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-build-run-debug/swiftpm-gui-app-bundle.md\",\n        \"size\": 4759,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-build-run-debug/test-triage.md\",\n        \"size\": 3569,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-packaging-notarization/distribution-and-notarization.md\",\n        \"size\": 5528,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-signing-entitlements/diagnosis-and-entitlements.md\",\n        \"size\": 5168,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-swiftui-appkit/appkit-interop.md\",\n        \"size\": 5489,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-swiftui-appkit/scene-architecture.md\",\n        \"size\": 6861,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-swiftui-appkit/windowing-and-visuals.md\",\n        \"size\": 5411,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/macos-unified-logging/logger-design-and-verification.md\",\n        \"size\": 4538,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/process-sop-example.md\",\n        \"size\": 2652,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/references/rule-sop-example.md\",\n        \"size\": 3025,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/scripts/sop-candidates.js\",\n        \"size\": 5420,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/scripts/sop-summaries.sh\",\n        \"size\": 2634,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/SKILL.md\",\n        \"size\": 7660,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/code-style.md\",\n        \"size\": 3921,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/macos-build-run-debug.md\",\n        \"size\": 9093,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/macos-packaging-notarization.md\",\n        \"size\": 8893,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/macos-signing-entitlements.md\",\n        \"size\": 8560,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/macos-swiftui-appkit.md\",\n        \"size\": 9703,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/macos-unified-logging.md\",\n        \"size\": 8065,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/agent-sops/sops/swift-api-design.md\",\n        \"size\": 10967,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/archive/evals/semantic_config.json\",\n        \"size\": 1571,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/archive/evals/trigger_cases.json\",\n        \"size\": 1199,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/archive/scripts/archive-session.mjs\",\n        \"size\": 6018,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/archive/SKILL.md\",\n        \"size\": 3065,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/csl-tasks/shared/lib/task-core.js\",\n        \"size\": 36021,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/csl-tasks/shared/protocols/task-target-alignment.md\",\n        \"size\": 24479,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/csl-tasks/shared/scripts/csl-tasks.js\",\n        \"size\": 6333,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/skill-quality/evals/semantic_config.json\",\n        \"size\": 804,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/skill-quality/evals/trigger_cases.json\",\n        \"size\": 753,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/skill-quality/scripts/check.js\",\n        \"size\": 18056,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/skill-quality/SKILL.md\",\n        \"size\": 2801,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-context/agents/openai.yaml\",\n        \"size\": 262,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-context/evals/context_value_cases.json\",\n        \"size\": 6993,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-context/evals/query_cases.json\",\n        \"size\": 2131,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-context/evals/trigger_cases.json\",\n        \"size\": 1351,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-context/scripts/context.js\",\n        \"size\": 14195,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/task-context/SKILL.md\",\n        \"size\": 14365,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-grill/SKILL.md\",\n        \"size\": 1504,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-lessons/agents/openai.yaml\",\n        \"size\": 212,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-lessons/evals/query_cases.json\",\n        \"size\": 1881,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-lessons/evals/trigger_cases.json\",\n        \"size\": 1263,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-lessons/scripts/lessons.js\",\n        \"size\": 10639,\n        \"mode\": 493\n      },\n      {\n        \"path\": \"skills/meta/task-lessons/SKILL.md\",\n        \"size\": 9836,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-maintenance/agents/openai.yaml\",\n        \"size\": 347,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-maintenance/evals/semantic_config.json\",\n        \"size\": 1456,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-maintenance/evals/structure_operation_cases.json\",\n        \"size\": 3565,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-maintenance/evals/trigger_cases.json\",\n        \"size\": 1650,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-maintenance/SKILL.md\",\n        \"size\": 20868,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-plan/agents/openai.yaml\",\n        \"size\": 203,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-plan/evals/semantic_config.json\",\n        \"size\": 584,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-plan/evals/trigger_cases.json\",\n        \"size\": 867,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-plan/SKILL.md\",\n        \"size\": 5852,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-queue/agents/openai.yaml\",\n        \"size\": 231,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-queue/evals/semantic_config.json\",\n        \"size\": 598,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-queue/evals/trigger_cases.json\",\n        \"size\": 836,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-queue/SKILL.md\",\n        \"size\": 6724,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/evals/contract_cases.json\",\n        \"size\": 10491,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/evals/semantic_config.json\",\n        \"size\": 2415,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/evals/trigger_cases.json\",\n        \"size\": 1957,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/references/code_review_checklist.md\",\n        \"size\": 2269,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/references/coding_standards.md\",\n        \"size\": 2339,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/references/common_antipatterns.md\",\n        \"size\": 2491,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/references/review_workflow.md\",\n        \"size\": 9456,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task-review/SKILL.md\",\n        \"size\": 7691,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/agents/openai.yaml\",\n        \"size\": 199,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/evals/review_gate_cases.json\",\n        \"size\": 3000,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/evals/review_stall_cases.json\",\n        \"size\": 4110,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/evals/semantic_config.json\",\n        \"size\": 906,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/evals/task_ownership_cases.json\",\n        \"size\": 2650,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/evals/trigger_cases.json\",\n        \"size\": 1325,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"skills/meta/task/SKILL.md\",\n        \"size\": 19090,\n        \"mode\": 420\n      }\n    ],\n    \"entryCount\": 167,\n    \"bundled\": []\n  }\n]\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "npm",
+      "publish",
+      "--dry-run",
+      "--access",
+      "public",
+      "--json"
+    ],
+    "exitCode": 0,
+    "stdout": "{\n  \"id\": \"@ssbun/csl-agent-kit@5.1.0\",\n  \"name\": \"@ssbun/csl-agent-kit\",\n  \"version\": \"5.1.0\",\n  \"size\": 1359546,\n  \"unpackedSize\": 1997089,\n  \"shasum\": \"0c19252b9ea5e9a47ff66f2a5e5531431fb47b5d\",\n  \"integrity\": \"sha512-zPo/yS5iEf7K0sT42FUr61n/IhTTq27y/OB9GWnF7p1BRLPEZWQKqvQKHdFX5zf5oe6N/eojeX+TdRI5Df6AzA==\",\n  \"filename\": \"ssbun-csl-agent-kit-5.1.0.tgz\",\n  \"files\": [\n    {\n      \"path\": \".agents/plugins/marketplace.json\",\n      \"size\": 1124,\n      \"mode\": 420\n    },\n    {\n      \"path\": \".claude-plugin/marketplace.json\",\n      \"size\": 884,\n      \"mode\": 420\n    },\n    {\n      \"path\": \".claude-plugin/plugin.json\",\n      \"size\": 1701,\n      \"mode\": 420\n    },\n    {\n      \"path\": \".codex-plugin/plugin.json\",\n      \"size\": 1192,\n      \"mode\": 420\n    },\n    {\n      \"path\": \".cursor-plugin/marketplace.json\",\n      \"size\": 884,\n      \"mode\": 420\n    },\n    {\n      \"path\": \".cursor-plugin/plugin.json\",\n      \"size\": 700,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"CHANGELOG.md\",\n      \"size\": 10539,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"LICENSE\",\n      \"size\": 1060,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"README.md\",\n      \"size\": 17102,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"bin/csl-agent-kit.js\",\n      \"size\": 21863,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"commands/doc-sync.md\",\n      \"size\": 2712,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"commands/sop-activate.md\",\n      \"size\": 3557,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"hooks/hooks.json\",\n      \"size\": 6950,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"package.json\",\n      \"size\": 2557,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"pi/extensions/csl-context-hooks.ts\",\n      \"size\": 15890,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"pi/extensions/csl-model-presets.ts\",\n      \"size\": 5954,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"pi/extensions/csl-skill-commands.ts\",\n      \"size\": 4745,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"pi/extensions/csl-task-overlay.ts\",\n      \"size\": 19833,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"pi/extensions/openai-codex-fast.ts\",\n      \"size\": 8681,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"prompts/yx-approve-all.md\",\n      \"size\": 1021,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"scripts/install.sh\",\n      \"size\": 221,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/evals/report_contract_cases.json\",\n      \"size\": 5415,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/evals/semantic_config.json\",\n      \"size\": 2499,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/evals/trigger_cases.json\",\n      \"size\": 2412,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/examples/agents/adversarial-editor.md\",\n      \"size\": 2991,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/examples/agents/adversarial-reviewer.md\",\n      \"size\": 2702,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/references/decision-consensus.md\",\n      \"size\": 2197,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/references/final-review-report.md\",\n      \"size\": 3202,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/references/review-lenses.md\",\n      \"size\": 2427,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/references/review-loop.md\",\n      \"size\": 6669,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/references/subagent-dispatch.md\",\n      \"size\": 13971,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/adversarial-review/SKILL.md\",\n      \"size\": 4872,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/align/references/align-method.md\",\n      \"size\": 2096,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/align/SKILL.md\",\n      \"size\": 1798,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/beautiful-mermaid/SKILL.md\",\n      \"size\": 2251,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/brainstorming/SKILL.md\",\n      \"size\": 2782,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/bug-fix/SKILL.md\",\n      \"size\": 3695,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/evals/semantic_config.json\",\n      \"size\": 1933,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/evals/trigger_cases.json\",\n      \"size\": 2790,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/evals/workflow_cases.json\",\n      \"size\": 5545,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/examples/agents/adversarial-challenger.md\",\n      \"size\": 2272,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/examples/agents/adversarial-synthesizer.md\",\n      \"size\": 2136,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/references/resource-handoff.md\",\n      \"size\": 941,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/deliberate/SKILL.md\",\n      \"size\": 6707,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/eli5/SKILL.md\",\n      \"size\": 346,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/git-conflict/SKILL.md\",\n      \"size\": 1788,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/project-index/scripts/project-index.js\",\n      \"size\": 20956,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/dev/project-index/SKILL.md\",\n      \"size\": 3199,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/repo-map/references/repo-map-android-example.md\",\n      \"size\": 2884,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/repo-map/references/repo-map-apple-example.md\",\n      \"size\": 3158,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/repo-map/references/repo-map-backend-example.md\",\n      \"size\": 2967,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/repo-map/references/repo-map-web-example.md\",\n      \"size\": 3237,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/repo-map/references/repo-map-workflow.md\",\n      \"size\": 3555,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/repo-map/SKILL.md\",\n      \"size\": 2871,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/tldr/evals/semantic_config.json\",\n      \"size\": 3124,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/tldr/evals/trigger_cases.json\",\n      \"size\": 2045,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/dev/tldr/SKILL.md\",\n      \"size\": 3263,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/create-app-icon/assets/icon-style-catalog.png\",\n      \"size\": 1071072,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/create-app-icon/references/chrome-extension-icons.md\",\n      \"size\": 3916,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/create-app-icon/references/icon-styles.md\",\n      \"size\": 3347,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/create-app-icon/scripts/remove-green-background.mjs\",\n      \"size\": 7722,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/create-app-icon/SKILL.md\",\n      \"size\": 4204,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/figma-describe/references/tree-output-format.md\",\n      \"size\": 1468,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/figma-describe/SKILL.md\",\n      \"size\": 1944,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/venom-cli/SKILL.md\",\n      \"size\": 3821,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/evals/semantic_config.json\",\n      \"size\": 2595,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/evals/trigger_cases.json\",\n      \"size\": 1910,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/references/approval-workflow.md\",\n      \"size\": 1924,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/references/daemon-workflow.md\",\n      \"size\": 2997,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/references/manifest-schema.md\",\n      \"size\": 5879,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/scripts/yunxiao.mjs\",\n      \"size\": 88658,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/domain/yunxiao/SKILL.md\",\n      \"size\": 3996,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/agents/openai.yaml\",\n      \"size\": 251,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/evals/semantic_config.json\",\n      \"size\": 1096,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/evals/trigger_cases.json\",\n      \"size\": 663,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/hooks/agent-rules.md\",\n      \"size\": 225,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/hooks/csl-agent-kit-contract.md\",\n      \"size\": 245,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/hooks/refresh-tab-title.md\",\n      \"size\": 226,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/references/codex-protocol.json\",\n      \"size\": 3732,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/references/csl-agent-kit-contract.md\",\n      \"size\": 12108,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/references/session-start-protocols.json\",\n      \"size\": 1032,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/agent-hooks.js\",\n      \"size\": 791,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/lib/cli.js\",\n      \"size\": 10611,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/lib/native-hook.js\",\n      \"size\": 4552,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/lib/rule.js\",\n      \"size\": 14830,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/lib/runtime.js\",\n      \"size\": 10329,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/lib/store.js\",\n      \"size\": 14317,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/read-agent-rules.js\",\n      \"size\": 934,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js\",\n      \"size\": 312,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/refresh-tab-title.js\",\n      \"size\": 27151,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/scripts/validate-rules.js\",\n      \"size\": 2011,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-hooks/SKILL.md\",\n      \"size\": 5043,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-rules/agent-rules.md\",\n      \"size\": 212,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-rules/SKILL.md\",\n      \"size\": 2479,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/code-style/swift-style.md\",\n      \"size\": 4219,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-build-run-debug/project-discovery-and-run-loop.md\",\n      \"size\": 5583,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-build-run-debug/swiftpm-gui-app-bundle.md\",\n      \"size\": 4759,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-build-run-debug/test-triage.md\",\n      \"size\": 3569,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-packaging-notarization/distribution-and-notarization.md\",\n      \"size\": 5528,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-signing-entitlements/diagnosis-and-entitlements.md\",\n      \"size\": 5168,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-swiftui-appkit/appkit-interop.md\",\n      \"size\": 5489,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-swiftui-appkit/scene-architecture.md\",\n      \"size\": 6861,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-swiftui-appkit/windowing-and-visuals.md\",\n      \"size\": 5411,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/macos-unified-logging/logger-design-and-verification.md\",\n      \"size\": 4538,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/process-sop-example.md\",\n      \"size\": 2652,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/references/rule-sop-example.md\",\n      \"size\": 3025,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/scripts/sop-candidates.js\",\n      \"size\": 5420,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/scripts/sop-summaries.sh\",\n      \"size\": 2634,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/SKILL.md\",\n      \"size\": 7660,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/code-style.md\",\n      \"size\": 3921,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/macos-build-run-debug.md\",\n      \"size\": 9093,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/macos-packaging-notarization.md\",\n      \"size\": 8893,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/macos-signing-entitlements.md\",\n      \"size\": 8560,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/macos-swiftui-appkit.md\",\n      \"size\": 9703,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/macos-unified-logging.md\",\n      \"size\": 8065,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/agent-sops/sops/swift-api-design.md\",\n      \"size\": 10967,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/archive/evals/semantic_config.json\",\n      \"size\": 1571,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/archive/evals/trigger_cases.json\",\n      \"size\": 1199,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/archive/scripts/archive-session.mjs\",\n      \"size\": 6018,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/archive/SKILL.md\",\n      \"size\": 3065,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/csl-tasks/shared/lib/task-core.js\",\n      \"size\": 36021,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/csl-tasks/shared/protocols/task-target-alignment.md\",\n      \"size\": 24479,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/csl-tasks/shared/scripts/csl-tasks.js\",\n      \"size\": 6333,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/skill-quality/evals/semantic_config.json\",\n      \"size\": 804,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/skill-quality/evals/trigger_cases.json\",\n      \"size\": 753,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/skill-quality/scripts/check.js\",\n      \"size\": 18056,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/skill-quality/SKILL.md\",\n      \"size\": 2801,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-context/agents/openai.yaml\",\n      \"size\": 262,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-context/evals/context_value_cases.json\",\n      \"size\": 6993,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-context/evals/query_cases.json\",\n      \"size\": 2131,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-context/evals/trigger_cases.json\",\n      \"size\": 1351,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-context/scripts/context.js\",\n      \"size\": 14195,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/task-context/SKILL.md\",\n      \"size\": 14365,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-grill/SKILL.md\",\n      \"size\": 1504,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-lessons/agents/openai.yaml\",\n      \"size\": 212,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-lessons/evals/query_cases.json\",\n      \"size\": 1881,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-lessons/evals/trigger_cases.json\",\n      \"size\": 1263,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-lessons/scripts/lessons.js\",\n      \"size\": 10639,\n      \"mode\": 493\n    },\n    {\n      \"path\": \"skills/meta/task-lessons/SKILL.md\",\n      \"size\": 9836,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-maintenance/agents/openai.yaml\",\n      \"size\": 347,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-maintenance/evals/semantic_config.json\",\n      \"size\": 1456,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-maintenance/evals/structure_operation_cases.json\",\n      \"size\": 3565,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-maintenance/evals/trigger_cases.json\",\n      \"size\": 1650,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-maintenance/SKILL.md\",\n      \"size\": 20868,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-plan/agents/openai.yaml\",\n      \"size\": 203,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-plan/evals/semantic_config.json\",\n      \"size\": 584,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-plan/evals/trigger_cases.json\",\n      \"size\": 867,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-plan/SKILL.md\",\n      \"size\": 5852,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-queue/agents/openai.yaml\",\n      \"size\": 231,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-queue/evals/semantic_config.json\",\n      \"size\": 598,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-queue/evals/trigger_cases.json\",\n      \"size\": 836,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-queue/SKILL.md\",\n      \"size\": 6724,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/evals/contract_cases.json\",\n      \"size\": 10491,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/evals/semantic_config.json\",\n      \"size\": 2415,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/evals/trigger_cases.json\",\n      \"size\": 1957,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/references/code_review_checklist.md\",\n      \"size\": 2269,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/references/coding_standards.md\",\n      \"size\": 2339,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/references/common_antipatterns.md\",\n      \"size\": 2491,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/references/review_workflow.md\",\n      \"size\": 9456,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task-review/SKILL.md\",\n      \"size\": 7691,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/agents/openai.yaml\",\n      \"size\": 199,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/evals/review_gate_cases.json\",\n      \"size\": 3000,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/evals/review_stall_cases.json\",\n      \"size\": 4110,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/evals/semantic_config.json\",\n      \"size\": 906,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/evals/task_ownership_cases.json\",\n      \"size\": 2650,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/evals/trigger_cases.json\",\n      \"size\": 1325,\n      \"mode\": 420\n    },\n    {\n      \"path\": \"skills/meta/task/SKILL.md\",\n      \"size\": 19090,\n      \"mode\": 420\n    }\n  ],\n  \"entryCount\": 167,\n  \"bundled\": []\n}\n",
+    "stderr": "npm notice Publishing to https://registry.npmjs.org/ with tag latest and public access (dry-run)\n"
+  }
+]

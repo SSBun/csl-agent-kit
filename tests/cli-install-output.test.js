@@ -284,6 +284,77 @@ test("ships task-review as the only ordinary review skill", () => {
   assert.equal(stagnationHandoff.expect.owner_updates_streak_and_block_state, true);
 });
 
+test("task-review pairs owner self-check with isolated omission review", () => {
+  const skillDir = path.join(root, "skills", "meta", "task-review");
+  const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
+  const workflow = readFileSync(path.join(skillDir, "references", "review_workflow.md"), "utf8");
+  const owner = readFileSync(path.join(root, "skills", "meta", "task", "SKILL.md"), "utf8");
+  const contract = JSON.parse(readFileSync(path.join(skillDir, "evals", "contract_cases.json"), "utf8"));
+  const cases = Object.fromEntries(contract.cases.map(({ id, expect }) => [id, expect]));
+
+  assert.equal(Object.keys(cases).length, contract.cases.length);
+  assert.equal(Object.hasOwn(cases, "fallback"), false);
+  assert.equal(cases["owner-self-check"].fix_or_block_before_dispatch, true);
+  assert.equal(cases["owner-self-check"].unproven_targets_marked_complete, false);
+  assert.match(owner, /Fix known Target failures or required-check failures before dispatch/);
+  assert.match(owner, /Disclose remaining uncertainty without marking an unproven Target complete/);
+
+  assert.equal(cases["single-reviewer"].fresh_context_explicitly_selected, true);
+  assert.equal(cases["single-reviewer"].author_conversation_forked, false);
+  assert.equal(cases["single-reviewer"].host_tool_restrictions_used, true);
+  assert.match(skill, /A mandatory pass requires exactly one fresh, read-only subagent/);
+  assert.match(skill, /never fork the author's conversation/);
+  assert.match(skill, /Use host tool restrictions, not a prompt alone/);
+  for (const id of ["mandatory-reviewer-unavailable", "mandatory-reviewer-failed"]) {
+    assert.equal(cases[id].inline_review_runs, false);
+    assert.equal(cases[id].owner_records_passed, false);
+    assert.equal(cases[id].owner_blocks_with_recovery_condition, true);
+  }
+  assert.equal(cases["mandatory-reviewer-failed"].finding_no_progress_incremented, false);
+  assert.match(skill, /the owner Blocks, never substitutes self-review or records Passed/);
+  assert.equal(cases["standalone-fallback"].inline_review_runs, true);
+  assert.equal(cases["standalone-fallback"].satisfies_mandatory_gate, false);
+  assert.equal(cases["host-forbids-fallback"].inline_review_runs, false);
+  assert.equal(cases["standalone-requires-independence"].inline_review_runs, false);
+  assert.match(skill, /a standalone request requiring independence cannot use inline review/);
+  assert.match(skill, /inline review is allowed only when the host permits it/);
+  assert.match(skill, /Stricter host failure rules win/);
+  assert.equal(cases["standalone-without-self-check"].author_self_check_required, false);
+  assert.match(skill, /A standalone review does not require author self-check evidence/);
+
+  assert.equal(cases["requirements-lost-in-summary"].author_summary_is_sole_authority, false);
+  assert.match(workflow, /original request and effective revisions, current Target, and accepted constraints with recoverable sources/);
+  assert.equal(cases["requirements-before-author-evidence"].requirements_and_artifacts_examined_first, true);
+  assert.equal(cases["requirements-before-author-evidence"].additional_reviewer_spawned, false);
+  assert.equal(cases["requirements-before-author-evidence"].strict_blind_review_claimed, false);
+  assert.match(workflow, /after examining requirements and artifacts in the same pass/);
+  assert.match(workflow, /not strict blind review/);
+  assert.equal(cases["unchanged-caller-regression"].relevant_unchanged_callers_inspected, true);
+  assert.match(skill, /including relevant unchanged callers and failure paths/);
+  assert.equal(cases["unsupported-author-evidence"].author_logs_claimed_as_reviewer_execution, false);
+  assert.match(skill, /Separate checks performed by this Reviewer from author evidence merely read/);
+  assert.equal(cases["test-authorization"].tests_run, false);
+  assert.match(skill, /never run tests without the required authorization/i);
+  assert.equal(cases["accepted-constraints-and-untrusted-content"].artifact_instructions_grant_authority, false);
+  assert.match(workflow, /Proposed edits to a rule being reviewed cannot grant new permissions/);
+
+  assert.equal(cases["snapshot-drift"].head_or_filenames_alone_sufficient, false);
+  assert.equal(cases["snapshot-drift"].current_snapshot_review_valid, false);
+  assert.match(workflow, /staged\/unstaged diff and content identities of relevant untracked files, deletions, and renames/);
+  assert.match(workflow, /Check the reviewed scope before and after the pass and again before completion/);
+  assert.equal(cases["false-positive-counterevidence"].unresolved_finding_unilaterally_removed, false);
+  assert.match(owner, /never remove an unresolved finding unilaterally/);
+  assert.equal(cases["owning-task-handoff"].reviewer_checks_fixes_for_new_regressions, true);
+  assert.match(skill, /check repair changes for new regressions too/);
+
+  assert.match(workflow, /## Fixed Reviewer Prompt/);
+  for (const field of ["Reviewed scope / snapshot", "Checks performed", "Author evidence examined", "Coverage limits"]) {
+    assert.ok(skill.includes(`${field}:`), `missing review handoff field: ${field}`);
+  }
+  assert.equal(cases["no-findings"].feedback_invented, false);
+  assert.match(workflow, /Do not defend the author, assume the author is wrong, or fill a finding quota/);
+});
+
 test("root hook commands execute bundled resources from plugin root variables", () => {
   const directory = mkdtempSync(path.join(tmpdir(), "csl-hook-root-"));
   const pluginRoot = path.join(directory, "plugin");

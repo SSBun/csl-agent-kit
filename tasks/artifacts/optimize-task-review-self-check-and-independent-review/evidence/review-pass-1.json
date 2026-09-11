@@ -1,0 +1,40 @@
+{
+  "baseRevision": "22ce2f06cc35556811f03f1f45e4918e053671bb",
+  "branch": "main",
+  "files": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task/SKILL.md",
+      "sha256": "7ad15204747c04ff734422a4c482c8b6010469b38f5b81891855d76371cd8805"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task-review/SKILL.md",
+      "sha256": "704b7bcb6815ae476d1319e7aff999f093f27dda66ea84265bc79346b5c44964"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task-review/references/review_workflow.md",
+      "sha256": "65380ac60b91af93f2cda77918d58a3333567d6c734a4a2e4e092376c7c541ea"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task-review/evals/contract_cases.json",
+      "sha256": "c4713ffd1ff303c4d4c95da14e3090f8ff5508f160a8737489afed1529ff8033"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "fcb7fb0a3e16d2a8f372925ed033040ab2c81c224bbddf519365544406a27cbf"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tests/cli-install-output.test.js",
+      "sha256": "185abb8c7fa32ccfe51e7b910282d427a4cb182b04325d93d09b7ae8bbe379c1"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs",
+      "sha256": "cc755750bf883eb52b2a086cd21e32861ffac9643a69a2b713f9cee0bfa6e86e"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tasks/context.md",
+      "sha256": "4f4d79380f4e5e93eda33ef83e0d0740c02ad9a20017102b312500bec4a59057"
+    }
+  ],
+  "patchSha256": "87e0bee57c12124ba5a39aa178b62301a94e31e9bb4db6d50f7c739a182bf507",
+  "checksSha256": "729a32d32198a6c86aaf7d3b0c3d02881306896bb26c8c969bdbd81904b19008"
+}

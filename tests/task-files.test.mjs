@@ -410,6 +410,12 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Touch only what the aligned outcome requires/);
   assert.match(contract, /## Mandatory Modification Review/);
   assert.match(contract, /mark review required, then enter In Review and dispatch one read-only `task-review` pass/);
+  assert.match(contract, /The main Agent first compares original requirements, effective revisions, and accepted constraints/);
+  assert.match(contract, /using an actual fresh subagent/);
+  assert.match(contract, /Mandatory independent review that is unavailable or fails Blocks the task/);
+  assert.match(contract, /self-review cannot substitute for it or justify passed/);
+  assert.match(contract, /Bind self-check, review, and final verification to the actual reviewed content/);
+  assert.match(contract, /a suspected false positive needs counterevidence checked by a fresh pass/);
   assert.match(contract, /Direct edits to an active task specification must use its sync lifecycle/);
   assert.match(contract, /sync invalidates terminal review and Verification evidence/);
   assert.match(contract, /Any confirmed finding returns the task to In Progress for remediation/);
@@ -684,6 +690,14 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /This is the only checkbox list/);
   assert.match(skill, /Do not put implementation steps, commands, workflow gates, or review state here/);
   assert.match(skill, /Never check a Target manually/);
+  assert.match(skill, /## Owner Self-Check and Review Handoff/);
+  assert.match(skill, /For each Target, collect requirement, observed result, evidence, and limitations/);
+  assert.match(skill, /Stop editing the review scope while the Reviewer runs/);
+  assert.match(skill, /untracked, deleted, and renamed content, not merely HEAD or filenames/);
+  assert.match(skill, /Do not substitute inline self-review or silently switch execution modes/);
+  assert.match(skill, /Infrastructure failures do not increment finding no-progress streaks/);
+  assert.match(skill, /Prepare the mandatory review handoff only for requested deliverable file changes/);
+  assert.match(skill, /core validates recorded state and evidence text, not actual subagent isolation/);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
   assert.match(skill, /`skipped` only when the task changed no requested deliverable files/);
   assert.match(skill, /`required` before every review pass for a task that changed requested deliverable files/);

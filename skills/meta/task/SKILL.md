@@ -56,6 +56,20 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
 6. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
 7. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
 
+## Owner Self-Check and Review Handoff
+
+Before each mandatory review pass, the main Agent owns self-check and verification; the fresh Reviewer looks for omissions, not the author's known unfinished fixes.
+
+1. Compare the original request, effective revisions, accepted constraints, current Target, actual behavior, and task-owned diff. A mismatch in authorized commitments returns to the alignment protocol, not a silently revised review criterion.
+2. For each Target, collect requirement, observed result, evidence, and limitations. Identify the checked version, check performed, and what the observation actually proves. Run only checks permitted by current authorization and host rules; never report an unrun test as passed. Fix known Target failures or required-check failures before dispatch; if unable, Block with an observable unblock condition. Disclose remaining uncertainty without marking an unproven Target complete.
+3. Record supported Result evidence and prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
+4. Stop editing the review scope while the Reviewer runs. Bind the pass to actual content: an exact revision for clean Git artifacts; for dirty workspaces also identify relevant staged, unstaged, untracked, deleted, and renamed content, not merely HEAD or filenames. Use content identities for non-Git artifacts. Check the same scope again before accepting feedback and before completion.
+5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
+
+A mandatory pass requires an actual fresh, read-only subagent; a prompt saying “be independent” or a Markdown template is not isolation. If it is unavailable or fails, preserve self-check evidence, report the exact failure and run/workspace state, and Block with an observable recovery condition. Do not substitute inline self-review or silently switch execution modes. Infrastructure failures do not increment finding no-progress streaks. Follow stricter host failure/retry rules.
+
+The core validates recorded state and evidence text, not actual subagent isolation, check execution, or filesystem freshness; the host and main Agent must establish those facts.
+
 ## Record Contract
 
 Keep `# Title`, the core-owned `Status:` line, and `Kind:`. Canonical `#` and `##` record headings start at column zero; indented or container-nested headings are content, not record sections. New records use these sections as needed:
@@ -82,11 +96,11 @@ The core records one evidence line per Target. Evidence must name what was check
 Record the review gate through `review <id> ... --evidence ...`:
 
 - `skipped` only when the task changed no requested deliverable files. Canonical task, Context, and Lessons lifecycle writes alone do not count as deliverable changes.
-- `required` before every review pass for a task that changed requested deliverable files. Record current Result evidence and preliminary checks, then set `required` and move to In Review before invoking `task-review`.
-- `passed` only after that `task-review` pass reports no Critical Finding, no Concern, and no Unverified Risk that prevents Target verification. The interaction owner records this value; the read-only Reviewer never writes task state or grants approval.
+- `required` before every review pass for a task that changed requested deliverable files. Complete Owner Self-Check and Review Handoff, record current Result evidence and preliminary checks, then set `required` and move to In Review before invoking `task-review`.
+- `passed` only after that `task-review` pass reports no Critical Finding, no Concern, and no Unverified Risk that prevents Target verification, and the main Agent confirms an independent pass covered the current snapshot. The interaction owner records this value; the read-only Reviewer never writes task state or grants approval.
 - `approved` only after an explicitly requested `adversarial-review` approves. A task with deliverable changes first completes the mandatory `task-review`; `approved` evidence must identify both outcomes.
 
-When `task-review` finds a problem, return to In Progress, remediate it, refresh stale Result and verification evidence, set the gate to `required`, re-enter In Review, and invoke a new one-pass `task-review`. Apply the Review tracking and stall guard below on every pass. Repeat without a fixed total round limit until the gate can be recorded as `passed`, the task becomes Blocked, or the user stops. Any reviewed deliverable change, Result change, or Queue graph change invalidates `passed` or `approved` evidence.
+When `task-review` finds a problem, return to In Progress, remediate it, refresh affected self-check, Result and verification evidence, set the gate to `required`, re-enter In Review, and invoke a new one-pass `task-review`. Check findings against actual artifacts rather than accepting suggestions mechanically. For a suspected false positive, supply observable counterevidence or authoritative constraints for the next fresh pass to verify; never remove an unresolved finding unilaterally or relabel it without evidence to obtain `passed`. Apply the Review tracking and stall guard below on every pass. Repeat without a fixed total round limit until the gate can be recorded as `passed`, the task becomes Blocked, or the user stops. Any reviewed deliverable change, Result change, or Queue graph change invalidates `passed` or `approved` evidence.
 
 Independent adversarial review, a two-Agent Reviewer-Editor loop, and independent approval remain opt-in and run only when the user explicitly requests them. They do not replace the mandatory `task-review` pass.
 
@@ -118,10 +132,10 @@ Add only while Blocked, with `Reason` and observable `Unblock when`. Add the sec
 
 ## Completion
 
-1. Confirm every current Target has Result evidence and run proportionate preliminary checks.
+1. Self-check the result against current requirements, confirm every current Target has supported Result evidence, and run proportionate preliminary checks. Prepare the mandatory review handoff only for requested deliverable file changes.
 2. For requested deliverable file changes, execute the mandatory `required` → In Review → `task-review` loop, apply its per-finding stall guard, and record `passed`; if adversarial review was explicitly requested, run it separately and replace the gate with `approved` evidence that also names the completed task-review pass.
 3. For a task with no requested deliverable file changes, record `skipped` with that exact boundary as evidence and remain In Progress. If the user explicitly requested adversarial review of that no-file result, instead set `required`, enter In Review, run `adversarial-review` without a mandatory `task-review`, and record `approved`.
-4. After the final review decision, rerun proportionate verification and record it as passed because every review-gate write invalidates prior Verification evidence.
+4. After the final review decision, rerun proportionate verification and record it as passed because every review-gate write invalidates prior Verification evidence. For reviewed results, first confirm the reviewed scope still matches the current content; relevant drift returns to self-check and fresh review, not completion. For `skipped`, verify the current result without inventing a reviewed snapshot.
 5. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
 6. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
 7. Run `check <id>` and `validate` before delivery.
