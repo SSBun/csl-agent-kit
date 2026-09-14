@@ -283,19 +283,26 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(alignmentProtocol, /Changes requiring approval/);
   assert.match(alignmentProtocol, /This Target changes your current authorization/);
   assert.match(alignmentProtocol, /Ask one focused question about the exact user-owned ambiguity/);
-  assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session passes the L2 confirmation-coverage check/);
-  assert.match(alignmentProtocol, /### Settled Commitments/);
+  assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint/);
+  assert.match(alignmentProtocol, /### Authorization Sources and Goal Acceptance/);
   assert.match(alignmentProtocol, /`direct_user`/);
   assert.match(alignmentProtocol, /`accepted_target`/);
   assert.match(alignmentProtocol, /both the proposal and the user's acceptance/);
-  assert.match(alignmentProtocol, /wording, formatting, mechanical restatement, or generic low confidence alone cannot create one/);
+  assert.match(alignmentProtocol, /Wording, formatting, mechanical restatement, or generic low confidence alone cannot create a new commitment difference/);
   assert.match(alignmentProtocol, /Repository facts may establish what exists, but do not authorize what to change/);
   assert.match(alignmentProtocol, /independently accepted clauses must not be combined into an unapproved effect/);
   assert.match(alignmentProtocol, /changed objects\/environments, or expired conditions/);
-  assert.match(alignmentProtocol, /If all commitments are settled, use `show_continue`/);
+  assert.match(alignmentProtocol, /`show_continue` is not a valid alignment action/);
+  assert.match(alignmentProtocol, /Authorization coverage does not establish user goal acceptance/);
   assert.match(alignmentProtocol, /empty `confirmationItems`, and null `checkpointReason`/);
-  for (const reason of ["unsettled_interpretation", "user_requested", "plan_graph_change", "acceptance_unavailable", "trivial_display"]) assert.match(alignmentProtocol, new RegExp("`" + reason + "`"));
-  assert.match(alignmentProtocol, /Preserve settled constraints in the complete Target without asking the user to reconfirm them/);
+  for (const reason of ["goal_recheck", "user_requested", "plan_graph_change", "acceptance_unavailable", "trivial_display"]) assert.match(alignmentProtocol, new RegExp("`" + reason + "`"));
+  assert.match(alignmentProtocol, /Preserve all inherited constraints in the displayed Target/);
+  assert.match(alignmentProtocol, /`authorizedClauses`/);
+  assert.match(alignmentProtocol, /These lists may overlap/);
+  assert.match(alignmentProtocol, /accepted_target` evidence for every clause/);
+  assert.match(alignmentProtocol, /An answer to a local clarification is not acceptance of an undisplayed whole Target/);
+  assert.match(alignmentProtocol, /confirm, but/);
+  assert.match(alignmentProtocol, /Do not continue source inspection, research, planning, delegation or editing while waiting/);
   assert.match(alignmentProtocol, /only the currently displayed L2 or L4 check that is waiting for a reply/);
   assert.match(alignmentProtocol, /delegated children covered by its current Plan also inherit that acceptance/);
   assert.match(alignmentProtocol, /A delegated child reaching that boundary returns to the main session/);
@@ -304,8 +311,8 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(alignmentProtocol, /S1 REQUIRED/);
   assert.match(alignmentProtocol, /\*\*Safety Confirmation\*\*/);
   assert.match(alignmentProtocol, /does not persist guard levels or acceptance/);
-  assert.match(alignmentProtocol, /render the complete Target without a confirmation footer and continue immediately in the same turn/);
-  assert.doesNotMatch(alignmentProtocol, /must pass one L2 checkpoint/);
+  assert.match(alignmentProtocol, /End the turn and wait/);
+  assert.doesNotMatch(alignmentProtocol, /If all commitments are settled, use `show_continue`|render the complete Target without a confirmation footer and continue immediately/);
   assert.doesNotMatch(alignmentProtocol, /task_target_confirm/);
 
   for (const name of ["task", "task-plan", "task-queue"]) {
@@ -400,7 +407,9 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.doesNotMatch(contract, /## Task Workflow Adoption/);
   assert.match(contract, /Use Task workflows automatically for every eligible request/);
   assert.match(contract, /users should not need to know Skill names or internal lifecycle mechanics/);
-  assert.match(contract, /Use the Task Target as a brief intent checkpoint, not process ceremony/);
+  assert.match(contract, /Use Task Target to let the user recheck the Agent's understanding of their goal before substantive work/);
+  assert.match(contract, /A clear request or complete authorization coverage is not user acceptance/);
+  assert.match(contract, /end the turn and wait/);
   assert.match(contract, /do not narrate routine internal bookkeeping/);
   assert.match(contract, /## Task-Family Routing/);
   assert.match(contract, /Use `task-plan` when the current outcome is planning/);
@@ -410,7 +419,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.match(contract, /Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution/);
   assert.match(contract, /Apply the selected task-family Skill, including its required Task Target alignment gate/);
   assert.match(contract, /Only the main interaction owner handles user-facing alignment and independent safety gates/);
-  assert.match(contract, /Do not repeat confirmation for an accepted unchanged Target/);
+  assert.match(contract, /Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance/);
   assert.match(contract, /Delegated work covered by the accepted current Plan inherits alignment/);
   assert.match(contract, /missing coverage, material changes, user decisions, or safety boundaries return to the main session/);
   assert.doesNotMatch(contract, /The Task Target states:|L0|L1|L2|L3|L4|Authorization Ledger|Changes requiring approval/);

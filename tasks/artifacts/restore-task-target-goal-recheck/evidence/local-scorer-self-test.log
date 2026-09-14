@@ -1,0 +1,14 @@
+{
+  "valid": true,
+  "cases": 110,
+  "baselinePass": true,
+  "underGuardDetected": true,
+  "overGuardDetected": true,
+  "checkpointMissDetected": true,
+  "handoffCheckpointLeakDetected": true,
+  "l3l4MismatchDetected": true,
+  "safetyMissDetected": true,
+  "childConfirmationLeakDetected": true,
+  "stalePlanContinueDetected": true,
+  "confirmationCoverageRegressionsDetected": true
+}

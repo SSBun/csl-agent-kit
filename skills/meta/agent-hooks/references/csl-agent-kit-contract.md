@@ -4,7 +4,7 @@ CSL AGENT KIT CONTRACT ACTIVE
 
 Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.
 
-- Use the Task Target as a brief intent checkpoint, not process ceremony.
+- Use Task Target to let the user recheck the Agent's understanding of their goal before substantive work, not merely to check authorization.
 - Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.
 - Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.
 - Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.
@@ -56,7 +56,7 @@ When a Task workflow applies, activate and focus its owning record before task-d
 
 Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
 
-Do not repeat confirmation for an accepted unchanged Target or still-applicable commitments explicitly supplied or accepted by the user. Apply the shared protocol's confirmation-coverage check: preserve the complete Target and inherited constraints, check only unsettled interpretations, and retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
+For a new or materially revised non-trivial Target, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
 
 After alignment, continue independently within the accepted outcome and boundaries.
 

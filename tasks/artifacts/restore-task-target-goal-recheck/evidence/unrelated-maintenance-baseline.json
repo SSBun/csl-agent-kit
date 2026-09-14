@@ -1,0 +1,10 @@
+{
+  "head": "20583fbcf0f0cae3f9e53496d94e2175eb4a1a13",
+  "unchangedMaintenanceSkill": true,
+  "assertionAlreadyInBaseline": true,
+  "assertionStillInCurrent": true,
+  "lowercaseTextInBaseline": false,
+  "uppercaseTextInBaseline": true,
+  "maintenanceSha256": "5f06d1b89131426974303848c92490ba9d893f2952556b557b183687b14e3d76",
+  "baselineTestExecution": false
+}

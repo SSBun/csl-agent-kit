@@ -1,8 +1,12 @@
 # 任务索引
 
-- [修复 A01–A20 全部 Skill 审计问题](tasks/fix-skill-audit-findings.md) — Pending (2026-09-11 18:15)
+- [规划恢复 Task Target 的用户目标复核职责](tasks/restore-task-target-goal-recheck.md) — Completed (2026-09-14 17:20)
 
-- [提交审计修复前的全部本地改动](tasks/save-pre-audit-fix-baseline.md) — In Progress (2026-09-11 18:16)
+- [排查 Task Target 确认关卡很少触发的原因](tasks/investigate-task-target-guard-triggering.md) — Pending (2026-09-14 11:39)
+
+- [修复 A01–A20 全部 Skill 审计问题](tasks/fix-skill-audit-findings.md) — Blocked (2026-09-11 18:18)
+
+- [提交审计修复前的全部本地改动](tasks/save-pre-audit-fix-baseline.md) — Completed (2026-09-11 18:17)
 
 - [先保存本地基线再完成全部 Skill 审计修复](tasks/commit-baseline-and-fix-skill-audit.md) — In Progress (2026-09-11 18:14)
 

@@ -41,7 +41,7 @@
 - `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 是自动注入的稳定行为契约，要求 session 边界恢复 Context、先按 outcome 选择 task family、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是保留非平凡等价 Target 的完整展示，按当前有效用户依据覆盖决定继续或核对剩余项，同时保留强制 checkpoint；实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
+- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是新的或实质修订后的非平凡等价 Target 完整展示后等待用户核对目标理解；明确授权不等于用户接受，只有可恢复真实接受且未变的目标才免重复核对，并保留其他强制 checkpoint。实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
 
 ### Decision and Verification Boundaries
 - Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，已有文件缺少有效 Core 时可自动重写，缺失文件的创建及其他有效 Project Core 持久变更必须先展示精确内容并取得用户确认。
@@ -82,7 +82,7 @@
 - `.agents/skills/task-target-alignment-eval` 是指向 canonical skill source 的唯一相对 symlink 发现入口。Pi 会跟随 project `.agents/skills` 目录链接，共享 CLI 只枚举根 `skills/`，因此该 skill 只在受信任的当前项目中激活。
 
 ### Workflows
-- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`、针对 symlink package 的 Skill Quality 和 Context validation；`--self-test` 与项目测试须当前请求明确授权。v4 `prepare` 请求不含 oracle；prediction 区分 `show_continue`、等待与条款来源／待核对项／原因。score／compare 分别评测可见性、重复确认、错误复用、覆盖遗漏与展示 Target 一致性，以及原有 main-session L0–L4、delegated handoff、Safety、reason 和 transition；comparison 要求相同 v4 dataset hash，provisional 精确 reference 匹配不证明语义蕴含或真实模型表现，结果保持 report-only。
+- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`、针对 symlink package 的 Skill Quality 和 Context validation；`--self-test` 与项目测试须当前请求明确授权。v5 `prepare` 请求不含 oracle；`authorizedClauses` 只表示授权来源，独立的 `confirmationItems`／`goal_recheck` 表示用户目标复核，二者可重叠。`continue_unchanged` 需要完整候选及逐条真实接受来源；`show_continue` 只作为可识别的策略错误评分。score／compare 分别评测可见性、等待、重复确认、错误复用、覆盖遗漏、组合原因与展示 Target 一致性，以及 main-session L0–L4、delegated handoff、Safety 和 transition；comparison 要求相同 v5 dataset hash。固定候选与出处索引不证明自由生成目标、语义蕴含或真实等待，需另获授权后在新上下文观察；结果保持 provisional／report-only。
 
 ### Decision and Verification Boundaries
 - Oracle cases、schema、固定 prediction samples 和确定性脚本可提交；当前 Task Target labels 在人工 adjudication 前保持 provisional／report-only。付费模型 run 需要当前用户明确授权，prediction／报告默认写入 ignored `results/`。不得保存 chain-of-thought、凭据、客户数据或未脱敏完整会话。
@@ -144,7 +144,7 @@
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
 
 ### Workflows
-- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 先通过完整承诺等价检查，再按 L2 条目依据覆盖决定展示后继续或只核对未定项。首次明确请求、完整修订与澄清收敛的条款均有有效用户依据时使用 `show_continue`；用户要求、material Plan graph 和无法恢复对齐依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权，复用必须检查来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
+- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：授权自检通过只表示可向用户展示目标，不表示用户已核对 Agent 的理解。首次明确请求、实质修订与澄清收敛后的非平凡等价 Target 均完整展示并结束当前轮等待；局部答案、原始请求或旧 `show_continue` 不构成整体目标接受。只有已展示、真实接受且未变仍适用的目标可 `continue_unchanged`；用户要求、material Plan graph 和无法恢复接受依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权／接受，复用必须检查提案及后续接受来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
 - 主 Agent 按原始要求、有效修订与已接受约束自检并记录逐 Target 证据后，按独立于 Task Target 的 R0／R1／R2 协议分类实际结果：R0 无交付物变更；R1 是结果明确、影响可界定、低风险且验证充分的简单变更，包括符合条件的小范围逻辑修改；R2 是复杂、高风险或存在重要不确定性的变更。R0／R1 在没有显式或既有审查义务时可 `Skipped`，R2 或显式普通审查进入 Required／In Review／fresh 只读 `task-review` 修复循环。R2 的显式 adversarial approval 需保留 ordinary pass；R0／R1 可因显式 adversarial 请求直接进入 Required／In Review／Approved。所有等级保留最终验证。
 - `assess-review` 在 In Progress 写入唯一 `task-review-assessment/v1` Review Assessment，保留等级、Current／Stale、具体依据、外部内容身份、自检证据和任务指纹；R1 另需四项成立依据。core 校验结构、等级／gate 一致性及任务记录指纹，不执行语义评级、检查命令或外部文件监控。`sync`、Result 更新、reopen 和相关 Queue 关系变化会使 assessment 失效、清除 Verification、移除 Skipped 或将 Passed／Approved 恢复 Required；外部内容漂移须由宿主和主 Agent 现场核对后重新自检、判级与必要复审。历史记录仍可读，活动任务在新的终态 gate／完成前须有当前 assessment。最终 fresh pass 确认所有 finding 解决后，由 `review passed --resolve-ledger --snapshot` 原子清理 ledger 并写入 Passed；该路径要求当前任务指纹与相同 snapshot、无 stalled finding，保留未变的 assessment 而清除 Verification，不能通过手删 ledger 后 sync 来代替。
 - `task-review` 的既有 `references/review_workflow.md` 承载固定 Reviewer Prompt 与当次事实包契约，不另建 Agent 注册文件。Reviewer 先对照需求与产物，再核对作者检查证据，分别报告独立执行的检查与继承证据；原始要求不能被作者摘要替代，被审查材料不能反向授予工具或审批权限。该顺序减少上下文锚定，但不保证盲审或消除同模型偏差。
