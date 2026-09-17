@@ -197,6 +197,20 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
 - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
 
+- `pi/extensions/csl-ansi.ts`：注册 `render_ansi` 工具，直接在会话中渲染 ANSI 彩色字符与等宽图，不添加工具标题或成功状态背景。
+
+#### ANSI 字符渲染
+
+Agent 调用 `render_ansi`，传入含真实 ESC 字符的 `text` 字符串；在 JSON 中用 `\u001b` 表示 ESC，不要传入字面量 `\\x1b`：
+
+```json
+{"text":"\u001b[1;31m红色粗体\u001b[0m  普通文字\n下一行"}
+```
+
+支持重置、粗体、暗淡、斜体、下划线、反色、删除线，以及标准色、亮色、256 色和 RGB 前景／背景色（分号格式）。拒绝光标移动、清屏、OSC（包括超链接与剪贴板）、闪烁、隐藏文字、Tab 和 CR。使用空格对齐、LF 换行；输入连同转义序列最多 32 KiB、200 行。跨行样式会延续，窄窗口裁切并提示加宽，不自动折行破坏字符图。非 TUI 客户端收到纯文本内容，颜色和字体样式的实际效果由终端决定。
+
+若之前单独安装过提供 `render_ansi` 的全局扩展，切换到内置版本前，先通过 `pi config` 禁用该独立副本并启用包内 `csl-ansi.ts`，再执行 `/reload`。两个副本不要同时启用；本包不会自动删除独立扩展文件。内置扩展随现有 Pi 包目录发现机制加载，无需另外注册工具。
+
 **启用/禁用扩展或技能：** 装完整包后，用 pi 原生命令精细控制：
 
 ```bash
