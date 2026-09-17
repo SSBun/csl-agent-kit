@@ -1,5 +1,7 @@
 # 任务索引
 
+- [修复 Pi render_ansi 工具注册冲突](tasks/fix-pi-render-ansi-conflict.md) — Completed (2026-09-15 20:30)
+
 - [规划恢复 Task Target 的用户目标复核职责](tasks/restore-task-target-goal-recheck.md) — Completed (2026-09-14 17:20)
 
 - [排查 Task Target 确认关卡很少触发的原因](tasks/investigate-task-target-guard-triggering.md) — Pending (2026-09-14 11:39)
