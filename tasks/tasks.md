@@ -1,5 +1,7 @@
 # 任务索引
 
+- [按关注点分组提交当前全部本地改动](tasks/commit-local-changes-20260915.md) — Completed (2026-09-17 13:07)
+
 - [修复 Pi render_ansi 工具注册冲突](tasks/fix-pi-render-ansi-conflict.md) — Completed (2026-09-15 20:30)
 
 - [规划恢复 Task Target 的用户目标复核职责](tasks/restore-task-target-goal-recheck.md) — Completed (2026-09-14 17:20)
