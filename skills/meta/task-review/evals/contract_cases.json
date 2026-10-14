@@ -302,6 +302,20 @@
       }
     },
     {
+      "id": "owner-persists-round-feedback",
+      "given": "an owning-task independent pass returns findings or no findings",
+      "expect": {
+        "reviewer_writes_files": false,
+        "owner_persists_feedback_before_terminal_gate": true,
+        "report_path": "tasks/artifacts/<task-id>/reviews/round-<NN>.md",
+        "existing_report_overwritten": false,
+        "task_index_section": "Review Reports",
+        "index_contains_link_snapshot_outcome": true,
+        "second_finding_ledger_created": false,
+        "standalone_no_owner_creates_report": false
+      }
+    },
+    {
       "id": "no-findings",
       "given": "no problem is demonstrated",
       "expect": {

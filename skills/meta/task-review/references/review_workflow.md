@@ -106,6 +106,12 @@ Previous ledger / next TR-ID: <current owning-task ledger; otherwise not applica
 Review mode: <mode established by actual dispatch, not assumed by this prompt>
 ```
 
+## Owner Persistence After the Pass
+
+For a canonical owning-task pass, the interaction owner follows `task`'s Review Reports contract: save the returned feedback to `tasks/artifacts/<task-id>/reviews/round-<NN>.md`, then append the task's separate `## Review Reports` index with the relative link, reviewed snapshot and outcome. Use the next unused artifact number across files and index entries, not the temporary finding ledger's pass counter. Preserve original feedback and stable IDs; label owner metadata, dispositions or safety redactions separately. The Reviewer remains read-only, and host-managed output capture may transport feedback without granting child file-write tools.
+
+Persist findings, no-findings and incomplete outputs honestly; a failed launch is not a completed review. Check the saved file and link before any terminal gate. A persistence failure stops the terminal transition with a concrete recovery condition. If the process stops between saving and indexing, verify and link the existing report rather than replacing it. Index-only writes are lifecycle bookkeeping excluded from the Task fingerprint; scope or substantive evidence drift still requires fresh self-check and review. Do not create a second finding ledger or save private reasoning. Standalone feedback without an owning task remains no-file.
+
 ## Evidence Boundary
 
 A confirmed finding needs an observable issue and practical impact. Put material uncertainty caused by missing evidence under Unverified Risks instead of presenting it as fact. Omit preference-only feedback and unrelated cleanup.

@@ -47,6 +47,8 @@ Completed children do not prove the integrated outcome. After `next` returns no 
 4. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
 5. Run `check <parent-id>` and `validate`.
 
+Apply `task`'s Review Reports persistence contract to every parent or child `task-review` pass: save and index the report under that owning task's ID before the terminal gate, never under a sibling or a shared parent directory. Keep the persistent report index separate from the temporary finding ledger.
+
 Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
 
 Keep the workflow interactive. If the session must pause, leave canonical status and evidence sufficient for a later Codex or Pi Agent to resume deterministically. Routing fixtures are in `evals/`.

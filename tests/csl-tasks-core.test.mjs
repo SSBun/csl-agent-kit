@@ -747,6 +747,46 @@ test("all findings resolved can atomically clear the ledger and pass without reg
   core.completeTask(root, "ledger");
 });
 
+test("report indexing preserves assessment and survives ledger resolution, completion and reopen", (t) => {
+  const root = workspace(t);
+  prepareLedgerReview(root);
+  const assessment = core.readTask(root, "ledger").reviewAssessment;
+  const index = "\n## Review Reports\n\n| Round | Report | Snapshot | Outcome |\n| --- | --- | --- | --- |\n| 01 | [Round 01](../artifacts/ledger/reviews/round-01.md) | fixture-content-v1 | findings: TR-1 |\n";
+  writeFileSync(core.taskPath(root, "ledger"), body(root, "ledger") + index);
+  writeFileSync(core.taskPath(root, "ledger"), body(root, "ledger") + "| 02 | [Round 02](../artifacts/ledger/reviews/round-02.md) | fixture-content-v1 | no blocking findings |\n");
+  core.setReviewGate(root, "ledger", "passed", "Round 02: TR-1 resolved", {
+    resolveLedger: true, snapshot: assessment.snapshot,
+  });
+  assert.deepEqual(core.readTask(root, "ledger").reviewAssessment, assessment);
+  assert.equal(core.readTask(root, "ledger").reviewLedger, undefined);
+  assert.match(body(root, "ledger"), /## Review Reports/);
+  core.recordVerification(root, "ledger", true, "Final unchanged result verified");
+  core.completeTask(root, "ledger");
+  core.reopenTask(root, "ledger");
+  for (const round of ["01", "02"]) assert.ok(body(root, "ledger").includes(`round-${round}.md`));
+  assert.equal(core.readTask(root, "ledger").reviewAssessment.state, "Stale");
+});
+
+test("report indexes do not hide substantive drift or bypass explicit sync", (t) => {
+  const root = workspace(t);
+  prepareLedgerReview(root);
+  const original = body(root, "ledger");
+  const index = "\n## Review Reports\n\n| 01 | [Round 01](../artifacts/ledger/reviews/round-01.md) | fixture-content-v1 | no blocking findings |\n";
+  for (const change of [
+    (text) => text.replace("T1: Correct behavior", "T1: Different behavior"),
+    (text) => text.replace("Fixed behavior checked", "Changed evidence"),
+    (text) => text + "\n## Scope\n\nChanged scope\n",
+  ]) {
+    writeFileSync(core.taskPath(root, "ledger"), change(original + index));
+    assert.throws(() => core.setReviewGate(root, "ledger", "passed", "Indexed report", {
+      resolveLedger: true, snapshot: "fixture-content-v1",
+    }), /stale Review Assessment/);
+  }
+  writeFileSync(core.taskPath(root, "ledger"), original + index);
+  core.syncIndex(root, "ledger");
+  assert.equal(core.readTask(root, "ledger").reviewAssessment.state, "Stale");
+});
+
 test("ledger resolution rejects missing, stale or mismatched identity without clearing findings", (t) => {
   const root = workspace(t);
   prepareLedgerReview(root);

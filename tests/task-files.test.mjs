@@ -691,7 +691,7 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
   }
-  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Verification", "Block"]) {
+  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Review Reports", "Verification", "Block"]) {
     assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
   }
   assert.equal(skill.includes("### Checklist"), false);
@@ -749,6 +749,21 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   }
   assert.deepEqual(readdirSync(skillDir).sort(), ["SKILL.md", "agents", "evals"]);
   assert.deepEqual(readdirSync(cslTasksSharedDir).sort(), ["lib", "protocols", "scripts"]);
+});
+
+test("owning tasks persist review feedback separately from the active finding ledger", () => {
+  const task = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
+  const reviewer = readFileSync(path.join(cslTasksDir, "task-review", "SKILL.md"), "utf8");
+  const workflow = readFileSync(path.join(cslTasksDir, "task-review", "references", "review_workflow.md"), "utf8");
+  const queue = readFileSync(path.join(cslTasksDir, "task-queue", "SKILL.md"), "utf8");
+  assert.match(task, /tasks\/artifacts\/<task-id>\/reviews\/round-<NN>\.md/);
+  assert.match(task, /Never overwrite or renumber a report/);
+  assert.match(task, /Index-only bookkeeping does not require `sync`/);
+  assert.match(task, /core does not validate report files or their links/);
+  assert.match(task, /index survives ledger resolution and completion/);
+  assert.match(reviewer, /Reviewer never writes the report or task index/);
+  assert.match(workflow, /If the process stops between saving and indexing/);
+  assert.match(queue, /under that owning task's ID before the terminal gate/);
 });
 
 test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {

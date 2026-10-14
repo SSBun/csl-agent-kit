@@ -27,7 +27,8 @@ Persist a workspace-local task artifact only when the user requests a durable fi
 
 - `discussions`: user-visible discussion or synthesis; never private reasoning, role exchanges, or hidden state.
 - `specs`: RFCs, PRDs, ADRs, designs, and separately requested implementation or migration plans.
-- `reports`: research, analysis, review, and audit reports.
+- `reports`: research, analysis, audit, and separately governed reports (including the existing adversarial-review final report).
+- `reviews`: immutable per-pass `task-review` feedback, including passes with findings or no findings; see Review Reports below.
 - `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.
 
 The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.
@@ -75,6 +76,8 @@ Before classification and each mandatory review pass, the main Agent owns self-c
 3. Record supported Result evidence, classify the actual result and record its assessment. When a pass is required, prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
 4. Stop editing the review scope while the Reviewer runs. Bind the pass to actual content: an exact revision for clean Git artifacts; for dirty workspaces also identify relevant staged, unstaged, untracked, deleted, and renamed content, not merely HEAD or filenames. Use content identities for non-Git artifacts. Check the same scope again before accepting feedback and before completion.
 5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check, assessment and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
+
+After each dispatched pass returns, the owner persists its feedback and appends the Review Reports index before acting on the findings or recording a terminal gate. The Reviewer stays read-only. Report persistence is owner bookkeeping, not a new review pass or approval. If saving or linking fails, preserve the returned output, stop the terminal transition and record the concrete recovery condition; never fabricate a saved report.
 
 A mandatory pass requires an actual fresh, read-only subagent; a prompt saying “be independent” or a Markdown template is not isolation. If it is unavailable or fails, preserve self-check evidence, report the exact failure and run/workspace state, and Block with an observable recovery condition. Do not substitute inline self-review or silently switch execution modes. Infrastructure failures do not increment finding no-progress streaks. Follow stricter host failure/retry rules.
 
@@ -135,6 +138,30 @@ Use exactly one temporary `## Review` section with the exact `task-review-ledger
 - Increment only a `no progress` item. Reset it to `0` for evidence-backed artifact progress, a valid evidence-backed reclassification, or newly actionable evidence; remove it when resolved. Text churn, restatement, unchanged checks, or unsupported relabeling is not progress.
 - When any item reaches `no-progress=2`, stop dispatching review passes. Add `## Block` with the stalled IDs and evidence as `Reason`, name the user decision or material artifact/evidence change as `Unblock when`, then set the task Blocked. Never convert a stall to `passed`.
 - Resume only after the unblock condition occurs. Reset affected streaks to `0` only when new evidence demonstrates substantive progress; the core rejects resume while any ledger item remains at `no-progress=2`. Once a fresh pass resolves every blocking item, use `review <id> passed --resolve-ledger --snapshot <exact-reviewed-assessment-identity> --evidence <pass-and-resolution-reference>` to remove the ledger and record Passed atomically. This core-owned lifecycle write requires In Review, Required, a current task fingerprint and matching snapshot, and no stalled item; it clears Verification but preserves the unchanged assessment. The owner must verify the actual external content and every prior ID's resolution. Do not manually delete the resolved ledger then `sync`, which conservatively invalidates the assessment and would require another pass.
+
+### Review Reports
+
+Keep one persistent `## Review Reports` section, separate from the temporary `## Review` ledger. It is an append-only report index, not another finding ledger or source of task requirements. The owner saves each `task-review` pass to `tasks/artifacts/<task-id>/reviews/round-<NN>.md` and links it from this section. Use task-relative Markdown links in stored records; apply host path-display rules in chat.
+
+- Choose the next unused number above both existing report filenames and index entries, including after resume or reopen; pad to at least two digits. Never overwrite or renumber a report. This artifact number is not the active ledger's `Pass` counter.
+- Preserve the returned user-visible feedback, including findings, stable IDs, prior-item dispositions, checks actually performed, inherited evidence and coverage limits. Add a clearly separated owner header with task ID, round, review mode, actual run identity when available, and the reviewed snapshot. Keep owner conclusions distinct from Reviewer feedback. Never save private reasoning, full tool transcripts or secrets; explicitly mark any necessary redaction.
+- Append one row per saved report: round, report link, reviewed snapshot and brief outcome (`findings`, `no blocking findings`, `incomplete`, or `invalidated by drift`). An infrastructure failure may have a diagnostic report, but must be labeled incomplete, never a completed review. Interrupted saves are recovered by checking the existing file against the returned output and appending the missing row, not overwriting it.
+- The owner verifies the link resolves inside the owning task's reviews directory and the report's round/snapshot match its row. Before a terminal gate and completion, recheck the referenced current report and actual scope. A row or a file alone never proves independence or grants Passed.
+- The index survives ledger resolution and completion. Only the active ledger tracks current finding state; historical reports retain what was observed in their own pass. Subsequent corrections or drift are appended as explicitly labeled owner notes, never silently rewritten into past feedback.
+- Index-only bookkeeping does not require `sync`: the Task fingerprint excludes `Review Reports`, just as it excludes the temporary ledger. This exception never covers changes to Target, Scope, Plan, Result, active ledger, reviewed artifacts or substantive evidence; apply their normal invalidation and fresh-review rules. The core does not validate report files or their links; the owner does.
+
+Example stored index:
+
+```markdown
+## Review Reports
+
+| Round | Report | Snapshot | Outcome |
+| --- | --- | --- | --- |
+| 01 | [Round 01](../artifacts/example-task/reviews/round-01.md) | sha256:<reviewed-content> | findings: TR-1 |
+| 02 | [Round 02](../artifacts/example-task/reviews/round-02.md) | sha256:<revised-content> | no blocking findings |
+```
+
+Do not backfill untouched historical tasks or create an empty section for a skipped review. Standalone feedback without an owning task keeps its existing no-file behavior. Explicit adversarial-review retains its own report contract; this per-pass protocol does not add an approval loop.
 
 ### Verification
 

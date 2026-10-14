@@ -342,7 +342,7 @@ function reviewAssessmentOf(text) {
 }
 
 function reviewTaskFingerprint(text) {
-  for (const name of ["Review Assessment", "Review", "Verification", "Block"]) text = replaceSection(text, name, undefined);
+  for (const name of ["Review Assessment", "Review", "Review Reports", "Verification", "Block"]) text = replaceSection(text, name, undefined);
   const result = section(text, "Result");
   if (result) text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
   text = text.replace(STATUS_PATTERN, "").replace(/\n{3,}/g, "\n\n").trim();
