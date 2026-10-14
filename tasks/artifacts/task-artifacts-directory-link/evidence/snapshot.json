@@ -1,0 +1,36 @@
+{
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "88b5f98ddf8c1d3664c146095c70b351b8958943c416137cc940c9b9a1ab97a9"
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "0eabd727b33b8770d9aaa85a20a032b84b2098dffc9bbc61082599e3d6dbb398"
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "cd10957ec3b680ebaf8332e49db9044e72aa0352efcc45670673c6dcbeccda7e"
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "63a86d1ac055fdb5c6eb86600e1466ac7e770bdeea3d333e52afd0229318962c"
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "b5ce29f62bcb55a570808316072d71aab3a733fc73fd018e1b12cdadfd7d2643"
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "64bdd81fbd87f0934563acbb46fe45adcc583c66516d176e9f4bd1f428e18499"
+    }
+  ],
+  "checks": [
+    "node --check：核心源码与回归用例语法通过",
+    "git diff --check：通过",
+    "Task、Plan、Queue 的 Skill Quality 均无失败，仅初始上下文预算警告",
+    "隔离临时目录 CLI：目录已有、后建、缺失、普通文件、删除、重复 resume、父子关联与 reopen、审查后补链和完成均已核对",
+    "正文中类似导航的内容变更仍被判定为 stale Review Assessment",
+    "未运行单元测试或项目测试套件"
+  ]
+}

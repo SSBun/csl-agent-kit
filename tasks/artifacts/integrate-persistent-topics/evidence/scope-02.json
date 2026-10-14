@@ -1,0 +1,101 @@
+{
+  "schema": "task-content-snapshot/v1",
+  "baseRef": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "f9ce1bb57b0c37f63ff5d34bd1b28b9e4d165640d88c413dafabe35a46421ba9",
+      "beforeSha256": "292992f9cc9722cf08654dd6d57ee08f3288d618dd2ffc31f9f1df46bf879e70"
+    },
+    {
+      "path": "README.md",
+      "sha256": "0018581744f7a8d69d61b88fcf8cd4d5a86555e256d4746b90df224c7db36862",
+      "beforeSha256": "cdb5a61ab613b13b33e1b29712868b3f8b2531e8b60cce33293f8670749445ff"
+    },
+    {
+      "path": "package.json",
+      "sha256": "c7f494a86963748fe1fb907eaac6d35afe6530cc3b8894bd68c834d42905295e",
+      "beforeSha256": "1bb9487411bef7fa90aeec5a0a914caad992284979984154f795bba8ef017272"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "e4468c34b82e8eff4c1474bd24fa23ea297fe66ece17cfb98e21d028c8bde109",
+      "beforeSha256": "cb56eb3ff25c159127c03d9f9dc570c7d301808f6150daa8a75a82939db86dcb"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "sha256": "b0d103a1c823cfdc42bad7adc312a800dae9b1af0950e8af79c8757e1279e7c5",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/topic-cli.js",
+      "sha256": "1ba2c568044c48b9439d17a79921a8239d9eba13561e157e4d632ae0e37677e2",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "sha256": "6146c6755be384104b88e8e0474bd312d6ce03e8b5e12ce56259ce609b9856d8",
+      "beforeSha256": "8e3a3440ea59dcba5b94a58d3ccb8314194dd757f179b9b8a29bc947904fa3b4"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "26ac593775a746215e19774fcbde5292510a7a38185612fe3b652ca02551dc83",
+      "beforeSha256": "757d44bef2858f4fc53a72111875d8640d0f2e9cd779c5c26418cd00ccfa343b"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "sha256": "6f12141771f0470a5b7bcbaeb12e1f2deb9c14f75de49eb532b393cf2c5190ab",
+      "beforeSha256": "d0e591f5949cbca10a9fc2a9d42355010d11a4604602297ea7bfb7afb7ce9fd5"
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "70b91a21041f8e1af5b07483c100c0f4c40482bd2db7807f431bea3263633f7e",
+      "beforeSha256": "bcc0077c2fb7a7962bac6e1c7ccdbb8bc5044c86c18fc55ae7dce8736f126a51"
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "8b85b19f5add7cc1fc18b123352fe05377db5220fc6e3b85fe289482036bbbac",
+      "beforeSha256": "cd10957ec3b680ebaf8332e49db9044e72aa0352efcc45670673c6dcbeccda7e"
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "e02e9ec8f570ff4e8e225432261106a30d1f8629d7f832001c5a39dc0f361f39",
+      "beforeSha256": "58874ab50abc7d12ae4a18f17870e5d91cee48bbe18657ec0be94249a298be68"
+    },
+    {
+      "path": "skills/meta/task-context/SKILL.md",
+      "sha256": "d858a65fe008fbbfe24be445d5415c738ea0422642f111af31a1e033e108eb2b",
+      "beforeSha256": "75c3a28332b0762f4bb0ee819c9fc119453a3beb5a58b3265e089068e97a57fe"
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "6d703706446cde0eea0b495d08e35783ec608d1c019fa6687c48b1706bb71133",
+      "beforeSha256": "1f0260d36a21c615fdde183b7d20c61027e76d59f6a7e46ed8ea52aa0da75c24"
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "8f59a995f3290941777d237bfbbf79a5a22fb117a7a83e2be183ba83118cf5c4",
+      "beforeSha256": "5282d6aaa269d5afee2c5ca833b6fd0af127cd5585cec55a862d90dcfa322550"
+    },
+    {
+      "path": "skills/meta/topic/SKILL.md",
+      "sha256": "9c34fe5eac3e66e954cecc254424ca620562e9e828ea22acebb7760b6a887639",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "skills/meta/topic/references/topic-contract.md",
+      "sha256": "2cee27c5f820b324c867f13f8d424b5d9460432551adca74d6f71d6dc5240b83",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "skills/meta/topic/evals/trigger_cases.json",
+      "sha256": "48af853d4d4858cf153d5fc3fffa1747e204a0cb54c2405ecb64d60bd10df3fc",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/topics.test.mjs",
+      "sha256": "7f79fcedeb6d3724722d66d5ca8b072a385559a68c6f977359564c2a13d08858",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

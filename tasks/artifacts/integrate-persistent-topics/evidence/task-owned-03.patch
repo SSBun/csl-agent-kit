@@ -1,0 +1,1531 @@
+--- before/.claude-plugin/plugin.json
++++ after/.claude-plugin/plugin.json
+@@ -57,6 +57,7 @@
+     "./skills/dev/repo-map",
+     "./skills/meta/task-context",
+     "./skills/meta/task",
++    "./skills/meta/topic",
+     "./skills/meta/task-plan",
+     "./skills/meta/task-queue",
+     "./skills/meta/task-lessons",
+--- before/README.md
++++ after/README.md
+@@ -19,6 +19,7 @@
+ | bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
+ | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
+ | task-context | `/csl:task-context` | `/task-context` | Ensure a standard Project Core, query task-relevant Context Packs, then maintain durable context. |
++| topic | `/csl:topic` | `/topic` | 管理长期维护主题的共享规格、版本及任务引用；支持实现、Bug 修复和审查，不限于多平台。 |
+ | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
+ | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
+ | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
+@@ -35,6 +36,19 @@
+ Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
+ 
+ 内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
++
++## 长期 Topic 与独立任务
++
++Topic 保存一个长期主题的当前有效规格，不是另一个任务类型或执行队列。可直接说“创建一个 Topic：账号注销，先讨论需求”“在账号注销 Topic 下排查 Bug”或“继续这个 Topic，查看相关任务”。建立 Topic 不会自动实施全部任务；所有任务完成也不会关闭 Topic。
++
++- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；不可变规格快照位于该 Topic 的 `revisions` 目录。
++- Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Topic 的任务列表只存引用和职责，状态现场读取。
++- Topic 使用 Draft、Active、Archived；归档和恢复均需明确意图。Queue 仍管理本地串行依赖，与 Topic 归属分开。
++- 通过共享 CLI 的 `topic` 子命令读写；`--help` 列出创建、更新规格、关联、采用新版本、校验和修复命令。版本变化会在评估及终态关卡被检查，不能只改 hash 消除过期。
++- 跨仓引用复用已确认的 project-index 映射，校验 Git root 和 origin 身份；跨仓写入需明确授权及 `--allow-cross-workspace`。不支持自动扫描仓库、自动注册或远程克隆。规范性外部接口需有显式固定摘要的本地文件，不自动抓取浮动 URL。
++- 内容版本、Active 状态和 maintenance 模式都不代表执行授权。半完成关联必须显式修复；写锁不会自动抢占，多仓写入不宣称崩溃原子性。
++
++详见 [Topic Skill](skills/meta/topic/SKILL.md) 与 [存储和命令契约](skills/meta/topic/references/topic-contract.md)。
+ 
+ ## Canonical source and duplicates
+ 
+--- before/package.json
++++ after/package.json
+@@ -43,7 +43,7 @@
+     "test:all": "npm test && npm run test:pi",
+     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
+     "test:agent-hooks": "node --test tests/agent-hooks.test.js",
+-    "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs",
++    "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs tests/topics.test.mjs",
+     "test:archive": "node --test tests/archive-session.test.mjs",
+     "test:pi": "node tests/run-pi-tests.js",
+     "check": "node --check bin/csl-agent-kit.js && npm run test:all && node bin/csl-agent-kit.js install --yes --dry-run --json",
+--- before/skills/meta/csl-tasks/shared/lib/task-core.js
++++ after/skills/meta/csl-tasks/shared/lib/task-core.js
+@@ -3,6 +3,8 @@
+ const fs = require("node:fs");
+ const path = require("node:path");
+ const { createHash } = require("node:crypto");
++const topics = require("./topic-core.js");
++const readVersions = new Map();
+ 
+ const STATE_DISPLAY = {
+   pending: "Pending",
+@@ -27,11 +29,11 @@
+ const HTML_BLOCK_TAGS = new Set("address article aside base basefont blockquote body caption center col colgroup dd details dialog dir div dl dt fieldset figcaption figure footer form frame frameset h1 h2 h3 h4 h5 h6 head header hr html iframe legend li link main menu menuitem nav noframes ol optgroup option p param search section summary table tbody td tfoot th thead title tr track ul".split(" "));
+ 
+ function tasksDir(workspace) {
+-  return path.join(path.resolve(workspace), "tasks", "tasks");
++  return path.join(fs.realpathSync(path.resolve(workspace)), "tasks", "tasks");
+ }
+ 
+ function indexPath(workspace) {
+-  return path.join(path.resolve(workspace), "tasks", "tasks.md");
++  return path.join(fs.realpathSync(path.resolve(workspace)), "tasks", "tasks.md");
+ }
+ 
+ function taskPath(workspace, id) {
+@@ -395,6 +397,7 @@
+ 
+ function recordReviewAssessment(workspace, id, level, options = {}) {
+   const task = readTask(workspace, id);
++  topics.fresh(workspace, task);
+   if (task.status.state !== "in_progress") throw new Error("assess-review requires In Progress");
+   const value = String(level || "").toUpperCase();
+   if (!["R0", "R1", "R2"].includes(value)) throw new Error(`invalid review level: ${level}`);
+@@ -498,7 +501,8 @@
+ }
+ 
+ function readTask(workspace, id) {
+-  const file = taskPath(workspace, id);
++  const file = topics.safePath(workspace, `tasks/tasks/${id}.md`);
++  assertId(id);
+   let text;
+   try {
+     text = fs.readFileSync(file, "utf8");
+@@ -506,6 +510,7 @@
+     if (error.code === "ENOENT") throw new Error(`task not found: ${id}`);
+     throw error;
+   }
++  readVersions.set(file, text);
+   return parseTask(id, text, file);
+ }
+ 
+@@ -521,6 +526,7 @@
+     status: statusOf(text),
+     kind,
+     parent: !parent || parent === "none" ? undefined : parent,
++    topic: topics.taskTopic(text),
+     children: childrenOf(text),
+     targets: targetsOf(text),
+     results: resultsOf(text),
+@@ -558,6 +564,22 @@
+ }
+ 
+ function writeMany(workspace, changes) {
++  return topics.withLocks([workspace], () => writeLocked(workspace, changes));
++}
++
++function writeLocked(workspace, changes) {
++  for (const [file, text] of changes) {
++    topics.safePath(workspace, path.relative(fs.realpathSync(path.resolve(workspace)), file));
++    if (readVersions.has(file) && fs.readFileSync(file, "utf8") !== readVersions.get(file)) throw new Error(`concurrent change: ${file}`);
++    if (path.dirname(file) === tasksDir(workspace)) {
++      const task = parseTask(path.basename(file, ".md"), text, file);
++      const before = readVersions.has(file) ? parseTask(task.id, readVersions.get(file), file) : undefined;
++      const advances = (["completed", "in_review"].includes(task.status.state) && task.status.state !== before?.status.state)
++        || (task.verification?.[1] === "Passed" && task.verification[0] !== before?.verification?.[0])
++        || (["Skipped", "Passed", "Approved"].includes(task.review?.[1]) && task.review[0] !== before?.review?.[0]);
++      if (advances) topics.fresh(workspace, task);
++    }
++  }
+   const originals = new Map();
+   try {
+     for (const [file, text] of changes) {
+@@ -566,11 +588,14 @@
+         : text;
+       originals.set(file, fs.existsSync(file) ? fs.readFileSync(file, "utf8") : undefined);
+       atomicWrite(file, output);
++      readVersions.set(file, output);
+     }
+   } catch (error) {
+     for (const [file, original] of originals) {
+       if (original === undefined) fs.rmSync(file, { force: true });
+       else atomicWrite(file, original);
++      if (original === undefined) readVersions.delete(file);
++      else readVersions.set(file, original);
+     }
+     throw error;
+   }
+@@ -582,7 +607,9 @@
+ 
+ function updatedIndex(workspace, task, timestamp, existingText) {
+   const file = indexPath(workspace);
+-  const text = existingText ?? (fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "# 任务索引\n");
++  const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : undefined;
++  if (current !== undefined) readVersions.set(file, current);
++  const text = existingText ?? current ?? "# 任务索引\n";
+   const lines = text.replace(/\s+$/, "").split(/\r?\n/);
+   const link = `(tasks/${task.id}.md)`;
+   const matches = lines.map((line, index) => line.includes(link) ? index : -1).filter((index) => index !== -1);
+@@ -677,8 +704,10 @@
+   if (!allowed[task.status.state].has(state)) throw new Error(`cannot move ${task.status.display} to ${STATE_DISPLAY[state]}`);
+   if (state === "in_progress" && task.targets.length === 0) throw new Error("In Progress requires at least one Target");
+   if (state === "in_review" && task.review?.[1] !== "Required") throw new Error("In Review requires a required review gate");
++  if (state === "in_review") topics.fresh(workspace, task);
+   if (state === "blocked" && !section(task.text, "Block")) throw new Error("Blocked requires an active Block section");
+   let text = replaceStatus(task.text, state);
++  if (state === "cancelled") text = invalidateReviewGate(text, "Task cancelled; refresh evidence before continuing");
+   if (task.status.state === "in_review" && state !== "in_review") {
+     text = invalidateReviewGate(text, "Task left In Review; rerun the applicable review after revisions");
+     text = replaceSection(text, "Verification", undefined);
+@@ -747,6 +776,7 @@
+ 
+ function setReviewGate(workspace, id, decision, evidence, options = {}) {
+   const task = readTask(workspace, id);
++  topics.fresh(workspace, task);
+   if (task.status.state === "completed") throw new Error("reopen the task before changing the review gate");
+   const values = { skipped: "Skipped", required: "Required", passed: "Passed", approved: "Approved" };
+   const key = String(decision || "").toLowerCase();
+@@ -794,10 +824,12 @@
+ 
+ function recordVerification(workspace, id, passed, evidence) {
+   const task = readTask(workspace, id);
++  if (passed) topics.fresh(workspace, task);
+   if (task.status.state === "completed") throw new Error("reopen the task before changing verification");
+   const value = String(evidence || "").trim();
+   if (!value || /[\r\n]/.test(value)) throw new Error("verification evidence must be one line");
+-  const text = replaceSection(task.text, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
++  const base = passed ? task.text : invalidateReviewGate(task.text, "Verification failed; refresh self-check and applicable review");
++  const text = replaceSection(base, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
+   writeMany(workspace, [[task.file, text]]);
+   return readTask(workspace, id);
+ }
+@@ -856,6 +888,7 @@
+ 
+ function completeTask(workspace, id) {
+   const task = readTask(workspace, id);
++  topics.fresh(workspace, task);
+   if (!["in_progress", "in_review"].includes(task.status.state)) throw new Error("only active tasks can be completed");
+   if (task.targets.length === 0) throw new Error("completion requires at least one Target");
+   const unchecked = task.targets.find((target) => !target.checked);
+@@ -949,6 +982,14 @@
+ }
+ 
+ module.exports = {
++  atomicWrite,
++  sectionsOf,
++  replaceSection,
++  replaceStatus,
++  invalidateReviewGate,
++  renderMetadata,
++  parseTask,
++  updatedIndex,
+   STATE_DISPLAY,
+   cancelTask,
+   checkTaskIndex,
+--- before/skills/meta/csl-tasks/shared/lib/topic-core.js
++++ after/skills/meta/csl-tasks/shared/lib/topic-core.js
+@@ -0,0 +1,551 @@
++"use strict";
++
++const fs = require("node:fs");
++const path = require("node:path");
++const os = require("node:os");
++const { createHash } = require("node:crypto");
++const { execFileSync } = require("node:child_process");
++
++const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
++const PROJECT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
++const DIGEST = /^[a-f0-9]{64}$/;
++const STATES = new Set(["Draft", "Active", "Archived"]);
++const RESERVED = new Set(["__proto__", "constructor", "prototype"]);
++const core = () => require("./task-core.js");
++const hash = (text) => createHash("sha256").update(text).digest("hex");
++
++function line(value, name) {
++  if (typeof value !== "string" || !value.trim() || /[\r\n]/.test(value)) throw new Error(`${name} must be one non-empty line`);
++  return value.trim();
++}
++
++function assertId(id) {
++  if (!ID.test(id || "")) throw new Error(`invalid topic/task id: ${id}`);
++}
++
++function root(workspace) {
++  return fs.realpathSync(path.resolve(workspace));
++}
++
++// Reject symlink traversal in owned data and normative dependencies, including missing leaves.
++function safePath(workspace, relative) {
++  const base = root(workspace);
++  if (typeof relative !== "string" || !relative || path.isAbsolute(relative) || relative.split(/[\\/]/).some((part) => !part || part === ".." || part === ".")) {
++    throw new Error(`unsafe relative path: ${relative}`);
++  }
++  let current = base;
++  for (const part of relative.split(/[\\/]/)) {
++    current = path.join(current, part);
++    try {
++      if (fs.lstatSync(current).isSymbolicLink()) throw new Error(`symlinks are not allowed: ${current}`);
++    } catch (error) {
++      if (error.code !== "ENOENT") throw error;
++    }
++  }
++  return current;
++}
++
++function topicPath(workspace, id) {
++  assertId(id);
++  return safePath(workspace, `tasks/topics/${id}.md`);
++}
++
++function revisionPath(workspace, id, digest) {
++  assertId(id);
++  if (!DIGEST.test(digest || "")) throw new Error("invalid topic revision");
++  return safePath(workspace, `tasks/topics/${id}/revisions/${digest}.md`);
++}
++
++function fileText(file) {
++  try { return fs.readFileSync(file, "utf8"); } catch (error) {
++    if (error.code === "ENOENT") return undefined;
++    throw error;
++  }
++}
++
++function withLocks(workspaces, action) {
++  const locks = [];
++  try {
++    for (const workspace of [...new Set(workspaces.map(root))].sort()) {
++      const lock = safePath(workspace, "tasks/.topic-write.lock");
++      fs.mkdirSync(path.dirname(lock), { recursive: true });
++      try { fs.mkdirSync(lock); } catch (error) {
++        if (error.code === "EEXIST") throw new Error(`workspace write locked: ${lock}; inspect the owner before manually recovering an abandoned lock`);
++        throw error;
++      }
++      locks.push(lock);
++      fs.writeFileSync(path.join(lock, "owner.json"), JSON.stringify({ pid: process.pid, started: new Date().toISOString() }));
++    }
++    return action();
++  } finally {
++    for (const lock of locks.reverse()) fs.rmSync(lock, { recursive: true, force: true });
++  }
++}
++
++// Synchronous rollback is best effort, not a cross-repository crash transaction.
++function commit(changes) {
++  for (const item of changes) {
++    if (fileText(item.file) !== item.before) throw new Error(`concurrent change: ${item.file}`);
++  }
++  const written = [];
++  try {
++    for (const item of changes) {
++      core().atomicWrite(item.file, item.after);
++      written.push(item);
++    }
++  } catch (error) {
++    const failed = [];
++    for (const item of written.reverse()) {
++      try {
++        if (fileText(item.file) !== item.after) throw new Error("changed during rollback");
++        if (item.before === undefined) fs.rmSync(item.file);
++        else core().atomicWrite(item.file, item.before);
++      } catch { failed.push(item.file); }
++    }
++    throw new Error(`${error.message}; association/write incomplete; inspect and repair exact references${failed.length ? `; rollback failed: ${failed.join(", ")}` : "; written files rolled back"}`);
++  }
++}
++
++function registry() {
++  const file = path.join(process.env.CSL_AGENT_KIT_HOME || path.join(os.homedir(), ".csl-agent-kit"), "project-indexes", "index.json");
++  const data = JSON.parse(fs.readFileSync(file, "utf8"));
++  if (data.schemaVersion !== 1 || !data.projects || typeof data.projects !== "object" || Array.isArray(data.projects)) throw new Error("invalid project-index schema");
++  return data.projects;
++}
++
++function gitIdentity(workspace) {
++  const base = root(workspace);
++  const top = execFileSync("git", ["rev-parse", "--show-toplevel"], { cwd: base, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
++  if (root(top) !== base) throw new Error("project mapping must name the repository root");
++  const origin = execFileSync("git", ["remote", "get-url", "origin"], { cwd: base, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
++  if (!origin) throw new Error("cross-project references require an origin identity");
++  return hash(origin);
++}
++
++function parseRef(value) {
++  const match = String(value || "").match(/^([^:]+):([a-z0-9]+(?:-[a-z0-9]+)*)$/);
++  if (!match || !PROJECT.test(match[1]) || RESERVED.has(match[1])) throw new Error(`invalid reference (project:id or self:id): ${value}`);
++  return { project: match[1], id: match[2] };
++}
++
++function resolve(workspace, reference, repository) {
++  const { project, id } = parseRef(reference);
++  const base = root(workspace);
++  if (project === "self") {
++    if (repository && repository !== "local") throw new Error("self reference must use local identity");
++    return { workspace: base, id, repository: "local" };
++  }
++  const projects = registry();
++  if (!Object.hasOwn(projects, project) || !path.isAbsolute(projects[project].root || "")) throw new Error(`unmapped project: ${project}; confirm project-index mapping first`);
++  const target = root(projects[project].root);
++  const identity = gitIdentity(target);
++  if (repository && identity !== repository) throw new Error(`repository identity changed for ${project}`);
++  return { workspace: target, id, repository: identity };
++}
++
++function refFor(from, to, id) {
++  if (root(from) === root(to)) return { reference: `self:${id}`, repository: "local" };
++  const matches = Object.entries(registry()).filter(([key, value]) => {
++    if (!PROJECT.test(key) || RESERVED.has(key) || key === "self" || !path.isAbsolute(value?.root || "")) return false;
++    try { return root(value.root) === root(to); } catch { return false; }
++  });
++  if (matches.length !== 1) throw new Error("cross-project writes require one confirmed project-index mapping for each repository");
++  return { reference: `${matches[0][0]}:${id}`, repository: gitIdentity(to) };
++}
++
++function body(text, name, required = true) {
++  const sections = core().sectionsOf(text, name);
++  if (sections.length > 1 || (required && sections.length !== 1)) throw new Error(`expected one ${name} section`);
++  if (!sections.length) return "";
++  const item = sections[0];
++  return item.lines.slice(item.start + 1, item.end).join("\n").trim();
++}
++
++function fields(text, required) {
++  const values = {};
++  for (const raw of text.split(/\r?\n/).filter((entry) => entry.trim())) {
++    const match = raw.match(/^- ([A-Za-z]+): (.+)$/);
++    if (!match || !required.includes(match[1]) || Object.hasOwn(values, match[1])) throw new Error(`invalid or duplicate field: ${raw}`);
++    values[match[1]] = match[2];
++  }
++  if (required.some((key) => !values[key])) throw new Error(`missing fields: ${required.join(", ")}`);
++  return values;
++}
++
++function jsonLines(value, name) {
++  return value ? value.split("\n").map((entry) => {
++    if (!entry.startsWith("- ")) throw new Error(`invalid ${name} entry`);
++    const parsed = JSON.parse(entry.slice(2));
++    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error(`invalid ${name} object`);
++    return parsed;
++  }) : [];
++}
++
++function validateSpec(input) {
++  if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).some((key) => !["scope", "spec", "decisions", "dependencies"].includes(key))) throw new Error("spec input accepts scope, spec, decisions, dependencies only");
++  const out = {};
++  for (const key of ["scope", "spec", "decisions"]) {
++    if (typeof (input[key] ?? "") !== "string") throw new Error(`invalid ${key}`);
++    out[key] = (input[key] || "").replace(/\r\n/g, "\n").trim();
++    if ((key !== "decisions" && !out[key]) || /^#{1,2}(?:\s|$)/m.test(out[key])) throw new Error(`${key} must be non-empty when required and contain no H1/H2 headings`);
++  }
++  out.dependencies = input.dependencies || [];
++  if (!Array.isArray(out.dependencies)) throw new Error("dependencies must be an array");
++  const seen = new Set();
++  for (const dep of out.dependencies) {
++    if (!dep || Object.keys(dep).sort().join(",") !== "path,sha256" || !DIGEST.test(dep.sha256) || typeof dep.path !== "string" || seen.has(dep.path)) throw new Error("invalid or duplicate dependency");
++    if (path.isAbsolute(dep.path) || dep.path.split(/[\\/]/).some((part) => !part || part === "." || part === "..")) throw new Error("dependency must be a safe repository-relative file");
++    seen.add(dep.path);
++  }
++  return out;
++}
++
++function normative(spec) {
++  return `## Scope\n\n${spec.scope}\n\n## Spec Context\n\n${spec.spec}\n\n## Decisions\n\n${spec.decisions}\n\n## Dependencies\n\n${spec.dependencies.map((dep) => `- ${JSON.stringify({ path: dep.path, sha256: dep.sha256 })}`).join("\n")}\n`;
++}
++
++function checkDependencies(workspace, spec) {
++  for (const dep of spec.dependencies) {
++    if (hash(fs.readFileSync(safePath(workspace, dep.path))) !== dep.sha256) throw new Error(`normative dependency changed: ${dep.path}`);
++  }
++}
++
++function render(topic) {
++  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}\n## Tasks\n\n${topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n")}\n`;
++}
++
++function parseTopic(id, text) {
++  const title = text.match(/^# (.+)\n/)?.[1];
++  if (!title) throw new Error("topic title missing");
++  const split = text.indexOf("\n## ");
++  const meta = fields(text.slice(text.indexOf("\n") + 1, split), ["Schema", "Id", "State", "Revision"]);
++  if (meta.Schema !== "topic/v1" || meta.Id !== id || !STATES.has(meta.State) || !DIGEST.test(meta.Revision)) throw new Error("invalid topic metadata");
++  const spec = validateSpec({ scope: body(text, "Scope"), spec: body(text, "Spec Context"), decisions: body(text, "Decisions"), dependencies: jsonLines(body(text, "Dependencies"), "dependency") });
++  if (hash(normative(spec)) !== meta.Revision) throw new Error("topic specification changed outside update-spec; use the last valid revision and an explicit update");
++  const tasks = jsonLines(body(text, "Tasks"), "task");
++  const seen = new Set();
++  for (const entry of tasks) {
++    if (Object.keys(entry).sort().join(",") !== "purpose,reference,repository" || seen.has(entry.reference)) throw new Error("invalid or duplicate topic task reference");
++    parseRef(entry.reference);
++    line(entry.purpose, "purpose");
++    if (entry.repository !== "local" && !DIGEST.test(entry.repository)) throw new Error("invalid repository identity");
++    seen.add(entry.reference);
++  }
++  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, tasks, text, version: hash(text) };
++  if (render(topic) !== text) throw new Error("noncanonical Topic structure; use Topic commands rather than editing fields or sections");
++  return topic;
++}
++
++function readTopic(workspace, id) {
++  const file = topicPath(workspace, id);
++  const topic = parseTopic(id, fs.readFileSync(file, "utf8"));
++  const snapshot = fs.readFileSync(revisionPath(workspace, id, topic.revision), "utf8");
++  if (snapshot !== normative(topic.spec)) throw new Error("topic snapshot missing or corrupt");
++  return { ...topic, file };
++}
++
++function topicIndex(workspace, topic) {
++  const file = safePath(workspace, "tasks/topics.md");
++  const before = fileText(file);
++  const lines = (before || "# Topic 索引\n").trimEnd().split("\n");
++  const link = `(topics/${topic.id}.md)`;
++  const matches = lines.map((entry, i) => entry.includes(link) ? i : -1).filter((i) => i !== -1);
++  if (matches.length > 1) throw new Error("duplicate topic index entry");
++  const title = topic.title.replace(/[\[\]]/g, "");
++  const entry = `- [${title}]${link} — ${topic.state}`;
++  if (matches.length) lines[matches[0]] = entry;
++  else lines.splice(1, 0, "", entry);
++  return { file, before, after: `${lines.join("\n")}\n` };
++}
++
++function saveTopic(workspace, topic, before) {
++  const candidate = render(topic);
++  parseTopic(topic.id, candidate);
++  const revision = revisionPath(workspace, topic.id, topic.revision);
++  const existing = fileText(revision);
++  const content = normative(topic.spec);
++  if (existing !== undefined && existing !== content) throw new Error("immutable topic revision conflict");
++  commit([
++    { file: revision, before: existing, after: content },
++    { file: topicPath(workspace, topic.id), before, after: candidate },
++    topicIndex(workspace, topic),
++  ]);
++  return readTopic(workspace, topic.id);
++}
++
++function createTopic(workspace, id, title, input) {
++  assertId(id);
++  title = line(title, "title");
++  if (/[\[\]|]/.test(title)) throw new Error("topic title cannot contain Markdown table/link delimiters");
++  return withLocks([workspace], () => {
++    if (fileText(topicPath(workspace, id)) !== undefined) throw new Error(`topic already exists: ${id}`);
++    const spec = validateSpec(input);
++    checkDependencies(workspace, spec);
++    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, tasks: [] }, undefined);
++  });
++}
++
++function updateSpec(workspace, id, expected, input) {
++  return withLocks([workspace], () => {
++    const topic = readTopic(workspace, id);
++    if (topic.version !== expected) throw new Error("topic changed; reread before update-spec");
++    if (topic.state === "Archived") throw new Error("restore Archived topic before changing its specification");
++    const spec = validateSpec(input);
++    checkDependencies(workspace, spec);
++    return saveTopic(workspace, { ...topic, spec, revision: hash(normative(spec)) }, topic.text);
++  });
++}
++
++function taskTopic(text) {
++  const raw = body(text, "Topic", false);
++  if (!raw && core().sectionsOf(text, "Topic").length === 0) return undefined;
++  const data = fields(raw, ["Schema", "Reference", "Repository", "Revision", "Applies", "Mode"]);
++  if (data.Schema !== "task-topic/v1" || !DIGEST.test(data.Revision) || !["implementation", "maintenance"].includes(data.Mode)) throw new Error("invalid task Topic schema, revision, or mode");
++  parseRef(data.Reference);
++  if (data.Repository !== "local" && !DIGEST.test(data.Repository)) throw new Error("invalid task Topic repository identity");
++  return { reference: data.Reference, repository: data.Repository, revision: data.Revision, applies: data.Applies, mode: data.Mode };
++}
++
++function bindingLines(binding) {
++  return ["- Schema: task-topic/v1", `- Reference: ${binding.reference}`, `- Repository: ${binding.repository}`, `- Revision: ${binding.revision}`, `- Applies: ${binding.applies}`, `- Mode: ${binding.mode}`];
++}
++
++function transactionPath(workspace, id) {
++  assertId(id);
++  return safePath(workspace, `tasks/topic-transactions/${id}.json`);
++}
++
++function pendingTransaction(workspace, id) {
++  const file = transactionPath(workspace, id);
++  const text = fileText(file);
++  if (text === undefined) return undefined;
++  const value = JSON.parse(text);
++  if (!value || Object.keys(value).sort().join(",") !== "after,before,schema,task,topics" || value.schema !== "topic-association-pending/v1" || value.task !== id || !Array.isArray(value.topics) || value.topics.length < 1 || value.topics.length > 2) throw new Error(`invalid pending association record: ${file}`);
++  for (const reference of [...value.topics, value.before, value.after].filter(Boolean)) {
++    if (Object.keys(reference).sort().join(",") !== "reference,repository") throw new Error(`invalid pending reference: ${file}`);
++    parseRef(reference.reference);
++    if (reference.repository !== "local" && !DIGEST.test(reference.repository)) throw new Error(`invalid pending repository: ${file}`);
++  }
++  const identities = new Set([value.before, value.after].filter(Boolean).map((entry) => `${entry.reference}|${entry.repository}`));
++  const declared = new Set(value.topics.map((entry) => `${entry.reference}|${entry.repository}`));
++  if (declared.size !== value.topics.length || identities.size !== declared.size || [...identities].some((identity) => !declared.has(identity)) || (!value.before && !value.after)) throw new Error(`inconsistent pending association record: ${file}`);
++  return value;
++}
++
++function finishPending(workspace, task) {
++  const pending = pendingTransaction(workspace, task.id);
++  if (!pending) return;
++  const binding = taskTopic(task.text);
++  const identity = (value) => value ? `${value.reference}|${value.repository}` : null;
++  if (![identity(pending.before), identity(pending.after)].includes(identity(binding))) throw new Error("task binding no longer matches the pending transaction; explicit recovery is required");
++  const current = binding && resolve(workspace, binding.reference, binding.repository);
++  for (const reference of pending.topics) {
++    const target = resolve(workspace, reference.reference, reference.repository);
++    const topic = readTopic(target.workspace, target.id);
++    const reverse = refFor(target.workspace, workspace, task.id);
++    const entries = topic.tasks.filter((entry) => entry.reference === reverse.reference);
++    const belongs = current?.workspace === target.workspace && current.id === target.id;
++    if (belongs ? entries.length !== 1 || entries[0].repository !== reverse.repository : entries.length !== 0) return;
++  }
++  core().checkTaskIndex(workspace, task.id);
++  fs.unlinkSync(transactionPath(workspace, task.id));
++}
++
++function fresh(workspace, task) {
++  if (pendingTransaction(workspace, task.id)) throw new Error(`incomplete Topic association: ${transactionPath(workspace, task.id)}; repair every exact old/new backlink before terminal gates`);
++  const binding = taskTopic(task.text);
++  if (!binding) return { applicable: false };
++  const target = resolve(workspace, binding.reference, binding.repository);
++  const topic = readTopic(target.workspace, target.id);
++  const reverse = refFor(target.workspace, workspace, task.id);
++  if (!topic.tasks.some((entry) => entry.reference === reverse.reference && entry.repository === reverse.repository)) throw new Error("incomplete Topic association; repair the exact task reference");
++  const snapshot = fs.readFileSync(revisionPath(target.workspace, target.id, binding.revision), "utf8");
++  if (hash(snapshot) !== binding.revision) throw new Error("adopted topic snapshot corrupt");
++  if (binding.revision !== topic.revision) throw new Error("Topic specification changed; analyze impact, align if needed, and explicitly adopt the current revision");
++  if (binding.mode === "implementation" && topic.state !== "Active") throw new Error("implementation requires an Active Topic; status does not replace authorization");
++  checkDependencies(target.workspace, topic.spec);
++  return { applicable: true, topic: binding.reference, revision: binding.revision, state: topic.state };
++}
++
++function freshness(workspace, task) {
++  try { return { current: true, ...fresh(workspace, task) }; } catch (error) { return { current: false, error: error.message }; }
++}
++
++function writableTask(workspace, id, expected) {
++  safePath(workspace, `tasks/tasks/${id}.md`);
++  const task = core().readTask(workspace, id);
++  if (task.status.state === "completed") throw new Error("reopen Completed task before changing Topic association");
++  if (hash(task.text) !== expected) throw new Error("task changed; reread before changing association");
++  return task;
++}
++
++function changedTask(task, binding) {
++  let text = core().replaceSection(task.text, "Topic", binding ? bindingLines(binding) : undefined);
++  text = core().replaceSection(text, "Topic Adoption", undefined);
++  text = core().invalidateReviewGate(text, "Topic association or adopted revision changed; refresh self-check and review");
++  if (task.status.state === "in_review") text = core().replaceStatus(text, "in_progress");
++  return core().renderMetadata(text);
++}
++
++function association(workspace, id, reference, options = {}) {
++  assertId(id);
++  const target = reference ? resolve(workspace, reference) : undefined;
++  const initial = core().readTask(workspace, id);
++  const old = taskTopic(initial.text);
++  const previous = old ? resolve(workspace, old.reference, old.repository) : undefined;
++  const workspaces = [workspace, target?.workspace, previous?.workspace].filter(Boolean);
++  if (workspaces.some((entry) => root(entry) !== root(workspace)) && options.allowCross !== true) throw new Error("cross-workspace mutation requires --allow-cross-workspace after explicit authorization");
++  return withLocks(workspaces, () => {
++    const task = writableTask(workspace, id, options.expectedTask);
++    if (pendingTransaction(workspace, id)) throw new Error("repair the pending Topic association before another binding change");
++    const topics = new Map();
++    for (const location of [previous, target].filter(Boolean)) {
++      const key = topicPath(location.workspace, location.id);
++      if (!topics.has(key)) topics.set(key, { workspace: location.workspace, topic: readTopic(location.workspace, location.id) });
++    }
++    let binding;
++    if (target) {
++      const topic = topics.get(topicPath(target.workspace, target.id)).topic;
++      if (topic.version !== options.expectedTopic) throw new Error("topic changed; reread before association");
++      if (previous?.workspace === target.workspace && previous.id === target.id && old.revision !== topic.revision) throw new Error("use adopt with impact evidence before reattaching a stale Topic");
++      if (topic.state === "Archived") throw new Error("restore Archived topic before adding tasks");
++      if (!["maintenance", "implementation"].includes(options.mode)) throw new Error("association requires explicit implementation or maintenance mode");
++      if (options.mode === "implementation" && topic.state !== "Active") throw new Error("implementation requires Active topic");
++      checkDependencies(target.workspace, topic.spec);
++      binding = { ...refFor(workspace, target.workspace, target.id), revision: topic.revision, applies: line(options.applies, "applies"), mode: options.mode };
++    }
++    const text = changedTask(task, binding);
++    const changes = [{ file: task.file, before: task.text, after: text }];
++    // A state transition out of review must also update the owning task index.
++    const parsed = core().parseTask(task.id, text, task.file);
++    const index = core().indexPath(workspace);
++    changes.push({ file: index, before: fileText(index), after: core().updatedIndex(workspace, parsed) });
++    for (const { workspace: owner, topic } of topics.values()) {
++      const reverse = refFor(owner, workspace, id);
++      const tasks = topic.tasks.filter((entry) => entry.reference !== reverse.reference);
++      if (target && topic.file === topicPath(target.workspace, target.id)) tasks.push({ ...reverse, purpose: line(options.purpose, "purpose") });
++      changes.push({ file: topic.file, before: topic.text, after: render({ ...topic, tasks }) });
++    }
++    if (topics.size === 0) return task;
++    const identity = (value) => value ? { reference: value.reference, repository: value.repository } : null;
++    const journal = { schema: "topic-association-pending/v1", task: id, before: identity(old), after: identity(binding), topics: [...topics.values()].map(({ workspace: owner, topic }) => refFor(workspace, owner, topic.id)) };
++    const journalFile = transactionPath(workspace, id);
++    fs.mkdirSync(path.dirname(journalFile), { recursive: true });
++    fs.writeFileSync(journalFile, `${JSON.stringify(journal, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
++    commit(changes);
++    // Leave the journal on any error, including a rollback failure or process interruption.
++    const result = core().readTask(workspace, id);
++    finishPending(workspace, result);
++    if (pendingTransaction(workspace, id)) throw new Error("association written but backlinks remain incomplete; repair exact references");
++    return result;
++  });
++}
++
++function adopt(workspace, id, options) {
++  line(options.evidence, "impact evidence");
++  return withLocks([workspace], () => {
++    const task = writableTask(workspace, id, options.expectedTask);
++    const binding = taskTopic(task.text);
++    if (!binding) throw new Error("task has no Topic");
++    const target = resolve(workspace, binding.reference, binding.repository);
++    const topic = readTopic(target.workspace, target.id);
++    if (topic.version !== options.expectedTopic) throw new Error("topic changed; reread before adopt");
++    // Adoption never silently repairs a broken backlink or drops an existing review obligation.
++    const reverse = refFor(target.workspace, workspace, id);
++    if (!topic.tasks.some((entry) => entry.reference === reverse.reference && entry.repository === reverse.repository)) throw new Error("repair incomplete Topic association first");
++    const text = changedTask(task, { ...binding, revision: topic.revision });
++    const updated = core().replaceSection(text, "Topic Adoption", [`- Evidence: ${options.evidence.trim()}`]);
++    const proposed = core().parseTask(id, updated, task.file);
++    fresh(workspace, proposed);
++    const index = core().indexPath(workspace);
++    commit([{ file: task.file, before: task.text, after: updated }, { file: index, before: fileText(index), after: core().updatedIndex(workspace, proposed) }]);
++    return core().readTask(workspace, id);
++  });
++}
++
++function members(workspace, topic) {
++  return topic.tasks.map((entry) => {
++    try {
++      const location = resolve(workspace, entry.reference, entry.repository);
++      safePath(location.workspace, `tasks/tasks/${location.id}.md`);
++      const task = core().readTask(location.workspace, location.id);
++      const binding = taskTopic(task.text);
++      if (!binding) throw new Error("stale backlink: task has no Topic");
++      const owner = resolve(location.workspace, binding.reference, binding.repository);
++      if (owner.workspace !== root(workspace) || owner.id !== topic.id) throw new Error("stale backlink: task belongs elsewhere");
++      return { ...entry, status: task.status.display, adoptedRevision: binding.revision, freshness: freshness(location.workspace, task) };
++    } catch (error) { return { ...entry, status: "unknown", error: error.message }; }
++  });
++}
++
++function setState(workspace, id, state, expected, ownerTask) {
++  if (!STATES.has(state) || state === "Draft") throw new Error("state must be Active or Archived");
++  return withLocks([workspace], () => {
++    const topic = readTopic(workspace, id);
++    if (topic.version !== expected) throw new Error("topic changed; reread before state transition");
++    if (state === "Archived") {
++      let ownerReference;
++      if (ownerTask) {
++        const location = resolve(workspace, ownerTask);
++        const task = core().readTask(location.workspace, location.id);
++        const binding = taskTopic(task.text);
++        const target = binding && resolve(location.workspace, binding.reference, binding.repository);
++        if (binding?.mode !== "maintenance" || target?.workspace !== root(workspace) || target.id !== id || task.status.state !== "in_progress") throw new Error("archive owner must be the In Progress maintenance task bound to this Topic");
++        fresh(location.workspace, task);
++        ownerReference = refFor(workspace, location.workspace, task.id).reference;
++      }
++      if (members(workspace, topic).some((entry) => !["Completed", "Cancelled"].includes(entry.status) && entry.reference !== ownerReference)) throw new Error("resolve active or inaccessible members before archive");
++    }
++    if (state === "Active") checkDependencies(workspace, topic.spec);
++    return saveTopic(workspace, { ...topic, state }, topic.text);
++  });
++}
++
++function repair(workspace, id, taskReference, options) {
++  const location = resolve(workspace, taskReference);
++  if (root(workspace) !== location.workspace && options.allowCross !== true) throw new Error("cross-workspace repair requires explicit --allow-cross-workspace");
++  return withLocks([workspace, location.workspace], () => {
++    const topic = readTopic(workspace, id);
++    if (topic.version !== options.expectedTopic) throw new Error("topic changed; reread before repair");
++    const task = core().readTask(location.workspace, location.id);
++    const binding = taskTopic(task.text);
++    const owner = binding ? resolve(location.workspace, binding.reference, binding.repository) : undefined;
++    const reverse = refFor(workspace, location.workspace, location.id);
++    const tasks = topic.tasks.filter((entry) => entry.reference !== reverse.reference);
++    if (owner?.workspace === root(workspace) && owner.id === id) tasks.push({ ...reverse, purpose: line(options.purpose, "purpose") });
++    const index = core().indexPath(location.workspace);
++    commit([
++      { file: topic.file, before: topic.text, after: render({ ...topic, tasks }) },
++      { file: index, before: fileText(index), after: core().updatedIndex(location.workspace, task) },
++    ]);
++    finishPending(location.workspace, task);
++    return { ...readTopic(workspace, id), pendingAssociation: pendingTransaction(location.workspace, task.id) || null };
++  });
++}
++
++function listTopics(workspace) {
++  const directory = safePath(workspace, "tasks/topics");
++  if (!fs.existsSync(directory)) return [];
++  return fs.readdirSync(directory).filter((file) => file.endsWith(".md")).sort().map((file) => readTopic(workspace, file.slice(0, -3)));
++}
++
++function check(workspace, id) {
++  const topic = readTopic(workspace, id);
++  const projected = topicIndex(workspace, topic);
++  if (projected.before !== projected.after) throw new Error("Topic index missing or inconsistent; rebuild the index");
++  const errors = members(workspace, topic).filter((entry) => entry.error).map((entry) => `${entry.reference}: ${entry.error}`);
++  if (errors.length) throw new Error(errors.join("; "));
++  return { valid: true, revision: topic.revision, members: members(workspace, topic) };
++}
++
++function rebuildIndex(workspace) {
++  return withLocks([workspace], () => {
++    const topics = listTopics(workspace);
++    const file = safePath(workspace, "tasks/topics.md");
++    const after = `# Topic 索引\n\n${topics.map((topic) => `- [${topic.title}](topics/${topic.id}.md) — ${topic.state}`).join("\n")}\n`;
++    commit([{ file, before: fileText(file), after }]);
++    return { count: topics.length };
++  });
++}
++
++module.exports = { hash, safePath, withLocks, createTopic, readTopic, updateSpec, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };
+--- before/skills/meta/csl-tasks/shared/lib/topic-cli.js
++++ after/skills/meta/csl-tasks/shared/lib/topic-cli.js
+@@ -0,0 +1,92 @@
++"use strict";
++
++const fs = require("node:fs");
++const topics = require("./topic-core.js");
++const core = require("./task-core.js");
++
++const HELP = `Topic commands (under csl-tasks.js topic):
++  list
++  show <topic-id>
++  create <topic-id> --title <title> --spec-json <file>
++  update-spec <topic-id> --expected <topic-version> --spec-json <file>
++  activate|archive|restore <topic-id> --expected <topic-version>
++    archive may name --owner-task <project:task-id|self:task-id> for its active maintenance task
++  check <topic-id>
++  rebuild-index
++  task <task-id>
++  attach <task-id> <project:topic-id|self:topic-id>
++    --expected <task-version> --expected-topic <topic-version>
++    --mode implementation|maintenance --applies <scope> --purpose <description>
++    [--allow-cross-workspace]
++  detach <task-id> --expected <task-version> [--allow-cross-workspace]
++  adopt <task-id> --expected <task-version> --expected-topic <topic-version> --evidence <impact-analysis>
++  repair <topic-id> <project:task-id|self:task-id> --expected <topic-version>
++    --purpose <description> [--allow-cross-workspace]
++
++show returns the full Topic and a version for optimistic writes; task returns the task version and freshness.
++Spec JSON: {"scope":"...","spec":"...","decisions":"...","dependencies":[{"path":"repo-relative-file","sha256":"..."}]}
++Topic state and maintenance mode do not grant execution authorization. Cross-workspace writes require separate user authorization.`;
++
++function summary(workspace, topic) {
++  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
++}
++
++function run(workspace, input, takeOption) {
++  const args = [...input];
++  const command = args.shift();
++  const allowCross = args.includes("--allow-cross-workspace");
++  if (allowCross) args.splice(args.indexOf("--allow-cross-workspace"), 1);
++  const expected = takeOption(args, "--expected");
++  const expectedTopic = takeOption(args, "--expected-topic");
++  const purpose = takeOption(args, "--purpose");
++  const ownerTask = takeOption(args, "--owner-task");
++  const applies = takeOption(args, "--applies");
++  const mode = takeOption(args, "--mode");
++  const evidence = takeOption(args, "--evidence");
++  const title = takeOption(args, "--title");
++  const specFile = takeOption(args, "--spec-json");
++  const values = { expected, expectedTopic, purpose, ownerTask, applies, mode, evidence, title, specFile, allowCross: allowCross || undefined };
++  const allowed = {
++    list: [], show: [], create: ["title", "specFile"], "update-spec": ["expected", "specFile"],
++    activate: ["expected"], archive: ["expected", "ownerTask"], restore: ["expected"], check: [], "rebuild-index": [], task: [],
++    attach: ["expected", "expectedTopic", "purpose", "applies", "mode", "allowCross"],
++    detach: ["expected", "allowCross"], adopt: ["expected", "expectedTopic", "evidence"],
++    repair: ["expected", "purpose", "allowCross"],
++  };
++  if (!Object.hasOwn(allowed, command)) throw new Error(`unknown topic command: ${command}\n${HELP}`);
++  for (const [key, value] of Object.entries(values)) {
++    if (value !== undefined && !allowed[command].includes(key)) throw new Error(`unexpected topic option: ${key}`);
++  }
++  const count = ["list", "rebuild-index"].includes(command) ? 0 : ["attach", "repair"].includes(command) ? 2 : 1;
++  if (args.length !== count) throw new Error(`${command} needs ${count} positional argument(s)`);
++  const [id, reference] = args;
++  const readSpec = () => {
++    if (!specFile) throw new Error("--spec-json is required");
++    return JSON.parse(fs.readFileSync(specFile, "utf8"));
++  };
++  const taskSummary = (task) => ({ id: task.id, version: topics.hash(task.text), topic: task.topic || null, pendingAssociation: topics.pendingTransaction(workspace, task.id) || null, freshness: topics.freshness(workspace, task) });
++  switch (command) {
++    case "list": return topics.listTopics(workspace).map((topic) => ({ id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version }));
++    case "show": return summary(workspace, topics.readTopic(workspace, id));
++    case "create": return summary(workspace, topics.createTopic(workspace, id, title, readSpec()));
++    case "update-spec": return summary(workspace, topics.updateSpec(workspace, id, expected, readSpec()));
++    case "activate": {
++      if (topics.readTopic(workspace, id).state !== "Draft") throw new Error("activate requires Draft; use restore for Archived");
++      return summary(workspace, topics.setState(workspace, id, "Active", expected));
++    }
++    case "restore": {
++      if (topics.readTopic(workspace, id).state !== "Archived") throw new Error("restore requires Archived");
++      return summary(workspace, topics.setState(workspace, id, "Active", expected));
++    }
++    case "archive": return summary(workspace, topics.setState(workspace, id, "Archived", expected, ownerTask));
++    case "check": return topics.check(workspace, id);
++    case "rebuild-index": return topics.rebuildIndex(workspace);
++    case "task": return taskSummary(core.readTask(workspace, id));
++    case "attach": return taskSummary(topics.association(workspace, id, reference, { expectedTask: expected, expectedTopic, purpose, applies, mode, allowCross }));
++    case "detach": return taskSummary(topics.association(workspace, id, undefined, { expectedTask: expected, allowCross }));
++    case "adopt": return taskSummary(topics.adopt(workspace, id, { expectedTask: expected, expectedTopic, evidence }));
++    case "repair": return summary(workspace, topics.repair(workspace, id, reference, { expectedTopic: expected, purpose, allowCross }));
++  }
++}
++
++module.exports = { HELP, run };
+--- before/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
++++ after/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+@@ -3,6 +3,8 @@
+ 
+ const path = require("node:path");
+ const core = require("../lib/task-core.js");
++const topics = require("../lib/topic-core.js");
++const topicCli = require("../lib/topic-cli.js");
+ 
+ const HELP = `Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]
+ 
+@@ -25,7 +27,10 @@
+   review <id> <skipped|required|passed|approved> --evidence <text>
+     passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve
+   verify <id> <passed|failed> --evidence <text>
+-  complete <id>`;
++  complete <id>
++  topic <command> [arguments]
++
++${topicCli.HELP}`;
+ 
+ function takeOption(args, name, { many = false } = {}) {
+   const values = [];
+@@ -51,6 +56,7 @@
+     parent: task.parent || null,
+     children: task.children.map(({ id }) => id),
+     reviewAssessment: task.reviewAssessment || null,
++    ...(task.topic ? { topic: task.topic } : {}),
+   };
+ }
+ 
+@@ -69,6 +75,9 @@
+     let output;
+ 
+     switch (command) {
++      case "topic":
++        output = topicCli.run(workspace, args, takeOption);
++        break;
+       case "create": {
+         const id = args.shift();
+         const title = takeOption(args, "--title");
+@@ -119,7 +128,10 @@
+         break;
+       case "resume":
+         if (args.length !== 1) throw new Error("resume needs one task id");
+-        output = summary(core.resumeTask(workspace, args[0]));
++        {
++          const task = core.resumeTask(workspace, args[0]);
++          output = { ...summary(task), ...(task.topic ? { topicFreshness: topics.freshness(workspace, task) } : {}) };
++        }
+         break;
+       case "reopen":
+         if (args.length !== 1) throw new Error("reopen needs one task id");
+--- before/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md
++++ after/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md
+@@ -74,8 +74,12 @@
+ - If a user-owned ambiguity prevents an honest Target, ask one focused question.
+ - Once a concrete outcome exists, activate and focus its owning record before further clarification or presentation.
+ - Task lifecycle writes required for create, resume, reopen, focus, sync, and check are bootstrap exceptions; they are not execution authorization.
+-- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands.
++- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands. The sole additional source-lookup exception is the minimum read-only specification/scope and relevant task references of a Topic explicitly selected by the user or already bound to the owning task, when needed to form an honest Target. Resolve only that exact reference; no repository scan, implementation research, implicit Topic selection or write is authorized by this exception.
+ - Do not ask the user for implementation facts that can be inspected after alignment.
++
++## Persistent Topic Boundary
++
++A Topic carries shared current requirements, not user approval. Reading the same Topic or revision across tasks or sessions does not create accepted-target evidence or a delegation packet. Apply the current request and recoverable user acceptance to the local task scope; a missing source remains an alignment hold. A changed Topic revision requires impact analysis: material requirement changes use the existing realignment procedure, while a checked non-material change may adopt the current revision without inventing a new goal. Topic lifecycle state, content digests and adoption notes never authorize execution. Topic maintenance is itself an owning task when it has a concrete outcome; internal association commands do not recursively create tasks.
+ 
+ ## Interaction Owner and Delegated Execution
+ 
+--- before/skills/meta/csl-tasks/shared/protocols/task-review-grading.md
++++ after/skills/meta/csl-tasks/shared/protocols/task-review-grading.md
+@@ -44,6 +44,8 @@
+ 
+ ## Invalidation and Recovery
+ 
++For Topic-bound tasks, the shared CLI additionally checks adopted/current normative revisions, pinned local dependencies, repository identity and the reciprocal task reference at assessment and terminal gates. This checkpoint check is not real-time monitoring or semantic approval. Topic adoption/binding changes invalidate normal task evidence; Required obligations remain. Historical Completed records retain their adopted version, while later work must recheck current applicability. A Topic-maintenance task adopts its own final changes before self-check. Draft/Archived maintenance outcomes are distinct from implementation, which requires Active.
++
+ - `sync`, Result changes, reopening, and relevant Queue graph/relationship changes mark an existing assessment Stale and clear Verification. A previous Skipped gate is removed; Passed/Approved become Required, preserving the independent-review obligation.
+ - Direct task specification or evidence drift is also detected by the Task fingerprint at a terminal gate or completion. The fingerprint excludes lifecycle status, the assessment, the review gate, finding ledger, persistent `Review Reports` index, Block and final Verification, not the substantive result/specification. The owner may append report-index bookkeeping without `sync`; this does not exempt substantive evidence drift or validate external report files. The owner checks report links and snapshot correspondence under `task`'s Review Reports contract before terminal gates.
+ - External artifact or evidence drift requires the owner to return to In Progress, refresh self-check and Result, and run `assess-review` again with the new identity. Do not reuse a stale snapshot string. A changed assessment invalidates terminal review and Verification even if its level stays the same.
+--- before/skills/meta/task/SKILL.md
++++ after/skills/meta/task/SKILL.md
+@@ -21,6 +21,14 @@
+ - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
+ - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
+ 
++## Optional Topic Context
++
++A task may bind to one persistent Topic through `topic`'s [storage contract](../topic/references/topic-contract.md). No binding is the normal independent-task path. Topic membership is separate from Queue Parent/Children and does not change Task Kind or grant execution permission. Load the `topic` Skill when the user names a Topic or the task has an explicit binding; do not infer membership from filenames.
++
++Use `topic task <id>` to inspect the adopted revision and freshness on start/resume. A stale or unavailable Topic permits diagnosis and explicit adoption/repair, not dependent implementation or terminal completion. The shared CLI checks current normative content, pinned dependencies and the backlink at assessment, review, passed verification and completion. Read the adopted snapshot and current specification before impact analysis; `topic adopt` records the disposition and invalidates task evidence. Material requirement changes still require realignment. A Topic-maintenance task adopts its own final specification change before self-check; maintenance mode never authorizes product implementation against Draft/Archived.
++
++Create a new task for a new bug, enhancement or bounded review under the same Topic; reopen only under the existing same-outcome rules. Completing this task does not close the Topic. Keep Task Summary focused on actual component changes, not shared specification prose. Do not mutate a Completed task's binding without reopening, and do not detach to bypass a stale specification or required review.
++
+ ## Task Artifacts
+ 
+ Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:
+@@ -38,7 +46,7 @@
+ ## Activation and Ownership
+ 
+ - Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
+-- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
++- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. The shared alignment protocol's narrow, read-only lookup of an explicitly selected Topic to form an honest Target is also permitted; it is not general source exploration. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
+ - The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.
+ - Start a new task for every independently acceptable user outcome in the main session.
+ - A delegated child must use the existing owning task named by the main session's current delegation packet. It must not create another task, present a user-facing checkpoint, or invent broader ownership; missing or out-of-Plan delegation returns to the main session under the shared protocol.
+@@ -104,6 +112,10 @@
+ 
+ Use an ordered list without checkboxes. Keep only current result nodes, dependencies, and next actions. Do not prescribe algorithms, files, functions, types, or call paths unless the user requires them.
+ 
++### Topic
++
++Only for an associated task, keep one CLI-owned `task-topic/v1` section with Reference, Repository identity, adopted Revision, Applies scope and implementation/maintenance Mode. Use `topic attach`, `detach` or `adopt`, never hand-edit a binding or digest. The section participates in the task fingerprint. Topic Adoption is the current impact-disposition note, not approval evidence or another task status. The Topic contract defines cross-workspace permission, optimistic versions and partial-link repair.
++
+ ### Task Summary
+ 
+ Before completion, write exactly one `## Task Summary` section describing only the code or components actually changed by this task. Use a separate short paragraph per changed component, led by its **component name**, followed by its component-root directory link and a concrete description of what changed. Use the highest directory that still identifies the component; do not collapse unrelated components into a repository-wide label or enumerate internal files and subfolders. Qualify components by project when more than one project was modified. For a standalone root-level file with no meaningful component directory, link that file instead.
+--- before/skills/meta/task-plan/SKILL.md
++++ after/skills/meta/task-plan/SKILL.md
+@@ -25,6 +25,10 @@
+ 6. Refine the record's Target, Decisions, Scope, and Plan. When the record is intended for later execution, ensure the accepted Target describes the final deliverable rather than merely the existence of a plan; any material refinement re-enters the shared alignment protocol. Then run `sync <id>` and `check <id>`.
+ 7. Return a decisions-only handoff: final decisions, material constraints, unresolved user decisions, and the canonical record path. Do not include the interview transcript or private reasoning.
+ 
++## Optional Topic
++
++For planning under an explicitly selected persistent Topic, load `topic` and use its shared specification rather than copying it into this task. The alignment protocol permits only the minimal selected-Topic lookup needed to form an honest Target before alignment. Bind the planning task through the shared CLI with maintenance mode and an explicit planning scope; a Draft Topic may be the subject of planning, not execution authorization. Preserve the adopted revision and check freshness before handing off. When later executing product implementation, explicitly switch the binding to implementation mode, require an Active current Topic, and retain the existing execution-authorization gate. Unrelated standalone plans need no Topic. Topic creation/updates remain a concrete owning outcome, not permission to implement all its member tasks.
++
+ ## Plan Record
+ 
+ Use `task`'s Task Artifacts contract: the shared core adds the top-level directory link when artifacts exist and refreshes it on lifecycle writes. After producing a separate planning artifact, update the owning record before handoff; do not create an empty directory for navigation.
+--- before/skills/meta/task-queue/SKILL.md
++++ after/skills/meta/task-queue/SKILL.md
+@@ -29,6 +29,10 @@
+ 
+ Do not duplicate a child's Target, Plan, Result, or status in the parent. The parent Plan links or names children and states dependencies only.
+ 
++## Optional Topic Membership
++
++Apply `task`'s optional Topic contract independently to an associated parent and each associated child. Topic membership does not create Queue links, order all members, or permit cross-workspace Parent/Children. Propose binding new children to the parent's Topic when their scope fits; do not silently reassign existing tasks or assume membership was inherited. Each task pins its applicable specification revision and checks it before review/verification/completion. The parent integration gate also checks its own binding and relevant child evidence against the currently accepted integration requirements. Finishing the Queue never archives the Topic; later bugs and reviews may create new tasks under it.
++
+ ## Sequential Execution
+ 
+ 1. Confirm the parent is In Progress.
+--- before/skills/meta/task-context/SKILL.md
++++ after/skills/meta/task-context/SKILL.md
+@@ -144,6 +144,8 @@
+ - Stable approval roles, module responsibility, and environment decision boundaries. Record where to query a mutable capability, never its cached current value.
+ 
+ ## Route Elsewhere
++
++- Current requirements and common decisions for a persistent maintenance theme → its canonical Topic, when explicitly established. Tasks bind to that shared specification; Topic content is not another Context Pack, and membership never grants execution authorization. Keep only separately confirmed stable project facts in Context.
+ 
+ - Current state, progress, results, evidence, next steps, branches, and workarounds → owning task record.
+ - Reusable Agent behavior after a correction → `tasks/lessons.md`.
+--- before/skills/meta/task-review/references/review_workflow.md
++++ after/skills/meta/task-review/references/review_workflow.md
+@@ -31,6 +31,7 @@
+ - original request and effective revisions, current Target, and accepted constraints with recoverable sources; never just the author's requirement summary
+ - actual artifacts, relevant diff, and a review-scope snapshot identity
+ - applicable rules/spec, allowed checks, prohibited actions, and known material limitations
++- when Topic-bound: exact Topic reference, adopted normative snapshot, current revision/freshness observation, applicable clauses and any impact disposition; verify access and do not substitute Topic state for user authorization
+ - applicable Result/Verification, the current Review Assessment (level, grounds, snapshot identity), and per-Target self-check evidence: requirement, observation, check and checked version, what it proves, and limitations
+ - for an owning-task re-review, the current `task-review-ledger/v1` `## Review` ledger and next unused `TR-<n>` ID; for an initial owning-task pass, an empty ledger and next ID 1
+ 
+@@ -39,6 +40,8 @@
+ Exclude the author's private reasoning, defense, confidence scores, desired verdict, suggested Reviewer response, and resolved self-check narrative. Preserve accepted decisions and unresolved facts; removing bias never permits hiding a material limitation. The Reviewer may inspect relevant surrounding evidence and run authorized non-destructive checks, but must not edit or delegate.
+ 
+ ## Snapshot and Isolation
++
++For a Topic-bound task, inspect the applicable specification and pinned normative dependencies before author evidence. Check the adopted/current revision at entry and again before concluding. Inaccessible content, revision drift or an unresolved backlink is an explicit evidence gap, not permission to use cached requirements as current. Historical task completion proves only its recorded scope/version; a new Topic review does not automatically authorize remediation or archive the Topic.
+ 
+ The owner freezes its review-scope edits while the Reviewer works. Identify a clean Git artifact with an exact revision; for a dirty workspace also capture the scoped staged/unstaged diff and content identities of relevant untracked files, deletions, and renames. HEAD, timestamps, or a filename list alone are insufficient. Use equivalent content/version identities for non-Git results. Do not include unrelated workspace changes or demand a clean whole repository.
+ 
+--- before/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
++++ after/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
+@@ -49,6 +49,12 @@
+ - Skip Task workflows only for simple factual answers, open-ended conversation without a concrete outcome, and other explicit skip boundaries owned by the selected Skill.
+ 
+ An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
++
++## Persistent Topics
++
++When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
++
++Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep Project Context for project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
+ 
+ ## Task Target
+ 
+--- before/skills/meta/topic/SKILL.md
++++ after/skills/meta/topic/SKILL.md
+@@ -0,0 +1,42 @@
++---
++name: topic
++description: Create, find, resume, update, link tasks to, or archive a persistent maintenance topic with a shared current specification. Use when the user names a long-lived topic or asks related implementation, improvement, bug-fix, or review tasks to share requirements. Not limited to multi-platform work. Do not use for an unrelated standalone task or infer membership from similar filenames.
++---
++
++# Topic
++
++A Topic owns a bounded, persistent specification and references to related tasks. It is not a Task Kind, Queue parent, progress cache, execution authorization, or conversation archive. Tasks may remain independent. Completing all members never closes a Topic.
++
++## Entry and Ownership
++
++1. Load Project Core. Resolve an explicitly named Topic or the current task's exact Topic reference. Ambiguous names or cross-repository owner choices require a focused question; never scan unregistered repositories.
++2. Read only the selected Topic's scope/specification and relevant task references before forming a Task Target. This narrow read is governed by [Task Target Alignment](../csl-tasks/shared/protocols/task-target-alignment.md); it does not permit implementation exploration before alignment.
++3. For a concrete change, activate and focus one owning `task-plan` or `task` record before substantive work. Internal Topic CLI operations do not each create another task. A create-topic task attaches after creating the Topic. Read-only listing/showing needs no mutation task.
++4. Apply the owning task's full alignment and authorization gates. Topic state or a stored statement of approval never replaces recoverable user acceptance. Planning does not authorize implementation; effective delegation retains its existing boundary.
++5. For “continue Topic”, reload its specification and read relevant member states. Resume the clearly requested task; otherwise ask which outcome to pursue. Do not automatically execute every member or select the first unfinished task.
++
++Read [storage and commands](references/topic-contract.md) before mutations. Use the existing shared CLI only; do not hand-edit digests, revisions, associations, or lifecycle fields.
++
++## Maintenance Workflow
++
++- Create a Draft from the user's bounded scope and current specification; activate only after the user accepts the specification. Draft supports planning, not automatic product implementation.
++- Add subsequent implementation, improvement, bug-fix and review tasks to the same Topic when they use its specification. One task has at most one Topic; no Topic is a fully supported default.
++- Treat a new bug or follow-up review as a new outcome unless it directly corrects/completes/re-verifies the same task outcome under `task`'s reopen rules. Retain old completion evidence. Reviews remain feedback-only unless remediation is authorized.
++- Keep Scope, Spec Context and shared Decisions current. Do not copy member progress, Results or Task Summaries into the Topic. Use stable requirement identifiers where tasks share acceptance clauses.
++- For an implementation defect, fix the implementation to the specification. A change to common behavior requires impact analysis and the applicable user goal/decision confirmation before `update-spec`; do not weaken the specification to make a task pass.
++- A task modifying the Topic itself uses maintenance mode. It explicitly adopts the final revision before its own self-check and review. This resolves self-created staleness, not authorization or review obligations.
++- Compare adopted and current revisions at start/resume, review handoff and terminal gates. Changes require explicit impact evidence and adoption; material changes also require realignment. Preserve Required review obligations. Unavailable sources, corrupt snapshots, unresolved dependencies and incomplete links block dependent work, not historical read-only inspection.
++- Draft/Archived can be the intended result of a maintenance task. Implementation mode requires Active. Maintenance mode is not an escape hatch for product implementation.
++- Archive only on an explicit request to stop maintenance. Resolve active/inaccessible member impact first; never cancel members automatically. Restore explicitly before new work. A release or milestone may finish while the Topic remains Active.
++
++## Association and Cross-Repository Boundaries
++
++Use one association operation to update the task's authoritative binding and the Topic's backlink. Read current versions immediately before writing. `--allow-cross-workspace` is an attestation of prior explicit permission, not a permission prompt or a substitute for it. Resolve both repositories through confirmed project-index mappings, and verify their repository identities. Do not install mappings, clone, upload, or silently fall back to guessed paths.
++
++A partial write must be reported. Stop terminal gates until the exact relationship is repaired. `repair` uses the task's authoritative binding; it must not infer new membership or inspect unrelated repositories. Completed task binding changes require reopen and refreshed evidence. Ordinary source links may refer to history without claiming membership.
++
++## Completion
++
++For the owning task, preserve normal R0/R1/R2 self-check, review and verification. Check the specific Topic, the binding and adopted revision, and the task/index before completion. Topic listing remains separate from the task index; no empty Topic storage is created for standalone tasks.
++
++Validate new/changed package resources with `skill-quality`. Run project tests only with explicit current authorization. Routing examples are in `evals/trigger_cases.json`.
+--- before/skills/meta/topic/references/topic-contract.md
++++ after/skills/meta/topic/references/topic-contract.md
+@@ -0,0 +1,79 @@
++# Topic Storage and Commands
++
++Run `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <root> topic ...`. Resolve the collection root as the parent of the `topic` Skill directory. `--help` lists exact options. Commands return JSON; `show` returns the current specification, file version and live member observations; `task` returns the task-file version and freshness. No command interprets user consent or judges semantic impact.
++
++## Storage
++
++- Canonical Topic: `<workspace>/tasks/topics/<topic-id>.md`.
++- Rebuildable navigation: `<workspace>/tasks/topics.md`, containing title/link and lifecycle state, not task progress.
++- Immutable normative snapshot: `<workspace>/tasks/topics/<topic-id>/revisions/<sha256>.md`.
++- Incomplete association marker: `<task-workspace>/tasks/topic-transactions/<task-id>.json`. It pins the exact old/new Topic identities before the first relationship write and is removed only after reciprocal relationships are verified. It is recovery state, not a second ownership record.
++- Tasks retain their existing canonical location. An optional unique `## Topic` section holds a `task-topic/v1` binding; task Kind and Queue Parent are unchanged.
++- Topic metadata uses `topic/v1`, stable ID, Draft/Active/Archived state, and the SHA-256 of canonical normative sections. `show.version` hashes the whole Topic file for optimistic writes; it is different from `revision`, which excludes member references and lifecycle display.
++- Topic sections are Scope, Spec Context, Decisions, Dependencies and Tasks. Tasks are JSON-line references with `reference`, `repository`, `purpose`; they never store status. The task binding is authoritative, the Topic list is its checked reverse index.
++- Spec input is a JSON object with non-empty `scope` and `spec`, optional `decisions`, and optional `dependencies`. Text may have paragraphs and H3+ headings, but no H1/H2 headings; the CLI owns those structural boundaries.
++- A normative dependency is `{ "path": "repository-relative-file", "sha256": "<digest>" }` in the Topic owner repository. Vendor a permitted immutable copy or otherwise obtain an explicit local source before relying on an external contract. Arbitrary remote URL fetching and floating external references are not supported by the first version. Informational links do not become checked dependencies.
++- Cross-project references use `<project-id>:<topic-or-task-id>`; local references use `self:<id>`. Existing project-index data resolves roots. Cross-project mappings must point to Git roots with an origin; the stored hash of that origin pins repository identity without exposing the URL. A changed identity requires explicit diagnosis/rebinding, not silent acceptance. Equivalent but differently spelled origin URLs also require confirmation.
++- Symlinks inside owned data paths and dependency paths are rejected. There is no auto-migration, global Topic list, Topic tree, scheduler or remote write service.
++
++## Commands
++
++Create a Draft:
++
++```text
++topic create <id> --title <title> --spec-json <file>
++```
++
++Read `topic show <id>` and pass its `version` to writes:
++
++```text
++topic update-spec <id> --expected <version> --spec-json <file>
++topic activate <id> --expected <version>
++topic archive <id> --expected <version>
++topic restore <id> --expected <version>
++```
++
++`activate` requires Draft; `restore` requires Archived. Archiving rejects active or inaccessible listed members, except its exact owning In Progress maintenance task when explicitly named with `--owner-task <project:task-id|self:task-id>`. That task must be currently bound to this Topic and fresh; it may finish with Archived as its intended result. This exception does not cover product implementation or other maintenance tasks. The user must decide how to handle other active members; the CLI never cancels them. A successful command does not prove that the Agent obtained consent.
++
++Associate an active or pending task after reading `topic task <task-id>` and `topic show <topic-id>`:
++
++```text
++topic attach <task-id> <project:topic-id|self:topic-id> --expected <task-version> --expected-topic <topic-version> --mode implementation|maintenance --applies <scope-or-clauses> --purpose <task-responsibility> [--allow-cross-workspace]
++topic detach <task-id> --expected <task-version> [--allow-cross-workspace]
++```
++
++The target `show` is run in the owning workspace. `implementation` requires Active. `maintenance` is for Topic creation, clarification, specification maintenance, archive/restore and bounded historical inspection, not a general bypass. A completed task must be explicitly reopened before association changes. Reassociation refreshes the old and new backlinks without creating a new Task Kind.
++
++After analyzing a revision difference and completing any required realignment:
++
++```text
++topic adopt <task-id> --expected <task-version> --expected-topic <topic-version> --evidence <impact-disposition>
++```
++
++Adoption writes the current revision and an evidence note, invalidates assessment/verification and preserves existing Required review. It does not decide whether the change is semantically harmless. Update actual Targets and implementation where needed, then repeat self-check, assessment, review and final verification. Old completed tasks retain historical snapshots; do not automatically adopt on their behalf.
++
++Read-only operations:
++
++```text
++topic list
++topic show <id>
++topic task <task-id>
++topic check <id>
++```
++
++`task.freshness` distinguishes current/blocked context; historical status is displayed separately. `check` verifies structure, the index and listed backlinks, while reporting member freshness separately. It does not certify that every member satisfies the latest specification or discover missing members in every repository. The task's own terminal gate rejects its missing backlink.
++
++Explicit repair:
++
++```text
++topic repair <topic-id> <project:task-id|self:task-id> --expected <topic-version> --purpose <responsibility> [--allow-cross-workspace]
++topic rebuild-index
++```
++
++Repair adds/removes only the specified backlink according to the task's current binding; it does not change task ownership. When a pending association exists, repair each exact old/new Topic reference. Repair also synchronizes that task's exact index entry from its canonical state. Only after all those backlinks and the task index match does repair clear the marker; otherwise `pendingAssociation` remains in its output and in `topic task`. A detached task with a pending marker cannot pass terminal gates as an independent task. Missing task files or unknown repository mappings fail closed rather than deleting presumed stale references.
++
++## Failure and Concurrency
++
++Topic mutations acquire per-workspace write locks in sorted order and compare expected content versions. Multi-file writes have synchronous best-effort rollback, not distributed crash atomicity. A crash can leave a stale lock or partial association. An association journal survives any failed write or rollback until explicit repair; never delete it merely because the task currently has no Topic. Full candidate Markdown is parsed and round-tripped before specification writes, so malformed fences or comments cannot hide required sections after commit. Report the exact files and state, inspect the recorded owner, and obtain authorization before removing an abandoned lock or repairing another workspace. Never automatically break a lock. Index rebuild only regenerates navigation from readable canonical Topics.
++
++Freshness is checked at workflow checkpoints and task terminal writes. This is not real-time broadcast or a transaction spanning all repositories' future changes: a later Topic change does not rewrite historical evidence. Unavailable or changed normative input prevents the next dependent success gate. Recording Failed verification and cancelling a task remain available and invalidate old successful evidence; they do not require adopting an unwanted new specification. Registered project paths and origin changes are never silently repaired.
+--- before/skills/meta/topic/evals/trigger_cases.json
++++ after/skills/meta/topic/evals/trigger_cases.json
+@@ -0,0 +1,22 @@
++{
++  "recommended_threshold": 0.5,
++  "should_trigger": [
++    "Create a persistent Topic for account deletion; discuss the specification first, without implementing.",
++    "Continue the offline sync Topic and show its related tasks.",
++    "Attach this Android bug-fix task to the account deletion Topic.",
++    "Update the shared specification of the login Topic and identify affected tasks.",
++    "Archive this Topic after showing the impact on its active tasks.",
++    "Review the current implementation of the account deletion Topic without fixing findings."
++  ],
++  "should_not_trigger": [
++    "Fix this standalone typo; there is no shared topic.",
++    "Create an ordered Queue for these unrelated tasks.",
++    "List trending discussion topics on the web.",
++    "Summarize which components this task changed."
++  ],
++  "near_neighbor": [
++    "Update the long-lived project architecture Context Pack.",
++    "Plan an independent feature implementation.",
++    "Explain the Task versus Queue distinction."
++  ]
++}
+--- before/tests/topics.test.mjs
++++ after/tests/topics.test.mjs
+@@ -0,0 +1,324 @@
++import assert from "node:assert/strict";
++import fs from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import test from "node:test";
++import { createRequire } from "node:module";
++import { execFileSync, spawn } from "node:child_process";
++
++const require = createRequire(import.meta.url);
++const core = require("../skills/meta/csl-tasks/shared/lib/task-core.js");
++const topics = require("../skills/meta/csl-tasks/shared/lib/topic-core.js");
++const cli = path.resolve("skills/meta/csl-tasks/shared/scripts/csl-tasks.js");
++const spec = { scope: "Persistent account capability", spec: "FR-1: Authenticate before deletion.", decisions: "Shared interface.", dependencies: [] };
++
++function workspace(t) {
++  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "csl-topics-"));
++  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
++  return fs.realpathSync(directory);
++}
++
++function topic(root, state = "Active") {
++  const created = topics.createTopic(root, "account", "Account", spec);
++  return state === "Draft" ? created : topics.setState(root, "account", state, created.version);
++}
++
++function task(root, id = "ios") {
++  return core.createTask(root, { id, title: id, kind: "task", targets: ["T1: Deliver the scoped result"] });
++}
++
++function attach(root, id = "ios", mode = "implementation") {
++  const record = core.readTask(root, id);
++  return topics.association(root, id, "self:account", {
++    expectedTask: topics.hash(record.text), expectedTopic: topics.readTopic(root, "account").version,
++    mode, applies: "FR-1", purpose: "Implement scoped behavior",
++  });
++}
++
++function finish(root, id) {
++  core.resumeTask(root, id);
++  core.recordResult(root, id, "T1", "Fixture observation");
++  core.recordReviewAssessment(root, id, "R0", { reason: "Fixture", snapshot: "fixture-v1", evidence: "Fixture" });
++  core.setReviewGate(root, id, "skipped", "Fixture");
++  core.recordVerification(root, id, true, "Fixture");
++  return core.completeTask(root, id);
++}
++
++test("standalone tasks do not create Topic storage", (t) => {
++  const root = workspace(t);
++  task(root);
++  finish(root, "ios");
++  assert.equal(fs.existsSync(path.join(root, "tasks/topics")), false);
++  assert.deepEqual(topics.listTopics(root), []);
++});
++
++test("persistent Topic has immutable spec revisions and a separate index", (t) => {
++  const root = workspace(t);
++  const created = topic(root);
++  task(root);
++  attach(root);
++  assert.equal(topics.readTopic(root, "account").revision, created.revision);
++  assert.equal(topics.check(root, "account").valid, true);
++  finish(root, "ios");
++  assert.equal(topics.readTopic(root, "account").state, "Active");
++  assert.match(fs.readFileSync(path.join(root, "tasks/topics.md"), "utf8"), /topics\/account.md/);
++  assert.throws(() => attach(root), /reopen Completed/);
++});
++
++test("changed external specification blocks assessment and terminal gates without editing task", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  core.resumeTask(root, "ios");
++  core.recordResult(root, "ios", "T1", "Fixture");
++  core.recordReviewAssessment(root, "ios", "R0", { reason: "Fixture", snapshot: "v1", evidence: "Fixture" });
++  core.setReviewGate(root, "ios", "skipped", "Fixture");
++  core.recordVerification(root, "ios", true, "Fixture");
++  const old = topics.readTopic(root, "account");
++  topics.updateSpec(root, "account", old.version, { ...spec, spec: "FR-1: Require a second factor." });
++  assert.throws(() => core.completeTask(root, "ios"), /specification changed/);
++  assert.throws(() => core.recordVerification(root, "ios", true, "Fixture"), /specification changed/);
++  assert.throws(() => core.setReviewGate(root, "ios", "skipped", "Fixture"), /specification changed/);
++  assert.throws(() => core.recordReviewAssessment(root, "ios", "R0", {}), /specification changed/);
++  assert.equal(topics.freshness(root, core.resumeTask(root, "ios")).current, false);
++  const adopted = topics.adopt(root, "ios", {
++    expectedTask: topics.hash(core.readTask(root, "ios").text), expectedTopic: topics.readTopic(root, "account").version,
++    evidence: "Changed behavior aligned; implementation and evidence must be refreshed.",
++  });
++  assert.equal(adopted.reviewAssessment.state, "Stale");
++  assert.equal(adopted.verification, null);
++});
++
++test("adoption preserves Required review and exits In Review", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  core.resumeTask(root, "ios");
++  core.recordResult(root, "ios", "T1", "Fixture");
++  core.recordReviewAssessment(root, "ios", "R2", { reason: "Fixture", snapshot: "v1", evidence: "Fixture" });
++  core.setReviewGate(root, "ios", "required", "Fixture");
++  core.setState(root, "ios", "in_review");
++  const current = topics.readTopic(root, "account");
++  topics.updateSpec(root, "account", current.version, { ...spec, decisions: "Revised common decision." });
++  const updated = topics.adopt(root, "ios", { expectedTask: topics.hash(core.readTask(root, "ios").text), expectedTopic: topics.readTopic(root, "account").version, evidence: "Impact checked." });
++  assert.equal(updated.review[1], "Required");
++  assert.equal(updated.status.state, "in_progress");
++  assert.equal(core.checkTaskIndex(root, "ios"), true);
++});
++
++test("Draft maintenance can finish, while implementation requires Active", (t) => {
++  const root = workspace(t);
++  topic(root, "Draft"); task(root);
++  assert.throws(() => attach(root), /Active/);
++  attach(root, "ios", "maintenance");
++  finish(root, "ios");
++  assert.equal(topics.readTopic(root, "account").state, "Draft");
++});
++
++test("archive blocks active members and preserves completed historical evidence", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  assert.throws(() => topics.setState(root, "account", "Archived", topics.readTopic(root, "account").version), /active or inaccessible/);
++  finish(root, "ios");
++  topics.setState(root, "account", "Archived", topics.readTopic(root, "account").version);
++  assert.equal(core.readTask(root, "ios").status.state, "completed");
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
++  assert.throws(() => topics.updateSpec(root, "account", topics.readTopic(root, "account").version, spec), /restore/);
++});
++
++test("archive maintenance owner can finish after archiving its own Topic", (t) => {
++  const root = workspace(t);
++  topic(root); task(root, "archive-topic"); attach(root, "archive-topic", "maintenance");
++  core.resumeTask(root, "archive-topic");
++  const current = topics.readTopic(root, "account");
++  topics.setState(root, "account", "Archived", current.version, "self:archive-topic");
++  finish(root, "archive-topic");
++  assert.equal(topics.readTopic(root, "account").state, "Archived");
++});
++
++test("stale association cannot adopt a new revision without impact evidence", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  const current = topics.readTopic(root, "account");
++  topics.updateSpec(root, "account", current.version, { ...spec, spec: "FR-1: Revised requirement." });
++  assert.throws(() => attach(root), /use adopt with impact evidence/);
++});
++
++test("duplicate binding, stale writes, missing snapshots and unsafe paths fail closed", (t) => {
++  const root = workspace(t);
++  const first = topic(root); task(root); attach(root);
++  assert.throws(() => topics.updateSpec(root, "account", first.version, spec), /reread/);
++  const record = core.readTask(root, "ios");
++  const section = record.text.slice(record.text.indexOf("## Topic"));
++  assert.throws(() => core.parseTask("ios", `${record.text}\n${section}`, record.file), /one Topic/);
++  assert.throws(() => topics.safePath(root, "../escape"), /unsafe/);
++  fs.unlinkSync(path.join(root, "tasks/topics/account/revisions", `${first.revision}.md`));
++  assert.equal(topics.freshness(root, record).current, false);
++});
++
++test("pinned dependencies are rechecked even when the Topic text is unchanged", (t) => {
++  const root = workspace(t);
++  fs.writeFileSync(path.join(root, "api.json"), "v1");
++  const created = topics.createTopic(root, "account", "Account", { ...spec, dependencies: [{ path: "api.json", sha256: topics.hash("v1") }] });
++  topics.setState(root, "account", "Active", created.version);
++  task(root); attach(root);
++  fs.writeFileSync(path.join(root, "api.json"), "v2");
++  assert.throws(() => topics.fresh(root, core.readTask(root, "ios")), /dependency changed/);
++});
++
++test("explicit repair follows task authority and index rebuild does not alter specs", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  const topicRecord = topics.readTopic(root, "account");
++  fs.writeFileSync(topicRecord.file, topicRecord.text.replace(/^- \{"reference":.*\n/m, "\n"));
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
++  topics.repair(root, "account", "self:ios", { expectedTopic: topics.readTopic(root, "account").version, purpose: "Repair exact reference" });
++  assert.equal(topics.fresh(root, core.readTask(root, "ios")).applicable, true);
++  fs.unlinkSync(path.join(root, "tasks/topics.md"));
++  topics.rebuildIndex(root);
++  assert.equal(topics.check(root, "account").revision, topicRecord.revision);
++});
++
++test("cross-repository binding requires permission, exact mapping and pinned origin identity", (t) => {
++  const owner = workspace(t), client = workspace(t), home = workspace(t);
++  const previous = process.env.CSL_AGENT_KIT_HOME;
++  process.env.CSL_AGENT_KIT_HOME = home;
++  t.after(() => { if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME; else process.env.CSL_AGENT_KIT_HOME = previous; });
++  for (const [name, directory] of [["owner", owner], ["client", client]]) {
++    execFileSync("git", ["init", directory], { stdio: "ignore" });
++    execFileSync("git", ["-C", directory, "remote", "add", "origin", `https://example.invalid/${name}.git`]);
++  }
++  fs.mkdirSync(path.join(home, "project-indexes"));
++  fs.writeFileSync(path.join(home, "project-indexes/index.json"), JSON.stringify({ schemaVersion: 1, projects: { owner: { root: owner }, client: { root: client } } }));
++  topic(owner); task(client);
++  const options = { expectedTask: topics.hash(core.readTask(client, "ios").text), expectedTopic: topics.readTopic(owner, "account").version, mode: "implementation", applies: "FR-1", purpose: "Client work" };
++  assert.throws(() => topics.association(client, "ios", "owner:account", options), /allow-cross-workspace/);
++  const bound = topics.association(client, "ios", "owner:account", { ...options, allowCross: true });
++  assert.equal(topics.fresh(client, bound).applicable, true);
++  execFileSync("git", ["-C", owner, "remote", "set-url", "origin", "https://example.invalid/replaced.git"]);
++  assert.throws(() => topics.fresh(client, bound), /identity changed/);
++});
++
++test("failed detach and rollback retain a durable terminal blocker until exact repair", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  const record = core.readTask(root, "ios");
++  const topicFile = topics.readTopic(root, "account").file;
++  const original = core.atomicWrite;
++  let taskWrites = 0;
++  core.atomicWrite = (file, text) => {
++    if (file === record.file && ++taskWrites > 1) throw new Error("injected task rollback failure");
++    if (file === topicFile) throw new Error("injected backlink write failure");
++    return original(file, text);
++  };
++  try {
++    assert.throws(() => topics.association(root, "ios", undefined, { expectedTask: topics.hash(record.text) }), /rollback failed/);
++  } finally { core.atomicWrite = original; }
++  const detached = core.readTask(root, "ios");
++  assert.equal(detached.topic, undefined);
++  assert.ok(topics.pendingTransaction(root, "ios"));
++  assert.throws(() => topics.fresh(root, detached), /incomplete Topic association/);
++  assert.throws(() => core.recordReviewAssessment(root, "ios", "R0", {}), /incomplete Topic association/);
++  const repaired = topics.repair(root, "account", "self:ios", { expectedTopic: topics.readTopic(root, "account").version, purpose: "Recover interrupted detach" });
++  assert.equal(repaired.pendingAssociation, null);
++  assert.equal(repaired.tasks.length, 0);
++  assert.equal(topics.fresh(root, core.readTask(root, "ios")).applicable, false);
++});
++
++test("repair reconciles the task index after an In Review detach and rollback failure", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  core.resumeTask(root, "ios");
++  core.recordResult(root, "ios", "T1", "Fixture");
++  core.recordReviewAssessment(root, "ios", "R2", { reason: "Fixture", snapshot: "v1", evidence: "Fixture" });
++  core.setReviewGate(root, "ios", "required", "Fixture");
++  core.setState(root, "ios", "in_review");
++  const record = core.readTask(root, "ios");
++  const topicFile = topics.readTopic(root, "account").file;
++  const original = core.atomicWrite;
++  let taskWrites = 0;
++  core.atomicWrite = (file, text) => {
++    if (file === record.file && ++taskWrites > 1) throw new Error("injected task rollback failure");
++    if (file === topicFile) throw new Error("injected backlink write failure");
++    return original(file, text);
++  };
++  try {
++    assert.throws(() => topics.association(root, "ios", undefined, { expectedTask: topics.hash(record.text) }), /rollback failed/);
++  } finally { core.atomicWrite = original; }
++  assert.equal(core.readTask(root, "ios").status.state, "in_progress");
++  assert.throws(() => core.checkTaskIndex(root, "ios"), /does not match/);
++  topics.repair(root, "account", "self:ios", { expectedTopic: topics.readTopic(root, "account").version, purpose: "Recover failed review detach" });
++  assert.equal(core.checkTaskIndex(root, "ios"), true);
++  assert.equal(topics.pendingTransaction(root, "ios"), undefined);
++  assert.equal(core.readTask(root, "ios").review[1], "Required");
++});
++
++test("successful rollback also requires explicit verification and pending repair", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  const record = core.readTask(root, "ios");
++  const target = topics.readTopic(root, "account");
++  const original = core.atomicWrite;
++  core.atomicWrite = (file, text) => {
++    if (file === target.file) throw new Error("injected backlink failure");
++    return original(file, text);
++  };
++  try {
++    assert.throws(() => topics.association(root, "ios", undefined, { expectedTask: topics.hash(record.text) }), /rolled back/);
++  } finally { core.atomicWrite = original; }
++  assert.equal(core.readTask(root, "ios").topic.reference, "self:account");
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
++  topics.repair(root, "account", "self:ios", { expectedTopic: topics.readTopic(root, "account").version, purpose: "Confirm rollback" });
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, true);
++});
++
++test("stale specification allows failure evidence and cancellation without adopting", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  core.resumeTask(root, "ios");
++  core.recordResult(root, "ios", "T1", "Fixture");
++  core.recordReviewAssessment(root, "ios", "R0", { reason: "Fixture", snapshot: "v1", evidence: "Fixture" });
++  core.setReviewGate(root, "ios", "skipped", "Fixture");
++  const current = topics.readTopic(root, "account");
++  topics.updateSpec(root, "account", current.version, { ...spec, spec: "FR-1: Changed." });
++  assert.equal(core.recordVerification(root, "ios", false, "Specification changed").verification[1], "Failed");
++  assert.equal(core.cancelTask(root, "ios").status.state, "cancelled");
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
++});
++
++test("malformed candidate Markdown is rejected before Topic, index or snapshot writes", (t) => {
++  const root = workspace(t);
++  const current = topic(root);
++  const index = fs.readFileSync(path.join(root, "tasks/topics.md"), "utf8");
++  const revisions = fs.readdirSync(path.join(root, "tasks/topics/account/revisions"));
++  for (const scope of ["Scope\n\n```text", "Scope\n\n<!--", "Scope\n\n<script>"]) {
++    assert.throws(() => topics.updateSpec(root, "account", current.version, { ...spec, scope }), /section|structure/);
++    assert.equal(fs.readFileSync(current.file, "utf8"), current.text);
++    assert.equal(fs.readFileSync(path.join(root, "tasks/topics.md"), "utf8"), index);
++    assert.deepEqual(fs.readdirSync(path.join(root, "tasks/topics/account/revisions")), revisions);
++  }
++});
++
++test("concurrent member additions reject a stale writer instead of losing a backlink", async (t) => {
++  const root = workspace(t);
++  topic(root); task(root, "ios"); task(root, "android");
++  const version = topics.readTopic(root, "account").version;
++  const jobs = ["ios", "android"].map((id) => new Promise((resolve, reject) => {
++    const child = spawn(process.execPath, [cli, "--workspace", root, "topic", "attach", id, "self:account", "--expected", topics.hash(core.readTask(root, id).text), "--expected-topic", version, "--mode", "implementation", "--applies", "FR-1", "--purpose", id], { stdio: "ignore" });
++    child.on("error", reject);
++    child.on("exit", (code) => resolve({ id, code }));
++  }));
++  const results = await Promise.all(jobs);
++  assert.equal(results.filter((entry) => entry.code === 0).length, 1);
++  const failed = results.find((entry) => entry.code !== 0);
++  attach(root, failed.id);
++  assert.equal(topics.readTopic(root, "account").tasks.length, 2);
++  assert.equal(topics.check(root, "account").valid, true);
++});
++
++test("new CLI entry, spec package and manifest expose Topic without adding a task kind", () => {
++  const help = execFileSync(process.execPath, [cli, "--help"], { encoding: "utf8" });
++  assert.match(help, /topic <command>/);
++  assert.match(help, /--kind task\|plan\|queue/);
++  const manifest = JSON.parse(fs.readFileSync(path.resolve(".claude-plugin/plugin.json"), "utf8"));
++  assert.ok(manifest.skills.includes("./skills/meta/topic"));
++  assert.match(fs.readFileSync(path.resolve("skills/meta/topic/SKILL.md"), "utf8"), /Completing all members never closes a Topic/);
++});

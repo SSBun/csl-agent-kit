@@ -1,0 +1,13 @@
+{
+  "snapshot": "sha256:7240e2ff566d47ad05e09d5f42da2fd9e3d0ea7b77ff7e159a970ae01425bc4c",
+  "head": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": {
+    "README.md": "5875041aea84c0f3f3e0663fb9bfa91f9dcfe1018800b7b12ba9db5cd76e81a4",
+    "pi/extensions/csl-settings.ts": "e3019277cb100ee14fedc0847d3c543140416c44099a13bab637715618f437c0",
+    "pi/lib/csl-settings.ts": "e4a10b8e25d21631602dd5d7b028154292701bd6b2859c06f826a637df9b9147",
+    "tests/pi-settings.test.mjs": "e761f946ac8ed71cb590eb7d44d182a81927da7d9e91b062f1b64bdc5d2a9bf9",
+    "tests/run-pi-tests.js": "8f9403d775457f4dd3ebc6a5b47505ccca7b38689f5aa47054e09b330a07ed94",
+    "tasks/context.md": "9e2e1750b3e8162f1fbfdb04623fd049eef1494bd6fdb9055aed88e1e93a064c"
+  },
+  "scopeNote": "仅审查列出的新增实现、README 通用设置段落、测试入口及 CTX-pi-settings；Context 中其他修改和所有其他工作区改动均早于本任务。"
+}

@@ -107,6 +107,21 @@
 - `third-party-skills.js status` 按来源与 ref 复用临时上游检出并比较导入 commit；`diff` 区分导入后的上游变化与当前上游相对本地副本的差异，只有 `--patch` 输出逐行补丁。
 - 导入、更新或移除第三方 skill 时使用项目内整合流程，并同步验证来源元数据、共享发现、当前 manifests、README、测试与发布包内容。
 
+## CTX-pi-settings — Pi 通用设置与审查配置
+- Scope: CSL Agent Kit 的 Pi 通用设置面板、审查配置存储与启动参数解析边界。
+- Paths: `pi/extensions/csl-settings.ts`, `pi/lib/csl-settings.ts`, `tests/pi-settings.test.mjs`
+- Keywords: Pi, csl-settings, review model, thinking, parent inheritance, csl_review_config
+- Authority: `pi/extensions/csl-settings.ts`, `pi/lib/csl-settings.ts`, `README.md`
+- Recheck: 当设置字段、数据目录、Pi 工具指引或 subagent 的模型后缀覆盖语义变化时复核。
+
+### Purpose and Boundaries
+- `/csl-settings` 是通用配置入口；`review.model` 与 `review.thinking` 保存到 `CSL_AGENT_KIT_HOME` 或默认 CSL 用户数据目录的 `settings.json`，不修改 Pi 或 pi-subagents 的配置。Task 确认模式也在该面板及 `/task-mode` 提供操作；共享解析器位于 `skills/meta/csl-tasks/shared/lib/task-mode.js`，跨宿主 CLI 位于同组件 `scripts/task-mode.js`。
+- Task 模式采用 session > project > global > 默认 confirm，各层新值为 solo／confirm／inherit，solo 对外名称 SOLO；已有 autonomous 存储只读归一为 solo，不自动改写用户文件。全部位于用户数据目录，项目按 realpath 摘要隔离，会话按宿主、工作区和真实会话 ID 摘要隔离。项目配置不是仓库内授权；Pi 每轮通过 Contract Hook 重读，原生 Codex／Claude 在 SessionStart 读取。无效配置降回确认并报告错误，保存成功不证明 Hook 已启用。
+- `skills/meta/task-mode/` 提供跨宿主共享 Skill，复用共享配置 CLI；Codex 通过递归 skills 根发现，Claude manifest 显式登记。Skill 查询须区分已保存设置与当前会话实际生效；真实会话身份不可用时仅解析项目／全局，不宣称覆盖会话层。Pi 自动别名跳过 task-mode，由设置扩展独占 `/task-mode`，原生 `/skill:task-mode` 仍可调用 Skill。
+- Pi 的 jiti 以 moduleCache=false 重载 TypeScript，但原生 createRequire 的 CommonJS 缓存不会随之失效。`pi/lib/csl-settings.ts` 每次重新加载时只清除无状态 task-mode 直接依赖的缓存，确保 /reload 读到当前枚举；不清理无关模块，不改用户配置。检查边界是同进程升级模块后重载，而非仅验证新进程 import。
+- `csl-settings` 使用原生 setStatus 的独立 csl-task-mode 键在 TUI 底栏显示解析模式与来源；启动／恢复／重载、树导航、每轮开始／结束及设置修改后重读，shutdown 只清理自己的键。无定时器，非 TUI 不显示，配置错误显示 CONFIRM · config error；显示配置解析结果，不证明进行中的模型请求已应用新规则。自定义 footer 是否展示 extension statuses 仍由该 footer 决定。
+- `csl_review_config` 是只读解析工具，不是启动器。其工具指引要求 CSL 审查的主 Agent 将返回的 `launch.model` 放到实际 Reviewer 子调用中；未设置的项读取调用时父会话实际值。该接入不拦截所有 subagent，不覆盖 Editor，也不会改变已有子 Agent 的恢复契约。
+
 ## CTX-pi-task-overlay — Pi task overlay rendering
 - Scope: Pi task widget parsing, session focus persistence, progress rendering, refresh lifecycle, mode boundaries, and clickable task titles.
 - Paths: `pi/extensions/csl-task-overlay.ts`, `tests/pi-task-overlay.test.mjs`, `tasks/tasks.md`, `tasks/tasks/`
@@ -136,26 +151,53 @@
 
 ### Purpose and Boundaries
 - `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，同时对齐计划任务最终要实现的 Target；该 Target 的接受不授权执行。`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
+- `Task Summary` 是 Agent 在完成自检与 assessment 前维护的单一改动摘要章节，不是 CLI 自动生成字段；按实际修改的组件分段，记录组件根目录与具体变化，不替代 Result／Verification。Queue parent 只记录 parent-owned 改动；正文变化仍走 `sync` 与证据失效流程。权威为 `skills/meta/task/SKILL.md` 和 `skills/meta/task-queue/SKILL.md`。
 
 ### Structure
 - 三个 workflow 直接位于 `skills/meta/`，进入或在上下文丢失后恢复时均须读取 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`；该普通 Markdown runtime contract 是全部 Target 对齐语义的唯一详细 Authority，不参与 skill discovery。各 consumer 只拥有激活时机、workflow-specific Target 含义、对齐前 lifecycle writes 与对齐后下一步。
 - 三个 workflow 共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不持久化会话 alignment 或 confirmation，也不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
-- Core 将 `Status: <state> (<YYYY-MM-DD HH:MM>)` 投影到 canonical record；canonical `#`／`##` record headings 固定从 column zero 开始，indented 或 container-nested headings 仅是内容。Core 在 `tasks/tasks.md` 维护对应标题、状态与 `tasks/<task-slug>.md` 链接；record 在索引不一致时仍是权威。
+- Core 将 Status、Kind、可选 Artifacts 与 Parent 投影到 canonical record 顶部的 `Field`／`Value` 两列表格，状态值保持 `<state> (<YYYY-MM-DD HH:MM>)`；兼容读取旧式 `Name: value` 元数据，并仅在该记录下次写入时转换，展示格式转换不改变 review fingerprint。canonical `#`／`##` record headings 固定从 column zero 开始，indented 或 container-nested headings 仅是内容。Core 在 `tasks/tasks.md` 维护对应标题、状态与 `tasks/<task-slug>.md` 链接；record 在索引不一致时仍是权威。
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
+- Core 在每次写入 Task／Plan／Queue record 时，按对应 `tasks/artifacts/<task-id>/` 是否为目录，在顶部元数据表维护 `Artifacts` 行及 `[Artifacts](../artifacts/<task-id>/)` 链接；不会创建空目录或批量回填，读取与校验不写入。仅这个固定格式的顶部导航字段不参与 review fingerprint，正文中的同类文本仍参与；`sync` 的既有证据失效行为不变。
 
 ### Workflows
-- 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：授权自检通过只表示可向用户展示目标，不表示用户已核对 Agent 的理解。首次明确请求、实质修订与澄清收敛后的非平凡等价 Target 均完整展示并结束当前轮等待；局部答案、原始请求或旧 `show_continue` 不构成整体目标接受。只有已展示、真实接受且未变仍适用的目标可 `continue_unchanged`；用户要求、material Plan graph 和无法恢复接受依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权／接受，复用必须检查提案及后续接受来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
+- 默认 confirm 模式下，文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：授权自检通过只表示可向用户展示目标，不表示用户已核对 Agent 的理解。首次明确请求、实质修订与澄清收敛后的非平凡等价 Target 均完整展示并结束当前轮等待；局部答案、原始请求或旧 `show_continue` 不构成整体目标接受。只有已展示、真实接受且未变仍适用的目标可 `continue_unchanged`；用户要求、material Plan graph 和无法恢复接受依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权／接受，复用必须检查提案及后续接受来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
 - 主 Agent 按原始要求、有效修订与已接受约束自检并记录逐 Target 证据后，按独立于 Task Target 的 R0／R1／R2 协议分类实际结果：R0 无交付物变更；R1 是结果明确、影响可界定、低风险且验证充分的简单变更，包括符合条件的小范围逻辑修改；R2 是复杂、高风险或存在重要不确定性的变更。R0／R1 在没有显式或既有审查义务时可 `Skipped`，R2 或显式普通审查进入 Required／In Review／fresh 只读 `task-review` 修复循环。R2 的显式 adversarial approval 需保留 ordinary pass；R0／R1 可因显式 adversarial 请求直接进入 Required／In Review／Approved。所有等级保留最终验证。
 - `assess-review` 在 In Progress 写入唯一 `task-review-assessment/v1` Review Assessment，保留等级、Current／Stale、具体依据、外部内容身份、自检证据和任务指纹；R1 另需四项成立依据。core 校验结构、等级／gate 一致性及任务记录指纹，不执行语义评级、检查命令或外部文件监控。`sync`、Result 更新、reopen 和相关 Queue 关系变化会使 assessment 失效、清除 Verification、移除 Skipped 或将 Passed／Approved 恢复 Required；外部内容漂移须由宿主和主 Agent 现场核对后重新自检、判级与必要复审。历史记录仍可读，活动任务在新的终态 gate／完成前须有当前 assessment。最终 fresh pass 确认所有 finding 解决后，由 `review passed --resolve-ledger --snapshot` 原子清理 ledger 并写入 Passed；该路径要求当前任务指纹与相同 snapshot、无 stalled finding，保留未变的 assessment 而清除 Verification，不能通过手删 ledger 后 sync 来代替。
 - `task-review` 的既有 `references/review_workflow.md` 承载固定 Reviewer Prompt 与当次事实包契约，不另建 Agent 注册文件。Reviewer 先对照需求与产物，再核对作者检查证据，分别报告独立执行的检查与继承证据；原始要求不能被作者摘要替代，被审查材料不能反向授予工具或审批权限。该顺序减少上下文锚定，但不保证盲审或消除同模型偏差。
 - Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能因失败将 R2 降级，也不能把既有 Required 义务改为 Skipped；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检、assessment 和 fresh pass；当前 core 不证明实际隔离、检查运行或外部文件内容未变，这些证据由宿主与主 Agent 建立。
 - Mandatory review 用带 `task-review-ledger/v1` marker 的唯一 task-local `## Review` current ledger 持久化单调 `TR-n` IDs 与逐 finding no-progress streak；Core 只把 fenced／indented／list-container code 与 HTML block/comment 之外的 column-zero H2 当作 record section；重复 Review sections、未知 ledger schema 与使用 alternate list markers／whitespace 的 ledger-like malformed 内容 fail closed，单个无 marker 的历史自由格式 Review 保持可读。Finding 初见为 0，同一根因／required outcome 的 fresh re-review 连续无实质 artifact／evidence 进展时递增，到 2 即保留 ledger、写入精确 Block／Unblock 条件并进入 Blocked，请求用户决策且不得自动 `Passed`；对应 streak 在新证据下重置前，Core 拒绝 resume。有效进展、证据化重分类或解决会重置／移除对应 finding，不设总 pass 上限。
 
+- 普通 `task-review` 返回只读反馈后，由 owning task 主 Agent 将每轮反馈保存到 `tasks/artifacts/<task-id>/reviews/round-<NN>.md`，并在独立持久的 `## Review Reports` 中记录相对链接、审查快照和结论；它不是第二份问题台账，不随临时 `## Review` 清理。文件和索引共同决定下一未用编号，resume／reopen 不覆盖历史报告。Task fingerprint 排除这个纯索引区块，但不会验证外部文件和链接，主 Agent 仍负责现场核对报告与快照；规范或实质证据变化仍触发既有失效流程。独立 adversarial-review 保留其自己的报告契约。
+
 ### Decision and Verification Boundaries
+- 共享对齐协议的 Confirmation Modes 定义 SOLO 独立执行路径：有效 solo 在 L0–L4 分级前使用 `continue_solo`，仍激活／聚焦并展示完整 Target，跳过原二次确认分级，目标范围内操作选择由 Agent 根据证据与有界默认值处理；已授权发布／X／SOP 的框架确认改为动作说明，不能仅因 SOP 要求询问而暂停。保留实质防护、真实用户暂停、命令范围、宿主审批和上级安全限制，缺少无法查证的必要事实／授权时如实报告阻塞；质量审查和验证不变。查询／切换模式不恢复旧批次，默认或配置错误仍为 confirm。权威为 `skills/meta/csl-tasks/shared/lib/task-mode.js`、`scripts/task-mode.js` 和共享对齐协议。
 - User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
 - 新请求默认创建独立 task；明确执行 implementation-ready plan 时 resume 该 plan 的 exact record，`task-plan` → `task` 阶段变化本身不产生新 ownership。其他情况下，只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。Completed child 只能在 parent 已激活后 reopen；该动作会原子失效 parent 的 assessment、终态 review／Verification，并将 In Review parent 退回 In Progress，防止 parent 以旧 integration evidence 完成。改变 Completed child 的关系前须显式 reopen；完全相同的 reciprocal link 为 no-op，不能清除任一已完成记录的证据。
-- 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
+- 任务执行族仍为 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；`topic` 是独立的可选共享规格与归属入口，不是第四种执行族。共享 Task Target 协议没有 `SKILL.md` 且不参与路由，各 skill package、协议与 task core 位于 `skills/meta/` 的分发树中。
 - `tests/csl-tasks-core.test.mjs` 定义 Queue／旧 Auto、父子图、Review gate、Review Assessment schema 与指纹失效、R1 四项依据、R2 禁止降级、显式审查、历史兼容、finding ledger 与完成门禁的回归用例；`tests/task-files.test.mjs` 定义 discoverability、默认规则、`evals/review_gate_cases.json`／`evals/review_stall_cases.json` 和记录契约检查。测试源码不是当前执行通过的证明，实际运行证据由 owning task 保存。
+
+## CTX-topics — 长期 Topic 与任务关联
+- Scope: 长期维护主题的共享规格、采用版本、可选任务归属、跨仓定位、双向索引和完成门禁。
+- Paths: `skills/meta/topic/`, `skills/meta/csl-tasks/shared/lib/topic-core.js`, `skills/meta/csl-tasks/shared/lib/topic-cli.js`, `tasks/topics/`, `tasks/topics.md`
+- Keywords: topic, persistent requirement, spec context, revision, freshness, task association, archived, cross-workspace
+- Authority: `skills/meta/topic/SKILL.md`, `skills/meta/topic/references/topic-contract.md`, `skills/meta/csl-tasks/shared/lib/topic-core.js`, `skills/meta/csl-tasks/shared/lib/task-core.js`
+- Recheck: Topic schema、关联权威、版本范围、跨仓解析、锁或终态门禁变化时复核。
+
+### Purpose and Boundaries
+- Topic 是独立于 Task Kind 与 Queue Parent 的长期共享规格，不限于多平台；任务可以没有 Topic，成员全部完成不自动归档。Topic 状态和内容版本都不是执行授权。
+- Topic canonical 文件和可重建索引位于 owning workspace 的 Task 数据区；规范快照不可变，成员列表只存引用和职责，状态现场读取。Task 绑定是归属权威，Topic Tasks 是反向索引。
+- Topic 的 `resources/` 保存跨任务长期资料，主文档 `Resources` 表记录可点击链接、用途及 normative/reference 分类；`update-resources` 显式替换索引，不复制、移动或删除来源。新 Topic 创建目录与空表；旧记录保持原样，直到显式初始化资源索引。
+- normative 资源的元数据与文件摘要进入规格投影并按既有门禁核对；reference 内容与索引变化不影响规格摘要。规范性来源只能是固定摘要的 owner-repo 文件；HTTP(S) 仅支持无凭证的参考链接，CLI 不抓取。已有权威文件直接引用，任务专属产物仍归 owning Task。
+
+### Workflows
+- 共享 CLI 的 `topic` 子命令维护 create/show/list/update-spec、activate/archive/restore、attach/detach/adopt、check/repair/rebuild-index；写入核对旧版本并持有工作区锁，跨仓写入另需明确授权和 allow-cross-workspace。关联写入前持久记录确切旧/新引用，失败或回滚后保留 pending marker，直到受限 repair 核对两侧关系并同步、验证该任务索引后完成；即使 Task 已解除绑定也不能绕过终态门禁。不能声称具备分布式崩溃原子性。
+- 规格摘要覆盖 Scope、Spec Context、Decisions 与固定的本地规范性依赖，不覆盖成员列表和生命周期状态。完整候选正文先通过同一解析器和 round-trip 检查再写入，避免未闭合围栏破坏固定章节。Task assessment、review、passed verification 和 complete 校验新旧规格、依赖及反向链接；显式 adopt 记录影响处置并失效旧证据，历史 Completed 不自动改写。失败验证和取消允许在过期时记录，并失效旧成功证据。
+
+### Decision and Verification Boundaries
+- 跨仓引用复用已确认的 project-index，限定 Git 根目录并固定 origin 哈希；未登记或身份变化不自动修复。规范性外部 URL 必须先取得允许的固定本地副本，CLI 不自动抓取。
+- Draft/Archived 仅允许符合目标的 maintenance 任务，不是实现绕过路径；归档可显式指定当前 In Progress 且已关联的归档维护任务，其他活动或未知成员仍阻止归档。
+- `topic check` 核对索引和已列成员关系，并分开展示成员 freshness；不证明所有历史成员满足最新规格，也不扫描所有仓库查找遗漏。
 
 ## CTX-agent-hooks — Agent Hooks runtime and built-in hooks
 - Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, three-level Agent Rules injection, CSL Agent Kit Contract injection, data migration, and host lifecycle adapters.
@@ -172,10 +214,11 @@
 - `skills/meta/agent-hooks/hooks/` 中的 inner hooks 随包分发、默认启用且源文件只读；用户通过 `<data-root>/hooks/config.json` 的 `disabledHooks` 和 `hookSettings` 控制自身状态。
 - `inner:agent-rules` 依次合并 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md` 三个同格式单文件来源；`AGENTS.md` / `CLAUDE.md` 不属于该系统，禁用 inner hook 会同时停止三个来源的注入。
 - Hook 规则、配置、事件与脚本环境协议分别使用 `agent-hooks/v1`、`agent-hooks.config/v1`、`agent-hooks.event/v1` 与 `AGENT_HOOKS_*`。
-- `inner:csl-agent-kit-contract` 在 `session-start` 运行 bundled script 并注入 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 的自包含行为契约，使 task-family 路由、目标对齐、Context、Lessons、最小与手术式执行及验证边界不依赖替换用户的 Agent 指令文件。
+- `inner:csl-agent-kit-contract` 在 `session-start` 运行 bundled script 并注入 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 的自包含行为契约，使 task-family 路由、目标对齐、Context、Lessons、最小与手术式执行及验证边界不依赖替换用户的 Agent 指令文件。脚本追加按当前 workspace、宿主和 payload session ID 解析的 Task 模式；Pi adapter 在每轮提供真实 session ID，避免会话覆盖丢失。配置错误保留契约并注入 confirm 诊断。
 
 ### Relationships
 - `hooks/hooks.json` 的 SessionStart dispatcher 处理 startup、resume 与 compact 来源，Pi adapter 在每次 `before_agent_start` 重建 session prompts；同一 Contract prompt 不再由 manifest 直接 `cat`，避免重复注入。
+- Codex manifest 显式组合共享 hooks 与 `hooks/codex-lifecycle.json`；后者只补 Interrupt/SessionEnd，均为非阻塞脚本事件，不能把这些入口加入 Claude/Pi 共享声明。`inner:itermate-codex-*` 按宿主筛选并调用 bundled adapter，只有 iTermate 的显式启用标记存在时才转发原生 payload 给用户已安装的 reporter；该规则不自行安装、改写原生 hooks 或注入模型上下文。规则 eligible、App opt-in、Codex plugin 版本/信任和实际 Socket 投递是不同验证边界。权威为 `.codex-plugin/plugin.json`、`hooks/codex-lifecycle.json`、`scripts/lib/runtime.js`、`scripts/itermate-codex-status.js`（后两者位于 Agent Hooks skill 内）。
 
 ### Decision and Verification Boundaries
 - Codex、Claude Code 与 Pi 支持该 session prompt；Cursor 在宿主传递 injected context 前保持 unsupported。`tests/agent-hooks.test.js` 与 `tests/pi-context-hooks.test.mjs` 验证迁移、默认启用、Built-in → User → Project Agent Rules 合并、来源不变、用户禁用、最终 task 名称和压缩后重建边界。
@@ -196,7 +239,7 @@
 
 ### Relationships
 - Native hooks 通过 `sop-summaries.sh` 从当前工作目录生成 session summary，并通过 `sop-candidates.js` 做 prompt-time 路由；Pi adapter 必须把 `ctx.cwd` 显式传给同一候选模块。
-- 发布工作直接按同一三级发现边界匹配具体 SOP，不另建发布 SOP 注册表。
+- 发布工作直接按同一三级发现边界匹配具体 SOP，不另建发布 SOP 注册表。`agent-sops` 的 Priority boundary 将 Task 确认模式应用到 SOP 的确认步骤：SOLO 跳过授权范围内的 confirmation-only 暂停，保留 SOP 的身份、防重复、平台限制、验证等实质要求；不修改用户级 SOP 来实现该模式。
 
 ### Decision and Verification Boundaries
 - `tests/cli-install-output.test.js` 同时验证摘要与候选路由的项目 > 用户 > 内置覆盖；`tests/pi-context-hooks.test.mjs` 验证 Pi 从活跃 workspace 注入项目 SOP。

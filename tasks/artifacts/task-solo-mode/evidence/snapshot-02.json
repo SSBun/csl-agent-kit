@@ -1,0 +1,74 @@
+{
+  "identity": "sha256:3834069403c2554945829478a4650f1e3eba180243120fa74f42929d719c3ca8",
+  "head": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-mode.js",
+      "sha256": "bd896d94c39aec016a812da4e2f77b80a00b4d78825e33e1043c21e9a16c3c51"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/task-mode.js",
+      "sha256": "f7fa87d6af7b783e66e188d90b9db1569087192765a8188657508177cd89ca3a"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "4dacd8ff81eda70850a4e515c42f9f11dec9084df17a424716d86a65e2caf34f"
+    },
+    {
+      "path": "pi/lib/csl-settings.ts",
+      "sha256": "1c8df252b9dee14fb858a7a38ab72db71a164c792d95f26dfb81881689b9e4e0"
+    },
+    {
+      "path": "pi/extensions/csl-settings.ts",
+      "sha256": "a0827a8256655ff02f90c6087876a5bd95e991418aa2475aee269ea361006011"
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js",
+      "sha256": "3c0ff2b2687712cfd81467b3688e75e1d7080ce304d7d8a0b7917ff855e88d57"
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "03078e34210af9706e796d6896084c7e414795fa021d923557d79b7cfd82f03b"
+    },
+    {
+      "path": "skills/meta/agent-sops/SKILL.md",
+      "sha256": "bc74d2d6f1954c9932e100cfcd3d371acb0acc8bf9dcdb9551cd194e2da91b47"
+    },
+    {
+      "path": "skills/meta/task-mode/SKILL.md",
+      "sha256": "1d44b5fd90f1121bc41608dab040553c49be64629e9c3799fea47946c5591fca"
+    },
+    {
+      "path": "skills/meta/task-mode/evals/trigger_cases.json",
+      "sha256": "e88a96150ed1dd63ff46d26e4a0668c29f6bce8ca546fd43d290ed8789ba593e"
+    },
+    {
+      "path": "skills/meta/task-mode/evals/confirmation_cases.json",
+      "sha256": "f220fa4b9da601534020d4458a70bd8fdc2273bfc45da2a8a9d6db6191f513a9"
+    },
+    {
+      "path": "tests/task-mode.test.js",
+      "sha256": "c11b38bc634b06257e998f17c7054ea111f27c1580259e4ef906108774746c02"
+    },
+    {
+      "path": "tests/pi-settings.test.mjs",
+      "sha256": "67a0b902cd7fb93291166cfa32e85372ba02fce2d3d865f8d3efc17fc7d3a082"
+    },
+    {
+      "path": "README.md",
+      "sha256": "33cd60342ca914436cc6a45adf86c0f6ec270a4b9ec3cbac975edea48a96b95d"
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "821a16da445fde2e5b51f91955de95119bc81db4574d1bbaaba6234c00d2ddaf"
+    },
+    {
+      "path": "tasks/artifacts/task-solo-mode/evidence/self-check.md",
+      "sha256": "30fccfea6313b079ab64e23a9ea7894b0b8be4f2ccdf19061eb5ed14cafc17da"
+    },
+    {
+      "path": "tasks/artifacts/task-solo-mode/evidence/reload-self-check.md",
+      "sha256": "395bc64035d16cea4f6c06519a86ae679437e50291f03916ac10768a814b5a01"
+    }
+  ]
+}

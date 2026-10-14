@@ -1,0 +1,256 @@
+diff --git a/skills/meta/csl-tasks/shared/lib/task-core.js b/skills/meta/csl-tasks/shared/lib/task-core.js
+index c916d77..d01fab4 100644
+--- a/skills/meta/csl-tasks/shared/lib/task-core.js
++++ b/skills/meta/csl-tasks/shared/lib/task-core.js
+@@ -342,7 +342,7 @@ function reviewAssessmentOf(text) {
+ }
+ 
+ function reviewTaskFingerprint(text) {
+-  for (const name of ["Review Assessment", "Review", "Verification", "Block"]) text = replaceSection(text, name, undefined);
++  for (const name of ["Review Assessment", "Review", "Review Reports", "Verification", "Block"]) text = replaceSection(text, name, undefined);
+   const result = section(text, "Result");
+   if (result) text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
+   text = text.replace(STATUS_PATTERN, "").replace(/\n{3,}/g, "\n\n").trim();
+diff --git a/skills/meta/csl-tasks/shared/protocols/task-review-grading.md b/skills/meta/csl-tasks/shared/protocols/task-review-grading.md
+index a5ad647..eff0be8 100644
+--- a/skills/meta/csl-tasks/shared/protocols/task-review-grading.md
++++ b/skills/meta/csl-tasks/shared/protocols/task-review-grading.md
+@@ -45,7 +45,7 @@ The core validates field structure, level/gate consistency, task-record freshnes
+ ## Invalidation and Recovery
+ 
+ - `sync`, Result changes, reopening, and relevant Queue graph/relationship changes mark an existing assessment Stale and clear Verification. A previous Skipped gate is removed; Passed/Approved become Required, preserving the independent-review obligation.
+-- Direct task specification or evidence drift is also detected by the Task fingerprint at a terminal gate or completion. The fingerprint excludes lifecycle status, the assessment, the review gate, finding ledger, Block and final Verification, not the substantive result/specification.
++- Direct task specification or evidence drift is also detected by the Task fingerprint at a terminal gate or completion. The fingerprint excludes lifecycle status, the assessment, the review gate, finding ledger, persistent `Review Reports` index, Block and final Verification, not the substantive result/specification. The owner may append report-index bookkeeping without `sync`; this does not exempt substantive evidence drift or validate external report files. The owner checks report links and snapshot correspondence under `task`'s Review Reports contract before terminal gates.
+ - External artifact or evidence drift requires the owner to return to In Progress, refresh self-check and Result, and run `assess-review` again with the new identity. Do not reuse a stale snapshot string. A changed assessment invalidates terminal review and Verification even if its level stays the same.
+ - Freeze scope during an independent pass. A relevant change invalidates the pass and requires fresh self-check, assessment and independent review, not reuse of a no-findings response.
+ - When a fresh pass resolves every ledger finding without substantive drift, use `review <id> passed --resolve-ledger --snapshot <exact-assessment-snapshot> --evidence <pass-and-resolution-reference>`. The core atomically removes the marked ledger and records Passed while retaining the unchanged assessment, and clears Verification. It requires In Review, Required, current task fingerprint, matching snapshot and no stalled finding. The owner still verifies external content and the fresh Reviewer's per-ID resolutions; the CLI does not prove those facts. Do not hand-delete this final ledger and call `sync`, which intentionally invalidates assessment. Intermediate manual ledger changes still use normal sync and a new pass.
+diff --git a/skills/meta/task-queue/SKILL.md b/skills/meta/task-queue/SKILL.md
+index 81f4e74..508014b 100644
+--- a/skills/meta/task-queue/SKILL.md
++++ b/skills/meta/task-queue/SKILL.md
+@@ -47,6 +47,8 @@ Completed children do not prove the integrated outcome. After `next` returns no
+ 4. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
+ 5. Run `check <parent-id>` and `validate`.
+ 
++Apply `task`'s Review Reports persistence contract to every parent or child `task-review` pass: save and index the report under that owning task's ID before the terminal gate, never under a sibling or a shared parent directory. Keep the persistent report index separate from the temporary finding ledger.
++
+ Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
+ 
+ Keep the workflow interactive. If the session must pause, leave canonical status and evidence sufficient for a later Codex or Pi Agent to resume deterministically. Routing fixtures are in `evals/`.
+diff --git a/skills/meta/task-review/SKILL.md b/skills/meta/task-review/SKILL.md
+index 4019c9a..a1aecbe 100644
+--- a/skills/meta/task-review/SKILL.md
++++ b/skills/meta/task-review/SKILL.md
+@@ -10,7 +10,7 @@ Run one evidence-based review pass without changing the reviewed work. The ownin
+ ## Contract
+ 
+ - Enter only from an explicit user review request or an explicit mandatory review dispatch from the owning `task` workflow. Never infer a pass solely from risk or task state.
+-- Return feedback only: no edits, task-state changes, reports, remediation, re-review, or approval. The owning task handles every transition, fix, and later pass.
++- Return feedback only: no edits, task-state changes, report-file writes, remediation, re-review, or approval. The owning task handles every transition, fix, and later pass, and persists the returned feedback under its Review Reports contract; this does not give the Reviewer write access.
+ - Review any task state as its snapshot; explicit unfinished work is not a defect.
+ - The owning Task classifies R0/R1/R2 before dispatch. R2 requires an independent pass; R0/R1 exemptions never suppress an explicit user review request. The Reviewer does not downgrade the task or rewrite its assessment.
+ - Route explicitly requested Reviewer–Editor approval to `adversarial-review`, and whole-subject audits elsewhere.
+@@ -23,7 +23,7 @@ Run one evidence-based review pass without changing the reviewed work. The ownin
+ 4. If the mandatory Reviewer is unavailable or fails, stop and return the exact failure and run/workspace state; the owner Blocks, never substitutes self-review or records Passed. For a standalone explicit review whose fresh Reviewer is unavailable or fails, inline review is allowed only when the host permits it and the request has no independence requirement, labeled `Review mode: non-independent self-review`; otherwise return the failure to the interaction owner. An actual fresh child uses `Review mode: independent subagent`. Stricter host failure rules win; never silently switch modes after a failed launch. A standalone review does not require author self-check evidence; disclose its absence rather than refusing the review.
+ 5. In the same pass, first compare original requirements, accepted constraints, and actual artifacts, including relevant unchanged callers and failure paths; then inspect author evidence and the prior ledger. Already checked behavior is not exempt, but do not mechanically rerun every check. This ordering reduces anchoring; it is not guaranteed blind review. Check snapshot identity before and after inspection; drift or inaccessible material evidence is an Unverified Risk, never a completed current-snapshot review.
+ 6. For an owning-task pass, state whether confirmed findings require remediation and whether any Unverified Risk prevents Target verification. Account for every prior `TR-<n>` ID and classify its progress as `resolved`, `substantive progress`, or `no progress`, with current evidence; check repair changes for new regressions too. Starting with the supplied next ID, assign successive IDs to new blocking items. Return that handoff to the interaction owner without changing the task.
+-7. Return feedback in the user's language and stop. Separate checks performed by this Reviewer from author evidence merely read, and disclose actual coverage. Do not output private reasoning or invent findings to fill a quota.
++7. Return feedback in the user's language and stop. Separate checks performed by this Reviewer from author evidence merely read, and disclose actual coverage. Do not output private reasoning or invent findings to fill a quota. For an owning-task pass, the interaction owner saves this handoff unchanged (except explicitly marked safety redactions) as the round report and indexes its snapshot and outcome; the Reviewer never writes the report or task index. Standalone feedback without an owning task remains no-file.
+ 
+ An owning task invokes one fresh pass at a time. Any Critical Finding or Concern requires remediation. An Unverified Risk blocks only when its missing evidence prevents the owner from verifying a Target. The owner returns to In Progress, fixes the result, updates the per-finding no-progress streak, and dispatches another fresh pass. This Skill never loops, decides that the task is stalled, or records `Passed` itself. Text churn, restatement, unchanged checks, and unsupported relabeling are `no progress`; evidence-backed artifact progress, valid reclassification, and newly actionable evidence are substantive.
+ 
+diff --git a/skills/meta/task-review/evals/contract_cases.json b/skills/meta/task-review/evals/contract_cases.json
+index 314990d..e7fac1d 100644
+--- a/skills/meta/task-review/evals/contract_cases.json
++++ b/skills/meta/task-review/evals/contract_cases.json
+@@ -301,6 +301,20 @@
+         "approval_language_used": false
+       }
+     },
++    {
++      "id": "owner-persists-round-feedback",
++      "given": "an owning-task independent pass returns findings or no findings",
++      "expect": {
++        "reviewer_writes_files": false,
++        "owner_persists_feedback_before_terminal_gate": true,
++        "report_path": "tasks/artifacts/<task-id>/reviews/round-<NN>.md",
++        "existing_report_overwritten": false,
++        "task_index_section": "Review Reports",
++        "index_contains_link_snapshot_outcome": true,
++        "second_finding_ledger_created": false,
++        "standalone_no_owner_creates_report": false
++      }
++    },
+     {
+       "id": "no-findings",
+       "given": "no problem is demonstrated",
+diff --git a/skills/meta/task-review/references/review_workflow.md b/skills/meta/task-review/references/review_workflow.md
+index df68b1c..c16f4dd 100644
+--- a/skills/meta/task-review/references/review_workflow.md
++++ b/skills/meta/task-review/references/review_workflow.md
+@@ -106,6 +106,12 @@ Previous ledger / next TR-ID: <current owning-task ledger; otherwise not applica
+ Review mode: <mode established by actual dispatch, not assumed by this prompt>
+ ```
+ 
++## Owner Persistence After the Pass
++
++For a canonical owning-task pass, the interaction owner follows `task`'s Review Reports contract: save the returned feedback to `tasks/artifacts/<task-id>/reviews/round-<NN>.md`, then append the task's separate `## Review Reports` index with the relative link, reviewed snapshot and outcome. Use the next unused artifact number across files and index entries, not the temporary finding ledger's pass counter. Preserve original feedback and stable IDs; label owner metadata, dispositions or safety redactions separately. The Reviewer remains read-only, and host-managed output capture may transport feedback without granting child file-write tools.
++
++Persist findings, no-findings and incomplete outputs honestly; a failed launch is not a completed review. Check the saved file and link before any terminal gate. A persistence failure stops the terminal transition with a concrete recovery condition. If the process stops between saving and indexing, verify and link the existing report rather than replacing it. Index-only writes are lifecycle bookkeeping excluded from the Task fingerprint; scope or substantive evidence drift still requires fresh self-check and review. Do not create a second finding ledger or save private reasoning. Standalone feedback without an owning task remains no-file.
++
+ ## Evidence Boundary
+ 
+ A confirmed finding needs an observable issue and practical impact. Put material uncertainty caused by missing evidence under Unverified Risks instead of presenting it as fact. Omit preference-only feedback and unrelated cleanup.
+diff --git a/skills/meta/task/SKILL.md b/skills/meta/task/SKILL.md
+index 935675a..6ac70ae 100644
+--- a/skills/meta/task/SKILL.md
++++ b/skills/meta/task/SKILL.md
+@@ -27,7 +27,8 @@ Persist a workspace-local task artifact only when the user requests a durable fi
+ 
+ - `discussions`: user-visible discussion or synthesis; never private reasoning, role exchanges, or hidden state.
+ - `specs`: RFCs, PRDs, ADRs, designs, and separately requested implementation or migration plans.
+-- `reports`: research, analysis, review, and audit reports.
++- `reports`: research, analysis, audit, and separately governed reports (including the existing adversarial-review final report).
++- `reviews`: immutable per-pass `task-review` feedback, including passes with findings or no findings; see Review Reports below.
+ - `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.
+ 
+ The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.
+@@ -76,6 +77,8 @@ Before classification and each mandatory review pass, the main Agent owns self-c
+ 4. Stop editing the review scope while the Reviewer runs. Bind the pass to actual content: an exact revision for clean Git artifacts; for dirty workspaces also identify relevant staged, unstaged, untracked, deleted, and renamed content, not merely HEAD or filenames. Use content identities for non-Git artifacts. Check the same scope again before accepting feedback and before completion.
+ 5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check, assessment and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
+ 
++After each dispatched pass returns, the owner persists its feedback and appends the Review Reports index before acting on the findings or recording a terminal gate. The Reviewer stays read-only. Report persistence is owner bookkeeping, not a new review pass or approval. If saving or linking fails, preserve the returned output, stop the terminal transition and record the concrete recovery condition; never fabricate a saved report.
++
+ A mandatory pass requires an actual fresh, read-only subagent; a prompt saying “be independent” or a Markdown template is not isolation. If it is unavailable or fails, preserve self-check evidence, report the exact failure and run/workspace state, and Block with an observable recovery condition. Do not substitute inline self-review or silently switch execution modes. Infrastructure failures do not increment finding no-progress streaks. Follow stricter host failure/retry rules.
+ 
+ The core validates assessment structure, level/gate consistency, task-record fingerprint and evidence text, not semantic risk, actual subagent isolation, check execution, or external filesystem freshness; the host and main Agent must establish those facts.
+@@ -136,6 +139,30 @@ Use exactly one temporary `## Review` section with the exact `task-review-ledger
+ - When any item reaches `no-progress=2`, stop dispatching review passes. Add `## Block` with the stalled IDs and evidence as `Reason`, name the user decision or material artifact/evidence change as `Unblock when`, then set the task Blocked. Never convert a stall to `passed`.
+ - Resume only after the unblock condition occurs. Reset affected streaks to `0` only when new evidence demonstrates substantive progress; the core rejects resume while any ledger item remains at `no-progress=2`. Once a fresh pass resolves every blocking item, use `review <id> passed --resolve-ledger --snapshot <exact-reviewed-assessment-identity> --evidence <pass-and-resolution-reference>` to remove the ledger and record Passed atomically. This core-owned lifecycle write requires In Review, Required, a current task fingerprint and matching snapshot, and no stalled item; it clears Verification but preserves the unchanged assessment. The owner must verify the actual external content and every prior ID's resolution. Do not manually delete the resolved ledger then `sync`, which conservatively invalidates the assessment and would require another pass.
+ 
++### Review Reports
++
++Keep one persistent `## Review Reports` section, separate from the temporary `## Review` ledger. It is an append-only report index, not another finding ledger or source of task requirements. The owner saves each `task-review` pass to `tasks/artifacts/<task-id>/reviews/round-<NN>.md` and links it from this section. Use task-relative Markdown links in stored records; apply host path-display rules in chat.
++
++- Choose the next unused number above both existing report filenames and index entries, including after resume or reopen; pad to at least two digits. Never overwrite or renumber a report. This artifact number is not the active ledger's `Pass` counter.
++- Preserve the returned user-visible feedback, including findings, stable IDs, prior-item dispositions, checks actually performed, inherited evidence and coverage limits. Add a clearly separated owner header with task ID, round, review mode, actual run identity when available, and the reviewed snapshot. Keep owner conclusions distinct from Reviewer feedback. Never save private reasoning, full tool transcripts or secrets; explicitly mark any necessary redaction.
++- Append one row per saved report: round, report link, reviewed snapshot and brief outcome (`findings`, `no blocking findings`, `incomplete`, or `invalidated by drift`). An infrastructure failure may have a diagnostic report, but must be labeled incomplete, never a completed review. Interrupted saves are recovered by checking the existing file against the returned output and appending the missing row, not overwriting it.
++- The owner verifies the link resolves inside the owning task's reviews directory and the report's round/snapshot match its row. Before a terminal gate and completion, recheck the referenced current report and actual scope. A row or a file alone never proves independence or grants Passed.
++- The index survives ledger resolution and completion. Only the active ledger tracks current finding state; historical reports retain what was observed in their own pass. Subsequent corrections or drift are appended as explicitly labeled owner notes, never silently rewritten into past feedback.
++- Index-only bookkeeping does not require `sync`: the Task fingerprint excludes `Review Reports`, just as it excludes the temporary ledger. This exception never covers changes to Target, Scope, Plan, Result, active ledger, reviewed artifacts or substantive evidence; apply their normal invalidation and fresh-review rules. The core does not validate report files or their links; the owner does.
++
++Example stored index:
++
++```markdown
++## Review Reports
++
++| Round | Report | Snapshot | Outcome |
++| --- | --- | --- | --- |
++| 01 | [Round 01](../artifacts/example-task/reviews/round-01.md) | sha256:<reviewed-content> | findings: TR-1 |
++| 02 | [Round 02](../artifacts/example-task/reviews/round-02.md) | sha256:<revised-content> | no blocking findings |
++```
++
++Do not backfill untouched historical tasks or create an empty section for a skipped review. Standalone feedback without an owning task keeps its existing no-file behavior. Explicit adversarial-review retains its own report contract; this per-pass protocol does not add an approval loop.
++
+ ### Verification
+ 
+ Run proportionate host-native checks yourself; the core never executes arbitrary commands. Record the current outcome with `verify <id> passed|failed --evidence <one-line observation>`. A failed check blocks completion. Re-run and replace verification after relevant changes.
+diff --git a/tasks/context.md b/tasks/context.md
+index f0b3d22..70e4c03 100644
+--- a/tasks/context.md
++++ b/tasks/context.md
+@@ -151,6 +151,8 @@
+ - Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能因失败将 R2 降级，也不能把既有 Required 义务改为 Skipped；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检、assessment 和 fresh pass；当前 core 不证明实际隔离、检查运行或外部文件内容未变，这些证据由宿主与主 Agent 建立。
+ - Mandatory review 用带 `task-review-ledger/v1` marker 的唯一 task-local `## Review` current ledger 持久化单调 `TR-n` IDs 与逐 finding no-progress streak；Core 只把 fenced／indented／list-container code 与 HTML block/comment 之外的 column-zero H2 当作 record section；重复 Review sections、未知 ledger schema 与使用 alternate list markers／whitespace 的 ledger-like malformed 内容 fail closed，单个无 marker 的历史自由格式 Review 保持可读。Finding 初见为 0，同一根因／required outcome 的 fresh re-review 连续无实质 artifact／evidence 进展时递增，到 2 即保留 ledger、写入精确 Block／Unblock 条件并进入 Blocked，请求用户决策且不得自动 `Passed`；对应 streak 在新证据下重置前，Core 拒绝 resume。有效进展、证据化重分类或解决会重置／移除对应 finding，不设总 pass 上限。
+ 
++- 普通 `task-review` 返回只读反馈后，由 owning task 主 Agent 将每轮反馈保存到 `tasks/artifacts/<task-id>/reviews/round-<NN>.md`，并在独立持久的 `## Review Reports` 中记录相对链接、审查快照和结论；它不是第二份问题台账，不随临时 `## Review` 清理。文件和索引共同决定下一未用编号，resume／reopen 不覆盖历史报告。Task fingerprint 排除这个纯索引区块，但不会验证外部文件和链接，主 Agent 仍负责现场核对报告与快照；规范或实质证据变化仍触发既有失效流程。独立 adversarial-review 保留其自己的报告契约。
++
+ ### Decision and Verification Boundaries
+ - User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
+ - 新请求默认创建独立 task；明确执行 implementation-ready plan 时 resume 该 plan 的 exact record，`task-plan` → `task` 阶段变化本身不产生新 ownership。其他情况下，只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。Completed child 只能在 parent 已激活后 reopen；该动作会原子失效 parent 的 assessment、终态 review／Verification，并将 In Review parent 退回 In Progress，防止 parent 以旧 integration evidence 完成。改变 Completed child 的关系前须显式 reopen；完全相同的 reciprocal link 为 no-op，不能清除任一已完成记录的证据。
+diff --git a/tests/csl-tasks-core.test.mjs b/tests/csl-tasks-core.test.mjs
+index 7bbf064..d8605a9 100644
+--- a/tests/csl-tasks-core.test.mjs
++++ b/tests/csl-tasks-core.test.mjs
+@@ -747,6 +747,46 @@ test("all findings resolved can atomically clear the ledger and pass without reg
+   core.completeTask(root, "ledger");
+ });
+ 
++test("report indexing preserves assessment and survives ledger resolution, completion and reopen", (t) => {
++  const root = workspace(t);
++  prepareLedgerReview(root);
++  const assessment = core.readTask(root, "ledger").reviewAssessment;
++  const index = "\n## Review Reports\n\n| Round | Report | Snapshot | Outcome |\n| --- | --- | --- | --- |\n| 01 | [Round 01](../artifacts/ledger/reviews/round-01.md) | fixture-content-v1 | findings: TR-1 |\n";
++  writeFileSync(core.taskPath(root, "ledger"), body(root, "ledger") + index);
++  writeFileSync(core.taskPath(root, "ledger"), body(root, "ledger") + "| 02 | [Round 02](../artifacts/ledger/reviews/round-02.md) | fixture-content-v1 | no blocking findings |\n");
++  core.setReviewGate(root, "ledger", "passed", "Round 02: TR-1 resolved", {
++    resolveLedger: true, snapshot: assessment.snapshot,
++  });
++  assert.deepEqual(core.readTask(root, "ledger").reviewAssessment, assessment);
++  assert.equal(core.readTask(root, "ledger").reviewLedger, undefined);
++  assert.match(body(root, "ledger"), /## Review Reports/);
++  core.recordVerification(root, "ledger", true, "Final unchanged result verified");
++  core.completeTask(root, "ledger");
++  core.reopenTask(root, "ledger");
++  for (const round of ["01", "02"]) assert.ok(body(root, "ledger").includes(`round-${round}.md`));
++  assert.equal(core.readTask(root, "ledger").reviewAssessment.state, "Stale");
++});
++
++test("report indexes do not hide substantive drift or bypass explicit sync", (t) => {
++  const root = workspace(t);
++  prepareLedgerReview(root);
++  const original = body(root, "ledger");
++  const index = "\n## Review Reports\n\n| 01 | [Round 01](../artifacts/ledger/reviews/round-01.md) | fixture-content-v1 | no blocking findings |\n";
++  for (const change of [
++    (text) => text.replace("T1: Correct behavior", "T1: Different behavior"),
++    (text) => text.replace("Fixed behavior checked", "Changed evidence"),
++    (text) => text + "\n## Scope\n\nChanged scope\n",
++  ]) {
++    writeFileSync(core.taskPath(root, "ledger"), change(original + index));
++    assert.throws(() => core.setReviewGate(root, "ledger", "passed", "Indexed report", {
++      resolveLedger: true, snapshot: "fixture-content-v1",
++    }), /stale Review Assessment/);
++  }
++  writeFileSync(core.taskPath(root, "ledger"), original + index);
++  core.syncIndex(root, "ledger");
++  assert.equal(core.readTask(root, "ledger").reviewAssessment.state, "Stale");
++});
++
+ test("ledger resolution rejects missing, stale or mismatched identity without clearing findings", (t) => {
+   const root = workspace(t);
+   prepareLedgerReview(root);
+diff --git a/tests/task-files.test.mjs b/tests/task-files.test.mjs
+index e771e7a..fecb516 100644
+--- a/tests/task-files.test.mjs
++++ b/tests/task-files.test.mjs
+@@ -691,7 +691,7 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit",
+   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
+     assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
+   }
+-  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Verification", "Block"]) {
++  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Review Reports", "Verification", "Block"]) {
+     assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
+   }
+   assert.equal(skill.includes("### Checklist"), false);
+@@ -751,6 +751,21 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit",
+   assert.deepEqual(readdirSync(cslTasksSharedDir).sort(), ["lib", "protocols", "scripts"]);
+ });
+ 
++test("owning tasks persist review feedback separately from the active finding ledger", () => {
++  const task = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
++  const reviewer = readFileSync(path.join(cslTasksDir, "task-review", "SKILL.md"), "utf8");
++  const workflow = readFileSync(path.join(cslTasksDir, "task-review", "references", "review_workflow.md"), "utf8");
++  const queue = readFileSync(path.join(cslTasksDir, "task-queue", "SKILL.md"), "utf8");
++  assert.match(task, /tasks\/artifacts\/<task-id>\/reviews\/round-<NN>\.md/);
++  assert.match(task, /Never overwrite or renumber a report/);
++  assert.match(task, /Index-only bookkeeping does not require `sync`/);
++  assert.match(task, /core does not validate report files or their links/);
++  assert.match(task, /index survives ledger resolution and completion/);
++  assert.match(reviewer, /Reviewer never writes the report or task index/);
++  assert.match(workflow, /If the process stops between saving and indexing/);
++  assert.match(queue, /under that owning task's ID before the terminal gate/);
++});
++
+ test("workspace task ownership defaults independent and ambiguous outcomes to new records", () => {
+   const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "task_ownership_cases.json"), "utf8"));
+   const outcomes = new Set();

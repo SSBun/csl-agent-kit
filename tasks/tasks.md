@@ -1,5 +1,37 @@
 # 任务索引
 
+- [为 Pi 模式状态添加方括号](tasks/pi-task-mode-status-brackets.md) — Completed (2026-10-14 15:50)
+
+- [在 Pi 底部状态栏显示 Task 模式](tasks/pi-task-mode-status.md) — Completed (2026-10-14 15:46)
+
+- [将自主模式命名为 SOLO 并统一框架免确认边界](tasks/task-solo-mode.md) — Completed (2026-10-14 15:19)
+
+- [修复 Codex 未识别配置警告](tasks/fix-codex-unrecognized-config.md) — Completed (2026-10-14 14:14)
+
+- [为 Task 确认机制添加自主执行模式](tasks/task-confirm-autonomous-mode.md) — Completed (2026-10-14 11:42)
+
+- [为长期 Topic 增加共享资料目录与索引](tasks/topic-shared-resources.md) — Completed (2026-10-13 18:17)
+
+- [规划长期 Topic 与现有任务工作流集成](tasks/integrate-persistent-topics.md) — Completed (2026-10-12 18:04)
+
+- [绘制 Topic 多平台需求完整交付流程图](tasks/diagram-topic-multiplatform-workflow.md) — Completed (2026-10-12 14:17)
+
+- [研究跨平台需求共享上下文与任务流程重设计](tasks/redesign-shared-requirement-pipeline.md) — Pending (2026-10-12 11:32)
+
+- [为完成任务增加组件改动摘要](tasks/implement-task-summary.md) — Completed (2026-10-10 17:56)
+
+- [讨论任务接手摘要的最小信息集合](tasks/deliberate-task-summary.md) — Pending (2026-10-10 14:27)
+
+- [任务记录自动链接已有产物目录](tasks/task-artifacts-directory-link.md) — Completed (2026-09-18 14:11)
+
+- [设置面板英文化并自动应用修改](tasks/settings-english-auto-apply.md) — Completed (2026-09-17 17:13)
+
+- [调整 Shadowrocket fake-IP 以恢复文档抓取](tasks/fix-shadowrocket-fake-ip-fetch.md) — Blocked (2026-09-17 16:20)
+
+- [提供审查模型与思考强度的 TUI 配置面板](tasks/configure-reviewer-model-tui.md) — Blocked (2026-09-17 15:12)
+
+- [持久化逐轮审查报告并从任务记录引用](tasks/persist-task-review-reports.md) — Completed (2026-09-17 14:48)
+
 - [按关注点分组提交当前全部本地改动](tasks/commit-local-changes-20260915.md) — Completed (2026-09-17 13:07)
 
 - [修复 Pi render_ansi 工具注册冲突](tasks/fix-pi-render-ansi-conflict.md) — Completed (2026-09-15 20:30)

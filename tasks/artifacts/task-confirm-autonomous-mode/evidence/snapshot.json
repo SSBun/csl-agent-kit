@@ -1,0 +1,66 @@
+{
+  "identity": "sha256:014394d5b40e5095a7f275c55766caa74e9a2556e3dd42019b1e56d6de1d3913",
+  "head": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d53800e2f50b0dc86ba0e68111c6eef32ac8694ba13cb604cad46aa290148c7d"
+    },
+    {
+      "path": "package.json",
+      "sha256": "8e412b6f850c86799b3fb5dbaf5fca174676aafcd4e3ace832bf54f0c78a766f"
+    },
+    {
+      "path": "pi/lib/csl-settings.ts",
+      "sha256": "c47c133ed927f03f8a0eea44f19f9d65f60d3c151570d5563173a45a1ea829fb"
+    },
+    {
+      "path": "pi/extensions/csl-settings.ts",
+      "sha256": "6f3504c83235b788313ca65c8328be8808be267181d33e493b0c115d697365e0"
+    },
+    {
+      "path": "pi/extensions/csl-context-hooks.ts",
+      "sha256": "dcc8f354b0ab03a84522162afbb60fa0d60cefe4239f017f82822fad76ed5ed4"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-mode.js",
+      "sha256": "7ecf388dd916eccb97545fe17ded87165fe1224494d34cc1102cbeee849b25c0"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/task-mode.js",
+      "sha256": "b90b7c685d243738dd7fab16695a53974ff6ce1af79f14fcb14baa248624118c"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "785b86b02dcb54416dd20fc5d22c9a353fc10fff0e8bc31054fbcdab673f57df"
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js",
+      "sha256": "3119aad0b4ba9178f3c6376b882e45be58f5778e2a2c3d6d6794b058195043ff"
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "74d69924435994a272eb4030fa0e2fa5ceb192285c5e09c114aa53eac6638dd4"
+    },
+    {
+      "path": "tests/task-mode.test.js",
+      "sha256": "f083781a039befa9ed124728ba33a6e1cae80b6fcafd65e57a254caf88d5354d"
+    },
+    {
+      "path": "tests/pi-settings.test.mjs",
+      "sha256": "259c947a972d72d1a001011161dcf6343094fd68843ba0bf20df011455c664dd"
+    },
+    {
+      "path": "tests/pi-context-hooks.test.mjs",
+      "sha256": "71933b24f15838dd360ed6f5adcf0780a2c06ced7daf1f730c423c4ccd0fabf5"
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "ed236cf666a2cab061c50ed74a7565dfceba56c50ee5536b7135ae51ec11ae3d"
+    },
+    {
+      "path": "tasks/artifacts/task-confirm-autonomous-mode/evidence/self-check.md",
+      "sha256": "43d3643785d4d27e92e4574f963691c19141d199ead35330545e1a6805a62e6b"
+    }
+  ]
+}
