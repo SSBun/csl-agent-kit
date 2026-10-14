@@ -1,5 +1,7 @@
 # 任务索引
 
+- [按功能分组提交全部本地改动](tasks/commit-task-mode-changes.md) — Completed (2026-10-14 16:14)
+
 - [为 Pi 模式状态添加方括号](tasks/pi-task-mode-status-brackets.md) — Completed (2026-10-14 15:50)
 
 - [在 Pi 底部状态栏显示 Task 模式](tasks/pi-task-mode-status.md) — Completed (2026-10-14 15:46)
