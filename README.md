@@ -210,6 +210,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/csl-context-hooks.ts`：桥接 Agent Hooks 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 - `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
+- `pi/extensions/csl-settings.ts`：通过 `/csl-settings` 配置审查模型和思考强度；`csl_review_config` 只解析审查启动参数，不启动子 Agent。
 - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
 
 - `pi/extensions/csl-ansi.ts`：注册 `render_ansi` 工具，直接在会话中渲染 ANSI 彩色字符与等宽图，不添加工具标题或成功状态背景。
@@ -234,6 +235,31 @@ pi config -l       # 项目级：覆盖全局设置（写入 .pi/settings.json�
 ```
 
 TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无需手动编辑 `settings.json`。
+
+#### CSL Agent Kit 通用设置
+
+在 Pi TUI 中执行 `/csl-settings` 打开英文设置面板。每次选定值后自动保存并应用，无需 Save 或 Cancel 按钮；退出主面板保留已应用的修改，退出子菜单而未选定值则不修改该项。该入口用于 CSL Agent Kit 的通用设置，目前包括审查模型与思考强度。
+
+审查模型和思考强度可独立选择 `Inherit from parent`（继承父 Agent）。默认两项均未配置，因此在每次新审查启动前继承父会话**当时实际使用的**模型与思考强度，而不是 Pi 新会话默认值或 reviewer 自带的 `high`。`off` 表示明确关闭思考，不表示继承。
+
+设置保存在 `~/.csl-agent-kit/settings.json`；设置了 `CSL_AGENT_KIT_HOME` 时使用该目录。最小示例：
+
+```json
+{
+  "review": {
+    "model": "provider/model-id",
+    "thinking": "medium"
+  }
+}
+```
+
+删除字段、空字符串或 `null` 均表示该项继承；文件不存在或内容为 `{}` 表示全部继承。不要给 `review.model` 添加思考强度后缀。自动保存只更新审查配置，保留其他设置；无效选择或写入失败会报错，不会显示为已应用，格式损坏不会被静默覆盖。选择 `Inherit from parent` 可逐项清空覆盖，即使当前模型暂不可用也能恢复继承；实际启动审查前仍会验证最终模型与思考强度组合。
+
+Pi 中的 CSL `task-review` 和 `adversarial-review` Reviewer 启动前，主 Agent 按 `csl_review_config` 的工具指引读取配置，将返回的 `launch.model` 原样传入现有 `subagent` 调用；脚本工作流应在每个 Reviewer 子调用中传入，而不是覆盖整个工作流。该值包含 `provider/model:thinking`，因此优先于 carrier 的默认模型和思考强度。配置解析失败时应停止，不自动换模型或降级；原有 subagent 模型范围、思考上限、隔离和授权限制仍然有效。
+
+这是 CSL 审查流程的显式启动参数接入，不是对全部 subagent 调用的拦截。手动 `/run reviewer`、其他流程及 Editor 等非审查角色不受影响。工具指引要求在父会话或设置改变后重新解析；已启动或恢复的子 Agent 保留原启动契约，需要新配置时启动新的审查子 Agent。配置保存后后续解析立即生效，无需重载；初次加载新扩展仍需 `/reload`。非 TUI 模式不能打开设置面板，但仍可调用只读解析工具。没有加载此扩展的宿主不使用此 Pi 配置。
+
+#### 模型预设
 
 模型与 thinking level 预设写在 `~/.pi/agent/presets.json`：
 
