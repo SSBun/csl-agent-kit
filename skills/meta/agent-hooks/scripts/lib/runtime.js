@@ -27,11 +27,14 @@ const CODEX_CAPABILITIES = {
   "subagent-start": { inject: true, script: true, block: false },
   "subagent-stop": { inject: false, script: true, block: true },
   stop: { inject: false, script: true, block: true },
+  interrupt: { inject: false, script: true, block: false },
+  "session-end": { inject: false, script: true, block: false },
 };
-// Claude Code shares Codex's stdin/stdout hook protocol (hookSpecificOutput,
-// exit 2 block, PermissionRequest deny, PreCompact continue:false), so every
-// Codex event/action is also physically realizable on Claude Code.
-const CLAUDE_CODE_CAPABILITIES = CODEX_CAPABILITIES;
+// Preserve the existing shared protocol surface. These additional terminal
+// lifecycle events are registered only by the Codex plugin manifest.
+const CLAUDE_CODE_CAPABILITIES = { ...CODEX_CAPABILITIES };
+delete CLAUDE_CODE_CAPABILITIES.interrupt;
+delete CLAUDE_CODE_CAPABILITIES["session-end"];
 
 // Pi has no native hook protocol; triggers run inside the csl-context-hooks
 // extension via pi.on(event, handler). Inject only works where the handler can

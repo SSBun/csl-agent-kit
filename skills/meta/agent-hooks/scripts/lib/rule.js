@@ -15,6 +15,8 @@ const EVENTS = new Set([
   "subagent-start",
   "subagent-stop",
   "stop",
+  "interrupt",
+  "session-end",
 ]);
 const ACTIONS = new Set(["inject-prompt", "run-script"]);
 const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout", "inject-output"]);

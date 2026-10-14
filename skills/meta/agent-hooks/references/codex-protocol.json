@@ -56,6 +56,18 @@
       "native": { "agent_id": "a1", "agent_type": "reviewer", "stop_hook_active": false, "last_assistant_message": "done" },
       "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": { "id": "a1", "type": "reviewer" }, "stop": { "hook_active": false, "last_message": "done" } }
     },
+    "Interrupt": {
+      "event": "interrupt",
+      "capability": { "inject": false, "script": true, "block": false },
+      "native": { "turn_id": "turn-1" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": null, "stop": null }
+    },
+    "SessionEnd": {
+      "event": "session-end",
+      "capability": { "inject": false, "script": true, "block": false },
+      "native": { "reason": "other" },
+      "expected": { "prompt": null, "tool": null, "permission": null, "compact": null, "subagent": null, "stop": null }
+    },
     "Stop": {
       "event": "stop",
       "capability": { "inject": false, "script": true, "block": true },

@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "Interrupt": [{
+      "hooks": [{
+        "type": "command",
+        "command": "sh -c 'exec node \"$PLUGIN_ROOT/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
+        "timeout": 3
+      }]
+    }],
+    "SessionEnd": [{
+      "hooks": [{
+        "type": "command",
+        "command": "sh -c 'exec node \"$PLUGIN_ROOT/skills/meta/agent-hooks/scripts/agent-hooks.js\" dispatch'",
+        "timeout": 3
+      }]
+    }]
+  }
+}

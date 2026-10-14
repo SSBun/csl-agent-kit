@@ -18,6 +18,8 @@ const NATIVE_EVENTS = {
   SubagentStart: "subagent-start",
   SubagentStop: "subagent-stop",
   Stop: "stop",
+  Interrupt: "interrupt",
+  SessionEnd: "session-end",
 };
 
 function normalizePayload(native, host, event, workspace) {
@@ -63,9 +65,15 @@ function dispatch(input = fs.readFileSync(0, "utf8"), env = process.env, io = pr
     const event = NATIVE_EVENTS[native.hook_event_name];
     if (!event) return 0;
     const host = env.PLUGIN_ROOT ? "codex" : "claude-code";
+    const terminalEvent = event === "interrupt" || event === "session-end";
+    if (terminalEvent && host !== "codex") return 0;
     const workspace = canonicalWorkspace(native.cwd || process.cwd());
     const payload = normalizePayload(native, host, event, workspace);
-    const result = runEvent(payload, { host, workspace });
+    const result = runEvent(payload, {
+      host, workspace,
+      // Codex caps these native hooks at three seconds, including dispatch overhead.
+      eventBudgetMs: terminalEvent ? 2500 : undefined,
+    });
     const diagnostics = dedupeDiagnostics(payload, result.diagnostics);
     if (diagnostics.length > 0) io.stderr.write(`Agent Hooks: ${diagnostics.join(", ")}\n`);
     if (result.blocked) {

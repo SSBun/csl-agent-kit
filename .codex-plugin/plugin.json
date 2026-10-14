@@ -35,6 +35,7 @@
     "beautiful-mermaid"
   ],
   "skills": "./skills/",
+  "hooks": ["./hooks/hooks.json", "./hooks/codex-lifecycle.json"],
   "interface": {
     "displayName": "CSL Agent Kit",
     "shortDescription": "Multi-client agent toolkit",

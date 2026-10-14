@@ -339,6 +339,11 @@ test("maps script success, failure, timeout, signal, post-event exit two, and sy
   const hooks = path.join(data, "hooks");
   fs.mkdirSync(scripts, { recursive: true });
   fs.mkdirSync(hooks, { recursive: true });
+  // This fixture asserts global-script exit mapping, not optional bundled observers.
+  fs.writeFileSync(path.join(hooks, "config.json"), JSON.stringify({
+    schema: "agent-hooks.config/v1",
+    disabledHooks: ["inner:itermate-codex-before-tool", "inner:itermate-codex-after-tool"],
+  }));
   const payload = (event) => agentHooks.normalizePayload({ hook_event_name: event === "before-tool" ? "PreToolUse" : "PostToolUse", session_id: "s", tool_name: "Bash" }, "codex", event, data);
   const writeRule = (name, event, script) => fs.writeFileSync(path.join(hooks, `${name}.md`), `---\nschema: agent-hooks/v1\nevent: ${event}\naction: run-script\nenabled: true\nscript: ${script}\n---\n`);
 
