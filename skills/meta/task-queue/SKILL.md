@@ -29,6 +29,10 @@ Apply `task`'s Task Artifacts contract to each owning parent or child: the share
 
 Do not duplicate a child's Target, Plan, Result, or status in the parent. The parent Plan links or names children and states dependencies only.
 
+## Optional Topic Membership
+
+Apply `task`'s optional Topic contract independently to an associated parent and each associated child. Topic membership does not create Queue links, order all members, or permit cross-workspace Parent/Children. Propose binding new children to the parent's Topic when their scope fits; do not silently reassign existing tasks or assume membership was inherited. Each task pins its applicable specification revision and checks it before review/verification/completion. The parent integration gate also checks its own binding and relevant child evidence against the currently accepted integration requirements. Finishing the Queue never archives the Topic; later bugs and reviews may create new tasks under it.
+
 ## Sequential Execution
 
 1. Confirm the parent is In Progress.

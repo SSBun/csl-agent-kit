@@ -25,6 +25,10 @@ This skill owns planning-task activation, the planned-task Target meaning, permi
 6. Refine the record's Target, Decisions, Scope, and Plan. When the record is intended for later execution, ensure the accepted Target describes the final deliverable rather than merely the existence of a plan; any material refinement re-enters the shared alignment protocol. Then run `sync <id>` and `check <id>`.
 7. Return a decisions-only handoff: final decisions, material constraints, unresolved user decisions, and the canonical record path. Do not include the interview transcript or private reasoning.
 
+## Optional Topic
+
+For planning under an explicitly selected persistent Topic, load `topic` and use its shared specification rather than copying it into this task. The alignment protocol permits only the minimal selected-Topic lookup needed to form an honest Target before alignment. Bind the planning task through the shared CLI with maintenance mode and an explicit planning scope; a Draft Topic may be the subject of planning, not execution authorization. Preserve the adopted revision and check freshness before handing off. When later executing product implementation, explicitly switch the binding to implementation mode, require an Active current Topic, and retain the existing execution-authorization gate. Unrelated standalone plans need no Topic. Topic creation/updates remain a concrete owning outcome, not permission to implement all its member tasks.
+
 ## Plan Record
 
 Use `task`'s Task Artifacts contract: the shared core adds the top-level directory link when artifacts exist and refreshes it on lifecycle writes. After producing a separate planning artifact, update the owning record before handoff; do not create an empty directory for navigation.

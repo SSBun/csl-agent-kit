@@ -3,6 +3,8 @@
 
 const path = require("node:path");
 const core = require("../lib/task-core.js");
+const topics = require("../lib/topic-core.js");
+const topicCli = require("../lib/topic-cli.js");
 
 const HELP = `Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]
 
@@ -25,7 +27,10 @@ Commands:
   review <id> <skipped|required|passed|approved> --evidence <text>
     passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve
   verify <id> <passed|failed> --evidence <text>
-  complete <id>`;
+  complete <id>
+  topic <command> [arguments]
+
+${topicCli.HELP}`;
 
 function takeOption(args, name, { many = false } = {}) {
   const values = [];
@@ -51,6 +56,7 @@ function summary(task) {
     parent: task.parent || null,
     children: task.children.map(({ id }) => id),
     reviewAssessment: task.reviewAssessment || null,
+    ...(task.topic ? { topic: task.topic } : {}),
   };
 }
 
@@ -69,6 +75,9 @@ function run(argv, io = console) {
     let output;
 
     switch (command) {
+      case "topic":
+        output = topicCli.run(workspace, args, takeOption);
+        break;
       case "create": {
         const id = args.shift();
         const title = takeOption(args, "--title");
@@ -119,7 +128,10 @@ function run(argv, io = console) {
         break;
       case "resume":
         if (args.length !== 1) throw new Error("resume needs one task id");
-        output = summary(core.resumeTask(workspace, args[0]));
+        {
+          const task = core.resumeTask(workspace, args[0]);
+          output = { ...summary(task), ...(task.topic ? { topicFreshness: topics.freshness(workspace, task) } : {}) };
+        }
         break;
       case "reopen":
         if (args.length !== 1) throw new Error("reopen needs one task id");

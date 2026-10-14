@@ -1,0 +1,22 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Create a persistent Topic for account deletion; discuss the specification first, without implementing.",
+    "Continue the offline sync Topic and show its related tasks.",
+    "Attach this Android bug-fix task to the account deletion Topic.",
+    "Update the shared specification of the login Topic and identify affected tasks.",
+    "Archive this Topic after showing the impact on its active tasks.",
+    "Review the current implementation of the account deletion Topic without fixing findings."
+  ],
+  "should_not_trigger": [
+    "Fix this standalone typo; there is no shared topic.",
+    "Create an ordered Queue for these unrelated tasks.",
+    "List trending discussion topics on the web.",
+    "Summarize which components this task changed."
+  ],
+  "near_neighbor": [
+    "Update the long-lived project architecture Context Pack.",
+    "Plan an independent feature implementation.",
+    "Explain the Task versus Queue distinction."
+  ]
+}

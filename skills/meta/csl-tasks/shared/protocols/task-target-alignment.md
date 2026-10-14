@@ -74,8 +74,12 @@ A Target is ready only when the request supports one concrete, independently acc
 - If a user-owned ambiguity prevents an honest Target, ask one focused question.
 - Once a concrete outcome exists, activate and focus its owning record before further clarification or presentation.
 - Task lifecycle writes required for create, resume, reopen, focus, sync, and check are bootstrap exceptions; they are not execution authorization.
-- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands.
+- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands. The sole additional source-lookup exception is the minimum read-only specification/scope and relevant task references of a Topic explicitly selected by the user or already bound to the owning task, when needed to form an honest Target. Resolve only that exact reference; no repository scan, implementation research, implicit Topic selection or write is authorized by this exception.
 - Do not ask the user for implementation facts that can be inspected after alignment.
+
+## Persistent Topic Boundary
+
+A Topic carries shared current requirements, not user approval. Reading the same Topic or revision across tasks or sessions does not create accepted-target evidence or a delegation packet. Apply the current request and recoverable user acceptance to the local task scope; a missing source remains an alignment hold. A changed Topic revision requires impact analysis: material requirement changes use the existing realignment procedure, while a checked non-material change may adopt the current revision without inventing a new goal. Topic lifecycle state, content digests and adoption notes never authorize execution. Topic maintenance is itself an owning task when it has a concrete outcome; internal association commands do not recursively create tasks.
 
 ## Interaction Owner and Delegated Execution
 

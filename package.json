@@ -43,7 +43,7 @@
     "test:all": "npm test && npm run test:pi",
     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
     "test:agent-hooks": "node --test tests/agent-hooks.test.js",
-    "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs",
+    "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs tests/topics.test.mjs",
     "test:archive": "node --test tests/archive-session.test.mjs",
     "test:pi": "node tests/run-pi-tests.js",
     "check": "node --check bin/csl-agent-kit.js && npm run test:all && node bin/csl-agent-kit.js install --yes --dry-run --json",

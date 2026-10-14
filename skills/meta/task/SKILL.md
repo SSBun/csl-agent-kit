@@ -21,6 +21,14 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
 - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
 - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
 
+## Optional Topic Context
+
+A task may bind to one persistent Topic through `topic`'s [storage contract](../topic/references/topic-contract.md). No binding is the normal independent-task path. Topic membership is separate from Queue Parent/Children and does not change Task Kind or grant execution permission. Load the `topic` Skill when the user names a Topic or the task has an explicit binding; do not infer membership from filenames.
+
+Use `topic task <id>` to inspect the adopted revision and freshness on start/resume. A stale or unavailable Topic permits diagnosis and explicit adoption/repair, not dependent implementation or terminal completion. The shared CLI checks current normative content, pinned dependencies and the backlink at assessment, review, passed verification and completion. Read the adopted snapshot and current specification before impact analysis; `topic adopt` records the disposition and invalidates task evidence. Material requirement changes still require realignment. A Topic-maintenance task adopts its own final specification change before self-check; maintenance mode never authorizes product implementation against Draft/Archived.
+
+Create a new task for a new bug, enhancement or bounded review under the same Topic; reopen only under the existing same-outcome rules. Completing this task does not close the Topic. Keep Task Summary focused on actual component changes, not shared specification prose. Do not mutate a Completed task's binding without reopening, and do not detach to bypass a stale specification or required review.
+
 ## Task Artifacts
 
 Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:
@@ -38,7 +46,7 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
 ## Activation and Ownership
 
 - Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
-- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
+- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. The shared alignment protocol's narrow, read-only lookup of an explicitly selected Topic to form an honest Target is also permitted; it is not general source exploration. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
 - The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.
 - Start a new task for every independently acceptable user outcome in the main session.
 - A delegated child must use the existing owning task named by the main session's current delegation packet. It must not create another task, present a user-facing checkpoint, or invent broader ownership; missing or out-of-Plan delegation returns to the main session under the shared protocol.
@@ -103,6 +111,10 @@ Add only when an adjacent boundary is easy to include accidentally, the user exc
 ### Plan
 
 Use an ordered list without checkboxes. Keep only current result nodes, dependencies, and next actions. Do not prescribe algorithms, files, functions, types, or call paths unless the user requires them.
+
+### Topic
+
+Only for an associated task, keep one CLI-owned `task-topic/v1` section with Reference, Repository identity, adopted Revision, Applies scope and implementation/maintenance Mode. Use `topic attach`, `detach` or `adopt`, never hand-edit a binding or digest. The section participates in the task fingerprint. Topic Adoption is the current impact-disposition note, not approval evidence or another task status. The Topic contract defines cross-workspace permission, optimistic versions and partial-link repair.
 
 ### Task Summary
 

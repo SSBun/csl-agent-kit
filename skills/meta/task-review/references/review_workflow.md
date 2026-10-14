@@ -31,6 +31,7 @@ The main Agent combines the fixed prompt below with one factual packet:
 - original request and effective revisions, current Target, and accepted constraints with recoverable sources; never just the author's requirement summary
 - actual artifacts, relevant diff, and a review-scope snapshot identity
 - applicable rules/spec, allowed checks, prohibited actions, and known material limitations
+- when Topic-bound: exact Topic reference, adopted normative snapshot, current revision/freshness observation, applicable clauses and any impact disposition; verify access and do not substitute Topic state for user authorization
 - applicable Result/Verification, the current Review Assessment (level, grounds, snapshot identity), and per-Target self-check evidence: requirement, observation, check and checked version, what it proves, and limitations
 - for an owning-task re-review, the current `task-review-ledger/v1` `## Review` ledger and next unused `TR-<n>` ID; for an initial owning-task pass, an empty ledger and next ID 1
 
@@ -39,6 +40,8 @@ Keep original requirements, constraints, scope, and important limitations visibl
 Exclude the author's private reasoning, defense, confidence scores, desired verdict, suggested Reviewer response, and resolved self-check narrative. Preserve accepted decisions and unresolved facts; removing bias never permits hiding a material limitation. The Reviewer may inspect relevant surrounding evidence and run authorized non-destructive checks, but must not edit or delegate.
 
 ## Snapshot and Isolation
+
+For a Topic-bound task, inspect the applicable specification and pinned normative dependencies before author evidence. Check the adopted/current revision at entry and again before concluding. Inaccessible content, revision drift or an unresolved backlink is an explicit evidence gap, not permission to use cached requirements as current. Historical task completion proves only its recorded scope/version; a new Topic review does not automatically authorize remediation or archive the Topic.
 
 The owner freezes its review-scope edits while the Reviewer works. Identify a clean Git artifact with an exact revision; for a dirty workspace also capture the scoped staged/unstaged diff and content identities of relevant untracked files, deletions, and renames. HEAD, timestamps, or a filename list alone are insufficient. Use equivalent content/version identities for non-Git results. Do not include unrelated workspace changes or demand a clean whole repository.
 

@@ -145,6 +145,8 @@ Treat discoverability only as a cost signal. If removing the candidate would not
 
 ## Route Elsewhere
 
+- Current requirements and common decisions for a persistent maintenance theme → its canonical Topic, when explicitly established. Tasks bind to that shared specification; Topic content is not another Context Pack, and membership never grants execution authorization. Keep only separately confirmed stable project facts in Context.
+
 - Current state, progress, results, evidence, next steps, branches, and workarounds → owning task record.
 - Reusable Agent behavior after a correction → `tasks/lessons.md`.
 - Mandatory or prohibited behavior → rules or `AGENTS.md`.

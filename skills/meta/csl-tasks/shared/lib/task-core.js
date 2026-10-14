@@ -3,6 +3,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
+const topics = require("./topic-core.js");
+const readVersions = new Map();
 
 const STATE_DISPLAY = {
   pending: "Pending",
@@ -27,11 +29,11 @@ const REVIEW_LEDGER_ENTRY_PATTERN = /^- `(TR-([1-9]\d*))` \| no-progress=([012])
 const HTML_BLOCK_TAGS = new Set("address article aside base basefont blockquote body caption center col colgroup dd details dialog dir div dl dt fieldset figcaption figure footer form frame frameset h1 h2 h3 h4 h5 h6 head header hr html iframe legend li link main menu menuitem nav noframes ol optgroup option p param search section summary table tbody td tfoot th thead title tr track ul".split(" "));
 
 function tasksDir(workspace) {
-  return path.join(path.resolve(workspace), "tasks", "tasks");
+  return path.join(fs.realpathSync(path.resolve(workspace)), "tasks", "tasks");
 }
 
 function indexPath(workspace) {
-  return path.join(path.resolve(workspace), "tasks", "tasks.md");
+  return path.join(fs.realpathSync(path.resolve(workspace)), "tasks", "tasks.md");
 }
 
 function taskPath(workspace, id) {
@@ -395,6 +397,7 @@ function requireCurrentReviewAssessment(task) {
 
 function recordReviewAssessment(workspace, id, level, options = {}) {
   const task = readTask(workspace, id);
+  topics.fresh(workspace, task);
   if (task.status.state !== "in_progress") throw new Error("assess-review requires In Progress");
   const value = String(level || "").toUpperCase();
   if (!["R0", "R1", "R2"].includes(value)) throw new Error(`invalid review level: ${level}`);
@@ -498,7 +501,8 @@ function childrenOf(text) {
 }
 
 function readTask(workspace, id) {
-  const file = taskPath(workspace, id);
+  const file = topics.safePath(workspace, `tasks/tasks/${id}.md`);
+  assertId(id);
   let text;
   try {
     text = fs.readFileSync(file, "utf8");
@@ -506,6 +510,7 @@ function readTask(workspace, id) {
     if (error.code === "ENOENT") throw new Error(`task not found: ${id}`);
     throw error;
   }
+  readVersions.set(file, text);
   return parseTask(id, text, file);
 }
 
@@ -521,6 +526,7 @@ function parseTask(id, text, file) {
     status: statusOf(text),
     kind,
     parent: !parent || parent === "none" ? undefined : parent,
+    topic: topics.taskTopic(text),
     children: childrenOf(text),
     targets: targetsOf(text),
     results: resultsOf(text),
@@ -558,6 +564,22 @@ function withArtifactsLink(workspace, id, text) {
 }
 
 function writeMany(workspace, changes) {
+  return topics.withLocks([workspace], () => writeLocked(workspace, changes));
+}
+
+function writeLocked(workspace, changes) {
+  for (const [file, text] of changes) {
+    topics.safePath(workspace, path.relative(fs.realpathSync(path.resolve(workspace)), file));
+    if (readVersions.has(file) && fs.readFileSync(file, "utf8") !== readVersions.get(file)) throw new Error(`concurrent change: ${file}`);
+    if (path.dirname(file) === tasksDir(workspace)) {
+      const task = parseTask(path.basename(file, ".md"), text, file);
+      const before = readVersions.has(file) ? parseTask(task.id, readVersions.get(file), file) : undefined;
+      const advances = (["completed", "in_review"].includes(task.status.state) && task.status.state !== before?.status.state)
+        || (task.verification?.[1] === "Passed" && task.verification[0] !== before?.verification?.[0])
+        || (["Skipped", "Passed", "Approved"].includes(task.review?.[1]) && task.review[0] !== before?.review?.[0]);
+      if (advances) topics.fresh(workspace, task);
+    }
+  }
   const originals = new Map();
   try {
     for (const [file, text] of changes) {
@@ -566,11 +588,14 @@ function writeMany(workspace, changes) {
         : text;
       originals.set(file, fs.existsSync(file) ? fs.readFileSync(file, "utf8") : undefined);
       atomicWrite(file, output);
+      readVersions.set(file, output);
     }
   } catch (error) {
     for (const [file, original] of originals) {
       if (original === undefined) fs.rmSync(file, { force: true });
       else atomicWrite(file, original);
+      if (original === undefined) readVersions.delete(file);
+      else readVersions.set(file, original);
     }
     throw error;
   }
@@ -582,7 +607,9 @@ function indexEntry(task, timestamp = task.status.timestamp) {
 
 function updatedIndex(workspace, task, timestamp, existingText) {
   const file = indexPath(workspace);
-  const text = existingText ?? (fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "# 任务索引\n");
+  const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : undefined;
+  if (current !== undefined) readVersions.set(file, current);
+  const text = existingText ?? current ?? "# 任务索引\n";
   const lines = text.replace(/\s+$/, "").split(/\r?\n/);
   const link = `(tasks/${task.id}.md)`;
   const matches = lines.map((line, index) => line.includes(link) ? index : -1).filter((index) => index !== -1);
@@ -677,8 +704,10 @@ function setState(workspace, id, requested) {
   if (!allowed[task.status.state].has(state)) throw new Error(`cannot move ${task.status.display} to ${STATE_DISPLAY[state]}`);
   if (state === "in_progress" && task.targets.length === 0) throw new Error("In Progress requires at least one Target");
   if (state === "in_review" && task.review?.[1] !== "Required") throw new Error("In Review requires a required review gate");
+  if (state === "in_review") topics.fresh(workspace, task);
   if (state === "blocked" && !section(task.text, "Block")) throw new Error("Blocked requires an active Block section");
   let text = replaceStatus(task.text, state);
+  if (state === "cancelled") text = invalidateReviewGate(text, "Task cancelled; refresh evidence before continuing");
   if (task.status.state === "in_review" && state !== "in_review") {
     text = invalidateReviewGate(text, "Task left In Review; rerun the applicable review after revisions");
     text = replaceSection(text, "Verification", undefined);
@@ -747,6 +776,7 @@ function recordResult(workspace, id, targetId, evidence) {
 
 function setReviewGate(workspace, id, decision, evidence, options = {}) {
   const task = readTask(workspace, id);
+  topics.fresh(workspace, task);
   if (task.status.state === "completed") throw new Error("reopen the task before changing the review gate");
   const values = { skipped: "Skipped", required: "Required", passed: "Passed", approved: "Approved" };
   const key = String(decision || "").toLowerCase();
@@ -794,10 +824,12 @@ function setReviewGate(workspace, id, decision, evidence, options = {}) {
 
 function recordVerification(workspace, id, passed, evidence) {
   const task = readTask(workspace, id);
+  if (passed) topics.fresh(workspace, task);
   if (task.status.state === "completed") throw new Error("reopen the task before changing verification");
   const value = String(evidence || "").trim();
   if (!value || /[\r\n]/.test(value)) throw new Error("verification evidence must be one line");
-  const text = replaceSection(task.text, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
+  const base = passed ? task.text : invalidateReviewGate(task.text, "Verification failed; refresh self-check and applicable review");
+  const text = replaceSection(base, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
   writeMany(workspace, [[task.file, text]]);
   return readTask(workspace, id);
 }
@@ -856,6 +888,7 @@ function nextChild(workspace, parentId) {
 
 function completeTask(workspace, id) {
   const task = readTask(workspace, id);
+  topics.fresh(workspace, task);
   if (!["in_progress", "in_review"].includes(task.status.state)) throw new Error("only active tasks can be completed");
   if (task.targets.length === 0) throw new Error("completion requires at least one Target");
   const unchecked = task.targets.find((target) => !target.checked);
@@ -949,6 +982,14 @@ function listTasks(workspace) {
 }
 
 module.exports = {
+  atomicWrite,
+  sectionsOf,
+  replaceSection,
+  replaceStatus,
+  invalidateReviewGate,
+  renderMetadata,
+  parseTask,
+  updatedIndex,
   STATE_DISPLAY,
   cancelTask,
   checkTaskIndex,

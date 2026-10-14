@@ -50,6 +50,12 @@ Choose exactly one workflow from the user's authorized outcome:
 
 An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
 
+## Persistent Topics
+
+When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
+
+Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep Project Context for project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
+
 ## Task Target
 
 When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.

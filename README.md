@@ -19,6 +19,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
 | task-context | `/csl:task-context` | `/task-context` | Ensure a standard Project Core, query task-relevant Context Packs, then maintain durable context. |
+| topic | `/csl:topic` | `/topic` | 管理长期维护主题的共享规格、版本及任务引用；支持实现、Bug 修复和审查，不限于多平台。 |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
@@ -35,6 +36,19 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
 内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+
+## 长期 Topic 与独立任务
+
+Topic 保存一个长期主题的当前有效规格，不是另一个任务类型或执行队列。可直接说“创建一个 Topic：账号注销，先讨论需求”“在账号注销 Topic 下排查 Bug”或“继续这个 Topic，查看相关任务”。建立 Topic 不会自动实施全部任务；所有任务完成也不会关闭 Topic。
+
+- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；不可变规格快照位于该 Topic 的 `revisions` 目录。
+- Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Topic 的任务列表只存引用和职责，状态现场读取。
+- Topic 使用 Draft、Active、Archived；归档和恢复均需明确意图。Queue 仍管理本地串行依赖，与 Topic 归属分开。
+- 通过共享 CLI 的 `topic` 子命令读写；`--help` 列出创建、更新规格、关联、采用新版本、校验和修复命令。版本变化会在评估及终态关卡被检查，不能只改 hash 消除过期。
+- 跨仓引用复用已确认的 project-index 映射，校验 Git root 和 origin 身份；跨仓写入需明确授权及 `--allow-cross-workspace`。不支持自动扫描仓库、自动注册或远程克隆。规范性外部接口需有显式固定摘要的本地文件，不自动抓取浮动 URL。
+- 内容版本、Active 状态和 maintenance 模式都不代表执行授权。半完成关联必须显式修复；写锁不会自动抢占，多仓写入不宣称崩溃原子性。
+
+详见 [Topic Skill](skills/meta/topic/SKILL.md) 与 [存储和命令契约](skills/meta/topic/references/topic-contract.md)。
 
 ## Canonical source and duplicates
 
