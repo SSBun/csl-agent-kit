@@ -293,7 +293,7 @@ Pi 保留直接 `/task-mode` 命令及 `/csl-settings` 面板；需要走 Agent 
 
 配置全部保存在用户数据目录（`CSL_AGENT_KIT_HOME`，默认 `~/.csl-agent-kit`）：全局复用 `settings.json` 中的 `task.mode`；项目位于 `projects/<规范化工作区路径摘要>/settings.json`；会话位于 `sessions/<宿主、工作区和会话ID摘要>/settings.json`。项目设置不从仓库读取，避免仓库改动自行开启自主权限；同一路径重开仍有效，移动项目后视为另一项目。恢复同一会话保留覆盖，新会话或不同宿主不继承旧会话覆盖。`inherit` 删除当前层 `task.mode`，保留其他配置。未配置时默认确认；损坏或无效配置降回确认并报告错误，不复用旧自主状态。
 
-Pi 在每次 Agent 开始处理新一轮请求时重新解析配置，包括恢复与压缩后的会话；正在执行的一轮不承诺即时切换。初次安装此功能需 `/reload`，且必须启用 `csl-context-hooks` 和 `inner:csl-agent-kit-contract` 才会注入模式。设置面板或命令的保存成功本身不证明 Hook 已启用。原生 Codex/Claude Code 在 SessionStart（含 resume/compact）读取配置；中途修改后需恢复会话，或由 Agent 使用真实宿主/会话 ID 显式重新查询后才应用。没有模式注入的宿主不能仅凭已保存配置声称功能生效。
+Pi 在每次 Agent 开始处理新一轮请求时重新解析配置，包括恢复与压缩后的会话；正在执行的一轮不承诺即时切换。初次安装或更新此功能需 `/reload`；设置模块重载时会定向清除共享模式模块的原生缓存，避免磁盘已更新为 SOLO 而命令仍使用旧枚举。如果重载后仍显示只接受 autonomous，检查实际加载的插件副本是否已更新；`/reload` 不会下载新版本。必须启用 `csl-context-hooks` 和 `inner:csl-agent-kit-contract` 才会注入模式。设置面板或命令的保存成功本身不证明 Hook 已启用。原生 Codex/Claude Code 在 SessionStart（含 resume/compact）读取配置；中途修改后需恢复会话，或由 Agent 使用真实宿主/会话 ID 显式重新查询后才应用。没有模式注入的宿主不能仅凭已保存配置声称功能生效。
 
 跨宿主配置入口（从已安装包根目录调用；会话 ID 必须来自宿主，不可猜测）：
 

@@ -13,7 +13,12 @@ export interface TaskModeState {
 	layers: Record<TaskModeScope, TaskMode>;
 	paths: Record<TaskModeScope, string | null>;
 }
-const taskModes = createRequire(import.meta.url)("../../skills/meta/csl-tasks/shared/lib/task-mode.js") as {
+const require = createRequire(import.meta.url);
+const taskModesPath = require.resolve("../../skills/meta/csl-tasks/shared/lib/task-mode.js");
+// Pi reloads this TS module, but native createRequire keeps its own CommonJS cache.
+// Evict only this direct, stateless dependency so /reload also picks up mode changes.
+delete require.cache[taskModesPath];
+const taskModes = require(taskModesPath) as {
 	resolveTaskMode(options: TaskModeOptions): TaskModeState;
 	saveTaskMode(scope: TaskModeScope, mode: TaskMode, options: TaskModeOptions): string;
 };

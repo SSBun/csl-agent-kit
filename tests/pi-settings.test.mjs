@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createRequire } from "node:module";
 import test from "node:test";
 import cslSettings from "../pi/extensions/csl-settings.ts";
 import { loadReviewSettings, resolveReviewSettings, saveReviewSettings, resolveTaskMode } from "../pi/lib/csl-settings.ts";
@@ -204,6 +205,31 @@ test("failed validation retains applied values; clearing works with unavailable 
     assert.deepEqual(loadReviewSettings(f.path), {});
     assert.equal(f.notifications.length, 1);
   } finally { f.cleanup(); }
+});
+
+test("reloading the settings helper evicts only its stale native task-mode dependency", async () => {
+  const f = fixture();
+  const require = createRequire(import.meta.url);
+  const sharedPath = require.resolve("../skills/meta/csl-tasks/shared/lib/task-mode.js");
+  const previous = require.cache[sharedPath];
+  const unrelatedPath = require.resolve("../skills/meta/csl-tasks/shared/lib/task-core.js");
+  require(unrelatedPath);
+  const unrelated = require.cache[unrelatedPath];
+  try {
+    require.cache[sharedPath] = {
+      ...previous,
+      exports: { ...previous.exports, saveTaskMode() { throw new Error("Mode must be confirm, autonomous, or inherit"); } },
+    };
+    const reloaded = await import("../pi/lib/csl-settings.ts?task-mode-reload");
+    const options = { workspace: f.ctx.cwd, host: "pi", sessionId: "settings-session" };
+    reloaded.saveTaskMode("project", "solo", options);
+    assert.equal(reloaded.resolveTaskMode(options).mode, "solo");
+    assert.equal(require.cache[unrelatedPath], unrelated);
+    assert.deepEqual(loadReviewSettings(f.path), {});
+  } finally {
+    require.cache[sharedPath] = previous;
+    f.cleanup();
+  }
 });
 
 test("task settings panel persists scopes; command distinguishes confirm from inherit", async () => {
