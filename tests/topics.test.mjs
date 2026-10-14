@@ -314,6 +314,148 @@ test("concurrent member additions reject a stale writer instead of losing a back
   assert.equal(topics.check(root, "account").valid, true);
 });
 
+test("new Topics provide a shared resources directory and clickable classified index", (t) => {
+  const root = workspace(t);
+  const current = topic(root);
+  const relative = "tasks/topics/account/resources/design notes #1.md";
+  fs.writeFileSync(path.join(root, relative), "Background notes");
+  const updated = topics.updateResources(root, "account", current.version, [
+    { label: "Design notes", target: relative, purpose: "Long-lived reference", kind: "reference" },
+    { label: "Remote design", target: "https://example.com/design", purpose: "External reference", kind: "reference" },
+  ]);
+  assert.equal(updated.revision, current.revision);
+  assert.match(updated.text, /\[Design notes\]\(<account\/resources\/design%20notes%20%231.md>\)/);
+  assert.equal(updated.resources[0].target, relative);
+  assert.equal(fs.readFileSync(path.join(root, relative), "utf8"), "Background notes");
+  assert.equal(topics.check(root, "account").valid, true);
+});
+
+test("reference metadata and content changes do not stale a bound task", (t) => {
+  const root = workspace(t);
+  topic(root); task(root); attach(root);
+  const record = core.readTask(root, "ios");
+  const initial = topics.readTopic(root, "account");
+  fs.writeFileSync(path.join(root, "notes.md"), "v1");
+  const resource = { label: "Notes", target: "notes.md", purpose: "Background only", kind: "reference" };
+  let updated = topics.updateResources(root, "account", initial.version, [resource]);
+  fs.writeFileSync(path.join(root, "notes.md"), "v2");
+  updated = topics.updateResources(root, "account", updated.version, [{ ...resource, purpose: "Updated reference description" }]);
+  assert.equal(topics.fresh(root, core.readTask(root, "ios")).revision, initial.revision);
+  assert.equal(core.readTask(root, "ios").text, record.text);
+  topics.updateResources(root, "account", updated.version, []);
+  assert.equal(fs.readFileSync(path.join(root, "notes.md"), "utf8"), "v2");
+  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, true);
+});
+
+test("normative resource changes use the existing revision and terminal gates", (t) => {
+  const root = workspace(t);
+  const initial = topic(root);
+  fs.writeFileSync(path.join(root, "api.json"), "v1");
+  const resource = { label: "API", target: "api.json", purpose: "Shared contract", kind: "normative", sha256: topics.hash("v1") };
+  const first = topics.updateResources(root, "account", initial.version, [resource]);
+  assert.notEqual(first.revision, initial.revision);
+  task(root); attach(root); core.resumeTask(root, "ios");
+  fs.writeFileSync(path.join(root, "api.json"), "v2");
+  assert.throws(() => core.recordVerification(root, "ios", true, "Fixture"), /dependency changed/);
+  const second = topics.updateResources(root, "account", topics.readTopic(root, "account").version, [{ ...resource, sha256: topics.hash("v2") }]);
+  assert.notEqual(second.revision, first.revision);
+  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
+  topics.adopt(root, "ios", { expectedTask: topics.hash(core.readTask(root, "ios").text), expectedTopic: second.version, evidence: "Aligned API v2" });
+  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, true);
+  assert.match(fs.readFileSync(path.join(root, "tasks/topics/account/revisions", `${first.revision}.md`), "utf8"), /## Normative Resources/);
+  assert.equal(fs.existsSync(path.join(root, "tasks/topics/account/resources/api.json")), false);
+  const third = topics.updateSpec(root, "account", second.version, { ...spec, decisions: "Updated choice" });
+  assert.equal(third.resources[0].sha256, topics.hash("v2"));
+  assert.equal(topics.readTopic(root, "account").revision, third.revision);
+});
+
+test("resource classification and removal change the normative projection only when applicable", (t) => {
+  const root = workspace(t);
+  const initial = topic(root);
+  fs.writeFileSync(path.join(root, "notes.md"), "contract");
+  const reference = { label: "Notes", target: "notes.md", purpose: "Notes", kind: "reference" };
+  const normative = { ...reference, kind: "normative", sha256: topics.hash("contract") };
+  const first = topics.updateResources(root, "account", initial.version, [reference]);
+  const second = topics.updateResources(root, "account", first.version, [normative]);
+  assert.notEqual(second.revision, first.revision);
+  const third = topics.updateResources(root, "account", second.version, [reference]);
+  assert.equal(third.revision, initial.revision);
+  assert.equal(fs.readFileSync(path.join(root, "notes.md"), "utf8"), "contract");
+});
+
+test("legacy Topics keep their shape and digest until explicit resource initialization", (t) => {
+  const root = workspace(t);
+  const initial = topic(root);
+  const legacy = initial.text.replace(/\n## Resources\n\n\| Resource \| Kind \| Purpose \| SHA-256 \|\n\| --- \| --- \| --- \| --- \|\n/, "");
+  fs.writeFileSync(initial.file, legacy);
+  fs.rmSync(path.join(root, "tasks/topics/account/resources"), { recursive: true });
+  const loaded = topics.readTopic(root, "account");
+  assert.equal(loaded.resources, undefined);
+  assert.equal(loaded.revision, initial.revision);
+  topics.listTopics(root); topics.check(root, "account");
+  assert.equal(fs.readFileSync(initial.file, "utf8"), legacy);
+  assert.equal(fs.existsSync(path.join(root, "tasks/topics/account/resources")), false);
+  const updated = topics.updateResources(root, "account", loaded.version, []);
+  assert.equal(updated.revision, loaded.revision);
+  assert.ok(fs.statSync(path.join(root, "tasks/topics/account/resources")).isDirectory());
+});
+
+test("resource registration rejects unsafe sources, duplicates, stale versions and archived writes", (t) => {
+  const root = workspace(t);
+  const initial = topic(root);
+  fs.writeFileSync(path.join(root, "api.json"), "v1");
+  const reference = { label: "API", target: "api.json", purpose: "Reference", kind: "reference" };
+  const invalid = [
+    [{ ...reference, target: "../escape" }],
+    [{ ...reference, target: path.join(root, "api.json") }],
+    [{ ...reference, kind: "normative" }],
+    [{ ...reference, kind: "normative", sha256: topics.hash("wrong") }],
+    [{ ...reference, sha256: topics.hash("v1") }],
+    [{ ...reference, target: "https://user:password@example.com/" }],
+    [{ ...reference, kind: "normative", target: "https://example.com/", sha256: topics.hash("v1") }],
+    [reference, reference],
+    [{ ...reference, label: "bad|label" }],
+  ];
+  for (const resources of invalid) {
+    assert.throws(() => topics.updateResources(root, "account", initial.version, resources));
+    assert.equal(topics.readTopic(root, "account").text, initial.text);
+  }
+  fs.symlinkSync(path.join(root, "api.json"), path.join(root, "alias.json"));
+  assert.throws(() => topics.updateResources(root, "account", initial.version, [{ ...reference, target: "alias.json" }]), /symlinks/);
+  assert.throws(() => topics.updateResources(root, "account", "outdated", [reference]), /reread/);
+  const archived = topics.setState(root, "account", "Archived", initial.version);
+  assert.throws(() => topics.updateResources(root, "account", archived.version, []), /restore Archived/);
+});
+
+test("the same normative source cannot acquire conflicting resource and dependency pins", (t) => {
+  const root = workspace(t);
+  fs.writeFileSync(path.join(root, "api.json"), "v1");
+  const current = topics.createTopic(root, "account", "Account", { ...spec, dependencies: [{ path: "api.json", sha256: topics.hash("v1") }] });
+  assert.throws(() => topics.updateResources(root, "account", current.version, [{ label: "API", target: "api.json", purpose: "Contract", kind: "normative", sha256: topics.hash("v1") }]), /must not be duplicated/);
+  assert.equal(topics.readTopic(root, "account").revision, current.revision);
+});
+
+test("normative source deduplication uses the same separator handling as file reads", (t) => {
+  const root = workspace(t);
+  fs.mkdirSync(path.join(root, "contracts"));
+  fs.writeFileSync(path.join(root, "contracts/api.json"), "v1");
+  const current = topics.createTopic(root, "account", "Account", { ...spec, dependencies: [{ path: "contracts\\api.json", sha256: topics.hash("v1") }] });
+  assert.throws(() => topics.updateResources(root, "account", current.version, [{ label: "API", target: "contracts/api.json", purpose: "Contract", kind: "normative", sha256: topics.hash("v1") }]), /must not be duplicated/);
+  assert.equal(topics.readTopic(root, "account").text, current.text);
+});
+
+test("resource CLI updates expose the index and directory without copying source content", (t) => {
+  const root = workspace(t);
+  const current = topic(root);
+  fs.writeFileSync(path.join(root, "notes.md"), "Existing authority");
+  const input = path.join(root, "resources.json");
+  fs.writeFileSync(input, JSON.stringify([{ label: "Notes", target: "notes.md", purpose: "Reference", kind: "reference" }]));
+  const output = JSON.parse(execFileSync(process.execPath, [cli, "--workspace", root, "topic", "update-resources", "account", "--expected", current.version, "--resources-json", input], { encoding: "utf8" }));
+  assert.equal(output.resources[0].target, "notes.md");
+  assert.equal(output.resourcesDirectory, path.join(root, "tasks/topics/account/resources"));
+  assert.deepEqual(fs.readdirSync(output.resourcesDirectory), []);
+});
+
 test("new CLI entry, spec package and manifest expose Topic without adding a task kind", () => {
   const help = execFileSync(process.execPath, [cli, "--help"], { encoding: "utf8" });
   assert.match(help, /topic <command>/);

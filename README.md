@@ -41,7 +41,8 @@ Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
 Topic 保存一个长期主题的当前有效规格，不是另一个任务类型或执行队列。可直接说“创建一个 Topic：账号注销，先讨论需求”“在账号注销 Topic 下排查 Bug”或“继续这个 Topic，查看相关任务”。建立 Topic 不会自动实施全部任务；所有任务完成也不会关闭 Topic。
 
-- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；不可变规格快照位于该 Topic 的 `revisions` 目录。
+- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；长期共享资料位于该 Topic 的 `resources` 目录，不可变规格快照位于 `revisions` 目录。
+- 主文档的 Resources 表记录资料链接、用途及 `normative`（有效约定）/`reference`（参考材料）分类。通过 `topic update-resources --resources-json` 更新完整索引；有效约定固定文件摘要并纳入规格核对，参考资料不使任务证据失效。已有权威文件仅链接，不自动复制；单次任务的报告和日志仍保存在任务产物中。旧 Topic 不批量迁移，保留原版本可读。
 - Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Topic 的任务列表只存引用和职责，状态现场读取。
 - Topic 使用 Draft、Active、Archived；归档和恢复均需明确意图。Queue 仍管理本地串行依赖，与 Topic 归属分开。
 - 通过共享 CLI 的 `topic` 子命令读写；`--help` 列出创建、更新规格、关联、采用新版本、校验和修复命令。版本变化会在评估及终态关卡被检查，不能只改 hash 消除过期。

@@ -200,18 +200,74 @@ function validateSpec(input) {
   return out;
 }
 
-function normative(spec) {
-  return `## Scope\n\n${spec.scope}\n\n## Spec Context\n\n${spec.spec}\n\n## Decisions\n\n${spec.decisions}\n\n## Dependencies\n\n${spec.dependencies.map((dep) => `- ${JSON.stringify({ path: dep.path, sha256: dep.sha256 })}`).join("\n")}\n`;
+function validateResources(input) {
+  if (!Array.isArray(input)) throw new Error("resources must be an array");
+  const seen = new Set();
+  return input.map((item) => {
+    if (!item || typeof item !== "object" || Array.isArray(item) || !["normative", "reference"].includes(item.kind)) throw new Error("resource kind must be normative or reference");
+    const keys = item.kind === "normative" ? "kind,label,purpose,sha256,target" : "kind,label,purpose,target";
+    if (Object.keys(item).sort().join(",") !== keys) throw new Error("invalid resource fields; only normative resources have sha256");
+    const label = line(item.label, "resource label"), purpose = line(item.purpose, "resource purpose");
+    if (/[\[\]|<>\\]/.test(label) || /[|<>\\]/.test(purpose)) throw new Error("resource label/purpose cannot contain Markdown delimiters");
+    const target = line(item.target, "resource target");
+    if (/^https?:\/\//.test(target)) {
+      const url = new URL(target);
+      if (item.kind !== "reference" || url.username || url.password || /[|<>\\]/.test(target) || url.href !== target) throw new Error("URLs must be canonical credential-free reference links; normative sources require a pinned local file");
+    } else if (path.isAbsolute(target) || /[:\\\u0000-\u001f\u007f]/.test(target) || target.split("/").some((part) => !part || part === "." || part === "..")) {
+      throw new Error("resource target must be an owner-repository-relative file or an HTTP(S) reference");
+    }
+    if (seen.has(target)) throw new Error("duplicate resource target");
+    seen.add(target);
+    const resource = { label, target, purpose, kind: item.kind };
+    if (item.kind === "normative") {
+      if (!DIGEST.test(item.sha256)) throw new Error("normative resource needs a SHA-256 digest");
+      resource.sha256 = item.sha256;
+    }
+    return resource;
+  });
 }
 
-function checkDependencies(workspace, spec) {
-  for (const dep of spec.dependencies) {
+function resourceLink(target) {
+  return /^https?:\/\//.test(target) ? target : path.posix.relative("tasks/topics", target).split("/").map(encodeURIComponent).join("/");
+}
+
+function renderResources(resources) {
+  if (resources === undefined) return "";
+  const rows = resources.map((item) => `| [${item.label}](<${resourceLink(item.target)}>) | ${item.kind} | ${item.purpose} | ${item.sha256 || "-"} |`);
+  return `\n## Resources\n\n| Resource | Kind | Purpose | SHA-256 |\n| --- | --- | --- | --- |\n${rows.length ? `${rows.join("\n")}\n` : ""}`;
+}
+
+function parseResources(text) {
+  const sections = core().sectionsOf(text, "Resources");
+  if (!sections.length) return undefined;
+  const lines = body(text, "Resources").split("\n");
+  if (lines.shift() !== "| Resource | Kind | Purpose | SHA-256 |" || lines.shift() !== "| --- | --- | --- | --- |") throw new Error("invalid Resources table");
+  return validateResources(lines.map((entry) => {
+    const match = entry.match(/^\| \[([^\]]+)\]\(<([^>]+)>\) \| (normative|reference) \| (.+) \| (-|[a-f0-9]{64}) \|$/);
+    if (!match) throw new Error("invalid Resources row");
+    const [, label, link, kind, purpose, digest] = match;
+    const target = /^https?:\/\//.test(link) ? link : path.posix.normalize(`tasks/topics/${decodeURIComponent(link)}`);
+    return { label, target, purpose, kind, ...(digest === "-" ? {} : { sha256: digest }) };
+  }));
+}
+
+function normative(spec, resources = []) {
+  const selected = resources.filter((item) => item.kind === "normative");
+  const base = `## Scope\n\n${spec.scope}\n\n## Spec Context\n\n${spec.spec}\n\n## Decisions\n\n${spec.decisions}\n\n## Dependencies\n\n${spec.dependencies.map((dep) => `- ${JSON.stringify({ path: dep.path, sha256: dep.sha256 })}`).join("\n")}\n`;
+  return selected.length ? `${base}\n## Normative Resources\n\n${selected.map((item) => `- ${JSON.stringify(item)}`).join("\n")}\n` : base;
+}
+
+function checkDependencies(workspace, spec, resources = []) {
+  const legacyPaths = new Set(spec.dependencies.map((dep) => safePath(workspace, dep.path)));
+  if (resources.some((item) => item.kind === "normative" && legacyPaths.has(safePath(workspace, item.target)))) throw new Error("a normative source must not be duplicated in Dependencies and Resources; move the declaration explicitly");
+  const dependencies = [...spec.dependencies, ...resources.filter((item) => item.kind === "normative").map((item) => ({ path: item.target, sha256: item.sha256 }))];
+  for (const dep of dependencies) {
     if (hash(fs.readFileSync(safePath(workspace, dep.path))) !== dep.sha256) throw new Error(`normative dependency changed: ${dep.path}`);
   }
 }
 
 function render(topic) {
-  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}\n## Tasks\n\n${topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n")}\n`;
+  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}${renderResources(topic.resources)}\n## Tasks\n\n${topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n")}\n`;
 }
 
 function parseTopic(id, text) {
@@ -221,7 +277,8 @@ function parseTopic(id, text) {
   const meta = fields(text.slice(text.indexOf("\n") + 1, split), ["Schema", "Id", "State", "Revision"]);
   if (meta.Schema !== "topic/v1" || meta.Id !== id || !STATES.has(meta.State) || !DIGEST.test(meta.Revision)) throw new Error("invalid topic metadata");
   const spec = validateSpec({ scope: body(text, "Scope"), spec: body(text, "Spec Context"), decisions: body(text, "Decisions"), dependencies: jsonLines(body(text, "Dependencies"), "dependency") });
-  if (hash(normative(spec)) !== meta.Revision) throw new Error("topic specification changed outside update-spec; use the last valid revision and an explicit update");
+  const resources = parseResources(text);
+  if (hash(normative(spec, resources)) !== meta.Revision) throw new Error("topic specification changed outside update-spec/update-resources; use the last valid revision and an explicit update");
   const tasks = jsonLines(body(text, "Tasks"), "task");
   const seen = new Set();
   for (const entry of tasks) {
@@ -231,7 +288,7 @@ function parseTopic(id, text) {
     if (entry.repository !== "local" && !DIGEST.test(entry.repository)) throw new Error("invalid repository identity");
     seen.add(entry.reference);
   }
-  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, tasks, text, version: hash(text) };
+  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, resources, tasks, text, version: hash(text) };
   if (render(topic) !== text) throw new Error("noncanonical Topic structure; use Topic commands rather than editing fields or sections");
   return topic;
 }
@@ -240,7 +297,7 @@ function readTopic(workspace, id) {
   const file = topicPath(workspace, id);
   const topic = parseTopic(id, fs.readFileSync(file, "utf8"));
   const snapshot = fs.readFileSync(revisionPath(workspace, id, topic.revision), "utf8");
-  if (snapshot !== normative(topic.spec)) throw new Error("topic snapshot missing or corrupt");
+  if (snapshot !== normative(topic.spec, topic.resources)) throw new Error("topic snapshot missing or corrupt");
   return { ...topic, file };
 }
 
@@ -263,8 +320,9 @@ function saveTopic(workspace, topic, before) {
   parseTopic(topic.id, candidate);
   const revision = revisionPath(workspace, topic.id, topic.revision);
   const existing = fileText(revision);
-  const content = normative(topic.spec);
+  const content = normative(topic.spec, topic.resources);
   if (existing !== undefined && existing !== content) throw new Error("immutable topic revision conflict");
+  if (topic.resources !== undefined) fs.mkdirSync(safePath(workspace, `tasks/topics/${topic.id}/resources`), { recursive: true });
   commit([
     { file: revision, before: existing, after: content },
     { file: topicPath(workspace, topic.id), before, after: candidate },
@@ -281,7 +339,7 @@ function createTopic(workspace, id, title, input) {
     if (fileText(topicPath(workspace, id)) !== undefined) throw new Error(`topic already exists: ${id}`);
     const spec = validateSpec(input);
     checkDependencies(workspace, spec);
-    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, tasks: [] }, undefined);
+    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, resources: [], tasks: [] }, undefined);
   });
 }
 
@@ -291,8 +349,23 @@ function updateSpec(workspace, id, expected, input) {
     if (topic.version !== expected) throw new Error("topic changed; reread before update-spec");
     if (topic.state === "Archived") throw new Error("restore Archived topic before changing its specification");
     const spec = validateSpec(input);
-    checkDependencies(workspace, spec);
-    return saveTopic(workspace, { ...topic, spec, revision: hash(normative(spec)) }, topic.text);
+    checkDependencies(workspace, spec, topic.resources);
+    return saveTopic(workspace, { ...topic, spec, revision: hash(normative(spec, topic.resources)) }, topic.text);
+  });
+}
+
+function updateResources(workspace, id, expected, input) {
+  return withLocks([workspace], () => {
+    const topic = readTopic(workspace, id);
+    if (topic.version !== expected) throw new Error("topic changed; reread before update-resources");
+    if (topic.state === "Archived") throw new Error("restore Archived topic before changing resources");
+    const resources = validateResources(input);
+    for (const item of resources) {
+      if (item.kind === "normative" && item.target === `tasks/topics/${id}.md`) throw new Error("a Topic cannot pin its own mutable document as a normative resource");
+      if (!/^https?:\/\//.test(item.target) && !fs.statSync(safePath(workspace, item.target)).isFile()) throw new Error(`resource is not a file: ${item.target}`);
+    }
+    checkDependencies(workspace, topic.spec, resources);
+    return saveTopic(workspace, { ...topic, resources, revision: hash(normative(topic.spec, resources)) }, topic.text);
   });
 }
 
@@ -363,7 +436,7 @@ function fresh(workspace, task) {
   if (hash(snapshot) !== binding.revision) throw new Error("adopted topic snapshot corrupt");
   if (binding.revision !== topic.revision) throw new Error("Topic specification changed; analyze impact, align if needed, and explicitly adopt the current revision");
   if (binding.mode === "implementation" && topic.state !== "Active") throw new Error("implementation requires an Active Topic; status does not replace authorization");
-  checkDependencies(target.workspace, topic.spec);
+  checkDependencies(target.workspace, topic.spec, topic.resources);
   return { applicable: true, topic: binding.reference, revision: binding.revision, state: topic.state };
 }
 
@@ -411,7 +484,7 @@ function association(workspace, id, reference, options = {}) {
       if (topic.state === "Archived") throw new Error("restore Archived topic before adding tasks");
       if (!["maintenance", "implementation"].includes(options.mode)) throw new Error("association requires explicit implementation or maintenance mode");
       if (options.mode === "implementation" && topic.state !== "Active") throw new Error("implementation requires Active topic");
-      checkDependencies(target.workspace, topic.spec);
+      checkDependencies(target.workspace, topic.spec, topic.resources);
       binding = { ...refFor(workspace, target.workspace, target.id), revision: topic.revision, applies: line(options.applies, "applies"), mode: options.mode };
     }
     const text = changedTask(task, binding);
@@ -496,7 +569,7 @@ function setState(workspace, id, state, expected, ownerTask) {
       }
       if (members(workspace, topic).some((entry) => !["Completed", "Cancelled"].includes(entry.status) && entry.reference !== ownerReference)) throw new Error("resolve active or inaccessible members before archive");
     }
-    if (state === "Active") checkDependencies(workspace, topic.spec);
+    if (state === "Active") checkDependencies(workspace, topic.spec, topic.resources);
     return saveTopic(workspace, { ...topic, state }, topic.text);
   });
 }
@@ -548,4 +621,4 @@ function rebuildIndex(workspace) {
   });
 }
 
-module.exports = { hash, safePath, withLocks, createTopic, readTopic, updateSpec, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };
+module.exports = { hash, safePath, withLocks, createTopic, readTopic, updateSpec, updateResources, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };

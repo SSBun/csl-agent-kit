@@ -9,6 +9,7 @@ const HELP = `Topic commands (under csl-tasks.js topic):
   show <topic-id>
   create <topic-id> --title <title> --spec-json <file>
   update-spec <topic-id> --expected <topic-version> --spec-json <file>
+  update-resources <topic-id> --expected <topic-version> --resources-json <file>
   activate|archive|restore <topic-id> --expected <topic-version>
     archive may name --owner-task <project:task-id|self:task-id> for its active maintenance task
   check <topic-id>
@@ -25,10 +26,12 @@ const HELP = `Topic commands (under csl-tasks.js topic):
 
 show returns the full Topic and a version for optimistic writes; task returns the task version and freshness.
 Spec JSON: {"scope":"...","spec":"...","decisions":"...","dependencies":[{"path":"repo-relative-file","sha256":"..."}]}
+Resources JSON: [{"label":"...","target":"repo-relative-file or https://...","purpose":"...","kind":"reference"}]
+Normative resources use kind normative and require sha256 of an existing local file; reference resources do not have sha256.
 Topic state and maintenance mode do not grant execution authorization. Cross-workspace writes require separate user authorization.`;
 
 function summary(workspace, topic) {
-  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
+  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, resources: topic.resources || [], resourcesDirectory: topics.safePath(workspace, `tasks/topics/${topic.id}/resources`), tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
 }
 
 function run(workspace, input, takeOption) {
@@ -45,9 +48,10 @@ function run(workspace, input, takeOption) {
   const evidence = takeOption(args, "--evidence");
   const title = takeOption(args, "--title");
   const specFile = takeOption(args, "--spec-json");
-  const values = { expected, expectedTopic, purpose, ownerTask, applies, mode, evidence, title, specFile, allowCross: allowCross || undefined };
+  const resourcesFile = takeOption(args, "--resources-json");
+  const values = { expected, expectedTopic, purpose, ownerTask, applies, mode, evidence, title, specFile, resourcesFile, allowCross: allowCross || undefined };
   const allowed = {
-    list: [], show: [], create: ["title", "specFile"], "update-spec": ["expected", "specFile"],
+    list: [], show: [], create: ["title", "specFile"], "update-spec": ["expected", "specFile"], "update-resources": ["expected", "resourcesFile"],
     activate: ["expected"], archive: ["expected", "ownerTask"], restore: ["expected"], check: [], "rebuild-index": [], task: [],
     attach: ["expected", "expectedTopic", "purpose", "applies", "mode", "allowCross"],
     detach: ["expected", "allowCross"], adopt: ["expected", "expectedTopic", "evidence"],
@@ -70,6 +74,10 @@ function run(workspace, input, takeOption) {
     case "show": return summary(workspace, topics.readTopic(workspace, id));
     case "create": return summary(workspace, topics.createTopic(workspace, id, title, readSpec()));
     case "update-spec": return summary(workspace, topics.updateSpec(workspace, id, expected, readSpec()));
+    case "update-resources": {
+      if (!resourcesFile) throw new Error("--resources-json is required");
+      return summary(workspace, topics.updateResources(workspace, id, expected, JSON.parse(fs.readFileSync(resourcesFile, "utf8"))));
+    }
     case "activate": {
       if (topics.readTopic(workspace, id).state !== "Draft") throw new Error("activate requires Draft; use restore for Archived");
       return summary(workspace, topics.setState(workspace, id, "Active", expected));
