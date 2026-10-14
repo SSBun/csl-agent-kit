@@ -17,6 +17,7 @@ const KINDS = new Set(["task", "plan", "queue"]);
 const ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const TIMESTAMP_PATTERN = "\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]) (?:[01]\\d|2[0-3]):[0-5]\\d";
 const STATUS_PATTERN = new RegExp(`^Status: (${Object.values(STATE_DISPLAY).join("|")}) \\((${TIMESTAMP_PATTERN})\\)$`, "m");
+const ARTIFACTS_FIELD_PATTERN = /^(Status: [^\r\n]+\r?\n)Artifacts: \[Artifacts\]\(\.\.\/artifacts\/[a-z0-9]+(?:-[a-z0-9]+)*\/\)\r?\n/m;
 const TARGET_PATTERN = /^\s*- \[([ xX])] (T\d+):\s*(.+)$/;
 const RESULT_PATTERN = /^\s*- (T\d+):\s*(.+)$/;
 const REVIEW_PATTERN = /^\s*- Review gate: (Skipped|Required|Passed|Approved) — (.+)$/m;
@@ -70,14 +71,39 @@ function normalizedTitle(title) {
   return title.normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+function normalizeMetadata(text) {
+  const sectionStart = text.search(/^## /m);
+  const headerEnd = sectionStart === -1 ? text.length : sectionStart;
+  const header = text.slice(0, headerEnd).replace(
+    /^\| Field \| Value \|\r?\n\| --- \| --- \|\r?\n((?:\| (?:Status|Artifacts|Kind|Parent) \| [^\r\n]* \|\r?\n)+)/m,
+    (_table, rows) => rows.replace(/^\| (Status|Artifacts|Kind|Parent) \| (.*) \|\r?\n/gm, "$1: $2\n"),
+  );
+  return header + text.slice(headerEnd);
+}
+
+function renderMetadata(text) {
+  text = normalizeMetadata(text);
+  const sectionStart = text.search(/^## /m);
+  const headerEnd = sectionStart === -1 ? text.length : sectionStart;
+  const header = text.slice(0, headerEnd);
+  const fields = [...header.matchAll(/^(Status|Artifacts|Kind|Parent): (.+)\r?\n/gm)];
+  const table = ["| Field | Value |", "| --- | --- |", ...fields.map(([, name, value]) => `| ${name} | ${value} |`)].join("\n");
+  let inserted = false;
+  return header.replace(/^(Status|Artifacts|Kind|Parent): (.+)\r?\n/gm, () => {
+    if (inserted) return "";
+    inserted = true;
+    return `${table}\n`;
+  }) + text.slice(headerEnd);
+}
+
 function statusOf(text) {
-  const match = text.match(STATUS_PATTERN);
+  const match = normalizeMetadata(text).match(STATUS_PATTERN);
   if (!match) throw new Error("canonical task is missing a standard status line");
   return { display: match[1], state: DISPLAY_STATE[match[1]], timestamp: match[2] };
 }
 
 function fieldOf(text, name) {
-  return text.match(new RegExp(`^${name}: (.+)$`, "m"))?.[1]?.trim();
+  return normalizeMetadata(text).match(new RegExp(`^${name}: (.+)$`, "m"))?.[1]?.trim();
 }
 
 function markdownLineContext(source) {
@@ -259,6 +285,7 @@ function replaceSection(text, name, bodyLines) {
 }
 
 function setField(text, name, value, after = "Kind") {
+  text = normalizeMetadata(text);
   const pattern = new RegExp(`^${name}: .+$`, "m");
   if (pattern.test(text)) return text.replace(pattern, `${name}: ${value}`);
   const anchor = new RegExp(`^${after}: .+$`, "m");
@@ -341,10 +368,18 @@ function reviewAssessmentOf(text) {
   };
 }
 
+function withoutArtifactsLink(text) {
+  const sectionStart = text.search(/^## /m);
+  const headerEnd = sectionStart === -1 ? text.length : sectionStart;
+  return text.slice(0, headerEnd).replace(ARTIFACTS_FIELD_PATTERN, "$1") + text.slice(headerEnd);
+}
+
 function reviewTaskFingerprint(text) {
+  text = normalizeMetadata(text);
   for (const name of ["Review Assessment", "Review", "Review Reports", "Verification", "Block"]) text = replaceSection(text, name, undefined);
   const result = section(text, "Result");
   if (result) text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
+  text = withoutArtifactsLink(text);
   text = text.replace(STATUS_PATTERN, "").replace(/\n{3,}/g, "\n\n").trim();
   return createHash("sha256").update(text).digest("hex");
 }
@@ -507,12 +542,30 @@ function atomicWrite(file, text) {
   }
 }
 
-function writeMany(changes) {
+function withArtifactsLink(workspace, id, text) {
+  assertId(id);
+  text = normalizeMetadata(text);
+  const directory = path.join(path.resolve(workspace), "tasks", "artifacts", id);
+  let exists = false;
+  try {
+    exists = fs.statSync(directory).isDirectory();
+  } catch (error) {
+    if (error.code !== "ENOENT" && error.code !== "ENOTDIR") throw error;
+  }
+  const withoutLink = withoutArtifactsLink(text);
+  if (!exists) return withoutLink;
+  return withoutLink.replace(STATUS_PATTERN, (status) => `${status}\nArtifacts: [Artifacts](../artifacts/${id}/)`);
+}
+
+function writeMany(workspace, changes) {
   const originals = new Map();
   try {
     for (const [file, text] of changes) {
+      const output = path.dirname(file) === tasksDir(workspace)
+        ? renderMetadata(withArtifactsLink(workspace, path.basename(file, ".md"), text))
+        : text;
       originals.set(file, fs.existsSync(file) ? fs.readFileSync(file, "utf8") : undefined);
-      atomicWrite(file, text);
+      atomicWrite(file, output);
     }
   } catch (error) {
     for (const [file, original] of originals) {
@@ -551,7 +604,7 @@ function syncIndex(workspace, id) {
   text = invalidateReviewGate(text, "Task record changed before sync; rerun the applicable review");
   text = replaceSection(text, "Verification", undefined);
   const synced = parseTask(task.id, text, task.file);
-  writeMany([[task.file, text], [indexPath(workspace), updatedIndex(workspace, synced)]]);
+  writeMany(workspace, [[task.file, text], [indexPath(workspace), updatedIndex(workspace, synced)]]);
   return readTask(workspace, id);
 }
 
@@ -584,11 +637,12 @@ function createTask(workspace, options) {
   const text = `${lines.join("\n")}\n`;
   const task = parseTask(id, text, file);
   const index = updatedIndex(workspace, task, timestamp);
-  writeMany([[file, text], [indexPath(workspace), index]]);
+  writeMany(workspace, [[file, text], [indexPath(workspace), index]]);
   return readTask(workspace, id);
 }
 
 function replaceStatus(text, state, timestamp = localTimestamp()) {
+  text = normalizeMetadata(text);
   const current = statusOf(text);
   return text.replace(STATUS_PATTERN, `Status: ${STATE_DISPLAY[state]} (${timestamp})`);
 }
@@ -596,7 +650,7 @@ function replaceStatus(text, state, timestamp = localTimestamp()) {
 function writeTaskAndIndex(workspace, task, text) {
   const parsed = parseTask(task.id, text, task.file);
   const index = updatedIndex(workspace, parsed);
-  writeMany([[task.file, text], [indexPath(workspace), index]]);
+  writeMany(workspace, [[task.file, text], [indexPath(workspace), index]]);
   return readTask(workspace, task.id);
 }
 
@@ -616,7 +670,10 @@ function setState(workspace, id, requested) {
     const stalled = stalledReviewIds(task);
     if (stalled.length) throw new Error(`reset stalled Review findings after the unblock condition before continuing: ${stalled.join(", ")}`);
   }
-  if (task.status.state === state) return task;
+  if (task.status.state === state) {
+    writeMany(workspace, [[task.file, task.text]]);
+    return readTask(workspace, id);
+  }
   if (!allowed[task.status.state].has(state)) throw new Error(`cannot move ${task.status.display} to ${STATE_DISPLAY[state]}`);
   if (state === "in_progress" && task.targets.length === 0) throw new Error("In Progress requires at least one Target");
   if (state === "in_review" && task.review?.[1] !== "Required") throw new Error("In Review requires a required review gate");
@@ -659,7 +716,7 @@ function reopenTask(workspace, id) {
   const invalidatedParent = parseTask(parent.id, parentText, parent.file);
   let index = updatedIndex(workspace, reopened);
   index = updatedIndex(workspace, invalidatedParent, undefined, index);
-  writeMany([[task.file, text], [parent.file, parentText], [indexPath(workspace), index]]);
+  writeMany(workspace, [[task.file, text], [parent.file, parentText], [indexPath(workspace), index]]);
   return readTask(workspace, id);
 }
 
@@ -684,7 +741,7 @@ function recordResult(workspace, id, targetId, evidence) {
   text = replaceSection(text, "Result", lines);
   text = invalidateReviewGate(text, "Result evidence changed after review; rerun the applicable review");
   text = replaceSection(text, "Verification", undefined);
-  atomicWrite(task.file, text);
+  writeMany(workspace, [[task.file, text]]);
   return readTask(workspace, id);
 }
 
@@ -731,7 +788,7 @@ function setReviewGate(workspace, id, decision, evidence, options = {}) {
   let text = resolveLedger ? replaceSection(task.text, "Review", undefined) : task.text;
   text = replaceSection(text, "Result", lines);
   text = replaceSection(text, "Verification", undefined);
-  atomicWrite(task.file, text);
+  writeMany(workspace, [[task.file, text]]);
   return readTask(workspace, id);
 }
 
@@ -741,7 +798,7 @@ function recordVerification(workspace, id, passed, evidence) {
   const value = String(evidence || "").trim();
   if (!value || /[\r\n]/.test(value)) throw new Error("verification evidence must be one line");
   const text = replaceSection(task.text, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
-  atomicWrite(task.file, text);
+  writeMany(workspace, [[task.file, text]]);
   return readTask(workspace, id);
 }
 
@@ -752,7 +809,10 @@ function linkChild(workspace, parentId, childId) {
   if (parent.kind !== "queue") throw new Error("parent must be a Queue task");
   if (child.parent && child.parent !== parentId) throw new Error(`${childId} already belongs to ${child.parent}`);
   const existingChild = parent.children.find(({ id }) => id === childId);
-  if (existingChild?.title === child.title && child.parent === parentId) return { parent, child };
+  if (existingChild?.title === child.title && child.parent === parentId) {
+    writeMany(workspace, [[parent.file, parent.text], [child.file, child.text]]);
+    return { parent: readTask(workspace, parentId), child: readTask(workspace, childId) };
+  }
   if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
   if (child.status.state === "completed") throw new Error(`reopen Completed child ${childId} before changing its relationship`);
 
@@ -780,7 +840,7 @@ function linkChild(workspace, parentId, childId) {
   parentText = invalidateReviewGate(parentText, "Queue graph changed after review; rerun the applicable review");
   parentText = replaceSection(parentText, "Verification", undefined);
   const childText = invalidateReviewGate(setField(child.text, "Parent", parentId), "Parent link changed; refresh assessment and review");
-  writeMany([[parent.file, parentText], [child.file, childText]]);
+  writeMany(workspace, [[parent.file, parentText], [child.file, childText]]);
   return { parent: readTask(workspace, parentId), child: readTask(workspace, childId) };
 }
 
@@ -851,7 +911,7 @@ function validateWorkspace(workspace) {
   for (const file of files) {
     const id = file.slice(0, -3);
     const text = fs.readFileSync(path.join(directory, file), "utf8");
-    if (!/^Kind: /m.test(text)) continue;
+    if (!fieldOf(text, "Kind")) continue;
     try {
       const task = parseTask(id, text, path.join(directory, file));
       modern.set(id, task);

@@ -132,6 +132,7 @@ function validateTaskGraph(index, tasks, reports) {
       ?? body.match(/^- \*\*Status:\*\*\s*(.+)$/m)?.[1]
       ?? body.match(/^\*\*Status:\*\*\s*(.+)$/m)?.[1]
       ?? body.match(/^Status:\s*(.+)$/m)?.[1]
+      ?? body.match(/^\| Status \| (.+) \|$/m)?.[1]
       ?? "未标注";
     assert.equal(entry.status, status.trim(), entry.file);
     const reportLink = body.match(/^- .*\[[^\]]+]\(\.\.\/artifacts\/([a-z0-9-]+)\/reports\/adversarial-review\.md\)$/m);

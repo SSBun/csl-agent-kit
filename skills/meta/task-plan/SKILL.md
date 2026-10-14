@@ -27,6 +27,8 @@ This skill owns planning-task activation, the planned-task Target meaning, permi
 
 ## Plan Record
 
+Use `task`'s Task Artifacts contract: the shared core adds the top-level directory link when artifacts exist and refreshes it on lifecycle writes. After producing a separate planning artifact, update the owning record before handoff; do not create an empty directory for navigation.
+
 - `Scope`: included and excluded outcomes only when a boundary matters.
 - `Target`: the final deliverable's stable, observable acceptance conditions; this remains the only checkbox list.
 - `Decisions`: only settled choices and constraints that execution must preserve. Do not retain question/answer chronology.

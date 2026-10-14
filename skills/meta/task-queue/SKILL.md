@@ -25,6 +25,8 @@ This skill owns Queue-parent activation, the integration Target meaning, permitt
 6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents, cycles, and same-Queue title collisions, and preserves order. Reopen a Completed child before changing its relationship; an identical reciprocal link is a no-op and must not invalidate either record's evidence.
 7. Add the parent's current Scope and Plan. The Plan must name every child ID in execution order so it is the delegation source, then `sync` and `check` every touched record.
 
+Apply `task`'s Task Artifacts contract to each owning parent or child: the shared core maintains its directory link when that directory exists, refreshing it on lifecycle writes without creating empty directories or backfilling untouched records.
+
 Do not duplicate a child's Target, Plan, Result, or status in the parent. The parent Plan links or names children and states dependencies only.
 
 ## Sequential Execution

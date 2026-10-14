@@ -31,6 +31,8 @@ Persist a workspace-local task artifact only when the user requests a durable fi
 - `reviews`: immutable per-pass `task-review` feedback, including passes with findings or no findings; see Review Reports below.
 - `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.
 
+The shared core maintains an `Artifacts` row with `[Artifacts](../artifacts/<task-id>/)` in the top-level metadata table whenever the corresponding directory exists. This applies to Task, Plan, and Queue records at creation and on subsequent lifecycle writes, including same-state resume. After creating artifacts, run the next normal task lifecycle update before handoff so the directory link appears. Read-only commands do not refresh it. Missing or non-directory paths omit the field; removing the directory removes the generated field on the next write. Never create an empty directory just for the link or backfill untouched records. This generated navigation field is excluded from the review fingerprint, not a substitute for per-artifact evidence links; normal `sync` invalidation remains unchanged.
+
 The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.
 
 ## Activation and Ownership
@@ -85,7 +87,7 @@ The core validates assessment structure, level/gate consistency, task-record fin
 
 ## Record Contract
 
-Keep `# Title`, the core-owned `Status:` line, and `Kind:`. Canonical `#` and `##` record headings start at column zero; indented or container-nested headings are content, not record sections. New records use these sections as needed:
+Keep `# Title` followed by the core-owned two-column metadata table (`Field` and `Value`). `Status` and `Kind` each occupy a row; include `Artifacts` only when its directory exists and `Parent` when present. The core reads legacy `Name: value` metadata and renders the table on subsequent writes; do not migrate untouched historical records. Display-only conversion preserves the review fingerprint. Canonical `#` and `##` record headings start at column zero; indented or container-nested headings are content, not record sections. New records use these sections as needed:
 
 ### Scope
 
@@ -181,7 +183,7 @@ Add only while Blocked, with `Reason` and observable `Unblock when`. Add the sec
 6. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
 7. Run `check <id>` and `validate` before delivery.
 
-Do not retrofit untouched historical record bodies. All records share the new paths, while the stricter `Kind:` contract applies to new or reopened work.
+Do not retrofit untouched historical record bodies. All records share the new paths, while the stricter `Kind` metadata contract applies to new or reopened work.
 
 ## Maintainer Validation
 

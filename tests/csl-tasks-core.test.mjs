@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -16,8 +16,19 @@ function workspace(t) {
   return root;
 }
 
-function body(root, id) {
+function rawBody(root, id) {
   return readFileSync(path.join(root, "tasks", "tasks", `${id}.md`), "utf8");
+}
+
+function body(root, id) {
+  // Keep existing lifecycle assertions independent of the metadata presentation.
+  return rawBody(root, id).replace(
+    /\| Field \| Value \|\n\| --- \| --- \|\n((?:\| (?:Status|Artifacts|Kind|Parent) \| .* \|\n)+)/,
+    (_table, rows) => rows.split("\n").filter(Boolean).map((row) => {
+      const [key, value] = row.slice(2, -2).split(" | ");
+      return `${key}: ${value}\n`;
+    }).join(""),
+  );
 }
 
 function assess(root, id, level = "R2", overrides = {}) {
@@ -69,6 +80,135 @@ test("creates a task and keeps the canonical record and newest-first index align
   const index = readFileSync(path.join(root, "tasks", "tasks.md"), "utf8");
   assert.ok(index.indexOf("tasks/second-task.md") < index.indexOf("tasks/first-task.md"));
   assert.doesNotThrow(() => core.checkTaskIndex(root, "first-task"));
+});
+
+test("metadata renders as a two-column table with a clickable artifacts value", (t) => {
+  const root = workspace(t);
+  mkdirSync(path.join(root, "tasks", "artifacts", "demo"), { recursive: true });
+  core.createTask(root, { id: "demo", title: "Demo", kind: "task", targets: ["T1: Deliver"] });
+  const text = rawBody(root, "demo");
+  assert.match(text, /^\| Field \| Value \|\n\| --- \| --- \|$/m);
+  assert.match(text, /^\| Status \| Pending \([\d :-]+\) \|$/m);
+  assert.match(text, /^\| Artifacts \| \[Artifacts\]\(\.\.\/artifacts\/demo\/\) \|$/m);
+  assert.match(text, /^\| Kind \| Task \|$/m);
+  assert.doesNotMatch(text, /^(Status|Artifacts|Kind):/m);
+  core.resumeTask(root, "demo");
+  assert.match(rawBody(root, "demo"), /^\| Status \| In Progress /m);
+  assert.equal(core.readTask(root, "demo").kind, "task");
+  assert.deepEqual(core.validateWorkspace(root), []);
+});
+
+test("legacy metadata is read without rewriting and converted only on lifecycle writes", (t) => {
+  const root = workspace(t);
+  for (const id of ["demo", "untouched"]) {
+    core.createTask(root, { id, title: id, kind: "task", targets: ["T1: Deliver"] });
+    writeFileSync(core.taskPath(root, id), body(root, id));
+  }
+  const untouched = rawBody(root, "untouched");
+  core.readTask(root, "demo");
+  core.validateWorkspace(root);
+  assert.match(rawBody(root, "demo"), /^Status: Pending /m);
+  core.resumeTask(root, "demo");
+  assert.match(rawBody(root, "demo"), /^\| Status \| In Progress /m);
+  assert.equal(rawBody(root, "untouched"), untouched);
+});
+
+test("all task kinds link existing artifact directories without creating missing ones", (t) => {
+  const root = workspace(t);
+  for (const kind of ["task", "plan", "queue"]) {
+    const id = `with-${kind}`;
+    const directory = path.join(root, "tasks", "artifacts", id);
+    mkdirSync(directory, { recursive: true });
+    core.createTask(root, { id, title: id, kind, targets: ["T1: Deliver"] });
+    assert.ok(body(root, id).includes(`\nArtifacts: [Artifacts](../artifacts/${id}/)\nKind:`));
+    const missing = `without-${kind}`;
+    core.createTask(root, { id: missing, title: missing, kind, targets: ["T1: Deliver"] });
+    assert.doesNotMatch(body(root, missing), /^Artifacts:/m);
+    assert.equal(existsSync(path.join(root, "tasks", "artifacts", missing)), false);
+  }
+  assert.deepEqual(core.validateWorkspace(root), []);
+});
+
+test("lifecycle writes add late artifact links, stay idempotent, and remove stale links", (t) => {
+  const root = workspace(t);
+  for (const id of ["demo", "untouched"]) {
+    core.createTask(root, { id, title: id, kind: "task", targets: ["T1: Deliver"] });
+    core.resumeTask(root, id);
+    mkdirSync(path.join(root, "tasks", "artifacts", id), { recursive: true });
+  }
+  const untouched = body(root, "untouched");
+  core.readTask(root, "demo");
+  core.checkTaskIndex(root, "demo");
+  core.validateWorkspace(root);
+  assert.doesNotMatch(body(root, "demo"), /^Artifacts:/m);
+  core.resumeTask(root, "demo");
+  core.resumeTask(root, "demo");
+  assert.equal(body(root, "demo").match(/^Artifacts:/gm).length, 1);
+  assert.equal(body(root, "untouched"), untouched);
+  const directory = path.join(root, "tasks", "artifacts", "demo");
+  rmSync(directory, { recursive: true });
+  core.recordResult(root, "demo", "T1", "Observed result");
+  assert.doesNotMatch(body(root, "demo"), /^Artifacts:/m);
+  writeFileSync(directory, "not a directory");
+  core.syncIndex(root, "demo");
+  assert.doesNotMatch(body(root, "demo"), /^Artifacts:/m);
+});
+
+test("artifact navigation added after assessment does not stale review or completion", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "demo", title: "Demo", kind: "task", targets: ["T1: Deliver"] });
+  core.resumeTask(root, "demo");
+  core.recordResult(root, "demo", "T1", "Observed result");
+  const fingerprint = assess(root, "demo", "R0").reviewAssessment.fingerprint;
+  const directory = path.join(root, "tasks", "artifacts", "demo");
+  mkdirSync(directory, { recursive: true });
+  core.setReviewGate(root, "demo", "skipped", "No deliverable change");
+  assert.match(body(root, "demo"), /^Artifacts:/m);
+  assert.equal(core.readTask(root, "demo").reviewAssessment.fingerprint, fingerprint);
+  rmSync(directory, { recursive: true });
+  core.recordVerification(root, "demo", true, "Verified");
+  assert.doesNotMatch(body(root, "demo"), /^Artifacts:/m);
+  mkdirSync(directory, { recursive: true });
+  core.completeTask(root, "demo");
+  assert.match(body(root, "demo"), /^Artifacts:/m);
+  assert.equal(core.readTask(root, "demo").status.state, "completed");
+});
+
+test("artifact-like body content is still covered by the review fingerprint", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "demo", title: "Demo", kind: "task", targets: ["T1: Deliver"] });
+  core.resumeTask(root, "demo");
+  core.recordResult(root, "demo", "T1", "Observed result");
+  assess(root, "demo", "R0");
+  writeFileSync(core.taskPath(root, "demo"), `${body(root, "demo")}\n## Scope\n\nStatus: example\nArtifacts: [Artifacts](../artifacts/demo/)\n`);
+  assert.throws(() => core.setReviewGate(root, "demo", "skipped", "Checked"), /stale Review Assessment/);
+});
+
+test("queue links and child reopening refresh only the records they write", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "parent", title: "Parent", kind: "queue", targets: ["T1: Integrate"] });
+  core.createTask(root, { id: "child", title: "Child", kind: "task", targets: ["T1: Deliver"] });
+  for (const id of ["parent", "child"]) mkdirSync(path.join(root, "tasks", "artifacts", id), { recursive: true });
+  core.linkChild(root, "parent", "child");
+  for (const id of ["parent", "child"]) assert.match(body(root, id), /^Artifacts:/m);
+  core.resumeTask(root, "parent");
+  core.resumeTask(root, "child");
+  core.recordResult(root, "child", "T1", "Observed result");
+  assess(root, "child", "R0");
+  core.setReviewGate(root, "child", "skipped", "No deliverable change");
+  core.recordVerification(root, "child", true, "Verified");
+  core.completeTask(root, "child");
+  rmSync(path.join(root, "tasks", "artifacts"), { recursive: true });
+  core.linkChild(root, "parent", "child");
+  assert.equal(core.readTask(root, "child").status.state, "completed");
+  assert.equal(core.readTask(root, "child").review[1], "Skipped");
+  for (const id of ["parent", "child"]) {
+    assert.doesNotMatch(body(root, id), /^Artifacts:/m);
+    mkdirSync(path.join(root, "tasks", "artifacts", id), { recursive: true });
+  }
+  core.reopenTask(root, "child");
+  for (const id of ["parent", "child"]) assert.match(body(root, id), /^Artifacts:/m);
+  assert.deepEqual(core.validateWorkspace(root), []);
 });
 
 test("writes Queue records and reads legacy Auto parents without accepting new Auto records", (t) => {
