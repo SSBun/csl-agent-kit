@@ -24,7 +24,29 @@ function taskModeOptions(ctx: ExtensionContext) {
 	return { workspace: ctx.cwd, host: "pi", sessionId: ctx.sessionManager.getSessionId() };
 }
 
+const TASK_MODE_STATUS = "csl-task-mode";
+
+function updateTaskModeStatus(ctx: ExtensionContext) {
+	if (ctx.mode !== "tui") return;
+	let text: string;
+	try {
+		const state = resolveTaskMode(taskModeOptions(ctx));
+		text = `Task: ${state.mode.toUpperCase()} · ${state.source}`;
+	} catch {
+		text = "Task: CONFIRM · config error";
+	}
+	ctx.ui.setStatus(TASK_MODE_STATUS, `[${text}]`);
+}
+
 export default function cslSettings(pi: ExtensionAPI) {
+	pi.on("session_start", (_event, ctx) => updateTaskModeStatus(ctx));
+	pi.on("session_tree", (_event, ctx) => updateTaskModeStatus(ctx));
+	pi.on("before_agent_start", (_event, ctx) => updateTaskModeStatus(ctx));
+	pi.on("agent_end", (_event, ctx) => updateTaskModeStatus(ctx));
+	pi.on("session_shutdown", (_event, ctx) => {
+		if (ctx.mode === "tui") ctx.ui.setStatus(TASK_MODE_STATUS, undefined);
+	});
+
 	pi.registerCommand("task-mode", {
 		description: "Show task mode or set <session|project|global> <confirm|solo|inherit> (SOLO skips framework confirmations)",
 		handler: async (args, ctx) => {
@@ -38,6 +60,8 @@ export default function cslSettings(pi: ExtensionAPI) {
 				ctx.ui.notify(`Task mode: ${state.mode} (source: ${state.source}). Session: ${state.layers.session}; project: ${state.layers.project}; global: ${state.layers.global}. Applies on the next agent turn; host approvals and quality gates are unchanged.`, "info");
 			} catch (error) {
 				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+			} finally {
+				updateTaskModeStatus(ctx);
 			}
 		},
 	});
@@ -76,6 +100,8 @@ export default function cslSettings(pi: ExtensionAPI) {
 							ctx.ui.notify(`Task mode: ${state.mode} (source: ${state.source}); saved ${scope}: ${mode}. Applies on the next agent turn.`, "info");
 						} catch (error) {
 							ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+						} finally {
+							updateTaskModeStatus(ctx);
 						}
 						continue;
 					}
@@ -107,6 +133,8 @@ export default function cslSettings(pi: ExtensionAPI) {
 				}
 			} catch (error) {
 				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+			} finally {
+				updateTaskModeStatus(ctx);
 			}
 		},
 	});

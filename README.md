@@ -274,6 +274,8 @@ $task-mode project inherit
 
 Pi 保留直接 `/task-mode` 命令及 `/csl-settings` 面板；需要走 Agent Skill 时使用 `/skill:task-mode`。自动 Skill 别名不重复注册 `/task-mode`，避免遮蔽直接配置命令。
 
+Pi TUI 底部状态栏显示 `[Task: SOLO · project]` 或 `[Task: CONFIRM · session]`，无覆盖时为 `[Task: CONFIRM · default]`；配置错误显示 `[Task: CONFIRM · config error]`。它使用独立状态键，不替换 footer 或覆盖其他扩展信息。命令／面板切换后立即刷新，启动／恢复／重载会话、树导航、每轮 Agent 开始与结束时也会刷新；其他进程改配置会在下一刷新事件体现，不做后台轮询。显示的是当前会话解析到的配置，不代表已进行中的模型请求已重新注入规则。非 TUI 不显示；自定义 footer 若不展示扩展状态，也不会显示此项。
+
 `/csl-settings` 的 `Task · Confirmation mode` 可选择作用域和值；选定后立即保存。也可以直接操作：
 
 ```text

@@ -18,10 +18,13 @@ function fixture(initial) {
   process.env.CSL_AGENT_KIT_HOME = root;
   const commands = new Map();
   const tools = new Map();
+  const handlers = new Map();
+  const statuses = new Map([["unrelated-status", "keep me"]]);
   const notifications = [];
   const choices = [];
   let thinking = "medium";
   cslSettings({
+    on: (event, handler) => handlers.set(event, handler),
     registerCommand: (name, command) => commands.set(name, command),
     registerTool: (tool) => tools.set(tool.name, tool),
     getThinkingLevel: () => thinking,
@@ -33,6 +36,7 @@ function fixture(initial) {
     model: PARENT,
     modelRegistry: { getAvailable: () => [PARENT, OTHER] },
     ui: {
+      setStatus: (key, text) => text === undefined ? statuses.delete(key) : statuses.set(key, text),
       notify: (...args) => notifications.push(args),
       select: async (title, items) => {
         const choice = choices.shift();
@@ -41,7 +45,7 @@ function fixture(initial) {
     },
   };
   return {
-    path, ctx, choices, notifications,
+    path, ctx, choices, notifications, handlers, statuses,
     modeCommand: commands.get("task-mode"),
     command: commands.get("csl-settings"),
     tool: tools.get("csl_review_config"),
@@ -204,6 +208,60 @@ test("failed validation retains applied values; clearing works with unavailable 
     await f.command.handler("", f.ctx);
     assert.deepEqual(loadReviewSettings(f.path), {});
     assert.equal(f.notifications.length, 1);
+  } finally { f.cleanup(); }
+});
+
+test("native status shows effective source, refreshes lifecycle and preserves other keys", async () => {
+  const f = fixture();
+  try {
+    await f.handlers.get("session_start")({}, f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: CONFIRM · default]");
+    assert.equal(existsSync(f.path), false, "rendering must not create settings");
+    await f.modeCommand.handler("project solo", f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: SOLO · project]");
+    await f.modeCommand.handler("session confirm", f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: CONFIRM · session]");
+    f.statuses.set("csl-task-mode", "overwritten");
+    await f.handlers.get("session_tree")({}, f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: CONFIRM · session]");
+    f.ctx.sessionManager.getSessionId = () => "new-session";
+    await f.handlers.get("session_start")({}, f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: SOLO · project]");
+    assert.equal(f.statuses.get("unrelated-status"), "keep me");
+    await f.handlers.get("session_shutdown")({}, f.ctx);
+    assert.equal(f.statuses.has("csl-task-mode"), false);
+    assert.equal(f.statuses.get("unrelated-status"), "keep me");
+  } finally { f.cleanup(); }
+});
+
+test("status fails closed on invalid config and recovers at agent boundaries", async () => {
+  const f = fixture({ task: { mode: "solo" } });
+  try {
+    await f.handlers.get("before_agent_start")({}, f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: SOLO · global]");
+    writeFileSync(f.path, "{");
+    await f.handlers.get("agent_end")({}, f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: CONFIRM · config error]");
+    assert.equal(readFileSync(f.path, "utf8"), "{");
+    writeFileSync(f.path, "{}");
+    await f.handlers.get("before_agent_start")({}, f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: CONFIRM · default]");
+    f.choices.push(row(2), "project", "solo", undefined);
+    await f.command.handler("", f.ctx);
+    assert.equal(f.statuses.get("csl-task-mode"), "[Task: SOLO · project]");
+  } finally { f.cleanup(); }
+});
+
+test("non-TUI lifecycle does not write a footer status", async () => {
+  const f = fixture();
+  try {
+    for (const mode of ["rpc", "json", "print"]) {
+      f.ctx.mode = mode;
+      f.ctx.ui.setStatus = () => { throw new Error("No TUI status expected"); };
+      for (const handler of f.handlers.values()) await handler({}, f.ctx);
+      await f.modeCommand.handler("show", f.ctx);
+    }
+    assert.equal(existsSync(f.path), false);
   } finally { f.cleanup(); }
 });
 
