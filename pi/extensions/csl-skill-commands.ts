@@ -20,6 +20,8 @@ const skillsDir = join(baseDir, "..", "..", "skills");
 
 export default function (pi: ExtensionAPI) {
 	for (const skill of discoverSkills(skillsDir)) {
+		// csl-settings owns the direct configuration command; /skill:task-mode remains available.
+		if (skill.name === "task-mode") continue;
 		pi.registerCommand(skill.name, {
 			description: `${skill.description} Alias for /skill:${skill.name}.`,
 			handler: async (args, ctx) => {

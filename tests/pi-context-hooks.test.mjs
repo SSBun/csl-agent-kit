@@ -71,7 +71,7 @@ function fakePi() {
 function fakeContext(cwd, entries = []) {
   return {
     cwd,
-    sessionManager: { buildContextEntries: () => entries },
+    sessionManager: { buildContextEntries: () => entries, getSessionId: () => "context-hooks-session" },
     ui: { notify() {} },
   };
 }

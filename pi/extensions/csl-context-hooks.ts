@@ -30,6 +30,7 @@ interface ChangedFile {
 }
 
 interface TriggerContext {
+	sessionId?: string;
 	prompt?: string;
 	toolName?: string;
 	toolCommand?: string;
@@ -48,6 +49,7 @@ interface AgentHooksModule {
 		event: string;
 		host: string;
 		workspace: string;
+		sessionId?: string | null;
 		prompt?: string | null;
 		tool?: object | null;
 		compact?: object | null;
@@ -136,6 +138,7 @@ function buildPayload(
 		event,
 		host: "pi",
 		workspace,
+		sessionId: context.sessionId ?? null,
 		prompt,
 		tool,
 		compact,
@@ -334,7 +337,9 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 
 		// session-start inject (session_start) + prompt-submit inject (when a
 		// prompt is present, before_agent_start fires per turn).
-		const sessionPrompts = triggerPrompts("session-start", ctx.cwd);
+		const sessionPrompts = triggerPrompts("session-start", ctx.cwd, {
+			sessionId: ctx.sessionManager.getSessionId(),
+		});
 		const titleContext = event.prompt
 			? buildTitleContext(ctx.sessionManager.buildContextEntries(), event.prompt)
 			: "";

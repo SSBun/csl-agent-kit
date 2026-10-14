@@ -57,6 +57,7 @@
     "./skills/dev/repo-map",
     "./skills/meta/task-context",
     "./skills/meta/task",
+    "./skills/meta/task-mode",
     "./skills/meta/topic",
     "./skills/meta/task-plan",
     "./skills/meta/task-queue",

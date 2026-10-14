@@ -1,0 +1,21 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "$task-mode project solo",
+    "Show the effective Task confirmation mode and its source.",
+    "Persist SOLO mode for this session only.",
+    "Set global Task mode to confirm.",
+    "Remove the project Task mode override and inherit the global preference."
+  ],
+  "should_not_trigger": [
+    "Implement the checkout page.",
+    "Run an independent code review.",
+    "Bypass the host permission prompt.",
+    "Disable all quality review and verification."
+  ],
+  "near_neighbor": [
+    "Create a canonical task for this bug fix.",
+    "Choose the model and thinking level for task-review.",
+    "Explain Task Target alignment without changing configuration."
+  ]
+}

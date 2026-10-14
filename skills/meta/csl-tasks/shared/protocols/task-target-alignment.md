@@ -8,6 +8,28 @@ Each consuming Skill must resolve the collection root, read this file in full be
 
 If this file is missing or unreadable, stop before substantive work and report the missing runtime dependency. Do not reconstruct the contract from memory or a consumer summary.
 
+## Confirmation Modes
+
+Resolve the runtime mode **before** selecting any L0-L4 level. `confirm` is the default and retains the complete graded confirmation procedure below. `solo` (display name **SOLO**) takes a separate execution path: bypass the entire L0-L4 second-confirmation grading procedure, not just its L2 wait. This applies to `task`, `task-plan` and `task-queue`; workflow scope and quality gates do not change.
+
+### Configuration
+
+- Precedence is session > project > global > default `confirm`. New values are `solo`, `confirm`, or `inherit`; `inherit` removes only that override. Explicit `confirm` overrides lower SOLO. Existing stored `autonomous` values are read as `solo` without rewriting files; new writes use `solo`. Never bulk-migrate user settings merely to rename the mode.
+- The shared resolver is `../lib/task-mode.js`; the CLI is `../scripts/task-mode.js` (`--help`). Files live under `CSL_AGENT_KIT_HOME` or `~/.csl-agent-kit`: global `settings.json`, project `projects/<canonical-workspace-hash>/settings.json`, session `sessions/<host-workspace-session-hash>/settings.json`. Project preferences are user-local, not repository-provided authorization. Never invent host/session identity or reuse another session's override.
+- The shared `task-mode` Skill queries and changes the same settings. Pi also exposes `/task-mode [show | <session|project|global> <confirm|solo|inherit>]` and `/csl-settings`. Pi's Contract Hook rereads with the actual identity before each agent turn, including resume. Native Codex/Claude Hooks resolve at SessionStart (including resume/compact); after a mid-session change, explicitly query with the actual identity or restart/resume before relying on it. Without session identity, label a read project/global-only, not current-session effective state. Missing files inherit; invalid/unreadable participating configuration forces `confirm` with a diagnostic, never stale SOLO.
+- Only an explicit user configuration request may change a scope/value. Never enable SOLO to escape a hold. Querying or switching mode is not an execution request, does not resume an old X batch, and does not fabricate user acceptance or authorize unrelated work.
+
+### SOLO execution path
+
+1. Establish the user's requested final result, scope, explicit constraints and available authorization. Activate/focus a task when the selected workflow requires one. Display the complete Task Target, then proceed in the same turn using `continue_solo`; do not select an L-level, render a confirmation footer, or end the turn just to obtain another command. A factual request that needs no task remains a direct answer.
+2. Drive toward the final result without asking for operational choices the Agent can make. Inspect evidence, choose reasonable bounded defaults within the request, state material assumptions, implement, verify and remediate. Initial Targets, revisions, graph changes and missing prior Target-acceptance evidence do not create a second-confirmation checkpoint. Keep progress recoverable; do not claim `accepted_target` merely because SOLO was enabled.
+3. Skip **framework/SOP confirmation-only pauses**, including Task checks, external publication/deployment confirmation, X post/reply or batch confirmation, and a step labeled Safety Confirmation. Show the action, affected object and consequence as a notice and continue. A SOP's generic requirement to ask is not itself an explicit user pause. Preserve actual scope: user-authorized composition and publication can proceed without approval of each draft; drafting-only does not authorize publishing, and a finite batch does not authorize another batch.
+4. Resolve missing operational details from authoritative evidence or bounded defaults instead of invoking L3/L4. Do not invent user facts, credentials, identity, permission or an expanded outcome. When a required fact/authorization genuinely cannot be established, complete unaffected work and report the concrete blocker and minimum missing input; do not issue a generic approval question or silently substitute a different goal. An unnecessary out-of-scope improvement is omitted, not escalated as an excuse to pause the whole task.
+5. Retain **substantive safeguards and independent limits**: actual user instructions to pause/check first, host/tool approvals, higher-priority safety constraints, account/target identity checks, privacy, duplicate-send prevention, platform limits, authentication and verifiable success. A safety label alone is not a blocker, but a demonstrated wrong account, uncertain send result, missing credential or platform restriction is; do not bypass these to reach a count. Perform bounded safe recovery when possible and report unresolved blockers honestly.
+6. Delegated work keeps its scope packet and returns missing coverage or independent boundaries to the main owner. Internal handback is not a user checkpoint; the owner continues under SOLO when it can resolve the issue within authorization. Neither child nor owner may expand permission. Keep R0/R1/R2 result review, required independent review, stall protection, task records, self-check and final verification; these are not Task second-confirmation levels.
+
+Switching to `confirm` restores its graded confirmation procedure at the next resolution boundary. Past SOLO work is not reusable user acceptance. Existing confirm-mode evaluation cases remain unchanged; SOLO cases use `continue_solo` with no L-level, an actual resolved `solo` mode/source, the requested result and scope, and any independently evidenced blocker. The old `continue_autonomous` label is superseded, not a second runtime action. Do not persist mode decisions or acceptance flags in canonical task core.
+
 ## Purpose
 
 Task Target gives the user a second look at the Agent's understanding of their goal before substantive work. Authorization self-checking establishes that a candidate is faithful enough to present; it does not establish that the user has checked that understanding. A detailed request, complete authorization coverage, or high model confidence never substitutes for the first non-trivial goal checkpoint.
@@ -83,7 +105,7 @@ A Topic carries shared current requirements, not user approval. Reading the same
 
 ## Interaction Owner and Delegated Execution
 
-The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. Its first ready non-trivial L2 Target must be displayed for user goal rechecking, and the owner must end the turn and wait before substantive work. An accepted unchanged Target does not receive another checkpoint.
+The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. In `confirm` mode, its first ready non-trivial L2 Target must be displayed for user goal rechecking, and the owner must end the turn and wait before substantive work. In SOLO, use its separate execution path instead of the L0-L4 procedure. An accepted unchanged Target does not receive another checkpoint.
 
 Target acceptance follows the accepted result semantics, not the task-family consumer. Changing from `task-plan` to `task` does not itself create a new Target. When the same canonical plan record is handed off in the same recoverable conversation state, the interaction owner continues without another checkpoint only when the user has explicitly authorized execution and the accepted outcome, Done when conditions, and boundaries remain materially equivalent. Planning-phase acceptance aligns the Target but never authorizes execution; without a later execution request, do not implement. If acceptance evidence cannot be recovered or the execution Target differs, apply the normal L2-L4 procedure.
 
@@ -104,6 +126,8 @@ A material Plan distribution change means adding, removing, or reordering a chil
 
 ## Guard Levels
 
+These levels apply only in `confirm` mode. SOLO bypasses this table and its second-confirmation procedure entirely; use the SOLO execution path above.
+
 The table below applies only to the interaction owner; delegated children use the gate above and do not choose an L0-L4 level.
 
 | Level | Name | Trigger | User interaction | Exit |
@@ -118,7 +142,7 @@ L2 asks the user to recheck their goal as understood by the Agent; L4 requests a
 
 ## Deterministic Decision Procedure
 
-Apply this order:
+Resolve mode first: if `solo`, use the SOLO execution path and do not enter the grading procedure below. Otherwise apply this order:
 
 1. Determine whether the current session is the interaction owner or has a complete delegation packet. A delegated child applies the delegated gate and returns without entering L0-L4.
 2. If no task workflow applies, choose L0.
@@ -262,7 +286,7 @@ Compute safety independently from L0-L4:
 - `S0 NONE`: no separate governing safety or permission gate applies.
 - `S1 REQUIRED`: publication, payment, destructive action, credentials, permissions, privacy data, deployment, or another external side effect is governed by a separate workflow.
 
-L2 or L4 acceptance never clears S1. At the actual action boundary, the main session renders a separate localized `**Safety Confirmation**` block naming the action, affected object, consequence, and governing rule. A delegated child reaching that boundary returns to the main session and does not render the block itself. Do not attach safety approval to the L2 or L4 footer. Conversely, safety confirmation does not align a materially different Target.
+L2 or L4 acceptance never clears S1. The SOLO execution path skips in-scope framework/SOP confirmation-only pauses, including those labeled Safety Confirmation; it never clears substantive safeguards, host or higher-priority gates. In `confirm` mode, at the actual action boundary, the main session renders a separate localized `**Safety Confirmation**` block naming the action, affected object, consequence, and governing rule. A delegated child reaching that boundary returns to the main session and does not render the block itself. Do not attach safety approval to the L2 or L4 footer. Conversely, safety confirmation does not align a materially different Target.
 
 ## Consumer Responsibilities
 

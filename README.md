@@ -210,7 +210,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/csl-context-hooks.ts`：桥接 Agent Hooks 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
 - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
 - `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
-- `pi/extensions/csl-settings.ts`：通过 `/csl-settings` 配置审查模型和思考强度；`csl_review_config` 只解析审查启动参数，不启动子 Agent。
+- `pi/extensions/csl-settings.ts`：通过 `/csl-settings` 配置审查模型、思考强度与三层 Task 确认模式；`/task-mode` 快捷管理确认偏好，`csl_review_config` 只解析审查启动参数，不启动子 Agent。
 - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
 
 - `pi/extensions/csl-ansi.ts`：注册 `render_ansi` 工具，直接在会话中渲染 ANSI 彩色字符与等宽图，不添加工具标题或成功状态背景。
@@ -238,7 +238,7 @@ TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无
 
 #### CSL Agent Kit 通用设置
 
-在 Pi TUI 中执行 `/csl-settings` 打开英文设置面板。每次选定值后自动保存并应用，无需 Save 或 Cancel 按钮；退出主面板保留已应用的修改，退出子菜单而未选定值则不修改该项。该入口用于 CSL Agent Kit 的通用设置，目前包括审查模型与思考强度。
+在 Pi TUI 中执行 `/csl-settings` 打开英文设置面板。每次选定值后自动保存并应用，无需 Save 或 Cancel 按钮；退出主面板保留已应用的修改，退出子菜单而未选定值则不修改该项。该入口用于 CSL Agent Kit 的通用设置，目前包括审查配置与 Task 确认模式。
 
 审查模型和思考强度可独立选择 `Inherit from parent`（继承父 Agent）。默认两项均未配置，因此在每次新审查启动前继承父会话**当时实际使用的**模型与思考强度，而不是 Pi 新会话默认值或 reviewer 自带的 `high`。`off` 表示明确关闭思考，不表示继承。
 
@@ -258,6 +258,52 @@ TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无
 Pi 中的 CSL `task-review` 和 `adversarial-review` Reviewer 启动前，主 Agent 按 `csl_review_config` 的工具指引读取配置，将返回的 `launch.model` 原样传入现有 `subagent` 调用；脚本工作流应在每个 Reviewer 子调用中传入，而不是覆盖整个工作流。该值包含 `provider/model:thinking`，因此优先于 carrier 的默认模型和思考强度。配置解析失败时应停止，不自动换模型或降级；原有 subagent 模型范围、思考上限、隔离和授权限制仍然有效。
 
 这是 CSL 审查流程的显式启动参数接入，不是对全部 subagent 调用的拦截。手动 `/run reviewer`、其他流程及 Editor 等非审查角色不受影响。工具指引要求在父会话或设置改变后重新解析；已启动或恢复的子 Agent 保留原启动契约，需要新配置时启动新的审查子 Agent。配置保存后后续解析立即生效，无需重载；初次加载新扩展仍需 `/reload`。非 TUI 模式不能打开设置面板，但仍可调用只读解析工具。没有加载此扩展的宿主不使用此 Pi 配置。
+
+#### Task SOLO 模式
+
+`task-mode` 是共享 Skill，不限于 Pi。Codex 加载包含该 Skill 的插件后，可直接调用：
+
+```text
+$task-mode show
+$task-mode project solo
+$task-mode global confirm
+$task-mode project inherit
+```
+
+也可自然语言要求“使用 task-mode，将当前项目设为 SOLO”。Skill 复用下述同一 CLI 和存储，修改后重新查询并报告有效值及来源；会话覆盖必须有宿主提供的真实身份。身份不可用时，只能报告项目／全局解析结果，不能冒称当前会话已生效。仓库新增 Skill 不等于已安装 Codex 插件自动更新；若检索不到，需先更新或重新加载实际安装的插件。
+
+Pi 保留直接 `/task-mode` 命令及 `/csl-settings` 面板；需要走 Agent Skill 时使用 `/skill:task-mode`。自动 Skill 别名不重复注册 `/task-mode`，避免遮蔽直接配置命令。
+
+`/csl-settings` 的 `Task · Confirmation mode` 可选择作用域和值；选定后立即保存。也可以直接操作：
+
+```text
+/task-mode                                  # 查看有效模式、来源及三层值
+/task-mode session solo                     # 仅当前会话使用 SOLO
+/task-mode project solo                     # 当前项目默认使用 SOLO
+/task-mode global solo                      # 所有项目默认使用 SOLO
+/task-mode session confirm                  # 当前会话明确恢复确认，覆盖下层自主配置
+/task-mode session inherit                  # 删除会话覆盖，恢复继承（不等于关闭自主）
+```
+
+优先级为 **会话 > 项目 > 全局 > 默认 confirm**。**SOLO** 的配置值为 `solo`：在进入 L0–L4 之前直接走 SOLO 执行路径，完全跳过原 Task 二次确认分级。Agent 展示完整 Task Target 后直接推进最终结果，对目标范围内的操作选择自行查证、采用合理且有边界的默认值，不反复询问下一步。
+
+用户命令已经涵盖的外部发布、部署、X 发帖／回复和批次操作，跳过框架或 SOP 额外要求的确认，说明动作、对象及后果后继续。SOP 写着“安全确认”或“必须询问”本身不是暂停理由，但不意味着跳过整个 SOP：仍保留账号／对象核对、防重复发送、平台限制、宿主强制审批及更高优先级安全约束。你明确要求的暂停依然有效；没有授权的发布、不可确定的必要身份或凭据等是真实阻塞，Agent 应完成不受影响的部分并报告，不能编造权限或结果。查询／切换模式本身不会恢复旧 X 批次。任务记录、自检、R0／R1／R2 自动质量审查和最终验证不变。
+
+已有配置中的 `autonomous` 会在读取时归一为 `solo`，不自动改写文件；新配置仅使用 `solo`／`confirm`／`inherit`。旧命令参数 `autonomous` 不再接受，请改用 `solo`。
+
+配置全部保存在用户数据目录（`CSL_AGENT_KIT_HOME`，默认 `~/.csl-agent-kit`）：全局复用 `settings.json` 中的 `task.mode`；项目位于 `projects/<规范化工作区路径摘要>/settings.json`；会话位于 `sessions/<宿主、工作区和会话ID摘要>/settings.json`。项目设置不从仓库读取，避免仓库改动自行开启自主权限；同一路径重开仍有效，移动项目后视为另一项目。恢复同一会话保留覆盖，新会话或不同宿主不继承旧会话覆盖。`inherit` 删除当前层 `task.mode`，保留其他配置。未配置时默认确认；损坏或无效配置降回确认并报告错误，不复用旧自主状态。
+
+Pi 在每次 Agent 开始处理新一轮请求时重新解析配置，包括恢复与压缩后的会话；正在执行的一轮不承诺即时切换。初次安装此功能需 `/reload`，且必须启用 `csl-context-hooks` 和 `inner:csl-agent-kit-contract` 才会注入模式。设置面板或命令的保存成功本身不证明 Hook 已启用。原生 Codex/Claude Code 在 SessionStart（含 resume/compact）读取配置；中途修改后需恢复会话，或由 Agent 使用真实宿主/会话 ID 显式重新查询后才应用。没有模式注入的宿主不能仅凭已保存配置声称功能生效。
+
+跨宿主配置入口（从已安装包根目录调用；会话 ID 必须来自宿主，不可猜测）：
+
+```bash
+node skills/meta/csl-tasks/shared/scripts/task-mode.js show --workspace /path/to/project
+node skills/meta/csl-tasks/shared/scripts/task-mode.js set project solo --workspace /path/to/project
+node skills/meta/csl-tasks/shared/scripts/task-mode.js set session confirm --workspace /path/to/project --host codex --session ACTUAL_SESSION_ID
+```
+
+CLI 成功输出 JSON，错误写入 stderr 并返回 1；`show` 不写文件，省略会话身份时只解析项目和全局。`set` 输出保存位置，`show` 显示最终有效模式与各层来源；它不修改宿主权限。Agent 只能在用户明确要求某个作用域和值时更改配置，不能为了继续工作自行启用自主模式。
 
 #### 模型预设
 

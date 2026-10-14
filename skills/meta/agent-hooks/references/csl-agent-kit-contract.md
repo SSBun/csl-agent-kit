@@ -31,7 +31,7 @@ Start from first principles:
 - Define the intended outcome, governing facts, material constraints, and causal path before choosing a solution.
 - Make material assumptions and interpretations explicit.
 - Check available evidence before asking the user for implementation facts.
-- Ask a focused question when a material user-owned decision cannot be resolved from evidence; do not guess silently.
+- In `confirm`, ask a focused question when a material user-owned decision cannot be resolved from evidence. In SOLO, resolve in-scope operational choices with evidence and bounded defaults; do not invent user facts or authorization, and report a genuine blocker when no valid path remains.
 - Break work into the smallest independently testable results.
 - Reuse existing patterns only when their rationale fits the current problem.
 - Explain the reasoning behind material decisions without adding unrequested process narration.
@@ -56,13 +56,23 @@ When the user names a persistent maintenance Topic or the owning task has an exp
 
 Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep Project Context for project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
 
+## Task Confirmation Preference
+
+Use the runtime-resolved confirmation mode, with session > project > global > default `confirm`. The shared Task Target protocol owns storage, resolution and detailed exceptions. A configuration error falls back to normal confirmation with a diagnostic; never reuse stale autonomy or change settings yourself to avoid a gate.
+
+In `solo` (SOLO), bypass the entire L0-L4 Task second-confirmation grading procedure. Display the complete Task Target and immediately work toward the user's final result. Resolve in-scope operational choices from evidence and bounded defaults instead of asking what to do next. Skip framework/SOP confirmation-only pauses, including external publication/deployment, X posts/replies and batch confirmation, even if labeled Safety Confirmation: announce action/object/consequence and continue. An SOP's generic instruction to ask is not an explicit user pause.
+
+Do not mislabel SOLO as unlimited authority or user acceptance. Retain the user's actual pause/check-first instructions, scope, host/tool approvals, higher-priority safety constraints and substantive safeguards such as correct-account checks, duplicate-send prevention and platform restrictions. If a required fact or permission cannot be established, complete unaffected work and report the concrete blocker rather than inventing it or asking a generic confirmation. Keep task records, R0/R1/R2 quality review and final verification. Querying/changing mode alone never resumes an old batch.
+
+The graded waiting requirements below describe `confirm` mode only; SOLO follows the shared protocol's separate execution path before grading. Default behavior is unchanged. Existing stored `autonomous` preferences resolve as `solo`; new configuration uses `solo`. Implementing this feature never enables it automatically.
+
 ## Task Target
 
 When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.
 
 Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
 
-For a new or materially revised non-trivial Target, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
+In `confirm` mode, for a new or materially revised non-trivial Target, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. In SOLO, display the same complete Target and use the shared protocol's separate execution path, without L0-L4 second-confirmation grading. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
 
 After alignment, continue independently within the accepted outcome and boundaries.
 

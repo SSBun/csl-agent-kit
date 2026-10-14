@@ -13,6 +13,7 @@ test("registers bug-fix without a test-triage alias", () => {
 
   assert.ok(commands.has("bug-fix"));
   assert.equal(commands.has("test-triage"), false);
+  assert.equal(commands.has("task-mode"), false, "csl-settings owns /task-mode; do not shadow it with a Skill alias");
 });
 
 test("registers nested skill commands without removed Matt Pocock skills", () => {

@@ -2,6 +2,7 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 import {
 	loadReviewSettings, resolveReviewSettings, saveReviewSettings, settingsPath,
 	THINKING_LEVELS, type ReviewSettings, type ThinkingLevel,
+	resolveTaskMode, saveTaskMode, type TaskMode, type TaskModeScope,
 } from "../lib/csl-settings.ts";
 
 const INHERIT = "Inherit from parent";
@@ -19,7 +20,28 @@ function validateResolvedReview(settings: ReviewSettings, ctx: ExtensionContext,
 	return resolved;
 }
 
+function taskModeOptions(ctx: ExtensionContext) {
+	return { workspace: ctx.cwd, host: "pi", sessionId: ctx.sessionManager.getSessionId() };
+}
+
 export default function cslSettings(pi: ExtensionAPI) {
+	pi.registerCommand("task-mode", {
+		description: "Show task mode or set <session|project|global> <confirm|solo|inherit> (SOLO skips framework confirmations)",
+		handler: async (args, ctx) => {
+			try {
+				const parts = args.trim().split(/\s+/).filter(Boolean);
+				if (parts.length && !(parts.length === 1 && parts[0] === "show")) {
+					if (parts.length !== 2) throw new Error("Usage: /task-mode [show | session|project|global confirm|solo|inherit]");
+					saveTaskMode(parts[0] as TaskModeScope, parts[1] as TaskMode, taskModeOptions(ctx));
+				}
+				const state = resolveTaskMode(taskModeOptions(ctx));
+				ctx.ui.notify(`Task mode: ${state.mode} (source: ${state.source}). Session: ${state.layers.session}; project: ${state.layers.project}; global: ${state.layers.global}. Applies on the next agent turn; host approvals and quality gates are unchanged.`, "info");
+			} catch (error) {
+				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+			}
+		},
+	});
+
 	pi.registerCommand("csl-settings", {
 		description: "CSL Agent Kit settings",
 		handler: async (_args, ctx) => {
@@ -33,10 +55,30 @@ export default function cslSettings(pi: ExtensionAPI) {
 					const current = loadReviewSettings(path);
 					const modelRow = `Review · Model: ${current.model ?? INHERIT}`;
 					const thinkingRow = `Review · Thinking level: ${current.thinking ?? INHERIT}`;
+					let modeLabel: string;
+					try {
+						const state = resolveTaskMode(taskModeOptions(ctx));
+						modeLabel = `${state.mode} (${state.source})`;
+					} catch { modeLabel = "Configuration error — use /task-mode to repair"; }
+					const taskRow = `Task · Confirmation mode: ${modeLabel}`;
 					const selected = await ctx.ui.select("CSL Agent Kit Settings (changes apply automatically)", [
-						modelRow, thinkingRow,
+						modelRow, thinkingRow, taskRow,
 					]);
 					if (!selected) return;
+					if (selected === taskRow) {
+						const scope = await ctx.ui.select("Task mode scope (session > project > global)", ["session", "project", "global"]);
+						if (!scope) continue;
+						const mode = await ctx.ui.select("Task mode: solo = SOLO (no framework confirmations; host approvals and quality gates remain)", ["inherit", "confirm", "solo"]);
+						if (!mode) continue;
+						try {
+							saveTaskMode(scope as TaskModeScope, mode as TaskMode, taskModeOptions(ctx));
+							const state = resolveTaskMode(taskModeOptions(ctx));
+							ctx.ui.notify(`Task mode: ${state.mode} (source: ${state.source}); saved ${scope}: ${mode}. Applies on the next agent turn.`, "info");
+						} catch (error) {
+							ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
+						}
+						continue;
+					}
 					let value: string | undefined;
 					let field: keyof ReviewSettings;
 					if (selected === modelRow) {

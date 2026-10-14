@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import cslSettings from "../pi/extensions/csl-settings.ts";
-import { loadReviewSettings, resolveReviewSettings, saveReviewSettings } from "../pi/lib/csl-settings.ts";
+import { loadReviewSettings, resolveReviewSettings, saveReviewSettings, resolveTaskMode } from "../pi/lib/csl-settings.ts";
 
 const PARENT = { provider: "example", id: "parent", reasoning: true, thinkingLevelMap: { max: "max" } };
 const OTHER = { provider: "other", id: "review", reasoning: true, thinkingLevelMap: { high: null } };
@@ -26,6 +26,8 @@ function fixture(initial) {
     getThinkingLevel: () => thinking,
   });
   const ctx = {
+    cwd: root,
+    sessionManager: { getSessionId: () => "settings-session" },
     mode: "tui",
     model: PARENT,
     modelRegistry: { getAvailable: () => [PARENT, OTHER] },
@@ -39,6 +41,7 @@ function fixture(initial) {
   };
   return {
     path, ctx, choices, notifications,
+    modeCommand: commands.get("task-mode"),
     command: commands.get("csl-settings"),
     tool: tools.get("csl_review_config"),
     setThinking: (value) => { thinking = value; },
@@ -102,7 +105,7 @@ test("English panel applies each selection before returning, without save or can
     assert.equal(f.command.description, "CSL Agent Kit settings");
     f.choices.push((title, items) => {
       assert.equal(title, "CSL Agent Kit Settings (changes apply automatically)");
-      assert.deepEqual(items, ["Review · Model: Inherit from parent", "Review · Thinking level: Inherit from parent"]);
+      assert.deepEqual(items, ["Review · Model: Inherit from parent", "Review · Thinking level: Inherit from parent", "Task · Confirmation mode: confirm (default)"]);
       return items[0];
     }, (title, items) => {
       assert.equal(title, "Review model");
@@ -200,5 +203,29 @@ test("failed validation retains applied values; clearing works with unavailable 
     await f.command.handler("", f.ctx);
     assert.deepEqual(loadReviewSettings(f.path), {});
     assert.equal(f.notifications.length, 1);
+  } finally { f.cleanup(); }
+});
+
+test("task settings panel persists scopes; command distinguishes confirm from inherit", async () => {
+  const f = fixture({ review: { thinking: "low" } });
+  const options = { workspace: f.ctx.cwd, host: "pi", sessionId: "settings-session" };
+  try {
+    f.choices.push(row(2), "global", "solo", undefined);
+    await f.command.handler("", f.ctx);
+    assert.equal(resolveTaskMode(options).source, "global");
+    await f.modeCommand.handler("project confirm", f.ctx);
+    assert.equal(resolveTaskMode(options).mode, "confirm");
+    await f.modeCommand.handler("session solo", f.ctx);
+    assert.equal(resolveTaskMode(options).source, "session");
+    assert.equal(resolveTaskMode({ ...options, sessionId: "new" }).source, "project");
+    await f.modeCommand.handler("session inherit", f.ctx);
+    assert.equal(resolveTaskMode(options).source, "project");
+    await f.modeCommand.handler("global invalid", f.ctx);
+    assert.equal(f.notifications.at(-1)[1], "error");
+    assert.deepEqual(loadReviewSettings(f.path), { thinking: "low" });
+    f.choices.push(row(2), undefined, undefined);
+    const before = resolveTaskMode(options);
+    await f.command.handler("", f.ctx);
+    assert.deepEqual(resolveTaskMode(options), before);
   } finally { f.cleanup(); }
 });

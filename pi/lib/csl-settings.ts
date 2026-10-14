@@ -2,6 +2,22 @@ import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "
 import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
+import { createRequire } from "node:module";
+
+export type TaskMode = "confirm" | "solo" | "inherit";
+export type TaskModeScope = "session" | "project" | "global";
+export interface TaskModeOptions { workspace: string; host: string; sessionId?: string }
+export interface TaskModeState {
+	mode: Exclude<TaskMode, "inherit">;
+	source: TaskModeScope | "default";
+	layers: Record<TaskModeScope, TaskMode>;
+	paths: Record<TaskModeScope, string | null>;
+}
+const taskModes = createRequire(import.meta.url)("../../skills/meta/csl-tasks/shared/lib/task-mode.js") as {
+	resolveTaskMode(options: TaskModeOptions): TaskModeState;
+	saveTaskMode(scope: TaskModeScope, mode: TaskMode, options: TaskModeOptions): string;
+};
+export const { resolveTaskMode, saveTaskMode } = taskModes;
 
 export const THINKING_LEVELS = ["off", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 export type ThinkingLevel = (typeof THINKING_LEVELS)[number];
