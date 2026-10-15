@@ -1,5 +1,7 @@
 # 任务索引
 
+- [按独立功能分组提交当前全部本地改动](tasks/commit-local-feature-groups.md) — Completed (2026-10-15 15:56)
+
 - [简化 Topic 生命周期为 Active 与 Archived](tasks/simplify-topic-lifecycle.md) — In Progress (2026-10-15 14:28)
 
 - [在 Pi 任务区域增加 Topics 导航面板](tasks/pi-topics-panel.md) — In Progress (2026-10-15 11:43)
