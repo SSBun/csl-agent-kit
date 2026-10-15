@@ -4,6 +4,8 @@
 
 - [在 Pi 任务区域增加 Topics 导航面板](tasks/pi-topics-panel.md) — In Progress (2026-10-15 11:43)
 
+- [为 Codex 创建任务感知状态栏](tasks/codex-task-status-line.md) — In Progress (2026-10-14 17:32)
+
 - [完整改造 Topic 任务与共享资料机制](tasks/clarify-topic-tasks-resources-spec.md) — In Progress (2026-10-14 16:14)
 
 - [按功能分组提交全部本地改动](tasks/commit-task-mode-changes.md) — Completed (2026-10-14 16:14)
