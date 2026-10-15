@@ -5,6 +5,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { createHash } = require("node:crypto");
 const { execFileSync } = require("node:child_process");
+const { pathToFileURL } = require("node:url");
 
 const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const PROJECT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
@@ -200,13 +201,13 @@ function validateSpec(input) {
   return out;
 }
 
-function validateResources(input) {
+function validateResources(input, { allowTaskReferences = false } = {}) {
   if (!Array.isArray(input)) throw new Error("resources must be an array");
   const seen = new Set();
   return input.map((item) => {
     if (!item || typeof item !== "object" || Array.isArray(item) || !["normative", "reference"].includes(item.kind)) throw new Error("resource kind must be normative or reference");
-    const keys = item.kind === "normative" ? "kind,label,purpose,sha256,target" : "kind,label,purpose,target";
-    if (Object.keys(item).sort().join(",") !== keys) throw new Error("invalid resource fields; only normative resources have sha256");
+    const keys = item.kind === "normative" ? "kind,label,purpose,sha256,target" : `kind,label,purpose,target${item.type === "directory" ? ",type" : ""}`;
+    if (Object.keys(item).sort().join(",") !== keys) throw new Error("invalid resource fields; only normative files have sha256 and only references may be directories");
     const label = line(item.label, "resource label"), purpose = line(item.purpose, "resource purpose");
     if (/[\[\]|<>\\]/.test(label) || /[|<>\\]/.test(purpose)) throw new Error("resource label/purpose cannot contain Markdown delimiters");
     const target = line(item.target, "resource target");
@@ -216,9 +217,13 @@ function validateResources(input) {
     } else if (path.isAbsolute(target) || /[:\\\u0000-\u001f\u007f]/.test(target) || target.split("/").some((part) => !part || part === "." || part === "..")) {
       throw new Error("resource target must be an owner-repository-relative file or an HTTP(S) reference");
     }
+    const targetPath = /^https?:\/\//.test(target) ? decodeURIComponent(new URL(target).pathname) : target;
+    if (!allowTaskReferences && /(^|\/)tasks\/tasks(?:\.md$|\/|$)/.test(targetPath)) throw new Error("task records belong in Tasks; use reference-task for history, not Resources");
+    if (item.type === "directory" && /^https?:\/\//.test(target)) throw new Error("directory resources must be local references");
     if (seen.has(target)) throw new Error("duplicate resource target");
     seen.add(target);
     const resource = { label, target, purpose, kind: item.kind };
+    if (item.type === "directory") resource.type = "directory";
     if (item.kind === "normative") {
       if (!DIGEST.test(item.sha256)) throw new Error("normative resource needs a SHA-256 digest");
       resource.sha256 = item.sha256;
@@ -227,13 +232,18 @@ function validateResources(input) {
   });
 }
 
-function resourceLink(target) {
-  return /^https?:\/\//.test(target) ? target : path.posix.relative("tasks/topics", target).split("/").map(encodeURIComponent).join("/");
+function resourceLink(target, type) {
+  if (/^https?:\/\//.test(target)) return target;
+  return path.posix.relative("tasks/topics", target).split("/").map(encodeURIComponent).join("/") + (type === "directory" ? "/" : "");
+}
+
+function resourceViews(workspace, topic) {
+  return (topic.resources || []).map((item) => ({ ...item, href: /^https?:\/\//.test(item.target) ? item.target : pathToFileURL(safePath(workspace, item.target)).href + (item.type === "directory" ? "/" : "") }));
 }
 
 function renderResources(resources) {
   if (resources === undefined) return "";
-  const rows = resources.map((item) => `| [${item.label}](<${resourceLink(item.target)}>) | ${item.kind} | ${item.purpose} | ${item.sha256 || "-"} |`);
+  const rows = resources.map((item) => `| [${item.label}](<${resourceLink(item.target, item.type)}>) | ${item.kind} | ${item.purpose} | ${item.sha256 || "-"} |`);
   return `\n## Resources\n\n| Resource | Kind | Purpose | SHA-256 |\n| --- | --- | --- | --- |\n${rows.length ? `${rows.join("\n")}\n` : ""}`;
 }
 
@@ -246,9 +256,9 @@ function parseResources(text) {
     const match = entry.match(/^\| \[([^\]]+)\]\(<([^>]+)>\) \| (normative|reference) \| (.+) \| (-|[a-f0-9]{64}) \|$/);
     if (!match) throw new Error("invalid Resources row");
     const [, label, link, kind, purpose, digest] = match;
-    const target = /^https?:\/\//.test(link) ? link : path.posix.normalize(`tasks/topics/${decodeURIComponent(link)}`);
-    return { label, target, purpose, kind, ...(digest === "-" ? {} : { sha256: digest }) };
-  }));
+    const target = /^https?:\/\//.test(link) ? link : path.posix.normalize(`tasks/topics/${decodeURIComponent(link)}`).replace(/\/$/, "");
+    return { label, target, purpose, kind, ...(!/^https?:\/\//.test(link) && link.endsWith("/") ? { type: "directory" } : {}), ...(digest === "-" ? {} : { sha256: digest }) };
+  }), { allowTaskReferences: true });
 }
 
 function normative(spec, resources = []) {
@@ -266,8 +276,56 @@ function checkDependencies(workspace, spec, resources = []) {
   }
 }
 
+const isMember = (entry) => entry.relation !== "history";
+const escapeCell = (value) => value.replace(/[&|\[\]<>\\*_`]/g, (character) => `&#${character.charCodeAt(0)};`);
+const unescapeCell = (value) => value.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+
+function taskLink(owner, source, id) {
+  return root(owner) === root(source) ? resourceLink(`tasks/tasks/${id}.md`) : pathToFileURL(safePath(source, `tasks/tasks/${id}.md`)).href;
+}
+
+function taskEntry(owner, source, task, reference, purpose, table, relation = "member") {
+  const entry = { ...reference, purpose: line(purpose, "purpose") };
+  return table ? { ...entry, relation, title: task.title, link: taskLink(owner, source, task.id) } : entry;
+}
+
+function renderTasks(topic) {
+  if (topic.tasksFormat !== "table") return topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n");
+  return ["| Task | Relation | Reference | Purpose | Repository |", "| --- | --- | --- | --- | --- |", ...topic.tasks.map((entry) => `| [${escapeCell(entry.title)}](<${entry.link}>) | ${entry.relation} | ${entry.reference} | ${escapeCell(entry.purpose)} | ${entry.repository} |`)].join("\n");
+}
+
+function parseTasks(text) {
+  const content = body(text, "Tasks");
+  if (!content.startsWith("|")) return { tasksFormat: "legacy", tasks: jsonLines(content, "task") };
+  const lines = content.split("\n");
+  if (lines.shift() !== "| Task | Relation | Reference | Purpose | Repository |" || lines.shift() !== "| --- | --- | --- | --- | --- |") throw new Error("invalid Tasks table");
+  const tasks = lines.map((row) => {
+    const match = row.match(/^\| \[([^\]]+)\]\(<([^>]+)>\) \| (member|history) \| ([^|]+) \| (.+) \| ([^|]+) \|$/);
+    if (!match) throw new Error("invalid Tasks row");
+    const [, title, link, relation, reference, purpose, repository] = match;
+    const ref = parseRef(reference);
+    if (ref.project === "self") {
+      if (link !== resourceLink(`tasks/tasks/${ref.id}.md`)) throw new Error("local task link does not match its reference");
+    } else {
+      const url = new URL(link);
+      if (url.protocol !== "file:" || url.hostname || url.search || url.hash || !decodeURIComponent(url.pathname).endsWith(`/tasks/tasks/${ref.id}.md`) || url.href !== link) throw new Error("invalid cross-project task file link");
+    }
+    return { reference, repository, purpose: unescapeCell(purpose), relation, title: unescapeCell(title), link };
+  });
+  return { tasksFormat: "table", tasks };
+}
+
+function tableTopic(workspace, topic) {
+  const tasks = topic.tasks.map((entry) => {
+    const location = resolve(workspace, entry.reference, entry.repository);
+    const task = core().readTask(location.workspace, location.id);
+    return taskEntry(workspace, location.workspace, task, { reference: entry.reference, repository: entry.repository }, entry.purpose, true, entry.relation || "member");
+  });
+  return { ...topic, tasksFormat: "table", tasks };
+}
+
 function render(topic) {
-  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}${renderResources(topic.resources)}\n## Tasks\n\n${topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n")}\n`;
+  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}${renderResources(topic.resources)}\n## Tasks\n\n${renderTasks(topic)}\n`;
 }
 
 function parseTopic(id, text) {
@@ -279,16 +337,18 @@ function parseTopic(id, text) {
   const spec = validateSpec({ scope: body(text, "Scope"), spec: body(text, "Spec Context"), decisions: body(text, "Decisions"), dependencies: jsonLines(body(text, "Dependencies"), "dependency") });
   const resources = parseResources(text);
   if (hash(normative(spec, resources)) !== meta.Revision) throw new Error("topic specification changed outside update-spec/update-resources; use the last valid revision and an explicit update");
-  const tasks = jsonLines(body(text, "Tasks"), "task");
+  const { tasks, tasksFormat } = parseTasks(text);
   const seen = new Set();
   for (const entry of tasks) {
-    if (Object.keys(entry).sort().join(",") !== "purpose,reference,repository" || seen.has(entry.reference)) throw new Error("invalid or duplicate topic task reference");
+    const keys = tasksFormat === "table" ? "link,purpose,reference,relation,repository,title" : "purpose,reference,repository";
+    if (Object.keys(entry).sort().join(",") !== keys || seen.has(entry.reference)) throw new Error("invalid or duplicate topic task reference");
     parseRef(entry.reference);
     line(entry.purpose, "purpose");
+    if (tasksFormat === "table") line(entry.title, "task title");
     if (entry.repository !== "local" && !DIGEST.test(entry.repository)) throw new Error("invalid repository identity");
     seen.add(entry.reference);
   }
-  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, resources, tasks, text, version: hash(text) };
+  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, resources, tasks, tasksFormat, text, version: hash(text) };
   if (render(topic) !== text) throw new Error("noncanonical Topic structure; use Topic commands rather than editing fields or sections");
   return topic;
 }
@@ -339,7 +399,7 @@ function createTopic(workspace, id, title, input) {
     if (fileText(topicPath(workspace, id)) !== undefined) throw new Error(`topic already exists: ${id}`);
     const spec = validateSpec(input);
     checkDependencies(workspace, spec);
-    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, resources: [], tasks: [] }, undefined);
+    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, resources: [], tasks: [], tasksFormat: "table" }, undefined);
   });
 }
 
@@ -362,10 +422,49 @@ function updateResources(workspace, id, expected, input) {
     const resources = validateResources(input);
     for (const item of resources) {
       if (item.kind === "normative" && item.target === `tasks/topics/${id}.md`) throw new Error("a Topic cannot pin its own mutable document as a normative resource");
-      if (!/^https?:\/\//.test(item.target) && !fs.statSync(safePath(workspace, item.target)).isFile()) throw new Error(`resource is not a file: ${item.target}`);
+      if (!/^https?:\/\//.test(item.target)) {
+        const stat = fs.statSync(safePath(workspace, item.target));
+        if (stat.isDirectory()) {
+          if (item.kind !== "reference") throw new Error("normative directories are not supported; pin the relevant files individually");
+          item.type = "directory";
+        } else if (!stat.isFile() || item.type === "directory") throw new Error(`resource type does not match a regular file/directory: ${item.target}`);
+      }
     }
     checkDependencies(workspace, topic.spec, resources);
     return saveTopic(workspace, { ...topic, resources, revision: hash(normative(topic.spec, resources)) }, topic.text);
+  });
+}
+
+function formatTopic(workspace, id, expected) {
+  return withLocks([workspace], () => {
+    const topic = readTopic(workspace, id);
+    if (topic.version !== expected) throw new Error("topic changed; reread before format");
+    return saveTopic(workspace, tableTopic(workspace, topic), topic.text);
+  });
+}
+
+function referenceTask(workspace, id, reference, expected, purpose, remove = false) {
+  return withLocks([workspace], () => {
+    const topic = readTopic(workspace, id);
+    if (topic.version !== expected) throw new Error("topic changed; reread before task reference update");
+    if (topic.state === "Archived") throw new Error("restore Archived topic before changing task references");
+    if (remove) {
+      parseRef(reference);
+      const existing = topic.tasks.find((entry) => entry.reference === reference);
+      if (!existing) throw new Error("historical reference not found; use the exact stored reference");
+      if (isMember(existing)) throw new Error("formal members require detach, not unreference-task");
+      return saveTopic(workspace, { ...topic, tasks: topic.tasks.filter((entry) => entry !== existing) }, topic.text);
+    }
+    const location = resolve(workspace, reference);
+    const canonical = refFor(workspace, location.workspace, location.id);
+    const existing = topic.tasks.find((entry) => entry.reference === canonical.reference);
+    if (existing && isMember(existing)) throw new Error("formal members require attach/detach; history commands cannot change membership");
+    if (existing && existing.repository !== canonical.repository) throw new Error("historical task repository identity changed; resolve the mapping first");
+    const prepared = topic.tasksFormat === "table" ? topic : tableTopic(workspace, topic);
+    const tasks = prepared.tasks.filter((entry) => entry.reference !== canonical.reference);
+    const task = core().readTask(location.workspace, location.id);
+    tasks.push(taskEntry(workspace, location.workspace, task, canonical, purpose, true, "history"));
+    return saveTopic(workspace, { ...prepared, tasks }, topic.text);
   });
 }
 
@@ -416,7 +515,7 @@ function finishPending(workspace, task) {
     const target = resolve(workspace, reference.reference, reference.repository);
     const topic = readTopic(target.workspace, target.id);
     const reverse = refFor(target.workspace, workspace, task.id);
-    const entries = topic.tasks.filter((entry) => entry.reference === reverse.reference);
+    const entries = topic.tasks.filter((entry) => isMember(entry) && entry.reference === reverse.reference);
     const belongs = current?.workspace === target.workspace && current.id === target.id;
     if (belongs ? entries.length !== 1 || entries[0].repository !== reverse.repository : entries.length !== 0) return;
   }
@@ -431,7 +530,7 @@ function fresh(workspace, task) {
   const target = resolve(workspace, binding.reference, binding.repository);
   const topic = readTopic(target.workspace, target.id);
   const reverse = refFor(target.workspace, workspace, task.id);
-  if (!topic.tasks.some((entry) => entry.reference === reverse.reference && entry.repository === reverse.repository)) throw new Error("incomplete Topic association; repair the exact task reference");
+  if (!topic.tasks.some((entry) => isMember(entry) && entry.reference === reverse.reference && entry.repository === reverse.repository)) throw new Error("incomplete Topic association; repair the exact task reference");
   const snapshot = fs.readFileSync(revisionPath(target.workspace, target.id, binding.revision), "utf8");
   if (hash(snapshot) !== binding.revision) throw new Error("adopted topic snapshot corrupt");
   if (binding.revision !== topic.revision) throw new Error("Topic specification changed; analyze impact, align if needed, and explicitly adopt the current revision");
@@ -495,8 +594,9 @@ function association(workspace, id, reference, options = {}) {
     changes.push({ file: index, before: fileText(index), after: core().updatedIndex(workspace, parsed) });
     for (const { workspace: owner, topic } of topics.values()) {
       const reverse = refFor(owner, workspace, id);
-      const tasks = topic.tasks.filter((entry) => entry.reference !== reverse.reference);
-      if (target && topic.file === topicPath(target.workspace, target.id)) tasks.push({ ...reverse, purpose: line(options.purpose, "purpose") });
+      const belongs = target && topic.file === topicPath(target.workspace, target.id);
+      const tasks = topic.tasks.filter((entry) => entry.reference !== reverse.reference || (!belongs && !isMember(entry)));
+      if (belongs) tasks.push(taskEntry(owner, workspace, task, reverse, options.purpose, topic.tasksFormat === "table"));
       changes.push({ file: topic.file, before: topic.text, after: render({ ...topic, tasks }) });
     }
     if (topics.size === 0) return task;
@@ -525,7 +625,7 @@ function adopt(workspace, id, options) {
     if (topic.version !== options.expectedTopic) throw new Error("topic changed; reread before adopt");
     // Adoption never silently repairs a broken backlink or drops an existing review obligation.
     const reverse = refFor(target.workspace, workspace, id);
-    if (!topic.tasks.some((entry) => entry.reference === reverse.reference && entry.repository === reverse.repository)) throw new Error("repair incomplete Topic association first");
+    if (!topic.tasks.some((entry) => isMember(entry) && entry.reference === reverse.reference && entry.repository === reverse.repository)) throw new Error("repair incomplete Topic association first");
     const text = changedTask(task, { ...binding, revision: topic.revision });
     const updated = core().replaceSection(text, "Topic Adoption", [`- Evidence: ${options.evidence.trim()}`]);
     const proposed = core().parseTask(id, updated, task.file);
@@ -542,12 +642,14 @@ function members(workspace, topic) {
       const location = resolve(workspace, entry.reference, entry.repository);
       safePath(location.workspace, `tasks/tasks/${location.id}.md`);
       const task = core().readTask(location.workspace, location.id);
+      const href = pathToFileURL(safePath(location.workspace, `tasks/tasks/${location.id}.md`)).href;
+      if (!isMember(entry)) return { ...entry, status: task.status.display, href, member: false };
       const binding = taskTopic(task.text);
       if (!binding) throw new Error("stale backlink: task has no Topic");
       const owner = resolve(location.workspace, binding.reference, binding.repository);
       if (owner.workspace !== root(workspace) || owner.id !== topic.id) throw new Error("stale backlink: task belongs elsewhere");
-      return { ...entry, status: task.status.display, adoptedRevision: binding.revision, freshness: freshness(location.workspace, task) };
-    } catch (error) { return { ...entry, status: "unknown", error: error.message }; }
+      return { ...entry, status: task.status.display, href, member: true, adoptedRevision: binding.revision, freshness: freshness(location.workspace, task) };
+    } catch (error) { return { ...entry, status: "unknown", member: isMember(entry), error: error.message }; }
   });
 }
 
@@ -567,7 +669,7 @@ function setState(workspace, id, state, expected, ownerTask) {
         fresh(location.workspace, task);
         ownerReference = refFor(workspace, location.workspace, task.id).reference;
       }
-      if (members(workspace, topic).some((entry) => !["Completed", "Cancelled"].includes(entry.status) && entry.reference !== ownerReference)) throw new Error("resolve active or inaccessible members before archive");
+      if (members(workspace, topic).some((entry) => entry.member && !["Completed", "Cancelled"].includes(entry.status) && entry.reference !== ownerReference)) throw new Error("resolve active or inaccessible members before archive");
     }
     if (state === "Active") checkDependencies(workspace, topic.spec, topic.resources);
     return saveTopic(workspace, { ...topic, state }, topic.text);
@@ -584,8 +686,9 @@ function repair(workspace, id, taskReference, options) {
     const binding = taskTopic(task.text);
     const owner = binding ? resolve(location.workspace, binding.reference, binding.repository) : undefined;
     const reverse = refFor(workspace, location.workspace, location.id);
-    const tasks = topic.tasks.filter((entry) => entry.reference !== reverse.reference);
-    if (owner?.workspace === root(workspace) && owner.id === id) tasks.push({ ...reverse, purpose: line(options.purpose, "purpose") });
+    const belongs = owner?.workspace === root(workspace) && owner.id === id;
+    const tasks = topic.tasks.filter((entry) => entry.reference !== reverse.reference || (!belongs && !isMember(entry)));
+    if (belongs) tasks.push(taskEntry(workspace, location.workspace, task, reverse, options.purpose, topic.tasksFormat === "table"));
     const index = core().indexPath(location.workspace);
     commit([
       { file: topic.file, before: topic.text, after: render({ ...topic, tasks }) },
@@ -606,9 +709,10 @@ function check(workspace, id) {
   const topic = readTopic(workspace, id);
   const projected = topicIndex(workspace, topic);
   if (projected.before !== projected.after) throw new Error("Topic index missing or inconsistent; rebuild the index");
-  const errors = members(workspace, topic).filter((entry) => entry.error).map((entry) => `${entry.reference}: ${entry.error}`);
+  const rows = members(workspace, topic);
+  const errors = rows.filter((entry) => entry.member && entry.error).map((entry) => `${entry.reference}: ${entry.error}`);
   if (errors.length) throw new Error(errors.join("; "));
-  return { valid: true, revision: topic.revision, members: members(workspace, topic) };
+  return { valid: true, revision: topic.revision, members: rows, referenceWarnings: rows.filter((entry) => !entry.member && entry.error).map((entry) => `${entry.reference}: ${entry.error}`) };
 }
 
 function rebuildIndex(workspace) {
@@ -621,4 +725,4 @@ function rebuildIndex(workspace) {
   });
 }
 
-module.exports = { resolveReference: resolve, hash, safePath, withLocks, createTopic, readTopic, updateSpec, updateResources, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };
+module.exports = { resolveReference: resolve, hash, safePath, withLocks, createTopic, readTopic, updateSpec, updateResources, resourceViews, formatTopic, referenceTask, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };

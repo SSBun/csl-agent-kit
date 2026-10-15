@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { createRequire } from "node:module";
 import { execFileSync, spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const core = require("../skills/meta/csl-tasks/shared/lib/task-core.js");
@@ -168,7 +169,7 @@ test("explicit repair follows task authority and index rebuild does not alter sp
   const root = workspace(t);
   topic(root); task(root); attach(root);
   const topicRecord = topics.readTopic(root, "account");
-  fs.writeFileSync(topicRecord.file, topicRecord.text.replace(/^- \{"reference":.*\n/m, "\n"));
+  fs.writeFileSync(topicRecord.file, topicRecord.text.replace(/^\| \[.*\| member \|.*\n/m, ""));
   assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
   topics.repair(root, "account", "self:ios", { expectedTopic: topics.readTopic(root, "account").version, purpose: "Repair exact reference" });
   assert.equal(topics.fresh(root, core.readTask(root, "ios")).applicable, true);
@@ -386,7 +387,7 @@ test("resource classification and removal change the normative projection only w
 test("legacy Topics keep their shape and digest until explicit resource initialization", (t) => {
   const root = workspace(t);
   const initial = topic(root);
-  const legacy = initial.text.replace(/\n## Resources\n\n\| Resource \| Kind \| Purpose \| SHA-256 \|\n\| --- \| --- \| --- \| --- \|\n/, "");
+  const legacy = initial.text.replace(/\n## Resources\n\n\| Resource \| Kind \| Purpose \| SHA-256 \|\n\| --- \| --- \| --- \| --- \|\n/, "").replace(/## Tasks\n[\s\S]*$/, "## Tasks\n\n\n");
   fs.writeFileSync(initial.file, legacy);
   fs.rmSync(path.join(root, "tasks/topics/account/resources"), { recursive: true });
   const loaded = topics.readTopic(root, "account");
@@ -454,6 +455,134 @@ test("resource CLI updates expose the index and directory without copying source
   assert.equal(output.resources[0].target, "notes.md");
   assert.equal(output.resourcesDirectory, path.join(root, "tasks/topics/account/resources"));
   assert.deepEqual(fs.readdirSync(output.resourcesDirectory), []);
+});
+
+test("new Topic Tasks tables link formal members and history without reopening completed tasks", (t) => {
+  const root = workspace(t);
+  topic(root); task(root, "current"); attach(root, "current");
+  task(root, "old-fix"); finish(root, "old-fix");
+  const old = core.readTask(root, "old-fix");
+  const taskIndex = fs.readFileSync(core.indexPath(root), "utf8");
+  const before = topics.readTopic(root, "account");
+  const after = topics.referenceTask(root, "account", "self:old-fix", before.version, "Historical | evidence");
+  assert.equal(after.tasksFormat, "table");
+  assert.match(after.text, /\| Task \| Relation \| Reference \| Purpose \| Repository \|/);
+  assert.match(after.text, /\[old-fix\]\(<\.\.\/tasks\/old-fix.md>\) \| history \|/);
+  assert.equal(after.revision, before.revision);
+  assert.equal(core.readTask(root, "old-fix").text, old.text);
+  assert.equal(fs.readFileSync(core.indexPath(root), "utf8"), taskIndex);
+  assert.equal(topics.members(root, after).find((entry) => entry.reference === "self:old-fix").member, false);
+  assert.equal(topics.freshness(root, core.readTask(root, "current")).current, true);
+  assert.throws(() => topics.referenceTask(root, "account", "self:current", after.version, "wrong"), /formal members/);
+});
+
+test("history does not block archive or satisfy a formal backlink", (t) => {
+  const root = workspace(t);
+  topic(root); task(root, "pending-history");
+  let current = topics.readTopic(root, "account");
+  current = topics.referenceTask(root, "account", "self:pending-history", current.version, "Unfinished old work");
+  fs.unlinkSync(core.taskPath(root, "pending-history"));
+  assert.equal(topics.check(root, "account").referenceWarnings.length, 1);
+  current = topics.setState(root, "account", "Archived", current.version);
+  assert.equal(current.state, "Archived");
+  current = topics.setState(root, "account", "Active", current.version);
+  current = topics.referenceTask(root, "account", "self:pending-history", current.version, undefined, true);
+  assert.equal(current.tasks.length, 0);
+  task(root, "member"); attach(root, "member");
+  current = topics.readTopic(root, "account");
+  fs.writeFileSync(current.file, current.text.replace(" | member | self:member |", " | history | self:member |"));
+  assert.throws(() => topics.fresh(root, core.readTask(root, "member")), /incomplete Topic association/);
+  topics.repair(root, "account", "self:member", { expectedTopic: topics.readTopic(root, "account").version, purpose: "Restore formal relationship" });
+  assert.equal(topics.readTopic(root, "account").tasks[0].relation, "member");
+});
+
+test("repair preserves genuine history and history removal never detaches a member", (t) => {
+  const root = workspace(t);
+  topic(root); task(root, "history");
+  let current = topics.readTopic(root, "account");
+  current = topics.referenceTask(root, "account", "self:history", current.version, "History");
+  current = topics.repair(root, "account", "self:history", { expectedTopic: current.version, purpose: "History remains history" });
+  assert.equal(current.tasks[0].relation, "history");
+  assert.equal(core.readTask(root, "history").topic, undefined);
+  task(root, "member"); attach(root, "member");
+  assert.throws(() => topics.referenceTask(root, "account", "self:member", topics.readTopic(root, "account").version, undefined, true), /formal members/);
+});
+
+test("explicit formatting converts legacy JSON Tasks without changing task evidence or revisions", (t) => {
+  const root = workspace(t);
+  topic(root); task(root); attach(root);
+  const record = core.readTask(root, "ios");
+  const current = topics.readTopic(root, "account");
+  const legacyRows = current.tasks.map(({ reference, repository, purpose }) => `- ${JSON.stringify({ reference, repository, purpose })}`).join("\n");
+  const legacy = current.text.replace(/## Tasks\n[\s\S]*$/, `## Tasks\n\n${legacyRows}\n`);
+  fs.writeFileSync(current.file, legacy);
+  const loaded = topics.readTopic(root, "account");
+  assert.equal(loaded.tasksFormat, "legacy");
+  topics.check(root, "account");
+  assert.equal(fs.readFileSync(current.file, "utf8"), legacy);
+  const formatted = topics.formatTopic(root, "account", loaded.version);
+  assert.equal(formatted.tasksFormat, "table");
+  assert.equal(formatted.revision, current.revision);
+  assert.equal(core.readTask(root, "ios").text, record.text);
+  assert.equal(topics.freshness(root, record).current, true);
+});
+
+test("reference files and folders expose openable encoded links for Chinese and spaces", (t) => {
+  const root = workspace(t);
+  const current = topic(root);
+  fs.mkdirSync(path.join(root, "共享 资料 #1"));
+  fs.writeFileSync(path.join(root, "共享 资料 #1", "设计 文档.md"), "Design");
+  const updated = topics.updateResources(root, "account", current.version, [
+    { label: "文件夹", target: "共享 资料 #1", purpose: "Shared material", kind: "reference" },
+    { label: "设计文档", target: "共享 资料 #1/设计 文档.md", purpose: "Reference document", kind: "reference" },
+  ]);
+  assert.equal(updated.resources[0].type, "directory");
+  assert.equal(updated.revision, current.revision);
+  const view = topics.resourceViews(root, updated);
+  assert.equal(fs.statSync(fileURLToPath(view[0].href)).isDirectory(), true);
+  assert.equal(fs.statSync(fileURLToPath(view[1].href)).isFile(), true);
+  assert.match(view[0].href, /%20.*%23.*\/$/);
+  assert.match(updated.text, /\[文件夹\]\(<.*%20.*%23.*\/>\)/);
+  assert.equal(topics.readTopic(root, "account").resources[0].type, "directory");
+  assert.throws(() => topics.updateResources(root, "account", updated.version, [{ label: "Folder", target: "共享 资料 #1", purpose: "Contract", kind: "normative", sha256: topics.hash("x") }]), /normative directories/);
+});
+
+test("task records cannot be newly registered as Resources while reports remain eligible", (t) => {
+  const root = workspace(t);
+  const current = topic(root); task(root);
+  for (const target of ["tasks/tasks/ios.md", "tasks/tasks", "tasks/tasks.md", "https://example.com/repo/tasks/tasks/ios.md"]) {
+    assert.throws(() => topics.updateResources(root, "account", current.version, [{ label: "Task", target, purpose: "History", kind: "reference" }]), /belong in Tasks/);
+  }
+  fs.mkdirSync(path.join(root, "tasks/artifacts/ios/reports"), { recursive: true });
+  fs.writeFileSync(path.join(root, "tasks/artifacts/ios/reports/analysis.md"), "Reusable analysis");
+  const updated = topics.updateResources(root, "account", current.version, [{ label: "Analysis", target: "tasks/artifacts/ios/reports/analysis.md", purpose: "Long-lived report", kind: "reference" }]);
+  assert.equal(updated.resources.length, 1);
+});
+
+test("legacy task Resource links remain readable but must be explicitly removed on update", (t) => {
+  const root = workspace(t);
+  const current = topic(root); task(root);
+  const legacy = current.text.replace("| --- | --- | --- | --- |\n", "| --- | --- | --- | --- |\n| [Old task](<../tasks/ios.md>) | reference | Historical source | - |\n");
+  fs.writeFileSync(current.file, legacy);
+  const loaded = topics.readTopic(root, "account");
+  assert.equal(loaded.revision, current.revision);
+  assert.throws(() => topics.updateResources(root, "account", loaded.version, loaded.resources), /belong in Tasks/);
+  const listed = topics.referenceTask(root, "account", "self:ios", loaded.version, "History without binding");
+  const cleaned = topics.updateResources(root, "account", listed.version, []);
+  assert.equal(cleaned.tasks[0].relation, "history");
+  assert.equal(cleaned.resources.length, 0);
+  assert.equal(core.readTask(root, "ios").topic, undefined);
+});
+
+test("historical task CLI and show links do not mutate the referenced task", (t) => {
+  const root = workspace(t);
+  const current = topic(root); task(root);
+  const before = core.readTask(root, "ios").text;
+  const output = JSON.parse(execFileSync(process.execPath, [cli, "--workspace", root, "topic", "reference-task", "account", "self:ios", "--expected", current.version, "--purpose", "Historical context"], { encoding: "utf8" }));
+  assert.equal(output.tasksFormat, "table");
+  assert.equal(output.tasks[0].relation, "history");
+  assert.equal(fs.readFileSync(fileURLToPath(output.tasks[0].href), "utf8"), before);
+  assert.equal(core.readTask(root, "ios").text, before);
 });
 
 test("new CLI entry, spec package and manifest expose Topic without adding a task kind", () => {

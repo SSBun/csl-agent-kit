@@ -31,7 +31,9 @@ Read [storage and commands](references/topic-contract.md) before mutations. Use 
 
 ## Shared Resources
 
-Keep long-lived material shared by multiple tasks under the owning Topic's `resources/` directory, indexed in its single `Resources` section with a label/link, purpose and normative/reference classification. Existing authoritative files stay where they belong: register a reference rather than copying them. Reports, screenshots and logs specific to one task remain in that task's artifacts.
+Resources is a material index, not a task index. Include reusable specifications, design/interaction materials, interface/data/event contracts, architecture diagrams, analysis reports and still-relevant decision documents. Keep Topic-owned long-lived files under `resources/`; link existing authoritative material in place. A task's report may be linked when it has lasting value, but the task record itself belongs in Tasks. Exclude task progress, disposable logs, one-off screenshots, review-round records and obsolete process material.
+
+Resource files and reference directories have clickable, encoded Markdown links; `show` also supplies absolute file-URI `href` values for local list views. Directories are reference navigation only; pin individual normative files rather than recursively hashing a folder. Do not auto-open links or bypass a viewer's local-file restrictions.
 
 Use `topic update-resources` with the whole desired index and the current Topic version. `normative` local files require an explicit digest and participate in the specification revision and freshness gates; adding, changing or removing them follows impact analysis and normal adoption. `reference` metadata and content do not affect specification revisions or task evidence, unless the same source is independently a normative Dependency. Never relabel a requirement as reference to bypass stale evidence. No implicit content copying, fetching, history migration or deletion occurs.
 
@@ -41,7 +43,11 @@ Maintain resource file contents only inside an authorized task, then update the 
 
 Use one association operation to update the task's authoritative binding and the Topic's backlink. Read current versions immediately before writing. `--allow-cross-workspace` is an attestation of prior explicit permission, not a permission prompt or a substitute for it. Resolve both repositories through confirmed project-index mappings, and verify their repository identities. Do not install mappings, clone, upload, or silently fall back to guessed paths.
 
-A partial write must be reported. Stop terminal gates until the exact relationship is repaired. `repair` uses the task's authoritative binding; it must not infer new membership or inspect unrelated repositories. Completed task binding changes require reopen and refreshed evidence. Ordinary source links may refer to history without claiming membership.
+New Topic documents render Tasks as a linked table with `member` (formal association) and `history` (historical reference) rows. `reference-task`/`unreference-task` update only the Topic: history never changes the old task, its index, state, evidence or binding and does not require reopening it. History does not satisfy a backlink or participate in archive/completion guards; unavailable history is a warning. Do not detach a formal member through a history command.
+
+Older JSON-line Tasks remain readable and untouched on reads. Use `format` for an explicitly selected Topic to convert the presentation and refresh task links; it does not change specification revisions or task state. Old task-record Resource links remain readable only for compatibility, and new registrations reject them. After the user confirms the actual Topic and selected changes, register those tasks as history and remove their Resource entries while retaining actual reports. Never scan or mass-migrate other workspaces.
+
+A partial write must be reported. Stop terminal gates until the exact relationship is repaired. `repair` uses the task's authoritative binding; it must not infer new membership or inspect unrelated repositories. Completed task binding changes require reopen and refreshed evidence. Use historical Tasks rows, not Resources, to refer to old task records without claiming membership.
 
 ## Completion
 

@@ -11,7 +11,7 @@ Run `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <r
 - Incomplete association marker: `<task-workspace>/tasks/topic-transactions/<task-id>.json`. It pins the exact old/new Topic identities before the first relationship write and is removed only after reciprocal relationships are verified. It is recovery state, not a second ownership record.
 - Tasks retain their existing canonical location. An optional unique `## Topic` section holds a `task-topic/v1` binding; task Kind and Queue Parent are unchanged.
 - Topic metadata uses `topic/v1`, stable ID, Draft/Active/Archived state, and the SHA-256 of canonical normative sections. `show.version` hashes the whole Topic file for optimistic writes; it is different from `revision`, which excludes member references and lifecycle display.
-- Topic sections are Scope, Spec Context, Decisions, Dependencies, Resources and Tasks. Resources is a clickable Markdown table; it remains optional when reading older `topic/v1` records. Existing records retain their shape unless resources are explicitly updated. Empty/reference-only Resources do not change the legacy normative digest. Tasks are JSON-line references with `reference`, `repository`, `purpose`; they never store status. The task binding is authoritative, the Topic list is its checked reverse index.
+- Topic sections are Scope, Spec Context, Decisions, Dependencies, Resources and Tasks. Resources is a clickable Markdown table; it remains optional when reading older `topic/v1` records. Existing records retain their shape unless resources are explicitly updated. Empty/reference-only Resources do not change the legacy normative digest. New Tasks sections are clickable tables with Task, Relation, Reference, Purpose and Repository columns. `member` rows are the checked reverse index of authoritative task bindings; `history` rows are read-only source references. Neither stores task status. Legacy JSON-line Tasks with `reference`, `repository`, `purpose` are still parsed as formal members and retain their original shape until explicit formatting.
 - Spec input is a JSON object with non-empty `scope` and `spec`, optional `decisions`, and optional `dependencies`. Text may have paragraphs and H3+ headings, but no H1/H2 headings; the CLI owns those structural boundaries.
 - A normative dependency is `{ "path": "repository-relative-file", "sha256": "<digest>" }` in the Topic owner repository. Vendor a permitted immutable copy or otherwise obtain an explicit local source before relying on an external contract. Arbitrary remote URL fetching and floating external references are not supported by the first version. Informational links do not become checked dependencies.
 - Cross-project references use `<project-id>:<topic-or-task-id>`; local references use `self:<id>`. Existing project-index data resolves roots. Cross-project mappings must point to Git roots with an origin; the stored hash of that origin pins repository identity without exposing the URL. A changed identity requires explicit diagnosis/rebinding, not silent acceptance. Equivalent but differently spelled origin URLs also require confirmation.
@@ -30,6 +30,7 @@ Read `topic show <id>` and pass its `version` to writes:
 ```text
 topic update-spec <id> --expected <version> --spec-json <file>
 topic update-resources <id> --expected <version> --resources-json <file>
+topic format <id> --expected <version>
 topic activate <id> --expected <version>
 topic archive <id> --expected <version>
 topic restore <id> --expected <version>
@@ -49,13 +50,35 @@ topic restore <id> --expected <version>
 ]
 ```
 
-Targets are owner-repository-relative files, not paths relative to the Topic MD; rendering converts them to portable, percent-encoded Topic-relative Markdown links. Local files must exist when registering. Absolute paths, traversal, symlinks, duplicate targets and malformed table labels/purposes are rejected. Labels cannot contain brackets, pipes, angle brackets or backslashes; purposes cannot contain pipes, angle brackets or backslashes. HTTP(S) URLs must be canonical and credential-free, and are reference-only; no network request is made. Do not record secrets in links or documents.
+Targets are owner-repository-relative files or reference directories, not paths relative to the Topic MD; rendering converts them to portable, percent-encoded Topic-relative Markdown links. Register local targets without a trailing slash; their type is detected from the existing filesystem. Directory links are rendered with a trailing slash and stored as `type: "directory"`; normative directories are rejected, so choose the relevant normative files individually. Local targets must exist when registering. `show.resources[].href` supplies encoded absolute `file://` URIs for local file/folder list views; HTTP(S) targets retain their URL. Chinese names, spaces and literal `#` characters are encoded rather than mistaken for fragments. Local opening depends on the viewer supporting local links; the CLI neither launches applications nor overrides browser security. Absolute paths, traversal, symlinks, duplicate targets and malformed table labels/purposes are rejected. Canonical task records and the task-index directory cannot be newly registered as Resources (including recognizable canonical task URLs); use historical Tasks references instead. Existing legacy Resource rows containing task links remain readable so they can be explicitly cleaned up, but `update-resources` rejects any remaining task-record rows in the desired new list. Labels cannot contain brackets, pipes, angle brackets or backslashes; purposes cannot contain pipes, angle brackets or backslashes. HTTP(S) URLs must be canonical and credential-free, and are reference-only; no network request is made. Do not record secrets in links or documents.
 
 Normative entries require `sha256`; their metadata and identity enter the specification projection and are rechecked anywhere existing Dependencies are checked, including activation, binding, adoption and terminal gates. A byte change fails freshness even before the index is updated; register the authorized new digest and explicitly adopt the resulting specification revision. Normative entries are recorded in revision snapshots; their source contents must remain recoverable at the original authoritative location.
 
 Reference entries must omit `sha256`. Their labels, purposes, links, additions/removals and file contents do not enter the normative digest. A reference deleted later may become a broken informational link, but does not invalidate task evidence. A separately declared normative Dependency on the same source still applies. Do not declare the same normative file in both Dependencies and Resources; move that declaration explicitly to avoid conflicting authority and incompatible digest updates. Changing classification to/from normative is itself a specification change, not a bypass.
 
+Use Resources for reusable specifications, interface/data/event contracts, design assets, architecture/comparison diagrams, analysis reports and current decision documents. Task records go in Tasks; transient task evidence stays with the task. Task-owned reports with lasting value may be linked at their original location. Directory references are navigation aids, not implicit normative inclusion of every descendant or permission to read them all.
+
 Empty old Topics without Resources remain readable with their original revisions and are not rewritten by listing/showing/checking. Index maintenance never moves task artifacts, copies source files, rewrites shared documents, or deletes unregistered material. Task-specific evidence stays with its owning task.
+
+## Tasks Table and History
+
+New Topics use a Tasks table. Task titles link to local Markdown records; formal `member` rows retain repository identity and reciprocal-binding checks. Historical `history` rows record relevant old work without membership. The Reference column is the authoritative locator; display links are not a substitute for repository identity checks.
+
+```text
+topic reference-task <topic-id> <project:task-id|self:task-id> --expected <topic-version> --purpose <why-relevant>
+topic unreference-task <topic-id> <exact-stored-reference> --expected <topic-version>
+topic format <topic-id> --expected <topic-version>
+```
+
+History registration reads the specified task and writes only the owning Topic; Completed tasks do not need reopen. It never changes task content, status, index or evidence, never establishes a reverse binding, and never grants execution permission. Removing a history row uses its exact stored reference and works without the old workspace being available. These commands cannot downgrade or remove a formal member. An explicit attach may promote a history row to a formal member under normal task and permission rules.
+
+Historical states can be shown live when available but are never cached in the document. Unavailable history is a warning and does not prevent Topic archival or valid member completion. History rows do not satisfy fresh/adopt backlink checks, and repair preserves history unless the task's authoritative binding requires restoring a formal member.
+
+`format` updates only the chosen Topic's task presentation and display links, preserving spec revision and every task's bytes/status/evidence. It resolves the exact listed repositories/tasks, fails before writing when those sources cannot be resolved, and does not scan other repositories. Format-only updates are allowed on Archived Topics; adding/removing history still requires explicit restoration. New history registration formats a legacy Tasks section in that same selected Topic. Unrelated Topic records are never migrated.
+
+Local task links are portable relative links. Cross-repository task links use pinned references plus a generated absolute file URI; `show.tasks[].href` resolves the current mapped root, and `format` refreshes stored display links after relocation. It does not silently change identity or register a new mapping. Use a viewer that supports local-file links; no guarantee is made that an HTTP-hosted viewer will permit file URIs.
+
+To clean up a legacy mixed Resource list after user approval: read the exact Topic; register the selected task records with `reference-task`; replace Resources with only reusable documents/reports/directories; optionally run `format` and `check`. Never infer membership or reopen historical tasks merely to list them. Removing a normative resource declaration remains a specification change and requires impact handling.
 
 ## Task Association
 
@@ -85,7 +108,7 @@ topic task <task-id>
 topic check <id>
 ```
 
-`task.freshness` distinguishes current/blocked context; historical status is displayed separately. `check` verifies structure, the index and listed backlinks, while reporting member freshness separately. It does not certify that every member satisfies the latest specification or discover missing members in every repository. The task's own terminal gate rejects its missing backlink.
+`task.freshness` distinguishes current/blocked context; historical status is displayed separately. `check` verifies structure, the index and formal member backlinks, while reporting member freshness separately. History lookup problems are returned as `referenceWarnings`, not member errors. It does not certify that every member satisfies the latest specification or discover missing members in every repository. The task's own terminal gate rejects its missing backlink.
 
 Explicit repair:
 

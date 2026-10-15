@@ -7,6 +7,9 @@ const core = require("./task-core.js");
 const HELP = `Topic commands (under csl-tasks.js topic):
   list
   show <topic-id>
+  format <topic-id> --expected <topic-version>
+  reference-task <topic-id> <project:task-id|self:task-id> --expected <topic-version> --purpose <description>
+  unreference-task <topic-id> <exact-stored-task-reference> --expected <topic-version>
   create <topic-id> --title <title> --spec-json <file>
   update-spec <topic-id> --expected <topic-version> --spec-json <file>
   update-resources <topic-id> --expected <topic-version> --resources-json <file>
@@ -27,11 +30,12 @@ const HELP = `Topic commands (under csl-tasks.js topic):
 show returns the full Topic and a version for optimistic writes; task returns the task version and freshness.
 Spec JSON: {"scope":"...","spec":"...","decisions":"...","dependencies":[{"path":"repo-relative-file","sha256":"..."}]}
 Resources JSON: [{"label":"...","target":"repo-relative-file or https://...","purpose":"...","kind":"reference"}]
-Normative resources use kind normative and require sha256 of an existing local file; reference resources do not have sha256.
+Normative resources use kind normative and require sha256 of an existing local file; references may be files, directories or URLs and do not have sha256.
+Resources cannot register canonical task records; use reference-task for history. show supplies encoded file:// href values for local entries.
 Topic state and maintenance mode do not grant execution authorization. Cross-workspace writes require separate user authorization.`;
 
 function summary(workspace, topic) {
-  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, resources: topic.resources || [], resourcesDirectory: topics.safePath(workspace, `tasks/topics/${topic.id}/resources`), tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
+  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, resources: topics.resourceViews(workspace, topic), tasksFormat: topic.tasksFormat, resourcesDirectory: topics.safePath(workspace, `tasks/topics/${topic.id}/resources`), tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
 }
 
 function run(workspace, input, takeOption) {
@@ -51,7 +55,7 @@ function run(workspace, input, takeOption) {
   const resourcesFile = takeOption(args, "--resources-json");
   const values = { expected, expectedTopic, purpose, ownerTask, applies, mode, evidence, title, specFile, resourcesFile, allowCross: allowCross || undefined };
   const allowed = {
-    list: [], show: [], create: ["title", "specFile"], "update-spec": ["expected", "specFile"], "update-resources": ["expected", "resourcesFile"],
+    list: [], show: [], format: ["expected"], "reference-task": ["expected", "purpose"], "unreference-task": ["expected"], create: ["title", "specFile"], "update-spec": ["expected", "specFile"], "update-resources": ["expected", "resourcesFile"],
     activate: ["expected"], archive: ["expected", "ownerTask"], restore: ["expected"], check: [], "rebuild-index": [], task: [],
     attach: ["expected", "expectedTopic", "purpose", "applies", "mode", "allowCross"],
     detach: ["expected", "allowCross"], adopt: ["expected", "expectedTopic", "evidence"],
@@ -61,7 +65,7 @@ function run(workspace, input, takeOption) {
   for (const [key, value] of Object.entries(values)) {
     if (value !== undefined && !allowed[command].includes(key)) throw new Error(`unexpected topic option: ${key}`);
   }
-  const count = ["list", "rebuild-index"].includes(command) ? 0 : ["attach", "repair"].includes(command) ? 2 : 1;
+  const count = ["list", "rebuild-index"].includes(command) ? 0 : ["attach", "repair", "reference-task", "unreference-task"].includes(command) ? 2 : 1;
   if (args.length !== count) throw new Error(`${command} needs ${count} positional argument(s)`);
   const [id, reference] = args;
   const readSpec = () => {
@@ -72,6 +76,9 @@ function run(workspace, input, takeOption) {
   switch (command) {
     case "list": return topics.listTopics(workspace).map((topic) => ({ id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version }));
     case "show": return summary(workspace, topics.readTopic(workspace, id));
+    case "format": return summary(workspace, topics.formatTopic(workspace, id, expected));
+    case "reference-task": return summary(workspace, topics.referenceTask(workspace, id, reference, expected, purpose));
+    case "unreference-task": return summary(workspace, topics.referenceTask(workspace, id, reference, expected, undefined, true));
     case "create": return summary(workspace, topics.createTopic(workspace, id, title, readSpec()));
     case "update-spec": return summary(workspace, topics.updateSpec(workspace, id, expected, readSpec()));
     case "update-resources": {

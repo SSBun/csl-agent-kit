@@ -43,7 +43,9 @@ Topic 保存一个长期主题的当前有效规格，不是另一个任务类�
 
 - Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；长期共享资料位于该 Topic 的 `resources` 目录，不可变规格快照位于 `revisions` 目录。
 - 主文档的 Resources 表记录资料链接、用途及 `normative`（有效约定）/`reference`（参考材料）分类。通过 `topic update-resources --resources-json` 更新完整索引；有效约定固定文件摘要并纳入规格核对，参考资料不使任务证据失效。已有权威文件仅链接，不自动复制；单次任务的报告和日志仍保存在任务产物中。旧 Topic 不批量迁移，保留原版本可读。
-- Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Topic 的任务列表只存引用和职责，状态现场读取。
+- Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Tasks 使用可点击表格，区分 `member`（正式关联）与 `history`（历史参考）；后者只登记来源，不修改或重开旧任务，也不参与成员生命周期检查。任务状态现场读取，不存副本。
+- 历史任务用 `topic reference-task` / `unreference-task` 登记和移除，不再放进 Resources。旧 JSON 任务列表仍可读；仅对明确选定的 Topic 执行 `topic format` 转成表格，不批量迁移。实际混排资料需要先确认位置与变更清单。
+- Resources 支持文件与参考文件夹，中文/空格路径正确编码；主文档使用可点击链接，`topic show` 另提供本机绝对 `file://` href 供列表视图打开。目录仅作导航，有效约定仍精确到文件；CLI 不自动打开应用或绕过查看器的本地链接限制。
 - Topic 使用 Draft、Active、Archived；归档和恢复均需明确意图。Queue 仍管理本地串行依赖，与 Topic 归属分开。
 - 通过共享 CLI 的 `topic` 子命令读写；`--help` 列出创建、更新规格、关联、采用新版本、校验和修复命令。版本变化会在评估及终态关卡被检查，不能只改 hash 消除过期。
 - 跨仓引用复用已确认的 project-index 映射，校验 Git root 和 origin 身份；跨仓写入需明确授权及 `--allow-cross-workspace`。不支持自动扫描仓库、自动注册或远程克隆。规范性外部接口需有显式固定摘要的本地文件，不自动抓取浮动 URL。
