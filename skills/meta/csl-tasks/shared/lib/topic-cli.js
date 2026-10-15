@@ -13,8 +13,9 @@ const HELP = `Topic commands (under csl-tasks.js topic):
   create <topic-id> --title <title> --spec-json <file>
   update-spec <topic-id> --expected <topic-version> --spec-json <file>
   update-resources <topic-id> --expected <topic-version> --resources-json <file>
-  activate|archive|restore <topic-id> --expected <topic-version>
+  archive|restore <topic-id> --expected <topic-version>
     archive may name --owner-task <project:task-id|self:task-id> for its active maintenance task
+  activate <topic-id> --expected <topic-version> (legacy Draft conversion only)
   check <topic-id>
   rebuild-index
   task <task-id>
@@ -32,7 +33,8 @@ Spec JSON: {"scope":"...","spec":"...","decisions":"...","dependencies":[{"path"
 Resources JSON: [{"label":"...","target":"repo-relative-file or https://...","purpose":"...","kind":"reference"}]
 Normative resources use kind normative and require sha256 of an existing local file; references may be files, directories or URLs and do not have sha256.
 Resources cannot register canonical task records; use reference-task for history. show supplies encoded file:// href values for local entries.
-Topic state and maintenance mode do not grant execution authorization. Cross-workspace writes require separate user authorization.`;
+New Topics start Active; normal lifecycle states are Active and Archived. Legacy Draft records remain readable and require explicit activate conversion, never a bulk migration.
+Active means maintained, not a complete specification or execution authorization. Topic state and maintenance mode do not grant execution authorization. Cross-workspace writes require separate user authorization.`;
 
 function summary(workspace, topic) {
   return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, resources: topics.resourceViews(workspace, topic), tasksFormat: topic.tasksFormat, resourcesDirectory: topics.safePath(workspace, `tasks/topics/${topic.id}/resources`), tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
@@ -86,7 +88,7 @@ function run(workspace, input, takeOption) {
       return summary(workspace, topics.updateResources(workspace, id, expected, JSON.parse(fs.readFileSync(resourcesFile, "utf8"))));
     }
     case "activate": {
-      if (topics.readTopic(workspace, id).state !== "Draft") throw new Error("activate requires Draft; use restore for Archived");
+      if (topics.readTopic(workspace, id).state !== "Draft") throw new Error("activate is only for legacy Draft records; new Topics are already Active, use restore for Archived");
       return summary(workspace, topics.setState(workspace, id, "Active", expected));
     }
     case "restore": {

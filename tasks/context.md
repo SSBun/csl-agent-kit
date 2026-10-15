@@ -185,7 +185,7 @@
 - Recheck: Topic schema、关联权威、版本范围、跨仓解析、锁或终态门禁变化时复核。
 
 ### Purpose and Boundaries
-- Topic 是独立于 Task Kind 与 Queue Parent 的长期共享规格，不限于多平台；任务可以没有 Topic，成员全部完成不自动归档。Topic 状态和内容版本都不是执行授权。
+- Topic 是独立于 Task Kind 与 Queue Parent 的长期共享规格，不限于多平台；任务可以没有 Topic，成员全部完成不自动归档。新建 Topic 默认 Active，正常状态为 Active/Archived；Active 不表示规格完整，Topic 状态和内容版本都不是执行授权。旧 Draft 保持读取兼容，`activate` 仅用于显式转换指定旧记录。
 - Topic canonical 文件和可重建索引位于 owning workspace 的 Task 数据区；规范快照不可变，成员列表只存引用和职责，状态现场读取。Task 绑定是归属权威，Topic Tasks 是反向索引。
 - Topic 的 `resources/` 保存跨任务长期资料，主文档 `Resources` 表记录可点击链接、用途及 normative/reference 分类；`update-resources` 显式替换索引，不复制、移动或删除来源。新 Topic 创建目录与空表；旧记录保持原样，直到显式初始化资源索引。
 - normative 资源的元数据与文件摘要进入规格投影并按既有门禁核对；reference 内容与索引变化不影响规格摘要。规范性来源只能是固定摘要的 owner-repo 文件；HTTP(S) 仅支持无凭证的参考链接，CLI 不抓取。已有权威文件直接引用，任务专属产物仍归 owning Task。
@@ -196,7 +196,7 @@
 
 ### Decision and Verification Boundaries
 - 跨仓引用复用已确认的 project-index，限定 Git 根目录并固定 origin 哈希；未登记或身份变化不自动修复。规范性外部 URL 必须先取得允许的固定本地副本，CLI 不自动抓取。
-- Draft/Archived 仅允许符合目标的 maintenance 任务，不是实现绕过路径；归档可显式指定当前 In Progress 且已关联的归档维护任务，其他活动或未知成员仍阻止归档。
+- Archived 和旧 Draft 仅允许符合目标的 maintenance 任务，不是实现绕过路径；归档可显式指定当前 In Progress 且已关联的归档维护任务，其他活动或未知成员仍阻止归档。
 - `topic check` 核对索引和已列成员关系，并分开展示成员 freshness；不证明所有历史成员满足最新规格，也不扫描所有仓库查找遗漏。
 
 ## CTX-agent-hooks — Agent Hooks runtime and built-in hooks

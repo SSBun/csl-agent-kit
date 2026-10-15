@@ -10,6 +10,7 @@ const { pathToFileURL } = require("node:url");
 const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const PROJECT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const DIGEST = /^[a-f0-9]{64}$/;
+// Draft remains readable for legacy records; new Topics start Active.
 const STATES = new Set(["Draft", "Active", "Archived"]);
 const RESERVED = new Set(["__proto__", "constructor", "prototype"]);
 const core = () => require("./task-core.js");
@@ -399,7 +400,7 @@ function createTopic(workspace, id, title, input) {
     if (fileText(topicPath(workspace, id)) !== undefined) throw new Error(`topic already exists: ${id}`);
     const spec = validateSpec(input);
     checkDependencies(workspace, spec);
-    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, resources: [], tasks: [], tasksFormat: "table" }, undefined);
+    return saveTopic(workspace, { id, title, state: "Active", revision: hash(normative(spec)), spec, resources: [], tasks: [], tasksFormat: "table" }, undefined);
   });
 }
 

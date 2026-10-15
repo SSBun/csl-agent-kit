@@ -1,5 +1,7 @@
 # 任务索引
 
+- [简化 Topic 生命周期为 Active 与 Archived](tasks/simplify-topic-lifecycle.md) — In Progress (2026-10-15 14:28)
+
 - [在 Pi 任务区域增加 Topics 导航面板](tasks/pi-topics-panel.md) — In Progress (2026-10-15 11:43)
 
 - [完整改造 Topic 任务与共享资料机制](tasks/clarify-topic-tasks-resources-spec.md) — In Progress (2026-10-14 16:14)

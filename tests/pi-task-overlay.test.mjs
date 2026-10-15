@@ -56,8 +56,7 @@ test("topics stay horizontal, capped at five, with the bound topic first and hig
   try {
     const spec = { scope: "Shared", spec: "FR-1: Example", decisions: "None", dependencies: [] };
     for (let i = 0; i < 7; i++) {
-      const topic = topics.createTopic(cwd, `topic-${i}`, `主题 ${i}`, spec);
-      topics.setState(cwd, topic.id, "Active", topic.version);
+      topics.createTopic(cwd, `topic-${i}`, `主题 ${i}`, spec);
     }
     const archived = topics.createTopic(cwd, "archived", "Archived excluded", spec);
     topics.setState(cwd, archived.id, "Archived", archived.version);
@@ -108,8 +107,7 @@ test("topics render without tasks and without hyperlink support", { concurrency:
   };
   setCapabilities({ images: null, trueColor: true, hyperlinks: false });
   try {
-    const topic = topics.createTopic(cwd, "only", "Only topic", { scope: "Shared", spec: "FR-1: Example", decisions: "None", dependencies: [] });
-    topics.setState(cwd, topic.id, "Active", topic.version);
+    topics.createTopic(cwd, "only", "Only topic", { scope: "Shared", spec: "FR-1: Example", decisions: "None", dependencies: [] });
     await handlers.get("session_start")({}, ctx);
     const text = widget.render(80).join("\n");
     assert.match(text, /📁 Topics/);

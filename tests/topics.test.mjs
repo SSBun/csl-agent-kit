@@ -21,7 +21,13 @@ function workspace(t) {
 
 function topic(root, state = "Active") {
   const created = topics.createTopic(root, "account", "Account", spec);
-  return state === "Draft" ? created : topics.setState(root, "account", state, created.version);
+  if (state === "Draft") {
+    // Old on-disk record fixture; the public API no longer creates Draft Topics.
+    fs.writeFileSync(created.file, created.text.replace("- State: Active", "- State: Draft"));
+    topics.rebuildIndex(root);
+    return topics.readTopic(root, "account");
+  }
+  return state === "Active" ? created : topics.setState(root, "account", state, created.version);
 }
 
 function task(root, id = "ios") {
@@ -44,6 +50,35 @@ function finish(root, id) {
   core.recordVerification(root, id, true, "Fixture");
   return core.completeTask(root, id);
 }
+
+test("new Topics start Active and accept implementation without activation", (t) => {
+  const root = workspace(t);
+  const created = topics.createTopic(root, "account", "Account", spec);
+  assert.equal(created.state, "Active");
+  assert.match(fs.readFileSync(path.join(root, "tasks/topics.md"), "utf8"), /— Active/);
+  task(root);
+  attach(root);
+  assert.equal(topics.fresh(root, core.readTask(root, "ios")).applicable, true);
+  assert.equal(core.readTask(root, "ios").status.state, "pending");
+  assert.throws(() => topics.setState(root, "account", "Draft", created.version), /state must/);
+});
+
+test("legacy Draft is unchanged by reads and converts only through an explicit versioned command", (t) => {
+  const root = workspace(t);
+  const legacy = topic(root, "Draft");
+  const sibling = topics.createTopic(root, "other", "Other", spec);
+  const indexFile = path.join(root, "tasks/topics.md");
+  const indexBefore = fs.readFileSync(indexFile, "utf8");
+  topics.listTopics(root);
+  topics.check(root, "account");
+  assert.equal(fs.readFileSync(legacy.file, "utf8"), legacy.text);
+  assert.equal(fs.readFileSync(indexFile, "utf8"), indexBefore);
+  const result = JSON.parse(execFileSync(process.execPath, [cli, "--workspace", root, "topic", "activate", "account", "--expected", legacy.version], { encoding: "utf8" }));
+  assert.equal(result.state, "Active");
+  assert.equal(result.revision, legacy.revision);
+  assert.equal(fs.readFileSync(sibling.file, "utf8"), sibling.text);
+  assert.equal(topics.check(root, "account").valid, true);
+});
 
 test("standalone tasks do not create Topic storage", (t) => {
   const root = workspace(t);
@@ -105,7 +140,7 @@ test("adoption preserves Required review and exits In Review", (t) => {
   assert.equal(core.checkTaskIndex(root, "ios"), true);
 });
 
-test("Draft maintenance can finish, while implementation requires Active", (t) => {
+test("legacy Draft maintenance can finish, while implementation requires explicit conversion", (t) => {
   const root = workspace(t);
   topic(root, "Draft"); task(root);
   assert.throws(() => attach(root), /Active/);

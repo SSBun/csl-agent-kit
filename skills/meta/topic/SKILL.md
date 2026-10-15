@@ -19,14 +19,15 @@ Read [storage and commands](references/topic-contract.md) before mutations. Use 
 
 ## Maintenance Workflow
 
-- Create a Draft from the user's bounded scope and current specification; activate only after the user accepts the specification. Draft supports planning, not automatic product implementation.
+- Create an Active Topic from the user's bounded scope and current specification; no separate activation is needed. Active means ongoing maintenance, not a complete specification or permission to implement. Preserve task alignment, execution authorization and revision-adoption gates. Normal lifecycle states are Active and Archived.
+- Legacy Draft records remain readable without rewriting. Convert only a selected legacy record through `activate` with its current version; do not bulk-migrate or silently treat it as Active.
 - Add subsequent implementation, improvement, bug-fix and review tasks to the same Topic when they use its specification. One task has at most one Topic; no Topic is a fully supported default.
 - Treat a new bug or follow-up review as a new outcome unless it directly corrects/completes/re-verifies the same task outcome under `task`'s reopen rules. Retain old completion evidence. Reviews remain feedback-only unless remediation is authorized.
 - Keep Scope, Spec Context and shared Decisions current. Do not copy member progress, Results or Task Summaries into the Topic. Use stable requirement identifiers where tasks share acceptance clauses.
 - For an implementation defect, fix the implementation to the specification. A change to common behavior requires impact analysis and the applicable user goal/decision confirmation before `update-spec`; do not weaken the specification to make a task pass.
 - A task modifying the Topic itself uses maintenance mode. It explicitly adopts the final revision before its own self-check and review. This resolves self-created staleness, not authorization or review obligations.
 - Compare adopted and current revisions at start/resume, review handoff and terminal gates. Changes require explicit impact evidence and adoption; material changes also require realignment. Preserve Required review obligations. Unavailable sources, corrupt snapshots, unresolved dependencies and incomplete links block dependent work, not historical read-only inspection.
-- Draft/Archived can be the intended result of a maintenance task. Implementation mode requires Active. Maintenance mode is not an escape hatch for product implementation.
+- Archived (or a legacy Draft) can be the intended result of a maintenance task. Implementation mode requires Active. Maintenance mode is not an escape hatch for product implementation.
 - Archive only on an explicit request to stop maintenance. Resolve active/inaccessible member impact first; never cancel members automatically. Restore explicitly before new work. A release or milestone may finish while the Topic remains Active.
 
 ## Shared Resources

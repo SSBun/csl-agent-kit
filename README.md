@@ -46,7 +46,7 @@ Topic 保存一个长期主题的当前有效规格，不是另一个任务类�
 - Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Tasks 使用可点击表格，区分 `member`（正式关联）与 `history`（历史参考）；后者只登记来源，不修改或重开旧任务，也不参与成员生命周期检查。任务状态现场读取，不存副本。
 - 历史任务用 `topic reference-task` / `unreference-task` 登记和移除，不再放进 Resources。旧 JSON 任务列表仍可读；仅对明确选定的 Topic 执行 `topic format` 转成表格，不批量迁移。实际混排资料需要先确认位置与变更清单。
 - Resources 支持文件与参考文件夹，中文/空格路径正确编码；主文档使用可点击链接，`topic show` 另提供本机绝对 `file://` href 供列表视图打开。目录仅作导航，有效约定仍精确到文件；CLI 不自动打开应用或绕过查看器的本地链接限制。
-- Topic 使用 Draft、Active、Archived；归档和恢复均需明确意图。Queue 仍管理本地串行依赖，与 Topic 归属分开。
+- Topic 创建后默认为 Active，正常生命周期只保留 Active、Archived；无需额外激活，归档和恢复均需明确意图。Active 仅表示持续维护，不表示规格完整或授权实施。旧 Draft 保持可读，仅通过 `topic activate <id> --expected <version>` 显式转换指定记录，不批量迁移。Queue 仍管理本地串行依赖，与 Topic 归属分开。
 - 通过共享 CLI 的 `topic` 子命令读写；`--help` 列出创建、更新规格、关联、采用新版本、校验和修复命令。版本变化会在评估及终态关卡被检查，不能只改 hash 消除过期。
 - 跨仓引用复用已确认的 project-index 映射，校验 Git root 和 origin 身份；跨仓写入需明确授权及 `--allow-cross-workspace`。不支持自动扫描仓库、自动注册或远程克隆。规范性外部接口需有显式固定摘要的本地文件，不自动抓取浮动 URL。
 - 内容版本、Active 状态和 maintenance 模式都不代表执行授权。半完成关联必须显式修复；写锁不会自动抢占，多仓写入不宣称崩溃原子性。

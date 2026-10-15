@@ -10,7 +10,7 @@ Run `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <r
 - Immutable normative snapshot: `<workspace>/tasks/topics/<topic-id>/revisions/<sha256>.md`. This records normative text and pinned source identities, not duplicate copies of linked file contents; retain source history in its authoritative location.
 - Incomplete association marker: `<task-workspace>/tasks/topic-transactions/<task-id>.json`. It pins the exact old/new Topic identities before the first relationship write and is removed only after reciprocal relationships are verified. It is recovery state, not a second ownership record.
 - Tasks retain their existing canonical location. An optional unique `## Topic` section holds a `task-topic/v1` binding; task Kind and Queue Parent are unchanged.
-- Topic metadata uses `topic/v1`, stable ID, Draft/Active/Archived state, and the SHA-256 of canonical normative sections. `show.version` hashes the whole Topic file for optimistic writes; it is different from `revision`, which excludes member references and lifecycle display.
+- Topic metadata uses `topic/v1`, stable ID, Active/Archived state (Draft is accepted only for legacy records), and the SHA-256 of canonical normative sections. `show.version` hashes the whole Topic file for optimistic writes; it is different from `revision`, which excludes member references and lifecycle display.
 - Topic sections are Scope, Spec Context, Decisions, Dependencies, Resources and Tasks. Resources is a clickable Markdown table; it remains optional when reading older `topic/v1` records. Existing records retain their shape unless resources are explicitly updated. Empty/reference-only Resources do not change the legacy normative digest. New Tasks sections are clickable tables with Task, Relation, Reference, Purpose and Repository columns. `member` rows are the checked reverse index of authoritative task bindings; `history` rows are read-only source references. Neither stores task status. Legacy JSON-line Tasks with `reference`, `repository`, `purpose` are still parsed as formal members and retain their original shape until explicit formatting.
 - Spec input is a JSON object with non-empty `scope` and `spec`, optional `decisions`, and optional `dependencies`. Text may have paragraphs and H3+ headings, but no H1/H2 headings; the CLI owns those structural boundaries.
 - A normative dependency is `{ "path": "repository-relative-file", "sha256": "<digest>" }` in the Topic owner repository. Vendor a permitted immutable copy or otherwise obtain an explicit local source before relying on an external contract. Arbitrary remote URL fetching and floating external references are not supported by the first version. Informational links do not become checked dependencies.
@@ -19,7 +19,7 @@ Run `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <r
 
 ## Commands
 
-Create a Draft:
+Create an Active Topic (no subsequent activation step):
 
 ```text
 topic create <id> --title <title> --spec-json <file>
@@ -31,12 +31,13 @@ Read `topic show <id>` and pass its `version` to writes:
 topic update-spec <id> --expected <version> --spec-json <file>
 topic update-resources <id> --expected <version> --resources-json <file>
 topic format <id> --expected <version>
-topic activate <id> --expected <version>
 topic archive <id> --expected <version>
 topic restore <id> --expected <version>
 ```
 
-`activate` requires Draft; `restore` requires Archived. Archiving rejects active or inaccessible listed members, except its exact owning In Progress maintenance task when explicitly named with `--owner-task <project:task-id|self:task-id>`. That task must be currently bound to this Topic and fresh; it may finish with Archived as its intended result. This exception does not cover product implementation or other maintenance tasks. The user must decide how to handle other active members; the CLI never cancels them. A successful command does not prove that the Agent obtained consent.
+`restore` requires Archived. Active means the Topic is maintained; it does not certify specification completeness or authorize implementation. Task alignment, revision adoption and verification gates still apply.
+
+Legacy Draft records remain readable and retain their stored state on reads and unrelated writes. For an explicitly selected legacy record, `topic activate <id> --expected <version>` converts it to Active and updates its index while preserving specification revision and task evidence. This compatibility command rejects already Active/Archived Topics; no command creates new Draft Topics or performs a bulk conversion. Archiving rejects active or inaccessible listed members, except its exact owning In Progress maintenance task when explicitly named with `--owner-task <project:task-id|self:task-id>`. That task must be currently bound to this Topic and fresh; it may finish with Archived as its intended result. This exception does not cover product implementation or other maintenance tasks. The user must decide how to handle other active members; the CLI never cancels them. A successful command does not prove that the Agent obtained consent.
 
 ## Resource Index
 
