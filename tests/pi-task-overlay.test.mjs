@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { pathToFileURL } from "node:url";
 
-import { resetCapabilitiesCache, setCapabilities } from "@earendil-works/pi-tui";
+import { resetCapabilitiesCache, setCapabilities, visibleWidth } from "@earendil-works/pi-tui";
+
+const require = createRequire(import.meta.url);
+const topics = require("../skills/meta/csl-tasks/shared/lib/topic-core.js");
+const taskCore = require("../skills/meta/csl-tasks/shared/lib/task-core.js");
 import cslTaskOverlay from "../pi/extensions/csl-task-overlay.ts";
 
 function installFakeExtension() {
@@ -29,6 +34,95 @@ function installFakeExtension() {
   });
   return { handlers, commands, tools, entries };
 }
+
+test("topics stay horizontal, capped at five, with the bound topic first and highlighted", { concurrency: false }, async () => {
+  const cwd = mkdtempSync(path.join(os.tmpdir(), "csl 主题 panel-"));
+  const { handlers, tools, commands } = installFakeExtension();
+  let widget;
+  const ctx = {
+    cwd, hasUI: true, mode: "tui",
+    sessionManager: { getBranch: () => [] },
+    ui: {
+      setWidget(_key, content) {
+        widget = typeof content === "function" ? content({ requestRender() {} }, {
+          fg(token, text) { assert.equal(token, "accent"); return `\x1b[36m${text}\x1b[39m`; },
+          bold(text) { return `\x1b[1m${text}\x1b[22m`; },
+        }) : undefined;
+      },
+      notify() {},
+    },
+  };
+  setCapabilities({ images: null, trueColor: true, hyperlinks: true });
+  try {
+    const spec = { scope: "Shared", spec: "FR-1: Example", decisions: "None", dependencies: [] };
+    for (let i = 0; i < 7; i++) {
+      const topic = topics.createTopic(cwd, `topic-${i}`, `主题 ${i}`, spec);
+      topics.setState(cwd, topic.id, "Active", topic.version);
+    }
+    const archived = topics.createTopic(cwd, "archived", "Archived excluded", spec);
+    topics.setState(cwd, archived.id, "Archived", archived.version);
+    const task = taskCore.createTask(cwd, { id: "demo", title: "当前任务", kind: "task", targets: ["T1: Example"] });
+    topics.association(cwd, "demo", "self:topic-0", {
+      expectedTask: topics.hash(task.text), expectedTopic: topics.readTopic(cwd, "topic-0").version,
+      mode: "implementation", applies: "FR-1", purpose: "Example",
+    });
+    const taskFile = path.join(cwd, "tasks/tasks/demo.md");
+    const before = readFileSync(taskFile, "utf8");
+    const topicBefore = readFileSync(topics.readTopic(cwd, "topic-0").file, "utf8");
+    await handlers.get("session_start")({}, ctx);
+    await tools.get("task_focus").execute("focus", { taskId: "demo" }, undefined, undefined, ctx);
+    const rendered = widget.render(120);
+    assert.match(rendered[0], /This Session.*📁 Topics/);
+    assert.ok(rendered.every(line => !line.includes("│")));
+    const text = rendered.join("\n");
+    assert.equal((text.match(/主题 \d/g) ?? []).length, 5);
+    assert.match(rendered[1], /├─ \x1b\[1m\x1b\[36m/);
+    assert.ok(!text.includes("\x1b[7m"));
+    assert.match(rendered[1], /主题 0/);
+    assert.ok(text.includes(pathToFileURL(topics.readTopic(cwd, "topic-0").file).href));
+    assert.ok(!text.includes(archived.title));
+    for (const width of [0, 1, 2, 3, 8, 20, 40, 80, 120]) {
+      const lines = widget.render(width);
+      assert.ok(lines.every(line => visibleWidth(line) <= width), `overflow at ${width}`);
+      assert.ok(lines.every(line => !line.includes("│")), `divider at ${width}`);
+      if (width >= 40) assert.match(lines[0], /This Session.*Topics/, `stacked at ${width}`);
+    }
+    assert.equal(readFileSync(taskFile, "utf8"), before);
+    assert.equal(readFileSync(topics.readTopic(cwd, "topic-0").file, "utf8"), topicBefore);
+    await commands.get("task-focus").handler("clear", ctx);
+    assert.ok(!widget.render(120).join("\n").includes("\x1b[1m"));
+  } finally {
+    await handlers.get("session_shutdown")({}, ctx);
+    resetCapabilitiesCache();
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("topics render without tasks and without hyperlink support", { concurrency: false }, async () => {
+  const cwd = mkdtempSync(path.join(os.tmpdir(), "csl-topics-only-"));
+  const { handlers } = installFakeExtension();
+  let widget;
+  const ctx = {
+    cwd, hasUI: true, mode: "tui", sessionManager: { getBranch: () => [] },
+    ui: { setWidget(_key, content) { widget = typeof content === "function" ? content({ requestRender() {} }) : undefined; }, notify() {} },
+  };
+  setCapabilities({ images: null, trueColor: true, hyperlinks: false });
+  try {
+    const topic = topics.createTopic(cwd, "only", "Only topic", { scope: "Shared", spec: "FR-1: Example", decisions: "None", dependencies: [] });
+    topics.setState(cwd, topic.id, "Active", topic.version);
+    await handlers.get("session_start")({}, ctx);
+    const text = widget.render(80).join("\n");
+    assert.match(text, /📁 Topics/);
+    assert.match(text, /└─ Only topic/);
+    assert.ok(!text.includes("│"));
+    assert.match(text, /Only topic/);
+    assert.ok(!text.includes("\x1b]8;"));
+  } finally {
+    await handlers.get("session_shutdown")({}, ctx);
+    resetCapabilitiesCache();
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
 
 test("updates one TUI component in place and clears session timers", { concurrency: false }, async () => {
   const cwd = mkdtempSync(path.join(os.tmpdir(), "csl task overlay-"));

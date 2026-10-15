@@ -621,4 +621,4 @@ function rebuildIndex(workspace) {
   });
 }
 
-module.exports = { hash, safePath, withLocks, createTopic, readTopic, updateSpec, updateResources, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };
+module.exports = { resolveReference: resolve, hash, safePath, withLocks, createTopic, readTopic, updateSpec, updateResources, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };

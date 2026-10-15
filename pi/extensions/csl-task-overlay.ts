@@ -20,10 +20,77 @@
  *   待办 / 进行中 / 审查中 / 已完成 / 未标注
  */
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { Container, getCapabilities, hyperlink, Text, type TUI } from "@earendil-works/pi-tui";
+import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
+import { Container, getCapabilities, hyperlink, Text, truncateToWidth, visibleWidth, type TUI } from "@earendil-works/pi-tui";
+
+const require = createRequire(import.meta.url);
+const topics = require("../../skills/meta/csl-tasks/shared/lib/topic-core.js");
+const TOPIC_LIMIT = 5;
+
+interface TopicRow {
+	title: string;
+	file?: string;
+	focused: boolean;
+}
+
+/** Navigation only: never use freshness or lifecycle commands to populate UI. */
+function loadTopicRows(cwd: string, focusedTaskId?: string): TopicRow[] {
+	const rows: TopicRow[] = [];
+	let focusedFile: string | undefined;
+	if (focusedTaskId && TASK_ID.test(focusedTaskId)) {
+		try {
+			const taskFile = topics.safePath(cwd, `tasks/tasks/${focusedTaskId}.md`);
+			const binding = topics.taskTopic(readFileSync(taskFile, "utf8"));
+			if (binding) {
+				try {
+					const location = topics.resolveReference(cwd, binding.reference, binding.repository);
+					focusedFile = topics.safePath(location.workspace, `tasks/topics/${location.id}.md`);
+					const topic = topics.readTopic(location.workspace, location.id);
+					rows.push({ title: topic.title, file: focusedFile, focused: true });
+				} catch {
+					rows.push({ title: `${binding.reference} (unavailable)`, focused: true });
+				}
+			}
+		} catch {
+			// A malformed binding must not invent membership or break the task panel.
+		}
+	}
+	let index: string;
+	try {
+		index = readFileSync(topics.safePath(cwd, "tasks/topics.md"), "utf8");
+	} catch {
+		return rows;
+	}
+	const seen = new Set<string>();
+	for (const line of index.split("\n")) {
+		if (rows.length >= TOPIC_LIMIT) break;
+		const match = INDEX_LINE.exec(line);
+		const id = match && /^topics\/([a-z0-9]+(?:-[a-z0-9]+)*)\.md$/.exec(match[2])?.[1];
+		if (!id || seen.has(id)) continue;
+		seen.add(id);
+		try {
+			const topic = topics.readTopic(cwd, id);
+			if (topic.state !== "Active" || topic.file === focusedFile) continue;
+			rows.push({ title: topic.title, file: topic.file, focused: false });
+		} catch {
+			// One unavailable record must not hide other valid topics.
+		}
+	}
+	return rows;
+}
+
+function renderTopicLines(rows: TopicRow[], linkTitles: boolean, theme: Theme): string[] {
+	return ["📁 Topics", ...rows.map((row, index) => {
+		const title = row.title.replace(/[\x00-\x1f\x7f-\x9f]/g, " ");
+		const label = linkTitles && row.file ? hyperlink(title, pathToFileURL(row.file).href) : title;
+		// Resolve semantic colors during rendering so theme changes do not leave stale ANSI.
+		const prefix = index === rows.length - 1 ? "└─" : "├─";
+		return `${prefix} ${row.focused ? theme.bold(theme.fg("accent", label)) : label}`;
+	})];
+}
 
 const WIDGET_KEY = "csl-tasks";
 const FOCUS_ENTRY_TYPE = "csl-task-focus";
@@ -248,16 +315,38 @@ function renderRows(rows: TaskRow[], cwd: string, linkTitles = false, focusedTas
 class TaskWidget extends Container {
 	private readonly requestRender: () => void;
 
-	constructor(lines: string[], requestRender: () => void) {
+	private topicRows: TopicRow[];
+	private readonly theme: Theme;
+
+	constructor(lines: string[], topicRows: TopicRow[], theme: Theme, requestRender: () => void) {
 		super();
 		this.requestRender = requestRender;
+		this.topicRows = topicRows;
+		this.theme = theme;
 		for (const line of lines) this.addChild(new Text(line, 1, 0));
 	}
 
-	setLines(lines: string[]): void {
+	setLines(lines: string[], topicRows: TopicRow[]): void {
 		this.clear();
+		this.topicRows = topicRows;
 		for (const line of lines) this.addChild(new Text(line, 1, 0));
 		this.requestRender();
+	}
+
+	render(width: number): string[] {
+		if (this.topicRows.length === 0) return super.render(width);
+		const topicLines = renderTopicLines(this.topicRows, getCapabilities().hyperlinks, this.theme);
+		// No vertical breakpoint: even tiny terminals keep separate column budgets.
+		const gap = width >= 3 ? "   " : "";
+		const available = Math.max(0, width - gap.length);
+		const leftWidth = Math.ceil(available * 0.6);
+		const rightWidth = available - leftWidth;
+		const left = leftWidth > 2 ? super.render(leftWidth) : [""];
+		return Array.from({ length: Math.max(left.length, topicLines.length) }, (_, index) => {
+			const a = truncateToWidth(left[index] ?? "", leftWidth, "");
+			const b = truncateToWidth(topicLines[index] ?? "", rightWidth, "");
+			return `${a}${" ".repeat(Math.max(0, leftWidth - visibleWidth(a)))}${gap}${b}`;
+		});
 	}
 }
 
@@ -284,19 +373,20 @@ function refresh(ctx: RefreshCtx, state: RefreshState): void {
 		ctx.ui.setWidget(WIDGET_KEY, rows.length > 0 ? rows : undefined, { placement: "aboveEditor" });
 		return;
 	}
-	if (rows.length === 0) {
+	const topicRows = loadTopicRows(ctx.cwd, state.focusedTaskId);
+	if (rows.length === 0 && topicRows.length === 0) {
 		state.widget = undefined;
 		ctx.ui.setWidget(WIDGET_KEY, undefined, { placement: "aboveEditor" });
 		return;
 	}
 	if (state.widget) {
-		state.widget.setLines(rows);
+		state.widget.setLines(rows, topicRows);
 		return;
 	}
 	ctx.ui.setWidget(
 		WIDGET_KEY,
-		(tui) => {
-			const widget = new TaskWidget(rows, () => tui.requestRender());
+		(tui, theme) => {
+			const widget = new TaskWidget(rows, topicRows, theme, () => tui.requestRender());
 			state.widget = widget;
 			return widget;
 		},
@@ -309,7 +399,7 @@ function refresh(ctx: RefreshCtx, state: RefreshState): void {
 interface ExtensionUIContext {
 	setWidget(
 		key: string,
-		content: string[] | ((tui: TUI) => TaskWidget) | undefined,
+		content: string[] | ((tui: TUI, theme: Theme) => TaskWidget) | undefined,
 		options?: { placement?: "aboveEditor" | "belowEditor" },
 	): void;
 	notify(message: string, type?: "info" | "warning" | "error"): void;
