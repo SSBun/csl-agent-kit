@@ -1,5 +1,7 @@
 # 任务索引
 
+- [修复本地检查问题并分组提交全部改动](tasks/fix-local-review-and-commit.md) — Completed (2026-10-21 11:27)
+
 - [检查当前全部未提交改动](tasks/inspect-local-changes.md) — In Progress (2026-10-21 11:15)
 
 - [提交并推送本地语言插件改动](tasks/publish-language-tutor-changes.md) — Completed (2026-10-16 14:44)
