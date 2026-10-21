@@ -1,5 +1,7 @@
 # 任务索引
 
+- [检查当前全部未提交改动](tasks/inspect-local-changes.md) — In Progress (2026-10-21 11:15)
+
 - [提交并推送本地语言插件改动](tasks/publish-language-tutor-changes.md) — Completed (2026-10-16 14:44)
 
 - [在解析详情中展示原始词汇](tasks/grammar-show-words.md) — Completed (2026-10-16 10:43)
