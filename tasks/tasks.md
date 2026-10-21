@@ -1,5 +1,15 @@
 # 任务索引
 
+- [在解析详情中展示原始词汇](tasks/grammar-show-words.md) — Completed (2026-10-16 10:43)
+
+- [突出显示完整正确句子](tasks/grammar-emphasize-sentence.md) — Completed (2026-10-15 17:38)
+
+- [移除语法详情顶部重复元信息](tasks/grammar-remove-detail-metadata.md) — Completed (2026-10-15 17:35)
+
+- [将完整纠正句置于解析详情顶部](tasks/grammar-sentence-first.md) — Completed (2026-10-15 17:24)
+
+- [压缩语法详情并将删除入口移到列表单元格](tasks/grammar-compact-cells.md) — Completed (2026-10-15 17:21)
+
 - [为语法记录添加删除按钮](tasks/grammar-delete-record.md) — Completed (2026-10-15 17:17)
 
 - [规划语法自动记录与复习展示](tasks/grammar-records-preview.md) — Blocked (2026-10-15 17:08)
