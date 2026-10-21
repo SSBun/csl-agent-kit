@@ -136,7 +136,7 @@
 - `session_start` 与 `session_tree` 从当前 branch 的最新 focus entry 恢复关联；`task_focus` 工具通过 prompt guidance 供 Agent 在创建、恢复、重开或激活 canonical task 后自动关联，`/task-focus <task-id|clear>` 提供手动切换或清除，`/tasks` 按索引顺序截取最近 20 个任务后分状态打印。
 - 有有效关联时，TUI 把该任务单列于 `This Session`，其余近期任务列于 `Workspace`；无关联或失效关联回退普通共享列表。已完成任务保持关联，直到被替换或清除。
 - TUI 对非空任务只注册一次自定义 Component，每 5 秒清除当前工作区进度缓存、重读任务并原位更新；空列表注销组件，重复启动释放旧 timer，`session_shutdown` 最终清理。
-- 支持 OSC 8 的 TUI 在任务 widget 与 `/tasks` 通知中将 canonical `tasks/<task-slug>.md` 标题链接到对应绝对文件 URL；不支持 hyperlink 的终端及非 canonical 路径保持纯文本。RPC 忽略 session 分组并保持可序列化纯字符串数组，headless 不注册 widget。
+- 支持 OSC 8 的 TUI 将 Tasks/Workspace 标题链接到当前工作区 `tasks/tasks.md`，Topics 标题链接到 `tasks/topics.md`；This Session 标题保持纯文本。在任务 widget 与 `/tasks` 通知中将 canonical `tasks/<task-slug>.md` 标题链接到对应绝对文件 URL；不支持 hyperlink 的终端及非 canonical 路径保持纯文本。RPC 忽略 session 分组并保持可序列化纯字符串数组，headless 不注册 widget。
 
 ### Decision and Verification Boundaries
 - 只有符合 `tasks/[a-z0-9-]+.md` 的 canonical index path 才能被关联或生成文件链接；`pathToFileURL` 负责绝对路径和特殊字符编码。

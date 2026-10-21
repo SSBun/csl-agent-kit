@@ -72,6 +72,7 @@ test("topics stay horizontal, capped at five, with the bound topic first and hig
     await tools.get("task_focus").execute("focus", { taskId: "demo" }, undefined, undefined, ctx);
     const rendered = widget.render(120);
     assert.match(rendered[0], /This Session.*📁 Topics/);
+    assert.ok(rendered[0].includes(`\x1b]8;;${pathToFileURL(path.join(cwd, "tasks/topics.md")).href}\x1b\\📁 Topics\x1b]8;;\x1b\\`));
     assert.ok(rendered.every(line => !line.includes("│")));
     const text = rendered.join("\n");
     assert.equal((text.match(/主题 \d/g) ?? []).length, 5);
@@ -179,6 +180,7 @@ test("updates one TUI component in place and clears session timers", { concurren
 
     await handlers.get("session_start")({}, ctx);
     assert.equal(typeof registrations[0], "function");
+    assert.ok(widget.render(200)[0].includes(`\x1b]8;;${pathToFileURL(path.join(cwd, "tasks/tasks.md")).href}\x1b\\📋 Tasks\x1b]8;;\x1b\\`));
     const taskLine = widget.render(200).at(-1);
     const taskUrl = pathToFileURL(path.join(cwd, "tasks", "tasks", "demo.md")).href;
     assert.match(taskLine, /🔄 \(0\/1\)/);
@@ -386,7 +388,14 @@ test("persists session focus and keeps a completed task focused until changed or
     assert.match(widget.render(200)[0], /📋 This Session/);
     assert.match(widget.render(200)[1], /🔄 \(0\/1\) Demo task/);
     assert.match(widget.render(200)[2], /📁 Workspace/);
+    assert.ok(!widget.render(200)[2].includes("\x1b]8;"));
     assert.match(widget.render(200)[3], /⏳ Other task/);
+
+    setCapabilities({ images: null, trueColor: true, hyperlinks: true });
+    await commands.get("tasks").handler("", ctx);
+    assert.ok(widget.render(200)[2].includes(`\x1b]8;;${pathToFileURL(path.join(cwd, "tasks/tasks.md")).href}\x1b\\📁 Workspace\x1b]8;;\x1b\\`));
+    setCapabilities({ images: null, trueColor: true, hyperlinks: false });
+    await commands.get("tasks").handler("", ctx);
 
     writeFileSync(
       path.join(cwd, "tasks", "tasks.md"),

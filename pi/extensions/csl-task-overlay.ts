@@ -82,8 +82,12 @@ function loadTopicRows(cwd: string, focusedTaskId?: string): TopicRow[] {
 	return rows;
 }
 
-function renderTopicLines(rows: TopicRow[], linkTitles: boolean, theme: Theme): string[] {
-	return ["📁 Topics", ...rows.map((row, index) => {
+function renderIndexHeading(label: string, cwd: string, index: string, linkTitles: boolean): string {
+	return linkTitles ? hyperlink(label, pathToFileURL(join(cwd, "tasks", index)).href) : label;
+}
+
+function renderTopicLines(rows: TopicRow[], linkTitles: boolean, theme: Theme, cwd: string): string[] {
+	return [renderIndexHeading("📁 Topics", cwd, "topics.md", linkTitles), ...rows.map((row, index) => {
 		const title = row.title.replace(/[\x00-\x1f\x7f-\x9f]/g, " ");
 		const label = linkTitles && row.file ? hyperlink(title, pathToFileURL(row.file).href) : title;
 		// Resolve semantic colors during rendering so theme changes do not leave stale ANSI.
@@ -299,7 +303,7 @@ function renderRows(rows: TaskRow[], cwd: string, linkTitles = false, focusedTas
 		? rows.find((row) => taskIdForRow(row) === focusedTaskId)
 		: undefined;
 	if (!focused) {
-		return ["📋 Tasks", ...renderTaskLines(rows.slice(0, RECENT_LIMIT), cwd, linkTitles)];
+		return [renderIndexHeading("📋 Tasks", cwd, "tasks.md", linkTitles), ...renderTaskLines(rows.slice(0, RECENT_LIMIT), cwd, linkTitles)];
 	}
 
 	const workspace = rows
@@ -307,7 +311,7 @@ function renderRows(rows: TaskRow[], cwd: string, linkTitles = false, focusedTas
 		.slice(0, RECENT_LIMIT - 1);
 	const out = ["📋 This Session", ...renderTaskLines([focused], cwd, linkTitles)];
 	if (workspace.length > 0) {
-		out.push("📁 Workspace", ...renderTaskLines(workspace, cwd, linkTitles));
+		out.push(renderIndexHeading("📁 Workspace", cwd, "tasks.md", linkTitles), ...renderTaskLines(workspace, cwd, linkTitles));
 	}
 	return out;
 }
@@ -317,12 +321,14 @@ class TaskWidget extends Container {
 
 	private topicRows: TopicRow[];
 	private readonly theme: Theme;
+	private readonly cwd: string;
 
-	constructor(lines: string[], topicRows: TopicRow[], theme: Theme, requestRender: () => void) {
+	constructor(lines: string[], topicRows: TopicRow[], theme: Theme, cwd: string, requestRender: () => void) {
 		super();
 		this.requestRender = requestRender;
 		this.topicRows = topicRows;
 		this.theme = theme;
+		this.cwd = cwd;
 		for (const line of lines) this.addChild(new Text(line, 1, 0));
 	}
 
@@ -335,7 +341,7 @@ class TaskWidget extends Container {
 
 	render(width: number): string[] {
 		if (this.topicRows.length === 0) return super.render(width);
-		const topicLines = renderTopicLines(this.topicRows, getCapabilities().hyperlinks, this.theme);
+		const topicLines = renderTopicLines(this.topicRows, getCapabilities().hyperlinks, this.theme, this.cwd);
 		// No vertical breakpoint: even tiny terminals keep separate column budgets.
 		const gap = width >= 3 ? "   " : "";
 		const available = Math.max(0, width - gap.length);
@@ -386,7 +392,7 @@ function refresh(ctx: RefreshCtx, state: RefreshState): void {
 	ctx.ui.setWidget(
 		WIDGET_KEY,
 		(tui, theme) => {
-			const widget = new TaskWidget(rows, topicRows, theme, () => tui.requestRender());
+			const widget = new TaskWidget(rows, topicRows, theme, ctx.cwd, () => tui.requestRender());
 			state.widget = widget;
 			return widget;
 		},
