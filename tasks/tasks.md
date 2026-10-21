@@ -1,5 +1,7 @@
 # 任务索引
 
+- [规划语法自动记录与复习展示](tasks/grammar-records-preview.md) — Blocked (2026-10-15 17:08)
+
 - [为 Pi 任务与 Topic 分区标题添加索引链接](tasks/pi-panel-index-links.md) — Completed (2026-10-15 16:48)
 
 - [将 Pi 语言插件切换到个人 fork](tasks/use-forked-language-tutor.md) — Completed (2026-10-15 16:46)
