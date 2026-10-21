@@ -2,6 +2,10 @@
 
 - [为 Pi 任务与 Topic 分区标题添加索引链接](tasks/pi-panel-index-links.md) — Completed (2026-10-15 16:48)
 
+- [将 Pi 语言插件切换到个人 fork](tasks/use-forked-language-tutor.md) — Completed (2026-10-15 16:46)
+
+- [Fork 语言学习插件并克隆到个人目录](tasks/fork-language-tutor.md) — Completed (2026-10-15 16:33)
+
 - [按独立功能分组提交当前全部本地改动](tasks/commit-local-feature-groups.md) — Completed (2026-10-15 15:56)
 
 - [简化 Topic 生命周期为 Active 与 Archived](tasks/simplify-topic-lifecycle.md) — In Progress (2026-10-15 14:28)
