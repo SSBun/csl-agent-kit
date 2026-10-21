@@ -1,5 +1,7 @@
 # 任务索引
 
+- [提交并推送本地语言插件改动](tasks/publish-language-tutor-changes.md) — Completed (2026-10-16 14:44)
+
 - [在解析详情中展示原始词汇](tasks/grammar-show-words.md) — Completed (2026-10-16 10:43)
 
 - [突出显示完整正确句子](tasks/grammar-emphasize-sentence.md) — Completed (2026-10-15 17:38)
