@@ -1,5 +1,7 @@
 # 任务索引
 
+- [为语法记录添加删除按钮](tasks/grammar-delete-record.md) — Completed (2026-10-15 17:17)
+
 - [规划语法自动记录与复习展示](tasks/grammar-records-preview.md) — Blocked (2026-10-15 17:08)
 
 - [为 Pi 任务与 Topic 分区标题添加索引链接](tasks/pi-panel-index-links.md) — Completed (2026-10-15 16:48)
