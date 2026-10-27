@@ -18,7 +18,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
 | bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
-| task-context | `/csl:task-context` | `/task-context` | Ensure a standard Project Core, query task-relevant Context Packs, then maintain durable context. |
+| task-context | `/csl:task-context` | `/task-context` | Establish source-backed Core and task-relevant coverage, retrieve sufficient Packs, and maintain affected durable facts. |
 | topic | `/csl:topic` | `/topic` | 管理长期维护主题的共享规格、版本及任务引用；支持实现、Bug 修复和审查，不限于多平台。 |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
@@ -260,6 +260,30 @@ TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无
 Pi 中的 CSL `task-review` 和 `adversarial-review` Reviewer 启动前，主 Agent 按 `csl_review_config` 的工具指引读取配置，将返回的 `launch.model` 原样传入现有 `subagent` 调用；脚本工作流应在每个 Reviewer 子调用中传入，而不是覆盖整个工作流。该值包含 `provider/model:thinking`，因此优先于 carrier 的默认模型和思考强度。配置解析失败时应停止，不自动换模型或降级；原有 subagent 模型范围、思考上限、隔离和授权限制仍然有效。
 
 这是 CSL 审查流程的显式启动参数接入，不是对全部 subagent 调用的拦截。手动 `/run reviewer`、其他流程及 Editor 等非审查角色不受影响。工具指引要求在父会话或设置改变后重新解析；已启动或恢复的子 Agent 保留原启动契约，需要新配置时启动新的审查子 Agent。配置保存后后续解析立即生效，无需重载；初次加载新扩展仍需 `/reload`。非 TUI 模式不能打开设置面板，但仍可调用只读解析工具。没有加载此扩展的宿主不使用此 Pi 配置。
+
+#### Task 证据校验
+
+共享 Task CLI 可为明确列出的工作区文件生成不可变快照，再通过 `assess-review --snapshot` 使用返回的身份：
+
+```bash
+node skills/meta/csl-tasks/shared/scripts/csl-tasks.js snapshot TASK_ID --file src/example.js --file tests/example.test.js
+node skills/meta/csl-tasks/shared/scripts/csl-tasks.js check-evidence TASK_ID
+node skills/meta/csl-tasks/shared/scripts/csl-tasks.js review-report TASK_ID --input feedback.md --snapshot SNAPSHOT_ID --outcome 'no blocking findings' --mode 'independent subagent' --run RUN_ID
+```
+
+快照记录所选文件的字节摘要和相关 Git HEAD／index 身份；重命名需显式列出新旧路径，删除路径必须仍有 Git 跟踪身份。工具不推断遗漏范围、不运行检查，也不捕获工作树尚未暂存的权限位变化。新快照会在终态审查、最终验证和完成时重新核对；旧自由文本身份继续由主 Agent 核对。
+
+`review-report` 只保存反馈及登记轮次、快照、任务指纹、结果和报告摘要，不授予审查通过。终态核对最新对应报告，任务要求改变后不能沿用旧报告。报告保存后未登记的中断，可用 `review-report TASK_ID --existing-round 01` 恢复索引；既有文件不会被覆盖；旧索引中的说明文字需要先保留到其他章节，工具不会静默删除。`check-evidence` 区分机械完整性与仍需人工判断的语义验收，`--include-legacy` 可额外检查历史报告链接。原 `check`／`validate` 通过仅表示任务结构和索引等检查通过。
+
+R0/R1 且没有显式或既有审查义务时，可以使用 `finalize TASK_ID R0|R1` 一次写入逐目标结果、分级依据、Skipped、最终验证与完成状态。通过重复 `--result 'T1: 已执行检查及观察'` 提供全部目标证据，其他分级参数与 `assess-review` 相同，另须 `--final-verification` 记录实际最终核对。已有 Result 可作为简短证据引用，避免多处重述。缺项、证据漂移或已有 Required 均不能绕过；新内容和原件备份在替换前准备，终态任务最后提交，失败恢复不再重写内容；若文件系统连恢复操作也拒绝，会保留备份并报告未恢复路径。工具不代跑验证或判断语义风险，R2 继续走独立审查。
+
+未完成任务可在现有 `Plan` 下用单行 `- Current artifacts:`、`- Next action:`、`- Required input:` 记录当前产物、下一动作和必要输入。CLI JSON 可读取这些明确记录的事实，以及 `Block` 中的 `Reason`／`Unblock when`；Pi 的 `This Session`、`Workspace`、普通任务列表及 `/tasks` 输出均只展示任务标题、状态和进度，不展示恢复详情；完整交接信息仍保留在任务记录中，供恢复任务时读取。旧记录缺少提示时保持原样，不推断进展或自动解除阻塞。恢复前仍须核对原任务与实际产物。
+
+准备阶段会针对实际依赖预检运行环境、必要验证及授权、独立审查的宿主能力与证据保存条件，复用已有会话授权。缺项记入现有 Plan／Block 和恢复条件；预检不执行占位审查、不预判最终风险，也不授予测试或实现权限。仅用于未来执行的能力缺口会进入计划交接，不阻止可独立完成的规划结果。
+
+常驻 Contract 负责自动路由、顺序与停止边界；确认模式细节归 Task Target 协议，分级与评估记录归 Grading／Task，审查 ledger 和报告细节归 Task／Task Review。独立分析以分析结果作为可验收交付物时使用 Task；为后续实现形成计划时使用 Task Plan。
+
+在 `confirm` 模式下，仅调查、分析或规划的任务保留记录，但不要求通用 Task Target 确认；用户明确要求先检查、关键用户决策和范围变化仍按协议处理。探索不产生实现目标的接受证据；后来要求实施时重新应用实现阶段的确认规则。“调查并修复”仍属于实现请求。
 
 #### Task SOLO 模式
 

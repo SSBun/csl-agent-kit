@@ -112,7 +112,7 @@ test("SOLO contracts bypass grading and SOP-only pauses while keeping real bound
   const sops = fs.readFileSync("skills/meta/agent-sops/SKILL.md", "utf8");
   assert.match(protocol, /Resolve the runtime mode \*\*before\*\* selecting any L0-L4 level/);
   assert.match(protocol, /Resolve mode first: if `solo`/);
-  assert.match(protocol, /use `continue_solo`; do not select an L-level/);
+  assert.match(protocol, /using `continue_solo`; do not select an L-level/);
   assert.match(protocol, /does not resume an old X batch/);
   assert.match(protocol, /duplicate-send prevention/);
   assert.match(protocol, /drafting-only does not authorize publishing/);

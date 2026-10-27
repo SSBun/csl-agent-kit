@@ -1,6 +1,6 @@
 ---
 name: task
-description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and align its Task Target before substantive work. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
+description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
 ---
 
 # Task
@@ -65,9 +65,21 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
 3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
 4. Immediately after creation, resume, or reopen succeeds, emit the real host tool call itself—for example, `task_focus(<id>)`—in the same reply as the lifecycle command; treat both calls as one atomic batch. Planning or listing `task_focus` without emitting it does not satisfy this step. If binding fails (for example, the record lives outside the session workspace), disclose that failure explicitly instead of silently skipping.
-5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it. A main session runs the user-facing gate; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming the same implementation-ready plan record, an explicit request to execute is execution authorization, not a new Target by itself; inherit a recoverable, materially equivalent accepted Target without another checkpoint.
-6. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
+5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. Classify the current authorized work before inspecting task-direct sources: standalone exploration uses the protocol's `continue_exploration` exemption without displaying a confirmation block or waiting; implementation follows its normal gate. A main session owns user-facing gates; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming a plan for implementation, an explicit request to execute supplies execution authorization; reuse a recoverable, materially equivalent accepted implementation Target when available, otherwise perform its first implementation checkpoint. Prior exploration alone is not Target acceptance.
+6. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources. Apply Capability Preflight below before work that depends on those capabilities.
 7. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
+
+## Capability Preflight
+
+During preparation, check only capabilities the accepted outcome visibly depends on, before investing in dependent edits. Reuse current session evidence and authorization; do not ask again for an already authorized check or an accepted in-scope exception.
+
+- Confirm required runtime resources, artifact access and host operations are actually available. Inspect the relevant tool schema or a safe read-only observation; a Skill naming a tool does not make it available. Use an authorized non-destructive probe only when needed to resolve material uncertainty.
+- Identify the checks needed to establish the Targets, their prerequisites and whether current instructions permit running them. Discovery is not execution permission. If required verification is unavailable, preserve that limitation instead of promising a verified result.
+- For an explicitly requested review or an outcome that clearly needs independent review, check fresh-context dispatch, actual read-only tool restrictions, and access to the reviewed artifacts. Also confirm a usable evidence/report persistence path. A prompt alone is not isolation; do not launch a placeholder review or treat capability discovery as a completed pass.
+
+Record only material missing prerequisites and the next action/input in the existing Plan. Continue useful independent authorized work within the current task or active Queue child, without skipping a Blocked child or starting a later child. When a missing capability prevents the current outcome, use the existing Block contract with the exact failure and observable recovery condition; return delegated blockers to the owner. Never obtain a lower risk grade, weaken required checks, or invent permission to work around a missing capability. An accepted exception applies only to its authorized scope and never changes the default requirement.
+
+This check is provisional: classify the actual result after self-check and recheck relevant capabilities when the host, scope or verification needs change. It does not replace final verification or the real mandatory review. For planning-only work, record unavailable future execution prerequisites in the handoff; they do not Block an otherwise complete plan unless they prevent a necessary planning decision or its verification.
 
 ## Review Classification
 
@@ -93,7 +105,11 @@ After each dispatched pass returns, the owner persists its feedback and appends 
 
 A mandatory pass requires an actual fresh, read-only subagent; a prompt saying “be independent” or a Markdown template is not isolation. If it is unavailable or fails, preserve self-check evidence, report the exact failure and run/workspace state, and Block with an observable recovery condition. Do not substitute inline self-review or silently switch execution modes. Infrastructure failures do not increment finding no-progress streaks. Follow stricter host failure/retry rules.
 
-The core validates assessment structure, level/gate consistency, task-record fingerprint and evidence text, not semantic risk, actual subagent isolation, check execution, or external filesystem freshness; the host and main Agent must establish those facts.
+The core validates assessment structure, level/gate consistency, task-record fingerprint and evidence text. Managed evidence also receives the mechanical checks below; semantic risk, actual subagent isolation, check execution and complete scope remain the host and main Agent's responsibility.
+
+For explicit workspace-local file scopes, use `snapshot <id> --file <relative-path> [--file ...]` before assessment. The returned `snapshot:...#<sha256>` identity pins an immutable manifest of file bytes and each named file's Git HEAD/index identity, including tracked deletions. Include both paths of a rename and every relevant source or evidence file; the command does not discover omitted scope, follow symlinks, run checks, or capture unstaged permission changes. Keep non-workspace and no-file identities owner-attested. Reusing an identical manifest is safe; a changed scope creates a new identity rather than overwriting evidence.
+
+`check-evidence <id>` checks managed snapshots and registered reports without changing state. Managed snapshots are also rechecked at terminal review, passed verification and completion, including repeated identical writes. The result distinguishes mechanical checks from owner-attested semantic review. Plain-text historical identities remain readable and owner-attested; `--include-legacy` explicitly checks historical report links without migrating them. Passing structural `check` or `validate` alone never proves external evidence or the Target.
 
 ## Record Contract
 
@@ -114,6 +130,10 @@ Add only when an adjacent boundary is easy to include accidentally, the user exc
 
 Use an ordered list without checkboxes. Keep only current result nodes, dependencies, and next actions. Do not prescribe algorithms, files, functions, types, or call paths unless the user requires them.
 
+Before an unfinished task is handed off or interrupted, keep a concise recovery note in this same section using optional single-line bullets `Current artifacts:`, `Next action:`, and `Required input:`. Link the actual current artifacts, name the next concrete action, and state the input still needed (or explicitly `None`). Update these facts when they change; do not copy the complete Result or invent missing facts. These are ordinary Plan content, so use `sync`/`check` after edits. They do not create a second status or resume cursor. Historical tasks without them remain valid.
+
+The CLI JSON and task navigation expose only recorded recovery notes and Block facts. Read the canonical task and recheck the current artifacts before resuming; displayed notes are navigation, not fresh evidence or permission to proceed.
+
 ### Topic
 
 Only for an associated task, keep one CLI-owned `task-topic/v1` section with Reference, Repository identity, adopted Revision, Applies scope and implementation/maintenance Mode. Use `topic attach`, `detach` or `adopt`, never hand-edit a binding or digest. The section participates in the task fingerprint. Topic Adoption is the current impact-disposition note, not approval evidence or another task status. The Topic contract defines cross-workspace permission, optimistic versions and partial-link repair.
@@ -129,6 +149,8 @@ Write or refresh the summary before self-check and review assessment, compare it
 ### Result
 
 The core records one evidence line per Target. Evidence must name what was checked, how, and the observed result. Update evidence when it becomes stale; changing a Target or relevant deliverable invalidates verification.
+
+Keep the full observation in Result once. Assessment and closing evidence may reference those Target IDs or the same durable evidence, adding only their distinct grounds and current-content checks. A reference reduces repetition; it never supplies missing evidence or proves that a new final check ran.
 
 Record the review gate through `review <id> ... --evidence ...`:
 
@@ -165,24 +187,28 @@ Use exactly one temporary `## Review` section with the exact `task-review-ledger
 
 ### Review Reports
 
-Keep one persistent `## Review Reports` section, separate from the temporary `## Review` ledger. It is an append-only report index, not another finding ledger or source of task requirements. The owner saves each `task-review` pass to `tasks/artifacts/<task-id>/reviews/round-<NN>.md` and links it from this section. Use task-relative Markdown links in stored records; apply host path-display rules in chat.
+Keep one persistent `## Review Reports` section, separate from the temporary `## Review` ledger. It is an append-only report index, not another finding ledger or source of task requirements. Save returned feedback with `review-report <id> --input <feedback-file> --snapshot <assessment-identity> --outcome <outcome> --mode <actual-mode> [--run <run-id>]` while In Review/Required. Outcomes are `findings`, `no blocking findings`, `incomplete`, or `invalidated by drift`; modes are `independent subagent`, `non-independent self-review`, or `incomplete`. These are owner attestations, never proof of independence or approval. The CLI allocates the next report number across files and index rows, preserves feedback bytes under an owner header bound to the assessment snapshot and Task fingerprint, and registers its SHA256 with the owning task in one locked, rollback-capable write. It does not provide a cross-file crash transaction. Use task-relative Markdown links in stored records; apply host path-display rules in chat.
+
+Reports remain at `tasks/artifacts/<task-id>/reviews/round-<NN>.md`; the CLI adds the index's schema and digest column when registering the first managed report.
 
 - Choose the next unused number above both existing report filenames and index entries, including after resume or reopen; pad to at least two digits. Never overwrite or renumber a report. This artifact number is not the active ledger's `Pass` counter.
 - Preserve the returned user-visible feedback, including findings, stable IDs, prior-item dispositions, checks actually performed, inherited evidence and coverage limits. Add a clearly separated owner header with task ID, round, review mode, actual run identity when available, and the reviewed snapshot. Keep owner conclusions distinct from Reviewer feedback. Never save private reasoning, full tool transcripts or secrets; explicitly mark any necessary redaction.
-- Append one row per saved report: round, report link, reviewed snapshot and brief outcome (`findings`, `no blocking findings`, `incomplete`, or `invalidated by drift`). An infrastructure failure may have a diagnostic report, but must be labeled incomplete, never a completed review. Interrupted saves are recovered by checking the existing file against the returned output and appending the missing row, not overwriting it.
+- Append one row per saved report: round, report link, reviewed snapshot, outcome and SHA256. The managed index uses `task-review-reports/v1`; existing rows are retained as `legacy`, not retroactively certified. Legacy prose prevents automatic migration; preserve those notes outside this index before retrying. An infrastructure failure may have a diagnostic report, but must be labeled incomplete, never a completed review. Recover an already saved managed report with `review-report <id> --existing-round <NN>`; it checks the header and current assessment before adding the missing row, never overwriting the file. Compare recovered feedback with the actual returned output before relying on it.
 - The owner verifies the link resolves inside the owning task's reviews directory and the report's round/snapshot match its row. Before a terminal gate and completion, recheck the referenced current report and actual scope. A row or a file alone never proves independence or grants Passed.
 - The index survives ledger resolution and completion. Only the active ledger tracks current finding state; historical reports retain what was observed in their own pass. Subsequent corrections or drift are appended as explicitly labeled owner notes, never silently rewritten into past feedback.
-- Index-only bookkeeping does not require `sync`: the Task fingerprint excludes `Review Reports`, just as it excludes the temporary ledger. This exception never covers changes to Target, Scope, Plan, Result, active ledger, reviewed artifacts or substantive evidence; apply their normal invalidation and fresh-review rules. The core does not validate report files or their links; the owner does.
+- Index-only bookkeeping does not require `sync`: the Task fingerprint excludes `Review Reports`, just as it excludes the temporary ledger. This exception never covers changes to Target, Scope, Plan, Result, active ledger, reviewed artifacts or substantive evidence; apply their normal invalidation and fresh-review rules. The core checks registered report bytes, paths and header/index correspondence. With a managed snapshot or report index, Passed requires the latest report matching both the current snapshot and Task fingerprint to attest an independent pass with no blocking findings; R2 Approved retains that ordinary-pass requirement. The owner still verifies reviewer independence, actual coverage and substantive conclusions.
 
 Example stored index:
 
 ```markdown
 ## Review Reports
 
-| Round | Report | Snapshot | Outcome |
-| --- | --- | --- | --- |
-| 01 | [Round 01](../artifacts/example-task/reviews/round-01.md) | sha256:<reviewed-content> | findings: TR-1 |
-| 02 | [Round 02](../artifacts/example-task/reviews/round-02.md) | sha256:<revised-content> | no blocking findings |
+- Schema: task-review-reports/v1
+
+| Round | Report | Snapshot | Outcome | SHA256 |
+| --- | --- | --- | --- | --- |
+| 01 | [Round 01](../artifacts/example-task/reviews/round-01.md) | <assessment-identity> | findings | <report-digest> |
+| 02 | [Round 02](../artifacts/example-task/reviews/round-02.md) | <assessment-identity> | no blocking findings | <report-digest> |
 ```
 
 Do not backfill untouched historical tasks or create an empty section for a skipped review. Standalone feedback without an owning task keeps its existing no-file behavior. Explicit adversarial-review retains its own report contract; this per-pass protocol does not add an approval loop.
@@ -195,17 +221,34 @@ Run proportionate host-native checks yourself; the core never executes arbitrary
 
 Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for a reversible soft stop; cancelled work is not completed and can resume.
 
+Navigation may display these existing facts alongside the Plan recovery note. Keep the required user input or external condition explicit; never infer that a displayed unblock condition has occurred.
+
 ## Completion
 
-1. Write or refresh Task Summary against the actual task-owned changes, then `sync` and `check`. Self-check current requirements and supported per-Target Result evidence, run proportionate authorized preliminary checks, then record the actual result's R0/R1/R2 assessment. Prepare the mandatory review handoff for R2 or explicit ordinary review.
+1. Before self-check, follow `task-context`'s Completion Gate for this task's actual changes and newly confirmed durable facts, including affected knowledge beyond the selected Packs; respect the task's write scope. Write or refresh Task Summary against the actual task-owned changes, then `sync` and `check`. Self-check current requirements and supported per-Target Result evidence, run proportionate authorized preliminary checks, then record the actual result's R0/R1/R2 assessment. Prepare the mandatory review handoff for R2 or explicit ordinary review.
 2. For R2, execute `required` → In Review → `task-review`, apply the existing per-finding stall guard and record `passed`. Explicit ordinary review also follows this route at any level; exemptions never cancel an existing Required obligation.
 3. For R0/R1 without explicit or existing review obligations, record `skipped` with the current assessment's exemption grounds and remain In Progress. If the user explicitly requested adversarial review of that no-file result or an R1 result, enter Required → In Review and run it without a mandatory `task-review`, then record `approved`. For R2, explicit adversarial review runs only after `passed`; `approved` evidence names both outcomes.
 4. After the final review decision, compare current content/evidence with the assessment snapshot and, if reviewed, the reviewed snapshot. Drift returns to self-check, assessment and any required fresh review. Rerun proportionate final verification and record it as passed because every assessment or review-gate write clears Verification. For `skipped`, do not invent an independent-review snapshot.
 5. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
-6. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
+6. Run `complete <id>`. This and the low-risk `finalize` path are the only routes to Completed; both fail closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
 7. Run `check <id>` and `validate` before delivery.
 
 Do not retrofit untouched historical record bodies. All records share the new paths, while the stricter `Kind` metadata contract applies to new or reopened work.
+
+### Low-Risk Completion in One Write
+
+For an In Progress R0/R1 task without an explicit or existing review obligation, `finalize` combines Result, assessment, Skipped, final Verification, Completed and the index in one locked, rollback-capable operation:
+
+```text
+finalize <id> <R0|R1> --result "T1: <checked observation>" [--result ...]
+  --reason <grading-ground> --snapshot <current-identity> --evidence <self-check-reference>
+  [R1: --clarity <ground> --impact <ground> --risk <ground> --verification <ground>]
+  --final-verification <current-final-check-observation>
+```
+
+First finish Context and Task Summary maintenance, `sync`/`check`, freeze the deliverable scope, and perform the authorized self-check and final content comparison. Supply every Target exactly once, all required grading grounds, and an actual final-check observation. Reuse Result references where sufficient rather than repeating their prose. The command does not run those checks or choose the risk level; it rechecks managed evidence before committing the complete state. Missing evidence, drift, unfinished Queue children, an active Block/ledger, or an existing review obligation rejects the operation. New contents and recovery copies are prepared before replacing destinations, and the terminal task is committed last. Failed commits restore originals without rewriting their contents. If the filesystem also refuses restoration, preserve recovery copies and report exact unrecovered paths; never claim rollback succeeded. This is not a cross-file crash transaction.
+
+If review was explicitly requested, record Required and use the normal review path; the core cannot infer a conversational obligation. R2 always uses that path. The separate lifecycle commands remain available. After successful `finalize`, run `check` and `validate`; do not repeat assessment/review writes that would invalidate the recorded final verification.
 
 ## Maintainer Validation
 

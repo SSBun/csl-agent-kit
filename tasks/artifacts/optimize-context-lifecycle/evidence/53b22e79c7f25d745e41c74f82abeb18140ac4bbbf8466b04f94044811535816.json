@@ -1,0 +1,201 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "optimize-context-lifecycle",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "a7321bdd3abd4d810f397930367ced715d8432fdb1bb168922e1aedbe47fb274",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "de97555bf658f6b707dd65527a2bd57ba8b8bc357daf2fbf695243fef18cf5f1",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8490121210a18e013407dc055f90bc7d39512c16"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8490121210a18e013407dc055f90bc7d39512c16",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-context/SKILL.md",
+      "sha256": "b429f2fd28ca3dfa6725261e9338942fd70fd777d5d8cbd343a4465f2ec2fa96",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0ae67ea74e0c479dbf5e548ab106b23a42f67c9d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0ae67ea74e0c479dbf5e548ab106b23a42f67c9d",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-context/agents/openai.yaml",
+      "sha256": "56c1204e055606f832f13768f0b33d8a88524938a8411099aa9bd7d52310065c",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "e884adbb2012549119358311f0783dfaf3df0eb5"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "e884adbb2012549119358311f0783dfaf3df0eb5",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-context/evals/context_value_cases.json",
+      "sha256": "006c1bf83e090a8ab0efc3e55b64ac68cbde0fcf4777e248b8707d3a625b081a",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8e97e550af531bcd9dc56791b5f7fc8f53a6d533"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8e97e550af531bcd9dc56791b5f7fc8f53a6d533",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-context/evals/lifecycle_cases.json",
+      "sha256": "460ba0ce2be327e3cffdf581d60b4989554a6c97d4734a5e93cd89b9a73a0aed",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/task-context/evals/query_cases.json",
+      "sha256": "87b3b822c3932b47a2cbdbca72088099abd637da37de00afe2d9888ca9e3e006",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "3cdceae279c8b1d50dc61c7bb00a09b254dbabb2"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "3cdceae279c8b1d50dc61c7bb00a09b254dbabb2",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-context/evals/trigger_cases.json",
+      "sha256": "f60a6927dfaf95b08e5fa233468dda0bc7a47cf52c90dcc346e05c112f677ac4",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "270ea2fab32b7aac0327ad97177b95ec2b9aa067"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "270ea2fab32b7aac0327ad97177b95ec2b9aa067",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-context/scripts/context.js",
+      "sha256": "206d21f0a1adf530eaa0e1cc8865334c17be1888a0998a5d42880bf31eda6a2e",
+      "git": {
+        "head": {
+          "mode": "100755",
+          "object": "d0f64517e3fce2a487a1f41130c1d24dc125fd96"
+        },
+        "index": [
+          {
+            "mode": "100755",
+            "object": "d0f64517e3fce2a487a1f41130c1d24dc125fd96",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "bdf67faa8e4b1eb119382e91a6658a7d92e71ea34df1c826e4f4c64acaf0d5fe",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8f9701592b081245824a2d42c32731310db383ef"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8f9701592b081245824a2d42c32731310db383ef",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "8636164568200459ecac40c9948d6e7f28859b83d5da3ad2d0f093193ff7ca85",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0e701ce4351b23190df2c5ef480d3ea04dfe39d7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0e701ce4351b23190df2c5ef480d3ea04dfe39d7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "db131cb16d2329d9b502f6d0faee1911b069775367fdbb5da6f2fe413725b62b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

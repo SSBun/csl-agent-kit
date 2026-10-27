@@ -1,0 +1,166 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-finalize-low-risk",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "b728a286da6e3d1801569e74ff3919fc637bdf828bc4e00e71cbc1af8ddf8fea",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "df5e8fb2a4b6c8beab9ff7e2570cab0d8dd37eae7c4bea2514b55ce956547ed7",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "006add8d5dd77ddd94436582b413d865b2b2ba89"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "006add8d5dd77ddd94436582b413d865b2b2ba89",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-evidence.js",
+      "sha256": "089eaa36ebe189a6ce0c4c8d6bf3744376b66b6971a80ce385fc8fa53bbb3c80",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-reports.js",
+      "sha256": "4b212442e347184c859228caa2e87b23db3663bf4f1086337dff4cacc174259b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "sha256": "4f9450fd064633c085ee6db44b7b9b2c505d00deeead4b16c73d3463413a0f1e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2f2875cf6ff4d3a37012c88ccc1d0e1f7842fe04"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2f2875cf6ff4d3a37012c88ccc1d0e1f7842fe04",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "sha256": "ef47e6bf94d67e6e558de47309f43e38ea1f5999a615625e0dbcf80d7fe9b1be",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "925758d873148b2c12ca225535011d3e0573d502"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "925758d873148b2c12ca225535011d3e0573d502",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "sha256": "068ac074dfdb991269441d4d1fceba35394ea0fc7d32c6df8082a586962e8d30",
+      "git": {
+        "head": {
+          "mode": "100755",
+          "object": "747cc9adb4b16c18274aad8e7610fcf0bc70ca08"
+        },
+        "index": [
+          {
+            "mode": "100755",
+            "object": "747cc9adb4b16c18274aad8e7610fcf0bc70ca08",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "311ccae8528652aa2b10172b65210a2cbeb1e3d336f017c34cbdab538b7d3736",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8f9701592b081245824a2d42c32731310db383ef"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8f9701592b081245824a2d42c32731310db383ef",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-finalize-low-risk/evidence/regression-fixed.log",
+      "sha256": "b433d058ca8dac84107d41b0777417e426fe2b3bec039d4cefd409280313a46c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "5fda8a9a566cb1a6b570d6c18cf04e9abf8cf8bbbf18f14135397a350cb82754",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "b77d0462f2453c64d1adac516d6f791b14d3a382"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "b77d0462f2453c64d1adac516d6f791b14d3a382",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "662ea38d81ea2f64cbe8959cad7919221bfd4edd74ab37ada00c388cfb0fae5b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

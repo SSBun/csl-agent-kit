@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
@@ -66,6 +66,7 @@ test("topics stay horizontal, capped at five, with the bound topic first and hig
       mode: "implementation", applies: "FR-1", purpose: "Example",
     });
     const taskFile = path.join(cwd, "tasks/tasks/demo.md");
+    writeFileSync(taskFile, `${readFileSync(taskFile, "utf8")}\n## Plan\n\n- Next action: Check the shared contract\n`);
     const before = readFileSync(taskFile, "utf8");
     const topicBefore = readFileSync(topics.readTopic(cwd, "topic-0").file, "utf8");
     await handlers.get("session_start")({}, ctx);
@@ -75,6 +76,7 @@ test("topics stay horizontal, capped at five, with the bound topic first and hig
     assert.ok(rendered[0].includes(`\x1b]8;;${pathToFileURL(path.join(cwd, "tasks/topics.md")).href}\x1b\\📁 Topics\x1b]8;;\x1b\\`));
     assert.ok(rendered.every(line => !line.includes("│")));
     const text = rendered.join("\n");
+    assert.doesNotMatch(text, /Next action: Check the shared contract/);
     assert.equal((text.match(/主题 \d/g) ?? []).length, 5);
     assert.match(rendered[1], /├─ \x1b\[1m\x1b\[36m/);
     assert.ok(!text.includes("\x1b[7m"));
@@ -91,6 +93,77 @@ test("topics stay horizontal, capped at five, with the bound topic first and hig
     assert.equal(readFileSync(topics.readTopic(cwd, "topic-0").file, "utf8"), topicBefore);
     await commands.get("task-focus").handler("clear", ctx);
     assert.ok(!widget.render(120).join("\n").includes("\x1b[1m"));
+  } finally {
+    await handlers.get("session_shutdown")({}, ctx);
+    resetCapabilitiesCache();
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("task navigation stays compact and leaves recorded recovery details unchanged", { concurrency: false }, async () => {
+  const cwd = mkdtempSync(path.join(os.tmpdir(), "csl-task-recovery-"));
+  const { handlers, tools, commands } = installFakeExtension();
+  let widget;
+  const messages = [];
+  const ctx = {
+    cwd, hasUI: true, mode: "tui", sessionManager: { getBranch: () => [] },
+    ui: {
+      setWidget(_key, content) { widget = typeof content === "function" ? content({ requestRender() {} }) : undefined; },
+      notify(message) { messages.push(message); },
+    },
+  };
+  setCapabilities({ images: null, trueColor: true, hyperlinks: false });
+  try {
+    mkdirSync(path.join(cwd, "tasks/tasks"), { recursive: true });
+    const records = [
+      ["demo", "进行中", "- Current artifacts: draft.md\n- Next action: Compare draft\n- Required input: Owner\x1b[31m examples\n"],
+      ["blocked", "Blocked", "- Next action: Retry later\n\n## Block\n\n- Reason: Missing examples\n- Unblock when: Examples supplied\n"],
+      ["cancelled", "Cancelled", "- Next action: Resume with owner\n"],
+      ["done", "Completed", "- Next action: Completed hint must hide\n"],
+      ["aborted", "Aborted", "- Next action: Aborted hint must hide\n"],
+    ];
+    const indexFile = path.join(cwd, "tasks/tasks.md");
+    const index = `# Tasks\n\n${records.map(([id, status]) => `- [${id}](tasks/${id}.md) — ${status}`).join("\n")}\n- [Linked](tasks/linked.md) — Pending\n- [Outside](../outside.md) — Pending\n`;
+    writeFileSync(indexFile, index);
+    for (const [id, , notes] of records) writeFileSync(path.join(cwd, `tasks/tasks/${id}.md`), `# ${id}\n\n## Plan\n\n${notes}`);
+    writeFileSync(path.join(cwd, "outside.md"), "# Outside\n\n## Plan\n\n- Next action: Private outside hint\n");
+    symlinkSync(path.join(cwd, "outside.md"), path.join(cwd, "tasks/tasks/linked.md"));
+    const taskFile = path.join(cwd, "tasks/tasks/demo.md"), before = readFileSync(taskFile, "utf8");
+    await handlers.get("session_start")({}, ctx);
+    let output = widget.render(200).join("\n");
+    assert.doesNotMatch(output, /↳|Current artifacts|Next action|Required input|Block reason|Unblock when|hint must hide|Private outside hint/);
+    await tools.get("task_focus").execute("focus", { taskId: "demo" }, undefined, undefined, ctx);
+    output = widget.render(200).join("\n");
+    assert.match(output, /This Session/);
+    assert.match(output, /└─ 🔄 demo/);
+    assert.doesNotMatch(output, /↳|Current artifacts|Next action|Required input|Block reason|Unblock when|Missing examples|Examples supplied|Resume with owner|\x1b/);
+    assert.doesNotMatch(output.split("📁 Workspace")[1], /↳/);
+    for (const width of [0, 1, 2, 3, 8, 20, 80]) assert.ok(widget.render(width).every((line) => visibleWidth(line) <= width), `overflow at ${width}`);
+    await commands.get("tasks").handler("", ctx);
+    assert.doesNotMatch(messages.at(-1), /↳|Current artifacts|Next action|Required input|Block reason|Unblock when|hint must hide|Private outside hint|\x1b/);
+    assert.equal(readFileSync(taskFile, "utf8"), before);
+    assert.equal(readFileSync(indexFile, "utf8"), index);
+    writeFileSync(taskFile, before.replace("Compare draft", "Compare revised draft"));
+    await commands.get("tasks").handler("", ctx);
+    assert.equal(widget.render(200).join("\n"), output);
+    await tools.get("task_focus").execute("blocked", { taskId: "blocked" }, undefined, undefined, ctx);
+    output = widget.render(200).join("\n");
+    assert.match(output, /└─ 🚫 blocked/);
+    assert.doesNotMatch(output, /↳|Next action|Block reason|Unblock when|Missing examples|Examples supplied/);
+    assert.doesNotMatch(output.split("📁 Workspace")[1], /↳/);
+    await tools.get("task_focus").execute("cancelled", { taskId: "cancelled" }, undefined, undefined, ctx);
+    assert.match(widget.render(200).join("\n"), /└─ ⏹️ cancelled/);
+    assert.doesNotMatch(widget.render(200).join("\n"), /↳|Next action|Resume with owner/);
+    await tools.get("task_focus").execute("linked", { taskId: "linked" }, undefined, undefined, ctx);
+    assert.doesNotMatch(widget.render(200).join("\n"), /↳|Private outside hint/);
+    await tools.get("task_focus").execute("done", { taskId: "done" }, undefined, undefined, ctx);
+    assert.match(widget.render(200)[0], /This Session/);
+    assert.match(widget.render(200)[1], /✅ done/);
+    assert.doesNotMatch(widget.render(200).join("\n"), /↳|Completed hint must hide/);
+    await tools.get("task_focus").execute("aborted", { taskId: "aborted" }, undefined, undefined, ctx);
+    assert.doesNotMatch(widget.render(200).join("\n"), /↳|Aborted hint must hide/);
+    await commands.get("task-focus").handler("clear", ctx);
+    assert.doesNotMatch(widget.render(200).join("\n"), /This Session|↳/);
   } finally {
     await handlers.get("session_shutdown")({}, ctx);
     resetCapabilitiesCache();

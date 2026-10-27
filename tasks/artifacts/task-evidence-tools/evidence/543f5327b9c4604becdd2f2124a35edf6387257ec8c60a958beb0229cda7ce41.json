@@ -1,0 +1,216 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-evidence-tools",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "a7321bdd3abd4d810f397930367ced715d8432fdb1bb168922e1aedbe47fb274",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "package.json",
+      "sha256": "7ffda6ded901844c0e1ab3ff2c0d9c0326babdb03fce5dd2f344b4804edfb7fe",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "f7b740aa70fef7895a6e76f263ff01b4de5e9516"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "f7b740aa70fef7895a6e76f263ff01b4de5e9516",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "de97555bf658f6b707dd65527a2bd57ba8b8bc357daf2fbf695243fef18cf5f1",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8490121210a18e013407dc055f90bc7d39512c16"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8490121210a18e013407dc055f90bc7d39512c16",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "2e757928851f8791323e56c92c29c59cb9a1a6dfb802cf31b670f8d64f9068e7",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "006add8d5dd77ddd94436582b413d865b2b2ba89"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "006add8d5dd77ddd94436582b413d865b2b2ba89",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-evidence.js",
+      "sha256": "089eaa36ebe189a6ce0c4c8d6bf3744376b66b6971a80ce385fc8fa53bbb3c80",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-reports.js",
+      "sha256": "4b212442e347184c859228caa2e87b23db3663bf4f1086337dff4cacc174259b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "sha256": "5b00dd87e377c7780152c14b441ebb550eeb09b0c5ff32e42fc8adebdba09a75",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "925758d873148b2c12ca225535011d3e0573d502"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "925758d873148b2c12ca225535011d3e0573d502",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "sha256": "7302a62a0ddd502e3f600f2cda994864be88c3a9d8b4fa1285bdca9cca7d842c",
+      "git": {
+        "head": {
+          "mode": "100755",
+          "object": "747cc9adb4b16c18274aad8e7610fcf0bc70ca08"
+        },
+        "index": [
+          {
+            "mode": "100755",
+            "object": "747cc9adb4b16c18274aad8e7610fcf0bc70ca08",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "cb94e923d79ceb3b59391fc19125fafb0cf60d81cb3c1ab25d8a1fdc572930ab",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a0271fde28a021f6bddca8b525a61f0e2fc7a67a"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a0271fde28a021f6bddca8b525a61f0e2fc7a67a",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "bdf67faa8e4b1eb119382e91a6658a7d92e71ea34df1c826e4f4c64acaf0d5fe",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8f9701592b081245824a2d42c32731310db383ef"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8f9701592b081245824a2d42c32731310db383ef",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-evidence-tools/evidence/core-fixed.log",
+      "sha256": "73ba4b860118528b6867ac1e0c076dc7a778ad1d80aca6be25a0b2bff12ba7fd",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-evidence-tools/evidence/regression-focused.log",
+      "sha256": "656a641eb764d77acd75caa0c0bda4cde01f08cf4055fd8938fbe43b0f144756",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "75811868782616d1bf1f7b9f7f1a29db6cb57b5aaa353631a0d0d7772f5fe6e2",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "b77d0462f2453c64d1adac516d6f791b14d3a382"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "b77d0462f2453c64d1adac516d6f791b14d3a382",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-evidence.test.mjs",
+      "sha256": "ea3569270d6b5cddd41698df1a9219effb91d1a94c62840f5f28ffdd8a03e733",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "db131cb16d2329d9b502f6d0faee1911b069775367fdbb5da6f2fe413725b62b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

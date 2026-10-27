@@ -1,0 +1,86 @@
+[
+  {
+    "package": "evals/skills/task-target-alignment-eval",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/evals/skills/task-target-alignment-eval\",\n      \"name\": \"task-target-alignment-eval\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 1559.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 1559,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 57\n        },\n        \"routing\": {\n          \"configured\": false,\n          \"cases\": 0,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/dev/adversarial-review",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/dev/adversarial-review\",\n      \"name\": \"adversarial-review\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 1345.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 1345,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 62\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 28,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/domain/yunxiao",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"pass\",\n  \"summary\": {\n    \"pass\": 1,\n    \"warning\": 0,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/domain/yunxiao\",\n      \"name\": \"yunxiao\",\n      \"status\": \"pass\",\n      \"failures\": [],\n      \"warnings\": [],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 999,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 67\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 26,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/agent-hooks",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks\",\n      \"name\": \"agent-hooks\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 1621.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 1621,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 63\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 11,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/agent-sops",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/agent-sops\",\n      \"name\": \"agent-sops\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 2155.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 2155,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 140\n        },\n        \"routing\": {\n          \"configured\": false,\n          \"cases\": 0,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task\",\n      \"name\": \"task\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 10180.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 10180,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 256\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 20,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-context",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-context\",\n      \"name\": \"task-context\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 5875.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 5875,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 264\n        },\n        \"routing\": {\n          \"configured\": false,\n          \"cases\": 23,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-lessons",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-lessons\",\n      \"name\": \"task-lessons\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 2511.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 2511,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 141\n        },\n        \"routing\": {\n          \"configured\": false,\n          \"cases\": 15,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-maintenance",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-maintenance\",\n      \"name\": \"task-maintenance\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 5302.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 5302,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 233\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 18,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-mode",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-mode\",\n      \"name\": \"task-mode\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 1319.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 1319,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 34\n        },\n        \"routing\": {\n          \"configured\": false,\n          \"cases\": 12,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-plan",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-plan\",\n      \"name\": \"task-plan\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 2004.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 2004,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 49\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 13,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-queue",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-queue\",\n      \"name\": \"task-queue\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 2538.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 2538,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 61\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 12,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/task-review",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/task-review\",\n      \"name\": \"task-review\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 2083.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 2083,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 65\n        },\n        \"routing\": {\n          \"configured\": true,\n          \"cases\": 28,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  },
+  {
+    "package": "skills/meta/topic",
+    "exitCode": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"status\": \"warning\",\n  \"summary\": {\n    \"pass\": 0,\n    \"warning\": 1,\n    \"failure\": 0\n  },\n  \"packages\": [\n    {\n      \"path\": \"/Users/caishilin/Desktop/personal/skills/skills/meta/topic\",\n      \"name\": \"topic\",\n      \"status\": \"warning\",\n      \"failures\": [],\n      \"warnings\": [\n        {\n          \"code\": \"context-budget\",\n          \"message\": \"Estimated initial-load tokens exceed the 1000-token budget: 2204.\"\n        }\n      ],\n      \"stats\": {\n        \"context\": {\n          \"estimatedInitialLoadTokens\": 2204,\n          \"initialTokenLimit\": 1000,\n          \"skillLines\": 58\n        },\n        \"routing\": {\n          \"configured\": false,\n          \"cases\": 13,\n          \"misfires\": 0\n        }\n      }\n    }\n  ]\n}\n",
+    "stderr": ""
+  }
+]

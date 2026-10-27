@@ -1,4 +1,4 @@
 interface:
   display_name: "Task Context"
   short_description: "Load, establish, and maintain workspace context"
-  default_prompt: "Use $task-context to ensure a standard Project Core, retrieve task-relevant Context Packs, and maintain changed durable context."
+  default_prompt: "Use $task-context to establish a source-backed Project Core, fill task-relevant coverage gaps after alignment, retrieve sufficient Context Packs, and maintain all affected durable facts."

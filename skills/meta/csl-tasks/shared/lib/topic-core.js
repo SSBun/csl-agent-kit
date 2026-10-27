@@ -80,7 +80,10 @@ function withLocks(workspaces, action) {
     }
     return action();
   } finally {
-    for (const lock of locks.reverse()) fs.rmSync(lock, { recursive: true, force: true });
+    for (const lock of locks.reverse()) {
+      try { fs.rmSync(lock, { recursive: true, force: true }); }
+      catch (error) { process.emitWarning(`Lock cleanup failed: ${lock}: ${error.message}; inspect the operation result and lock owner before retrying`); }
+    }
   }
 }
 

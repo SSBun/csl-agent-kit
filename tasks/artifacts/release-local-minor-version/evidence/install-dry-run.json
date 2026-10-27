@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "target": "codex-plugin",
+      "ok": true,
+      "changes": [
+        {
+          "action": "command",
+          "command": "codex plugin remove csl-agent-kit@csl-agent-market --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin remove csl@CSL --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin remove csl@csl --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin marketplace remove csl-agent-market --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin marketplace remove CSL --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin marketplace remove csl --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin marketplace add /Users/caishilin/Desktop/personal/skills --json",
+          "dryRun": true
+        },
+        {
+          "action": "command",
+          "command": "codex plugin add csl-agent-kit@csl-agent-market --json",
+          "dryRun": true
+        }
+      ]
+    }
+  ]
+}

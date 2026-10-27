@@ -1,5 +1,37 @@
 # 任务索引
 
+- [提交全部本地改动并发布新的 minor 版本](tasks/release-local-minor-version.md) — In Progress (2026-10-27 19:21)
+
+- [同步委派契约的两处测试断言](tasks/fix-contract-delegation-assertions.md) — Completed (2026-10-27 14:33)
+
+- [评估 Codex TUI 插件任务面板可行性](tasks/assess-codex-tui-task-panel.md) — Completed (2026-10-23 15:47)
+
+- [精简任务面板为标题状态与进度](tasks/compact-task-panel.md) — Completed (2026-10-23 15:20)
+
+- [仅在 This Session 展示任务处理详情](tasks/session-only-task-details.md) — Completed (2026-10-23 15:03)
+
+- [Skip Target checkpoints for exploration tasks](tasks/exploration-without-target-checkpoint.md) — Blocked (2026-10-23 14:41)
+
+- [分析 Task Target 确认等级与优化空间](tasks/analyze-target-confirmation-levels.md) — Completed (2026-10-22 20:57)
+
+- [优化 Context 新项目建档、检索与更新设计](tasks/optimize-context-lifecycle.md) — Blocked (2026-10-22 20:17)
+
+- [精简 Task 常驻契约重复细节](tasks/task-contract-dedup.md) — Completed (2026-10-22 21:05)
+
+- [提前核对 Task 验证与审查能力](tasks/task-capability-preflight.md) — Completed (2026-10-22 20:56)
+
+- [展示 Task 恢复动作与阻塞条件](tasks/task-recovery-navigation.md) — Completed (2026-10-22 20:53)
+
+- [合并低风险 Task 收尾操作](tasks/task-finalize-low-risk.md) — Completed (2026-10-22 20:46)
+
+- [自动校验 Task 快照与审查报告](tasks/task-evidence-tools.md) — Completed (2026-10-22 20:23)
+
+- [完善 Task 工作流的执行效率与恢复能力](tasks/optimize-task-workflow.md) — Completed (2026-10-22 21:06)
+
+- [分析 Task 工作流的优化空间](tasks/analyze-task-workflow-optimization.md) — Completed (2026-10-22 19:46)
+
+- [按功能拆分已推送的插件提交](tasks/split-language-tutor-commits.md) — Completed (2026-10-21 18:14)
+
 - [修复本地检查问题并分组提交全部改动](tasks/fix-local-review-and-commit.md) — Completed (2026-10-21 11:27)
 
 - [检查当前全部未提交改动](tasks/inspect-local-changes.md) — In Progress (2026-10-21 11:15)

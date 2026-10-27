@@ -38,13 +38,13 @@
     },
     {
       "id": "existing-nonstandard-context",
-      "event": "An existing tasks/context.md has no valid Project Core.",
-      "expected_action": "RewriteThenLoadCore"
+      "event": "An existing Context has a locally repairable Core format error and unrelated valid Packs.",
+      "expected_action": "RepairCorePreservePacksThenLoad"
     },
     {
-      "id": "existing-context-rewrite-failed",
-      "event": "Existing Context Rewrite lacks authoritative evidence, finds a source conflict, or fails validation.",
-      "expected_action": "RestoreAndDisclose"
+      "id": "existing-context-repair-failed",
+      "event": "Core repair cannot reliably isolate the damaged content or establish authoritative facts.",
+      "expected_action": "PreserveAndDisclose"
     },
     {
       "id": "missing-context",
@@ -60,6 +60,71 @@
       "id": "duplicate-relevant-id",
       "event": "A relevant Context Pack ID is duplicated.",
       "expected_action": "DoNotApply"
+    },
+    {
+      "id": "aligned-core-only-project",
+      "event": "After Task Target alignment, a Core-only project lacks the component model needed for the concrete task.",
+      "expected_action": "CoverageThenSeedPacks"
+    },
+    {
+      "id": "small-project-core-sufficient",
+      "event": "Bounded coverage investigation confirms that Core already expresses every relevant stable boundary of a small project.",
+      "expected_action": "KeepCoreWithoutFillerPacks"
+    },
+    {
+      "id": "alias-or-empty-query",
+      "event": "The first query has no plausible match, but task-direct sources reveal a domain alias and its component.",
+      "expected_action": "ExploreThenRequery"
+    },
+    {
+      "id": "task-boundary-expanded",
+      "event": "Task scope or a newly discovered dependency crosses a boundary absent from the current fingerprint.",
+      "expected_action": "RequeryRelevantPacks"
+    },
+    {
+      "id": "more-than-three-needed",
+      "event": "The initial three Packs do not cover the task verification boundary owned by a fourth component.",
+      "expected_action": "RetrieveUntilCoverageSufficient"
+    },
+    {
+      "id": "authority-unavailable-or-conflicting",
+      "event": "A required conclusion has unavailable or conflicting Authority while other Pack claims remain supported.",
+      "expected_action": "SuspendAffectedClaimsAndExplore"
+    },
+    {
+      "id": "unselected-pack-affected",
+      "event": "An owning-task change affects the Authority or a confirmed dependency of a Pack not selected initially.",
+      "expected_action": "ScanImpactThenMaintain"
+    },
+    {
+      "id": "new-confirmed-facts",
+      "event": "Current work confirms a new stable decision-changing project fact with no matching existing Pack.",
+      "expected_action": "AdmitNewFactsThenMaintain"
+    },
+    {
+      "id": "source-renamed",
+      "event": "An authoritative source moves and current evidence confirms its replacement and unchanged supported facts.",
+      "expected_action": "UpdateAffectedReferencesThenValidate"
+    },
+    {
+      "id": "stable-id-has-live-consumers",
+      "event": "Deleting an obsolete Pack would leave active consumers of its stable ID unresolved.",
+      "expected_action": "DeferIdDeletion"
+    },
+    {
+      "id": "unindexed-top-level-content",
+      "event": "The Context contains a nonstandard top-level section outside Core and CTX headings.",
+      "expected_action": "WarnAndPreserveUnindexedContent"
+    },
+    {
+      "id": "read-only-scope-new-fact",
+      "event": "A read-only investigation confirms a reusable fact, but writing Context is excluded by the current task scope.",
+      "expected_action": "ReportFactWithoutContextWrite"
+    },
+    {
+      "id": "no-durable-change",
+      "event": "Work changes only task progress or presentation and confirms no new durable project fact.",
+      "expected_action": "NoOp"
     }
   ]
 }

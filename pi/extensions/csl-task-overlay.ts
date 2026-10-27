@@ -340,7 +340,7 @@ class TaskWidget extends Container {
 	}
 
 	render(width: number): string[] {
-		if (this.topicRows.length === 0) return super.render(width);
+		if (this.topicRows.length === 0) return width > 2 ? super.render(width).map((line) => truncateToWidth(line, width, "")) : [""];
 		const topicLines = renderTopicLines(this.topicRows, getCapabilities().hyperlinks, this.theme, this.cwd);
 		// No vertical breakpoint: even tiny terminals keep separate column budgets.
 		const gap = width >= 3 ? "   " : "";

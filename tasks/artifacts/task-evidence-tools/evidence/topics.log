@@ -1,0 +1,238 @@
+TAP version 13
+# Subtest: new Topics start Active and accept implementation without activation
+ok 1 - new Topics start Active and accept implementation without activation
+  ---
+  duration_ms: 15.079542
+  type: 'test'
+  ...
+# Subtest: legacy Draft is unchanged by reads and converts only through an explicit versioned command
+ok 2 - legacy Draft is unchanged by reads and converts only through an explicit versioned command
+  ---
+  duration_ms: 40.542292
+  type: 'test'
+  ...
+# Subtest: standalone tasks do not create Topic storage
+ok 3 - standalone tasks do not create Topic storage
+  ---
+  duration_ms: 11.147125
+  type: 'test'
+  ...
+# Subtest: persistent Topic has immutable spec revisions and a separate index
+ok 4 - persistent Topic has immutable spec revisions and a separate index
+  ---
+  duration_ms: 20.185042
+  type: 'test'
+  ...
+# Subtest: changed external specification blocks assessment and terminal gates without editing task
+ok 5 - changed external specification blocks assessment and terminal gates without editing task
+  ---
+  duration_ms: 21.789166
+  type: 'test'
+  ...
+# Subtest: adoption preserves Required review and exits In Review
+ok 6 - adoption preserves Required review and exits In Review
+  ---
+  duration_ms: 18.039334
+  type: 'test'
+  ...
+# Subtest: legacy Draft maintenance can finish, while implementation requires explicit conversion
+ok 7 - legacy Draft maintenance can finish, while implementation requires explicit conversion
+  ---
+  duration_ms: 16.082792
+  type: 'test'
+  ...
+# Subtest: archive blocks active members and preserves completed historical evidence
+ok 8 - archive blocks active members and preserves completed historical evidence
+  ---
+  duration_ms: 18.754708
+  type: 'test'
+  ...
+# Subtest: archive maintenance owner can finish after archiving its own Topic
+ok 9 - archive maintenance owner can finish after archiving its own Topic
+  ---
+  duration_ms: 18.077041
+  type: 'test'
+  ...
+# Subtest: stale association cannot adopt a new revision without impact evidence
+ok 10 - stale association cannot adopt a new revision without impact evidence
+  ---
+  duration_ms: 8.048167
+  type: 'test'
+  ...
+# Subtest: duplicate binding, stale writes, missing snapshots and unsafe paths fail closed
+ok 11 - duplicate binding, stale writes, missing snapshots and unsafe paths fail closed
+  ---
+  duration_ms: 6.588917
+  type: 'test'
+  ...
+# Subtest: pinned dependencies are rechecked even when the Topic text is unchanged
+ok 12 - pinned dependencies are rechecked even when the Topic text is unchanged
+  ---
+  duration_ms: 9.10125
+  type: 'test'
+  ...
+# Subtest: explicit repair follows task authority and index rebuild does not alter specs
+ok 13 - explicit repair follows task authority and index rebuild does not alter specs
+  ---
+  duration_ms: 9.071875
+  type: 'test'
+  ...
+# Subtest: cross-repository binding requires permission, exact mapping and pinned origin identity
+ok 14 - cross-repository binding requires permission, exact mapping and pinned origin identity
+  ---
+  duration_ms: 364.598292
+  type: 'test'
+  ...
+# Subtest: failed detach and rollback retain a durable terminal blocker until exact repair
+ok 15 - failed detach and rollback retain a durable terminal blocker until exact repair
+  ---
+  duration_ms: 10.450958
+  type: 'test'
+  ...
+# Subtest: repair reconciles the task index after an In Review detach and rollback failure
+ok 16 - repair reconciles the task index after an In Review detach and rollback failure
+  ---
+  duration_ms: 16.149
+  type: 'test'
+  ...
+# Subtest: successful rollback also requires explicit verification and pending repair
+ok 17 - successful rollback also requires explicit verification and pending repair
+  ---
+  duration_ms: 10.100542
+  type: 'test'
+  ...
+# Subtest: stale specification allows failure evidence and cancellation without adopting
+ok 18 - stale specification allows failure evidence and cancellation without adopting
+  ---
+  duration_ms: 15.715708
+  type: 'test'
+  ...
+# Subtest: malformed candidate Markdown is rejected before Topic, index or snapshot writes
+ok 19 - malformed candidate Markdown is rejected before Topic, index or snapshot writes
+  ---
+  duration_ms: 3.840833
+  type: 'test'
+  ...
+# Subtest: concurrent member additions reject a stale writer instead of losing a backlink
+ok 20 - concurrent member additions reject a stale writer instead of losing a backlink
+  ---
+  duration_ms: 48.249417
+  type: 'test'
+  ...
+# Subtest: new Topics provide a shared resources directory and clickable classified index
+ok 21 - new Topics provide a shared resources directory and clickable classified index
+  ---
+  duration_ms: 4.730458
+  type: 'test'
+  ...
+# Subtest: reference metadata and content changes do not stale a bound task
+ok 22 - reference metadata and content changes do not stale a bound task
+  ---
+  duration_ms: 11.442625
+  type: 'test'
+  ...
+# Subtest: normative resource changes use the existing revision and terminal gates
+ok 23 - normative resource changes use the existing revision and terminal gates
+  ---
+  duration_ms: 14.3165
+  type: 'test'
+  ...
+# Subtest: resource classification and removal change the normative projection only when applicable
+ok 24 - resource classification and removal change the normative projection only when applicable
+  ---
+  duration_ms: 5.832375
+  type: 'test'
+  ...
+# Subtest: legacy Topics keep their shape and digest until explicit resource initialization
+ok 25 - legacy Topics keep their shape and digest until explicit resource initialization
+  ---
+  duration_ms: 3.685375
+  type: 'test'
+  ...
+# Subtest: resource registration rejects unsafe sources, duplicates, stale versions and archived writes
+ok 26 - resource registration rejects unsafe sources, duplicates, stale versions and archived writes
+  ---
+  duration_ms: 10.253125
+  type: 'test'
+  ...
+# Subtest: the same normative source cannot acquire conflicting resource and dependency pins
+ok 27 - the same normative source cannot acquire conflicting resource and dependency pins
+  ---
+  duration_ms: 3.148417
+  type: 'test'
+  ...
+# Subtest: normative source deduplication uses the same separator handling as file reads
+ok 28 - normative source deduplication uses the same separator handling as file reads
+  ---
+  duration_ms: 3.148375
+  type: 'test'
+  ...
+# Subtest: resource CLI updates expose the index and directory without copying source content
+ok 29 - resource CLI updates expose the index and directory without copying source content
+  ---
+  duration_ms: 35.482458
+  type: 'test'
+  ...
+# Subtest: new Topic Tasks tables link formal members and history without reopening completed tasks
+ok 30 - new Topic Tasks tables link formal members and history without reopening completed tasks
+  ---
+  duration_ms: 16.487916
+  type: 'test'
+  ...
+# Subtest: history does not block archive or satisfy a formal backlink
+ok 31 - history does not block archive or satisfy a formal backlink
+  ---
+  duration_ms: 15.426625
+  type: 'test'
+  ...
+# Subtest: repair preserves genuine history and history removal never detaches a member
+ok 32 - repair preserves genuine history and history removal never detaches a member
+  ---
+  duration_ms: 9.626666
+  type: 'test'
+  ...
+# Subtest: explicit formatting converts legacy JSON Tasks without changing task evidence or revisions
+ok 33 - explicit formatting converts legacy JSON Tasks without changing task evidence or revisions
+  ---
+  duration_ms: 8.099417
+  type: 'test'
+  ...
+# Subtest: reference files and folders expose openable encoded links for Chinese and spaces
+ok 34 - reference files and folders expose openable encoded links for Chinese and spaces
+  ---
+  duration_ms: 4.764125
+  type: 'test'
+  ...
+# Subtest: task records cannot be newly registered as Resources while reports remain eligible
+ok 35 - task records cannot be newly registered as Resources while reports remain eligible
+  ---
+  duration_ms: 6.471458
+  type: 'test'
+  ...
+# Subtest: legacy task Resource links remain readable but must be explicitly removed on update
+ok 36 - legacy task Resource links remain readable but must be explicitly removed on update
+  ---
+  duration_ms: 7.259125
+  type: 'test'
+  ...
+# Subtest: historical task CLI and show links do not mutate the referenced task
+ok 37 - historical task CLI and show links do not mutate the referenced task
+  ---
+  duration_ms: 38.546416
+  type: 'test'
+  ...
+# Subtest: new CLI entry, spec package and manifest expose Topic without adding a task kind
+ok 38 - new CLI entry, spec package and manifest expose Topic without adding a task kind
+  ---
+  duration_ms: 25.608
+  type: 'test'
+  ...
+1..38
+# tests 38
+# suites 0
+# pass 38
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 949.695542

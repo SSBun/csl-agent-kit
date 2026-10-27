@@ -4,6 +4,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
 const topics = require("./topic-core.js");
+const evidence = require("./task-evidence.js");
+const reports = require("./task-reports.js");
 const readVersions = new Map();
 
 const STATE_DISPLAY = {
@@ -321,6 +323,27 @@ function resultsOf(text) {
   return map;
 }
 
+function recoveryOf(text) {
+  const recovery = {};
+  for (const [name, fields] of [
+    ["Plan", { "Current artifacts": "currentArtifacts", "Next action": "nextAction", "Required input": "requiredInput" }],
+    ["Block", { Reason: "blockReason", "Unblock when": "unblockWhen" }],
+  ]) {
+    const found = sectionsOf(text, name);
+    if (found.length !== 1) continue;
+    const seen = new Set();
+    for (const { columns, quoteDepth, line } of visibleMarkdownLines(found[0].lines.slice(found[0].start + 1, found[0].end))) {
+      const match = columns === 0 && quoteDepth === 0 && line.match(/^[-*+] (.+?):[ \t]*(.*)$/);
+      if (!match || !Object.hasOwn(fields, match[1])) continue;
+      const key = fields[match[1]];
+      if (seen.has(key)) { delete recovery[key]; continue; }
+      seen.add(key);
+      if (match[2].trim()) recovery[key] = match[2].trim();
+    }
+  }
+  return recovery;
+}
+
 function invalidateReviewGate(text, evidence) {
   const assessment = section(text, "Review Assessment");
   if (assessment) {
@@ -395,9 +418,7 @@ function requireCurrentReviewAssessment(task) {
   return assessment;
 }
 
-function recordReviewAssessment(workspace, id, level, options = {}) {
-  const task = readTask(workspace, id);
-  topics.fresh(workspace, task);
+function reviewAssessmentText(task, level, options) {
   if (task.status.state !== "in_progress") throw new Error("assess-review requires In Progress");
   const value = String(level || "").toUpperCase();
   if (!["R0", "R1", "R2"].includes(value)) throw new Error(`invalid review level: ${level}`);
@@ -416,7 +437,54 @@ function recordReviewAssessment(workspace, id, level, options = {}) {
     `- Schema: ${REVIEW_ASSESSMENT_SCHEMA}`, `- Level: ${value}`, "- State: Current",
     ...fields, `- Task fingerprint: ${reviewTaskFingerprint(text)}`,
   ]);
+  return text;
+}
+
+function recordReviewAssessment(workspace, id, level, options = {}) {
+  const task = readTask(workspace, id);
+  topics.fresh(workspace, task);
+  const text = reviewAssessmentText(task, level, options);
+  if (evidence.isSnapshotReference(options.snapshot)) evidence.verifySnapshot(workspace, id, options.snapshot);
   return writeTaskAndIndex(workspace, task, text);
+}
+
+function checkEvidence(workspace, id, { includeLegacy = false } = {}) {
+  const task = typeof id === "string" ? readTask(workspace, id) : id;
+  const snapshot = task.reviewAssessment?.snapshot;
+  const managed = evidence.isSnapshotReference(snapshot);
+  if (managed) evidence.verifySnapshot(workspace, task.id, snapshot);
+  const reportCheck = reports.verifyReports(workspace, task, {
+    includeLegacy,
+    requirePassed: (managed || reports.reportsOf(task).managed)
+      && (task.review?.[1] === "Passed" || (task.review?.[1] === "Approved" && task.reviewAssessment?.level === "R2")),
+  });
+  return { snapshot: managed ? "verified" : "owner-attested", reports: reportCheck, semanticReview: "owner-attested" };
+}
+
+function recordSnapshot(workspace, id, files) {
+  return topics.withLocks([workspace], () => {
+    const task = readTask(workspace, id);
+    if (!["in_progress", "in_review"].includes(task.status.state)) throw new Error("snapshot requires an active task");
+    const snapshot = evidence.prepareSnapshot(workspace, id, files);
+    const changes = fs.existsSync(snapshot.file) ? [] : [[snapshot.file, snapshot.text]];
+    writeLocked(workspace, [...changes, [task.file, task.text]]);
+    return { reference: snapshot.reference, files: snapshot.manifest.files.length };
+  });
+}
+
+function recordReviewReport(workspace, id, options) {
+  return topics.withLocks([workspace], () => {
+    const task = readTask(workspace, id);
+    if (task.status.state !== "in_review" || task.review?.[1] !== "Required") throw new Error("review-report requires In Review with Required review");
+    const assessment = requireCurrentReviewAssessment(task);
+    const report = reports.prepareReport(workspace, task, options);
+    if (report.row.snapshot !== assessment.snapshot) throw new Error("report snapshot must match the current assessment");
+    if (evidence.isSnapshotReference(report.row.snapshot)) evidence.verifySnapshot(workspace, id, report.row.snapshot, { current: false });
+    const updated = parseTask(id, report.taskText, task.file);
+    const changes = report.existing ? [] : [[report.file, report.text]];
+    writeLocked(workspace, [...changes, [task.file, report.taskText], [indexPath(workspace), updatedIndex(workspace, updated)]]);
+    return { round: report.row.number, file: report.relative, sha256: report.row.hash, snapshot: report.row.snapshot, outcome: report.row.outcome };
+  });
 }
 
 function reviewLedgerOf(text) {
@@ -530,6 +598,7 @@ function parseTask(id, text, file) {
     children: childrenOf(text),
     targets: targetsOf(text),
     results: resultsOf(text),
+    recovery: recoveryOf(text),
     review: text.match(REVIEW_PATTERN),
     reviewAssessment: reviewAssessmentOf(text),
     reviewLedger: reviewLedgerOf(text),
@@ -563,11 +632,11 @@ function withArtifactsLink(workspace, id, text) {
   return withoutLink.replace(STATUS_PATTERN, (status) => `${status}\nArtifacts: [Artifacts](../artifacts/${id}/)`);
 }
 
-function writeMany(workspace, changes) {
-  return topics.withLocks([workspace], () => writeLocked(workspace, changes));
+function writeMany(workspace, changes, options) {
+  return topics.withLocks([workspace], () => writeLocked(workspace, changes, options));
 }
 
-function writeLocked(workspace, changes) {
+function writeLocked(workspace, changes, { terminal = false } = {}) {
   for (const [file, text] of changes) {
     topics.safePath(workspace, path.relative(fs.realpathSync(path.resolve(workspace)), file));
     if (readVersions.has(file) && fs.readFileSync(file, "utf8") !== readVersions.get(file)) throw new Error(`concurrent change: ${file}`);
@@ -578,27 +647,67 @@ function writeLocked(workspace, changes) {
         || (task.verification?.[1] === "Passed" && task.verification[0] !== before?.verification?.[0])
         || (["Skipped", "Passed", "Approved"].includes(task.review?.[1]) && task.review[0] !== before?.review?.[0]);
       if (advances) topics.fresh(workspace, task);
+      if (terminal) checkEvidence(workspace, task);
+      if (task.reviewAssessment?.state === "Current" && task.reviewAssessment.snapshot !== before?.reviewAssessment?.snapshot
+        && evidence.isSnapshotReference(task.reviewAssessment.snapshot)) evidence.verifySnapshot(workspace, task.id, task.reviewAssessment.snapshot);
     }
   }
-  const originals = new Map();
+  const prepared = [];
+  let failure;
+  const recoveryFailures = [];
   try {
     for (const [file, text] of changes) {
-      const output = path.dirname(file) === tasksDir(workspace)
+      const task = path.dirname(file) === tasksDir(workspace);
+      const output = task
         ? renderMetadata(withArtifactsLink(workspace, path.basename(file, ".md"), text))
         : text;
-      originals.set(file, fs.existsSync(file) ? fs.readFileSync(file, "utf8") : undefined);
-      atomicWrite(file, output);
-      readVersions.set(file, output);
+      const before = fs.existsSync(file) ? fs.readFileSync(file) : undefined;
+      const suffix = `${process.pid}-${Math.random().toString(16).slice(2)}`;
+      const item = { file, output, task, before, temporary: `${file}.tmp-${suffix}`, backup: before === undefined ? undefined : `${file}.bak-${suffix}` };
+      prepared.push(item);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      if (item.backup) fs.copyFileSync(file, item.backup, fs.constants.COPYFILE_EXCL);
+      fs.writeFileSync(item.temporary, output, { encoding: "utf8", flag: "wx" });
     }
+    for (const item of prepared) {
+      topics.safePath(workspace, path.relative(fs.realpathSync(path.resolve(workspace)), item.file));
+      const current = fs.existsSync(item.file) ? fs.readFileSync(item.file) : undefined;
+      if ((item.before === undefined ? current !== undefined : !current?.equals(item.before))
+        || (readVersions.has(item.file) && current?.toString("utf8") !== readVersions.get(item.file))) throw new Error(`concurrent change: ${item.file}`);
+    }
+    // Prepare every allocation first; a terminal task is published only after its index.
+    const ordered = terminal ? [...prepared].sort((a, b) => Number(a.task) - Number(b.task)) : prepared;
+    for (const item of ordered) {
+      fs.renameSync(item.temporary, item.file);
+      item.written = true;
+    }
+    for (const item of prepared) readVersions.set(item.file, item.output);
   } catch (error) {
-    for (const [file, original] of originals) {
-      if (original === undefined) fs.rmSync(file, { force: true });
-      else atomicWrite(file, original);
-      if (original === undefined) readVersions.delete(file);
-      else readVersions.set(file, original);
+    failure = error;
+    for (const item of prepared.filter((entry) => entry.written).reverse()) {
+      try {
+        if (item.backup) fs.renameSync(item.backup, item.file);
+        else fs.rmSync(item.file, { force: true });
+        if (item.before === undefined) readVersions.delete(item.file);
+        else readVersions.set(item.file, item.before.toString("utf8"));
+      } catch (restoreError) {
+        item.keepBackup = true;
+        readVersions.delete(item.file);
+        recoveryFailures.push(`${item.file}: ${restoreError.message}; ${item.backup ? `restore original from ${item.backup}` : "remove the newly created file"}`);
+      }
     }
-    throw error;
   }
+  const cleanupFailures = [];
+  for (const item of prepared) {
+    for (const file of [item.temporary, ...(!item.keepBackup && item.backup ? [item.backup] : [])]) {
+      try { fs.rmSync(file, { force: true }); } catch (error) { cleanupFailures.push(`${file}: ${error.message}`); }
+    }
+  }
+  if (failure) {
+    if (recoveryFailures.length || cleanupFailures.length) throw new Error(`${failure.message}${recoveryFailures.length ? `; rollback incomplete: ${recoveryFailures.join("; ")}` : ""}${cleanupFailures.length ? `; cleanup incomplete: ${cleanupFailures.join("; ")}` : ""}`, { cause: failure });
+    throw failure;
+  }
+  if (cleanupFailures.length) process.emitWarning(`Task write committed; cleanup incomplete: ${cleanupFailures.join("; ")}`);
 }
 
 function indexEntry(task, timestamp = task.status.timestamp) {
@@ -674,10 +783,10 @@ function replaceStatus(text, state, timestamp = localTimestamp()) {
   return text.replace(STATUS_PATTERN, `Status: ${STATE_DISPLAY[state]} (${timestamp})`);
 }
 
-function writeTaskAndIndex(workspace, task, text) {
+function writeTaskAndIndex(workspace, task, text, options) {
   const parsed = parseTask(task.id, text, task.file);
   const index = updatedIndex(workspace, parsed);
-  writeMany(workspace, [[task.file, text], [indexPath(workspace), index]]);
+  writeMany(workspace, [[task.file, text], [indexPath(workspace), index]], options);
   return readTask(workspace, task.id);
 }
 
@@ -749,8 +858,7 @@ function reopenTask(workspace, id) {
   return readTask(workspace, id);
 }
 
-function recordResult(workspace, id, targetId, evidence) {
-  const task = readTask(workspace, id);
+function resultText(task, targetId, evidence) {
   if (task.status.state === "completed") throw new Error("reopen the task before changing results");
   if (!/^T\d+$/.test(targetId)) throw new Error(`invalid Target ID: ${targetId}`);
   const value = String(evidence || "").trim();
@@ -769,14 +877,17 @@ function recordResult(workspace, id, targetId, evidence) {
   else lines.splice(reviewIndex, 0, result);
   text = replaceSection(text, "Result", lines);
   text = invalidateReviewGate(text, "Result evidence changed after review; rerun the applicable review");
-  text = replaceSection(text, "Verification", undefined);
+  return replaceSection(text, "Verification", undefined);
+}
+
+function recordResult(workspace, id, targetId, evidence) {
+  const task = readTask(workspace, id);
+  const text = resultText(task, targetId, evidence);
   writeMany(workspace, [[task.file, text]]);
   return readTask(workspace, id);
 }
 
-function setReviewGate(workspace, id, decision, evidence, options = {}) {
-  const task = readTask(workspace, id);
-  topics.fresh(workspace, task);
+function reviewGateText(task, decision, evidence, options = {}) {
   if (task.status.state === "completed") throw new Error("reopen the task before changing the review gate");
   const values = { skipped: "Skipped", required: "Required", passed: "Passed", approved: "Approved" };
   const key = String(decision || "").toLowerCase();
@@ -817,20 +928,30 @@ function setReviewGate(workspace, id, decision, evidence, options = {}) {
   lines.push(`- Review gate: ${values[key]} — ${value}`);
   let text = resolveLedger ? replaceSection(task.text, "Review", undefined) : task.text;
   text = replaceSection(text, "Result", lines);
-  text = replaceSection(text, "Verification", undefined);
-  writeMany(workspace, [[task.file, text]]);
+  return replaceSection(text, "Verification", undefined);
+}
+
+function setReviewGate(workspace, id, decision, evidence, options = {}) {
+  const task = readTask(workspace, id);
+  topics.fresh(workspace, task);
+  const text = reviewGateText(task, decision, evidence, options);
+  writeMany(workspace, [[task.file, text]], { terminal: String(decision).toLowerCase() !== "required" });
   return readTask(workspace, id);
+}
+
+function verificationText(task, passed, evidence) {
+  if (task.status.state === "completed") throw new Error("reopen the task before changing verification");
+  const value = String(evidence || "").trim();
+  if (!value || /[\r\n]/.test(value)) throw new Error("verification evidence must be one line");
+  const base = passed ? task.text : invalidateReviewGate(task.text, "Verification failed; refresh self-check and applicable review");
+  return replaceSection(base, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
 }
 
 function recordVerification(workspace, id, passed, evidence) {
   const task = readTask(workspace, id);
   if (passed) topics.fresh(workspace, task);
-  if (task.status.state === "completed") throw new Error("reopen the task before changing verification");
-  const value = String(evidence || "").trim();
-  if (!value || /[\r\n]/.test(value)) throw new Error("verification evidence must be one line");
-  const base = passed ? task.text : invalidateReviewGate(task.text, "Verification failed; refresh self-check and applicable review");
-  const text = replaceSection(base, "Verification", [`- ${passed ? "Passed" : "Failed"}: ${value}`]);
-  writeMany(workspace, [[task.file, text]]);
+  const text = verificationText(task, passed, evidence);
+  writeMany(workspace, [[task.file, text]], { terminal: passed });
   return readTask(workspace, id);
 }
 
@@ -886,8 +1007,7 @@ function nextChild(workspace, parentId) {
   return undefined;
 }
 
-function completeTask(workspace, id) {
-  const task = readTask(workspace, id);
+function requireCompletable(workspace, task) {
   topics.fresh(workspace, task);
   if (!["in_progress", "in_review"].includes(task.status.state)) throw new Error("only active tasks can be completed");
   if (task.targets.length === 0) throw new Error("completion requires at least one Target");
@@ -911,7 +1031,40 @@ function completeTask(workspace, id) {
     const unfinished = task.children.map(({ id: childId }) => readTask(workspace, childId)).find((child) => child.status.state !== "completed");
     if (unfinished) throw new Error(`unfinished child: ${unfinished.id}`);
   }
-  return writeTaskAndIndex(workspace, task, replaceStatus(task.text, "completed"));
+}
+
+function completeTask(workspace, id) {
+  const task = readTask(workspace, id);
+  requireCompletable(workspace, task);
+  return writeTaskAndIndex(workspace, task, replaceStatus(task.text, "completed"), { terminal: true });
+}
+
+function finalizeTask(workspace, id, level, options = {}) {
+  const value = String(level || "").toUpperCase();
+  if (!["R0", "R1"].includes(value)) throw new Error("finalize only accepts R0 or R1");
+  return topics.withLocks([workspace], () => {
+    let task = readTask(workspace, id);
+    if (task.status.state !== "in_progress") throw new Error("finalize requires In Progress");
+    if (!Array.isArray(options.results) || !options.results.length) throw new Error("finalize requires Result evidence for every Target");
+    const results = options.results.map((result) => {
+      const match = typeof result === "string" && !/[\r\n]/.test(result) && result.match(/^(T\d+):[ \t]*(\S.*)$/);
+      if (!match) throw new Error("finalize results must be one-line Tn: observation values");
+      return { id: match[1], evidence: match[2] };
+    });
+    if (new Set(results.map((result) => result.id)).size !== results.length) throw new Error("duplicate finalize Result ID");
+    const missing = task.targets.find((target) => !results.some((result) => result.id === target.id));
+    if (missing) throw new Error(`missing finalize Result evidence: ${missing.id}`);
+    for (const result of results) task = parseTask(id, resultText(task, result.id, result.evidence), task.file);
+    task = parseTask(id, reviewAssessmentText(task, value, options), task.file);
+    if (evidence.isSnapshotReference(options.snapshot)) evidence.verifySnapshot(workspace, id, options.snapshot);
+    task = parseTask(id, reviewGateText(task, "skipped", "See Review Assessment for the recorded exemption"), task.file);
+    task = parseTask(id, verificationText(task, true, options.finalVerification), task.file);
+    requireCompletable(workspace, task);
+    const text = replaceStatus(task.text, "completed");
+    const completed = parseTask(id, text, task.file);
+    writeLocked(workspace, [[task.file, text], [indexPath(workspace), updatedIndex(workspace, completed)]], { terminal: true });
+    return readTask(workspace, id);
+  });
 }
 
 function checkTaskIndex(workspace, idOrPath) {
@@ -994,6 +1147,7 @@ module.exports = {
   cancelTask,
   checkTaskIndex,
   completeTask,
+  finalizeTask,
   createTask,
   indexPath,
   linkChild,
@@ -1001,7 +1155,11 @@ module.exports = {
   localTimestamp,
   nextChild,
   readTask,
+  recoveryOf,
   recordResult,
+  recordSnapshot,
+  recordReviewReport,
+  checkEvidence,
   recordReviewAssessment,
   recordVerification,
   reopenTask,

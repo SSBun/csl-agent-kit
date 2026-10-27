@@ -1,0 +1,74 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "compact-task-panel",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "2de6cef9827b309a07917091436daf5846604676933032ff2882fb6a6d116503",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "pi/extensions/csl-task-overlay.ts",
+      "sha256": "12927bfddd2a8f3ce48a6ba195b797adb323655c530f0d9c72a31b137411603e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "80e03559d8195138d9e8a7e7f48002ad24596256"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "80e03559d8195138d9e8a7e7f48002ad24596256",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "f0fcef69e70d4be9cc0410efcdf71e381c101b1dc85be76df14ae499d5e552a2",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0e701ce4351b23190df2c5ef480d3ea04dfe39d7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0e701ce4351b23190df2c5ef480d3ea04dfe39d7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/pi-task-overlay.test.mjs",
+      "sha256": "3c17eb74b0bbe778b001dbdf61cfc8e126ba9c922559a68f366e1a6f0966c572",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "e019490b9946c4668d0863c9a6061e1229fee357"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "e019490b9946c4668d0863c9a6061e1229fee357",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

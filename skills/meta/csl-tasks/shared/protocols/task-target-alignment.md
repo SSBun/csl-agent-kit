@@ -32,7 +32,19 @@ Switching to `confirm` restores its graded confirmation procedure at the next re
 
 ## Purpose
 
-Task Target gives the user a second look at the Agent's understanding of their goal before substantive work. Authorization self-checking establishes that a candidate is faithful enough to present; it does not establish that the user has checked that understanding. A detailed request, complete authorization coverage, or high model confidence never substitutes for the first non-trivial goal checkpoint.
+Task Target gives the user a second look at the Agent's understanding of their goal before substantive work that requires a checkpoint. Exploration-only work uses the exemption below. Outside that exemption, authorization self-checking establishes that a candidate is faithful enough to present; it does not establish that the user has checked that understanding. A detailed request, complete authorization coverage, or high model confidence never substitutes for the first non-trivial goal checkpoint.
+
+## Exploration Without a Target Checkpoint
+
+In `confirm`, continue authorized exploration without displaying a confirmation block or waiting for a generic Target acceptance. Exploration means the current deliverable is information: source inspection, search, research, analysis, comparison, recommendations, or a plan for later implementation. Canonical task/plan records and an explicitly requested findings report are permitted outputs; product code, operational configuration, and other implementation deliverables remain read-only. Classify the authorized work and candidate commitments, not a task title or the word “explore”. A request to investigate **and fix** is an implementation request and retains its normal checkpoint.
+
+- Activate/focus the owning task as usual and retain its observable Target, scope, evidence and applicable quality gates. Apply the Authorization Ledger and equivalence checks; the exemption removes the generic goal-recheck pause, not scope checks. A brief explanation of the investigation is optional and does not create a checkpoint.
+- Once the candidate is ready and equivalent, the main session uses `continue_exploration` with no L-level. Do not require prior accepted-target evidence. Resume/compaction, in-scope changes to the investigation plan, and optional display of the exploration objective do not create a new confirmation pause. Load relevant Context/Lessons and investigate immediately after selecting this path; selecting it satisfies the workflow's alignment step.
+- Clarify only a user-owned decision that actually blocks useful, correct exploration (L3). Do not ask the user for facts sources can establish. A proposal that adds, omits, weakens or changes a commitment still uses L4; prefer omitting an unnecessary out-of-scope action and completing the requested investigation. An explicit user instruction to pause/check first still uses the applicable hold, including L2 `user_requested`; the exemption never clears an independent safety, host or higher-priority boundary.
+- Before implementation or an external action outside the authorized exploration, stop at that boundary. Obtain an execution request when absent, then apply the normal implementation L1–L4 procedure before implementation research, planning, delegation or edits. Exploration and its task-record writes do not create `accepted_target` evidence. A later request to execute the plan normally requires the first implementation L2 checkpoint; only a recoverable user acceptance of the complete, materially equivalent implementation Target can be reused.
+- A delegated exploration keeps its complete scope packet and uses `continue_delegated` or `return_to_main`, not a child-facing checkpoint. The main Plan may authorize exploration without having been accepted through a generic Target check; the packet does not authorize implementation.
+
+The evaluation input's `workType` (`exploration` or `implementation`) describes the current authorized work, including a plan's read-only phase. It is not an assertion that a candidate is in scope: compare all commitments and messages before allowing `continue_exploration`. Do not persist this classification or confirmation state in task core.
 
 ## Current User Authorization
 
@@ -96,7 +108,7 @@ A Target is ready only when the request supports one concrete, independently acc
 - If a user-owned ambiguity prevents an honest Target, ask one focused question.
 - Once a concrete outcome exists, activate and focus its owning record before further clarification or presentation.
 - Task lifecycle writes required for create, resume, reopen, focus, sync, and check are bootstrap exceptions; they are not execution authorization.
-- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands. The sole additional source-lookup exception is the minimum read-only specification/scope and relevant task references of a Topic explicitly selected by the user or already bound to the owning task, when needed to form an honest Target. Resolve only that exact reference; no repository scan, implementation research, implicit Topic selection or write is authorized by this exception.
+- Before alignment, do not inspect task-direct sources, research implementation facts, plan the solution, decompose a Queue, delegate, edit the requested deliverable, or run unrelated mutating commands. Selecting `continue_exploration` satisfies alignment for its bounded exploration scope, not for later implementation. The sole additional source-lookup exception is the minimum read-only specification/scope and relevant task references of a Topic explicitly selected by the user or already bound to the owning task, when needed to form an honest Target. Resolve only that exact reference; no repository scan, implementation research, implicit Topic selection or write is authorized by this exception.
 - Do not ask the user for implementation facts that can be inspected after alignment.
 
 ## Persistent Topic Boundary
@@ -105,7 +117,7 @@ A Topic carries shared current requirements, not user approval. Reading the same
 
 ## Interaction Owner and Delegated Execution
 
-The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. In `confirm` mode, its first ready non-trivial L2 Target must be displayed for user goal rechecking, and the owner must end the turn and wait before substantive work. In SOLO, use its separate execution path instead of the L0-L4 procedure. An accepted unchanged Target does not receive another checkpoint.
+The session directly handling the user's request is the `interaction owner`. Only that main session may render user-facing L0-L4 interactions or an S1 Safety Confirmation. In `confirm` mode, first apply the exploration exemption; otherwise its first ready non-trivial L2 Target must be displayed for user goal rechecking, and the owner must end the turn and wait before substantive work. In SOLO, use its separate execution path instead of the L0-L4 procedure. An accepted unchanged Target does not receive another checkpoint.
 
 Target acceptance follows the accepted result semantics, not the task-family consumer. Changing from `task-plan` to `task` does not itself create a new Target. When the same canonical plan record is handed off in the same recoverable conversation state, the interaction owner continues without another checkpoint only when the user has explicitly authorized execution and the accepted outcome, Done when conditions, and boundaries remain materially equivalent. Planning-phase acceptance aligns the Target but never authorizes execution; without a later execution request, do not implement. If acceptance evidence cannot be recovered or the execution Target differs, apply the normal L2-L4 procedure.
 
@@ -122,19 +134,19 @@ Do not persist this packet or confirmation state in the canonical task core. A d
 - when the packet is missing or stale, the assignment exceeds the Plan, a user-owned decision is required, or an S1 action boundary is reached, use `return_to_main`, stop, and report the relevant commitment dimensions and evidence to the interaction owner;
 - a child never renders L2, L3, L4, or Safety Confirmation directly.
 
-A material Plan distribution change means adding, removing, or reordering a child, or changing a child's outcome, done conditions, or scope. It returns control to the main session: use L2 when the accepted Target remains equivalent, L3 when a user-owned ambiguity blocks a ready Target, and L4 when authorization changes. Files, functions, algorithms, commands, and verification methods within one unchanged child node are implementation-only and do not trigger realignment.
+A material Plan distribution change means adding, removing, or reordering a child, or changing a child's outcome, done conditions, or scope. It returns control to the main session: in-scope exploration may continue under its exemption; otherwise use L2 when the accepted Target remains equivalent, L3 when a user-owned ambiguity blocks a ready Target, and L4 when authorization changes. Files, functions, algorithms, commands, and verification methods within one unchanged child node are implementation-only and do not trigger realignment.
 
 ## Guard Levels
 
 These levels apply only in `confirm` mode. SOLO bypasses this table and its second-confirmation procedure entirely; use the SOLO execution path above.
 
-The table below applies only to the interaction owner; delegated children use the gate above and do not choose an L0-L4 level.
+The table below applies only to the interaction owner; delegated children use the gate above and do not choose an L0-L4 level. Equivalent exploration without an explicit hold uses `continue_exploration` with no L-level before reaching L1/L2.
 
 | Level | Name | Trigger | User interaction | Exit |
 | --- | --- | --- | --- | --- |
 | L0 | `NO_TASK` | No file mutation and no concrete non-trivial outcome | No Target | Answer or continue conversation |
 | L1 | `TRIVIAL_PASS` | Task exists solely for a trivial deterministic file mutation and Target is materially equivalent | Target display may be omitted | Continue after lifecycle activation |
-| L2 | `VISIBLE_CHECKPOINT` | Ready non-trivial Target; every authorized atom is preserved and no candidate atom is untraceable | Display the complete Target and wait for the user to check the Agent's understanding | Explicit acceptance of the displayed Target or valid unchanged-Target reuse |
+| L2 | `VISIBLE_CHECKPOINT` | Ready non-trivial Target outside the exploration exemption, or an explicit user-requested hold; every authorized atom is preserved and no candidate atom is untraceable | Display the complete Target and wait for the user to check the Agent's understanding | Explicit acceptance of the displayed Target or valid unchanged-Target reuse |
 | L3 | `CLARIFICATION_HOLD` | User-owned ambiguity prevents an honest Target | Ask exactly one focused question; do not present a guessed Target | User answer makes a Target ready |
 | L4 | `TARGET_CHANGE_APPROVAL` | Target is ready but adds, omits, weakens, changes, or cannot rule out a concrete commitment difference | Display Target, name changed dimensions, and wait for approval | Explicit acceptance adds the Target to authorization |
 
@@ -150,9 +162,10 @@ Resolve mode first: if `solo`, use the SOLO execution path and do not enter the 
 4. Form the minimum candidate Target from the Authorization Ledger.
 5. Run both material-equivalence counterfactuals across every commitment atom.
 6. If any relation is `add`, `omit`, `weaken`, `change`, or concrete `unknown`, choose L4.
-7. If every relation is `preserve` and the task exists solely for a trivial deterministic file mutation, choose L1.
-8. Otherwise choose L2 and apply the goal-recheck and acceptance-reuse check below.
-9. Independently compute the Safety Overlay described below.
+7. If every relation is `preserve` and the current work is exploration-only, use `continue_exploration` with no L-level unless an explicit user-requested hold applies. Such a hold uses L2 `user_requested`; graph changes and missing prior acceptance alone do not require an exploration checkpoint.
+8. Otherwise, if every relation is `preserve` and the task exists solely for a trivial deterministic file mutation, choose L1.
+9. Otherwise choose L2 and apply the goal-recheck and acceptance-reuse check below.
+10. Independently compute the Safety Overlay described below, including for exploration continuation.
 
 L2 is valid only when all of these hold:
 
@@ -167,11 +180,11 @@ unresolvedUserDecisions = []
 
 ### L2 Goal Recheck and Acceptance Reuse
 
-Run this only after the whole Target passes material equivalence. Authorization coverage does not establish user goal acceptance.
+Run this only after the whole Target passes material equivalence and the exploration exemption has been checked. Authorization coverage does not establish user goal acceptance.
 
-1. Preserve mandatory holds: a material Plan distribution change uses `plan_graph_change`; unrecoverable acceptance evidence on resume/compaction uses `acceptance_unavailable`; an unfulfilled explicit user instruction to check before proceeding uses `user_requested`. These use `show_checkpoint` even for a previously accepted Target. Returning to the main session and checking the graph are still required. If several holds apply, keep them all active: use `user_requested` when it names items to check, otherwise `plan_graph_change` before `acceptance_unavailable`, and identify the other holds in `reasonCodes`. Satisfying one never clears the others.
+1. Preserve mandatory holds: outside exploration, a material Plan distribution change uses `plan_graph_change` and unrecoverable acceptance evidence on resume/compaction uses `acceptance_unavailable`; an unfulfilled explicit user instruction to check before proceeding uses `user_requested` for either work type. These use `show_checkpoint` even for a previously accepted Target. Exploration's explicit user hold does not activate graph or missing-acceptance holds. Returning to the main session and checking the graph are still required. If several applicable holds exist, keep them all active: use `user_requested` when it names items to check, otherwise `plan_graph_change` before `acceptance_unavailable`, and identify the other holds in `reasonCodes`. Satisfying one never clears the others.
 2. Otherwise use `continue_unchanged` only for a previously displayed Target with recoverable user acceptance, unchanged outcome, Done when conditions and boundaries, and still-applicable object, environment and scope. A pure acceptance reply or implementation-only adjustment does not create a new checkpoint. Check the whole Target and combined effects, not just independent clauses. Do not use this action for an initial or materially revised Target.
-3. Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint: use `show_checkpoint` with `goal_recheck`, display the complete current Target, and ask whether it accurately expresses the user's intended result. End the turn and wait. This includes detailed initial requests, complete explicit user revisions, and Targets made ready by focused clarification. An answer to a local clarification is not acceptance of an undisplayed whole Target.
+3. Every new or materially revised non-trivial equivalent Target owned by the main session outside the exploration exemption must pass one L2 checkpoint: use `show_checkpoint` with `goal_recheck`, display the complete current Target, and ask whether it accurately expresses the user's intended result. End the turn and wait. This includes detailed initial requests, complete explicit user revisions, and Targets made ready by focused clarification. An answer to a local clarification is not acceptance of an undisplayed whole Target; after clarification, equivalent exploration continues through its exemption.
 4. Preserve all inherited constraints in the displayed Target. For a material revision, highlight the revision without reducing the check to authorization for the changed words. A partial acceptance, question, hesitation or unrelated reply does not settle the whole goal check.
 5. Keep L3 for user-owned ambiguity, L4 for commitment deltas, delegated handback for missing coverage, and S1 at its action boundary. These are not replaced by the goal checkpoint.
 
@@ -205,6 +218,8 @@ For `show_checkpoint` and `continue_unchanged`, `authorizedClauses` contains `{ 
 `continue_unchanged` requires complete authorized-clause coverage with `accepted_target` evidence for every clause, empty `confirmationItems`, and null `checkpointReason`. The owner must verify that the cited proposal and later acceptance cover the whole unchanged Target in the current scope; source-role or index checks alone cannot prove this. Other actions use empty lists and null reason.
 
 Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 names the governing safety rule or action boundary.
+
+`continue_exploration` has null `level`, empty goal-check lists and null `checkpointReason`. It describes an authorized investigation, never accepted-target reuse or execution permission; an optional progress statement is not a displayed confirmation action.
 
 A delegated child instead uses a compact session-local packet with `sessionRole`, `mainTaskId`, `owningTaskId` or `planNode`, `action`, `changedDimensions`, and `reasonCodes`. Its action is exactly `continue_delegated` or `return_to_main`; it has no user-facing L-code.
 
@@ -263,9 +278,9 @@ After task activation, continue without waiting when the request is solely a tri
 - L4 acceptance adds the displayed Target to current authorization.
 - A question, hesitation, partial acceptance, unrelated reply, or ambiguous acknowledgment is not whole-Target acceptance. Answer or clarify only within the pre-alignment boundary, then present the current checkpoint again when ready.
 - A user response that adds, removes, or changes a commitment revises authorization instead of accepting the old Target, even when it starts with an affirmative such as “confirm, but…”. Update the canonical Target as needed, run required consistency commands, regenerate the candidate, and recompute the level. A pure rewording or implementation-only instruction under an accepted unchanged Target does not create a new goal.
-- An explicit material user revision updates authorization first, then the revised equivalent Target requires its own L2 goal checkpoint. Recompute L3/L4 when appropriate; a material Plan distribution change still requires its checkpoint. Do not treat an answer to a focused question as acceptance of an undisplayed revised Target.
+- An explicit material user revision updates authorization first, then recompute the exploration exemption or the revised Target's L2–L4 procedure. Outside exploration, the revised equivalent Target requires its own L2 goal checkpoint and a material Plan distribution change still requires its checkpoint. Do not treat an answer to a focused question as acceptance of an undisplayed revised Target.
 - Once accepted, an unchanged main Target must not be presented for redundant confirmation in the same recoverable conversation state. This includes an explicitly authorized `task-plan` to `task` handoff of the same canonical record; delegated children covered by its current Plan also inherit that acceptance.
-- After main-session resume or compaction, if the displayed Target and its applicable user acceptance cannot be recovered, present the checkpoint again rather than assuming acceptance. A delegated child without a complete current packet returns to the main session instead.
+- After main-session resume or compaction, recover the current authorized scope first. Equivalent exploration may continue without claiming acceptance; outside its exemption, if the displayed Target and its applicable user acceptance cannot be recovered, present the checkpoint again rather than assuming acceptance. A delegated child without a complete current packet returns to the main session instead.
 
 ## Realignment
 
@@ -273,7 +288,7 @@ After alignment:
 
 - Implementation-only changes such as files, functions, algorithms, commands, or verification methods within an unchanged Plan node do not trigger a new checkpoint while the accepted result and boundaries remain unchanged.
 - Refining the canonical record from authoritative sources does not trigger a new checkpoint when the accepted user-facing commitment remains unchanged.
-- A material Plan distribution change returns control to the main session and requires one new checkpoint before the changed child graph executes; a delegated child never performs that checkpoint.
+- A material Plan distribution change returns control to the main session. The owner may continue an in-scope exploration graph under the exemption; otherwise one new checkpoint is required before the changed child graph executes. A delegated child never performs that checkpoint.
 - A material commitment change introduced by the Agent or discovery invalidates affected evidence, updates the canonical Target, and enters L4 in the main session.
 - A user revision enters L3 when it still contains a user-owned ambiguity; otherwise it produces a revised L2 or L4 Target as determined above.
 

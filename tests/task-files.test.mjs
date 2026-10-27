@@ -245,7 +245,8 @@ test("task workflow skills own canonical records and routes", () => {
   assert.equal(existsSync(path.join(skillsDir, "workspace-lessons")), false);
 
   assert.match(contract, /## Task-Family Routing/);
-  assert.match(contract, /Use `task-plan` when the current outcome is planning/);
+  assert.match(contract, /Use `task-plan` when the current outcome is an implementation-ready plan/);
+  assert.match(contract, /standalone analysis whose findings are the requested deliverable/);
   assert.match(contract, /Use `task-queue` when the user wants multiple independently acceptable outcomes/);
   assert.match(contract, /Use `task` for one execution outcome/);
   assert.match(contract, /Complexity, step count, or file count alone does not make a Queue/);
@@ -284,7 +285,7 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(alignmentProtocol, /Changes requiring approval/);
   assert.match(alignmentProtocol, /This Target changes your current authorization/);
   assert.match(alignmentProtocol, /Ask one focused question about the exact user-owned ambiguity/);
-  assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session must pass one L2 checkpoint/);
+  assert.match(alignmentProtocol, /Every new or materially revised non-trivial equivalent Target owned by the main session outside the exploration exemption must pass one L2 checkpoint/);
   assert.match(alignmentProtocol, /### Authorization Sources and Goal Acceptance/);
   assert.match(alignmentProtocol, /`direct_user`/);
   assert.match(alignmentProtocol, /`accepted_target`/);
@@ -361,9 +362,9 @@ test("task workflow skills own canonical records and routes", () => {
   assert.match(queueSkill, /do not display another child checkpoint/);
   assert.match(queueSkill, /material child-distribution graph change/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
-  assert.match(contract, /Every task must classify its actual result before the completion review gate/);
-  assert.match(contract, /R2 covers complex, high-risk or materially uncertain changes and must use the existing In Review state/);
-  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
+  assert.match(contract, /Classify the actual result under the shared Task Review Grading protocol before choosing a completion gate/);
+  assert.match(contract, /R2 covers complex, high-risk or materially uncertain changes and requires `task-review`/);
+  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop and independent approval remain separate and require an explicit user request/);
   assert.equal(contract.includes("applicable task requirement"), false);
 
   const projectRules = readFileSync(path.join(root, "AGENTS.md"), "utf8");
@@ -382,6 +383,8 @@ test("task workflow skills own canonical records and routes", () => {
 
 test("injected CSL Agent Kit contract defines behavior without runtime mechanics", () => {
   const contract = readFileSync(path.join(root, "skills", "meta", "agent-hooks", "references", "csl-agent-kit-contract.md"), "utf8");
+  const task = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
+  const grading = readFileSync(path.join(cslTasksDir, "csl-tasks", "shared", "protocols", "task-review-grading.md"), "utf8");
   assert.equal(existsSync(path.join(root, "super-agent")), false);
   assert.ok(existsSync(path.join(root, "skills", "meta", "agent-hooks", "hooks", "csl-agent-kit-contract.md")));
   assert.equal(existsSync(path.join(root, "skills", "meta", "agent-hooks", "hooks", "workspace-workflow-gates.md")), false);
@@ -408,46 +411,52 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
   assert.doesNotMatch(contract, /## Task Workflow Adoption/);
   assert.match(contract, /Use Task workflows automatically for every eligible request/);
   assert.match(contract, /users should not need to know Skill names or internal lifecycle mechanics/);
-  assert.match(contract, /Use Task Target to let the user recheck the Agent's understanding of their goal before substantive work/);
+  assert.match(contract, /Use Task Target to let the user recheck implementation goals before substantive work; exploration-only work proceeds without a generic Target confirmation/);
   assert.match(contract, /A clear request or complete authorization coverage is not user acceptance/);
   assert.match(contract, /end the turn and wait/);
   assert.match(contract, /do not narrate routine internal bookkeeping/);
   assert.match(contract, /## Task-Family Routing/);
-  assert.match(contract, /Use `task-plan` when the current outcome is planning/);
+  assert.match(contract, /Use `task-plan` when the current outcome is an implementation-ready plan/);
   assert.match(contract, /Use `task-queue` when the user wants multiple independently acceptable outcomes/);
   assert.match(contract, /Complexity, step count, or file count alone does not make a Queue/);
   assert.match(contract, /activate and focus its owning record before task-direct exploration or requested deliverable changes/);
   assert.match(contract, /Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution/);
   assert.match(contract, /Apply the selected task-family Skill, including its required Task Target alignment gate/);
   assert.match(contract, /Only the main interaction owner handles user-facing alignment and independent safety gates/);
-  assert.match(contract, /Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance/);
-  assert.match(contract, /Delegated work covered by the accepted current Plan inherits alignment/);
+  assert.match(contract, /Do not repeat confirmation when the previously displayed Target has recoverable user acceptance/);
+  assert.match(contract, /Delegated work covered by the current aligned Plan inherits its bounded scope/);
   assert.match(contract, /missing coverage, material changes, user decisions, or safety boundaries return to the main session/);
   assert.doesNotMatch(contract, /The Task Target states:|L0|L1|L2|L3|L4|Authorization Ledger|Changes requiring approval/);
-  assert.match(contract, /At session start, resume, or compaction, establish and load the standard workspace Context before acting/);
+  assert.match(contract, /At session start, resume, or compaction, establish and load the minimum source-backed Project Core for orientation/);
+  assert.match(contract, /Broader project discovery waits for Task Target alignment/);
+  assert.match(contract, /Before final self-check, maintain durable Context affected by the task's actual changes and newly confirmed facts/);
+  assert.match(contract, /The maintenance scope is not limited to previously selected Packs/);
   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
   assert.match(contract, /Implement the minimum solution that fully satisfies the aligned outcome/);
   assert.match(contract, /Touch only what the aligned outcome requires/);
   assert.match(contract, /## Mandatory Modification Review/);
-  assert.match(contract, /mark review required, then enter In Review and dispatch one read-only `task-review` pass/);
-  assert.match(contract, /The main Agent first compares original requirements, effective revisions, and accepted constraints/);
+  assert.match(contract, /mark Required, enter In Review and dispatch one read-only `task-review` pass/);
+  assert.match(contract, /The main Agent compares original requirements, effective revisions and accepted constraints/);
   assert.match(contract, /using an actual fresh subagent/);
-  assert.match(contract, /Mandatory independent review that is unavailable or fails Blocks the task/);
-  assert.match(contract, /self-review cannot substitute for it or justify passed/);
-  assert.match(contract, /Bind self-check, review, and final verification to the actual reviewed content/);
+  assert.match(contract, /Unavailable or failed mandatory review Blocks the task/);
+  assert.match(contract, /Self-review cannot substitute or justify Passed/);
+  assert.match(contract, /Bind assessment, self-check, review and final verification to actual content and evidence/);
   assert.match(contract, /a suspected false positive needs counterevidence checked by a fresh pass/);
-  assert.match(contract, /Direct edits to an active task specification must use its sync lifecycle/);
-  assert.match(contract, /sync invalidates the assessment, terminal review and Verification evidence/);
+  assert.match(contract, /Direct task specification edits require sync, which invalidates assessment, terminal review and Verification evidence/);
   assert.match(contract, /Any confirmed finding returns the task to In Progress for remediation/);
-  assert.match(contract, /Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger/);
-  assert.match(contract, /Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed/);
-  assert.match(contract, /At two, stop reviewing, Block the task/);
-  assert.match(contract, /Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it/);
-  assert.match(contract, /Resume is rejected while any stalled item remains at two/);
-  assert.match(contract, /The Reviewer remains feedback-only and never grants approval or changes task state/);
-  assert.match(contract, /adversarial review of that no-file result or an R1 result was explicitly requested/);
-  assert.match(contract, /records Approved without running the mandatory `task-review`/);
-  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
+  assert.doesNotMatch(contract, /task-review-ledger\/v1|no-progress=|At two|Resume is rejected while any stalled item remains at two/);
+  assert.match(task, /Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate Markdown list markers or whitespace fail closed/);
+  assert.match(task, /Give each Critical Finding, Concern, and Target-blocking Unverified Risk a stable/);
+  assert.match(task, /When any item reaches `no-progress=2`, stop dispatching review passes/);
+  assert.match(task, /Text churn, restatement, unchanged checks, or unsupported relabeling is not progress/);
+  assert.match(task, /the core rejects resume while any ledger item remains at `no-progress=2`/);
+  assert.match(contract, /stall guard stops further passes, Blocks with the stalled IDs and an observable unblock condition/);
+  assert.match(contract, /Never disguise no progress, bypass the unblock condition or convert a stall to Passed/);
+  assert.match(contract, /Those Skills own ledger schemas, counters, resolution and resume rules/);
+  assert.match(contract, /The Reviewer is feedback-only: it never grants approval or changes task state/);
+  assert.match(grading, /R0\/R1 may enter `required` → In Review → `approved` directly/);
+  assert.match(grading, /R2 first completes mandatory `task-review`/);
+  assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop and independent approval remain separate and require an explicit user request/);
   assert.match(contract, /Keep this contract behavioral and stable\. Skills retain operational detail\./);
   assert.doesNotMatch(contract, /\$(?:task|task-plan|task-queue|task-context|task-lessons)/);
   assert.doesNotMatch(contract, /Task Target Alignment Protocol/);
@@ -472,10 +481,24 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
 
   assert.match(skill, /without repeating broad repository exploration, repo mapping, or architecture analysis/);
   assert.match(skill, /do not read the whole Context file for orientation/);
-  assert.match(skill, /Usually select one to three Packs/);
+  assert.match(skill, /Do not broaden pre-alignment work into project analysis/);
+  assert.match(skill, /After the owning task's Target is aligned/);
+  assert.match(skill, /Start with one to three Packs.*this is an initial batch, not a limit/);
   assert.match(skill, /node <skill-dir>\/scripts\/context\.js --workspace <workspace> core/);
   assert.match(skill, /one batched `show`/);
   assert.match(skill, /Keep selected IDs only in session state/);
+  assert.match(skill, /### Coverage and Seed Packs/);
+  assert.match(skill, /`confirmed` plus supporting source, `not applicable` plus evidence, or `unresolved` plus the missing evidence/);
+  assert.match(skill, /Stop when discovered major boundaries have responsibilities and authoritative entry points/);
+  assert.match(skill, /A source's existence alone does not establish that it supports the claim/);
+  assert.match(skill, /refine the fingerprint and re-query until sufficient/);
+  assert.match(skill, /### Change Gate/);
+  assert.match(skill, /An unavailable source is an evidence gap, not deletion evidence/);
+  assert.match(skill, /Scan the complete metadata index for affected candidates/);
+  assert.match(skill, /the read set does not limit the maintenance set/);
+  assert.match(skill, /Do not attribute other tasks' dirty files to this task/);
+  assert.match(skill, /Make permitted changes before the owning task's self-check/);
+  assert.match(skill, /Structural fixtures and event\/action assertions do not prove Agent retrieval or factual accuracy/);
   assert.match(skill, /Confirmed.*Project-specific.*Stable boundary.*Decision-changing.*Summary-efficient.*Correctly routed.*Verifiable/s);
   assert.match(skill, /Treat discoverability only as a cost signal/);
   assert.match(skill, /Verification and observability boundaries/);
@@ -483,7 +506,7 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   assert.match(skill, /Never cache a mutable current value/);
   assert.match(skill, /A stable lookup does not qualify by itself/);
   assert.match(skill, /Exclude an obvious version or configuration pointer/);
-  assert.match(skill, /Replacing the current workspace's existing Context when it lacks a valid Project Core is pre-authorized/);
+  assert.match(skill, /Local repair of a missing or invalid Core in an existing file is pre-authorized under Existing Core Repair/);
   assert.match(skill, /Creating a missing `tasks\/context\.md` requires showing the exact complete proposed file and obtaining explicit user confirmation/);
   assert.match(skill, /Every other persistent Project Core change requires showing the exact proposed diff and obtaining explicit user confirmation/);
   assert.match(skill, /source-backed Add, Update, or Delete may happen automatically/);
@@ -491,12 +514,14 @@ test("workspace context contract supports dispatch-ready retrieval and durable a
   assert.match(skill, /the current task ends/);
   assert.match(skill, /the related module next changes materially/);
   assert.match(skill, /evidence, source, assumption, or Authority becomes invalid/);
-  assert.match(skill, /Never convert old Context content into Packs or carry it into the replacement/);
-  assert.match(skill, /Replace the entire file with a minimal standard Context/);
+  assert.match(skill, /Old content is only a lead for source verification, never its own Authority/);
+  assert.match(skill, /preserving all unrelated Pack and nonstandard content byte-for-byte/);
+  assert.match(skill, /Delete the smallest independently invalid fact/);
+  assert.match(skill, /inventory current non-historical consumers before removing its stable ID/);
   assert.match(skill, /Show the exact complete proposed file and request explicit user confirmation/);
-  assert.match(skill, /Run both `core` and `validate` against the replacement/);
-  assert.match(skill, /Do not disclose an existing invalid Core before attempting Existing Context Rewrite/);
-  assert.doesNotMatch(skill, /Default Migration|Legacy Migration|legacy-<content-hash>/);
+  assert.match(skill, /Run both `core` and `validate` against the repaired file/);
+  assert.match(skill, /If it changed concurrently, do not overwrite another writer/);
+  assert.doesNotMatch(skill, /Default Migration|Legacy Migration|legacy-<content-hash>|Replace the entire file with a minimal standard Context/);
   const script = readFileSync(path.join(cslTasksDir, "task-context", "scripts", "context.js"), "utf8");
   assert.doesNotMatch(script, /parseLegacy|legacy-pack|LEGACY_SECTIONS/);
   assert.match(skill, /the built-in `\$skill-quality` gate against this package/);
@@ -540,6 +565,10 @@ test("workspace context value cases enforce admission and temporary exits", () =
   assert.equal(byId["temporary-with-event-exits"].temporary_evidence, true);
   assert.equal(byId["temporary-with-event-exits"].responsible_role_or_module, true);
   assert.equal(byId["temporary-with-event-exits"].expected, "Store");
+  for (const id of ["new-confirmed-state-owner", "confirmed-domain-alias"]) assert.equal(byId[id].expected, "Store");
+  for (const id of ["source-exists-but-does-not-support-claim", "missing-evidence-is-not-negative-knowledge", "generic-directory-inventory", "unresolved-authority-conflict"]) {
+    assert.equal(byId[id].expected, "Exclude");
+  }
 });
 
 test("workspace context query cases cover session, task, write, and failure gates", () => {
@@ -553,11 +582,59 @@ test("workspace context query cases cover session, task, write, and failure gate
   assert.equal(actions["ordinary-follow-up"], "ReuseSelectedPacks");
   assert.equal(actions["durable-pack-change"], "MaintainPackThenValidate");
   assert.equal(actions["project-core-change"], "ShowDiffAndConfirm");
-  assert.equal(actions["existing-nonstandard-context"], "RewriteThenLoadCore");
-  assert.equal(actions["existing-context-rewrite-failed"], "RestoreAndDisclose");
+  assert.equal(actions["existing-nonstandard-context"], "RepairCorePreservePacksThenLoad");
+  assert.equal(actions["existing-context-repair-failed"], "PreserveAndDisclose");
   assert.equal(actions["missing-context"], "AnalyzeProposeAndConfirm");
   assert.equal(actions["missing-context-confirmed"], "CreateThenLoadCore");
   assert.equal(actions["duplicate-relevant-id"], "DoNotApply");
+  assert.equal(actions["aligned-core-only-project"], "CoverageThenSeedPacks");
+  assert.equal(actions["small-project-core-sufficient"], "KeepCoreWithoutFillerPacks");
+  assert.equal(actions["alias-or-empty-query"], "ExploreThenRequery");
+  assert.equal(actions["task-boundary-expanded"], "RequeryRelevantPacks");
+  assert.equal(actions["more-than-three-needed"], "RetrieveUntilCoverageSufficient");
+  assert.equal(actions["authority-unavailable-or-conflicting"], "SuspendAffectedClaimsAndExplore");
+  assert.equal(actions["unselected-pack-affected"], "ScanImpactThenMaintain");
+  assert.equal(actions["new-confirmed-facts"], "AdmitNewFactsThenMaintain");
+  assert.equal(actions["source-renamed"], "UpdateAffectedReferencesThenValidate");
+  assert.equal(actions["stable-id-has-live-consumers"], "DeferIdDeletion");
+  assert.equal(actions["unindexed-top-level-content"], "WarnAndPreserveUnindexedContent");
+  assert.equal(actions["read-only-scope-new-fact"], "ReportFactWithoutContextWrite");
+  assert.equal(actions["no-durable-change"], "NoOp");
+});
+
+test("workspace context lifecycle scenarios have complete inputs and consistent expected references", () => {
+  const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task-context", "evals", "lifecycle_cases.json"), "utf8"));
+  assert.equal(fixture.schema, "csl-context.lifecycle-cases/v1");
+  const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+  assert.equal(Object.keys(byId).length, fixture.cases.length);
+  for (const id of ["new-project-cross-component-coverage", "sparse-project-evidence", "domain-alias-requery", "expanded-task-needs-four-packs", "unselected-authority-and-new-facts", "source-move-and-partial-fact-removal", "unavailable-and-conflicting-authority", "local-core-repair-and-orphan-content", "stable-id-delete-with-live-consumer", "pending-core-with-authorized-pack-update", "read-only-investigation-discovers-fact", "no-durable-change"]) {
+    assert.ok(byId[id], `missing lifecycle scenario: ${id}`);
+  }
+  for (const item of fixture.cases) {
+    assert.ok(item.task_input.trim(), item.id);
+    assert.ok(item.initial_context.core_state.trim(), item.id);
+    assert.ok(item.source_facts.length > 0, item.id);
+    for (const fact of item.source_facts) assert.ok(fact.source.trim() && fact.evidence.trim(), item.id);
+    const candidates = new Set(item.candidate_packs.map(({ id }) => id));
+    assert.equal(candidates.size, item.candidate_packs.length, item.id);
+    for (const pack of item.candidate_packs) {
+      assert.match(pack.id, /^CTX-[a-z0-9]+(?:-[a-z0-9]+)*$/);
+      assert.ok(pack.scope.trim() && pack.recheck.trim(), item.id);
+      for (const field of ["paths", "keywords", "authority", "claims"]) {
+        assert.ok(pack[field].length > 0 && pack[field].every((value) => value.trim()), `${item.id}: ${field}`);
+      }
+    }
+    for (const ids of [item.initial_context.selected_ids, item.expected.selected_ids, item.expected.affected_ids]) {
+      assert.equal(new Set(ids).size, ids.length, item.id);
+      for (const id of ids) assert.ok(candidates.has(id), `${item.id}: unknown Pack ${id}`);
+    }
+    for (const field of ["coverage", "operations", "observable_behavior", "forbidden_claims"]) {
+      assert.ok(item.expected[field].length > 0 && item.expected[field].every((value) => value.trim()), `${item.id}: ${field}`);
+    }
+  }
+  assert.deepEqual(byId["expanded-task-needs-four-packs"].expected.selected_ids, ["CTX-api", "CTX-payments", "CTX-ledger", "CTX-notifications"]);
+  assert.deepEqual(byId["unselected-authority-and-new-facts"].expected.affected_ids, ["CTX-api", "CTX-sdk"]);
+  assert.deepEqual(byId["no-durable-change"].expected.affected_ids, []);
 });
 
 test("workspace context CLI loads Core, queries only v1 Packs, and fails closed", (t) => {
@@ -609,9 +686,11 @@ test("workspace context CLI loads Core, queries only v1 Packs, and fails closed"
   const index = JSON.parse(indexResult.stdout);
   assert.equal(index.schema, "csl-context.index/v1");
   assert.equal(index.packs.length, 1);
-  assert.deepEqual(Object.keys(index.packs[0]), ["id", "title", "format", "scope", "paths", "keywords"]);
+  assert.deepEqual(Object.keys(index.packs[0]), ["id", "title", "format", "scope", "paths", "keywords", "authority", "recheck"]);
   assert.equal(index.packs[0].id, "CTX-workspace-tasks");
   assert.deepEqual(index.packs[0].paths, ["tasks/tasks.md", "tasks/tasks/"]);
+  assert.equal(index.packs[0].authority, "`skills/meta/task/SKILL.md`");
+  assert.equal(index.packs[0].recheck, "When the CSL Task contract changes.");
 
   const showResult = run("show", ...index.packs.map(({ id }) => id));
   assert.equal(showResult.status, 0, showResult.stderr);
@@ -628,6 +707,32 @@ test("workspace context CLI loads Core, queries only v1 Packs, and fails closed"
   const selfTest = spawnSync(process.execPath, [script, "--self-test"], { encoding: "utf8" });
   assert.equal(selfTest.status, 0, selfTest.stderr);
 
+  const standardContext = readFileSync(contextFile, "utf8");
+  const mixedContext = `${standardContext}\n## Legacy Notes\n\n- Unindexed content must remain visible and unchanged.\n`;
+  writeFileSync(contextFile, mixedContext, "utf8");
+  const warningLine = mixedContext.split("\n").indexOf("## Legacy Notes") + 1;
+  const warningMessage = "section `## Legacy Notes` is not indexed; only Project Core and CTX-* sections are loaded";
+  const mixedValidationResult = run("validate");
+  assert.equal(mixedValidationResult.status, 0, mixedValidationResult.stderr);
+  const mixedValidation = JSON.parse(mixedValidationResult.stdout);
+  assert.equal(mixedValidation.valid, true);
+  assert.deepEqual(mixedValidation.errors, []);
+  assert.deepEqual(mixedValidation.warnings, [{
+    code: "unindexed-context-section",
+    message: warningMessage,
+    line: warningLine,
+    section: "Legacy Notes",
+  }]);
+  for (const args of [["core"], ["index"], ["show", "CTX-workspace-tasks"]]) {
+    const result = run(...args);
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr.trim(), `[unindexed-context-section] line ${warningLine}: ${warningMessage}`);
+    const payload = JSON.parse(result.stdout);
+    if (args[0] === "core") assert.deepEqual(payload.core, JSON.parse(coreResult.stdout).core);
+    else assert.deepEqual(payload.packs, args[0] === "index" ? index.packs : shown.packs);
+  }
+  assert.equal(readFileSync(contextFile, "utf8"), mixedContext);
+
   rmSync(contextFile);
   const missingResult = run("validate");
   assert.equal(missingResult.status, 1);
@@ -635,7 +740,7 @@ test("workspace context CLI loads Core, queries only v1 Packs, and fails closed"
   assert.ok(missingCodes.has("missing-context"));
   assert.ok(missingCodes.has("missing-or-duplicate-core"));
 
-  writeFileSync(contextFile, `${core}
+  writeFileSync(contextFile, `${standardContext}
 ## CTX-duplicate — First
 - Scope: first
 - Paths: \`one/\`
@@ -662,6 +767,17 @@ test("workspace context CLI loads Core, queries only v1 Packs, and fails closed"
   const invalidCodes = new Set(JSON.parse(invalidResult.stdout).errors.map(({ code }) => code));
   assert.ok(invalidCodes.has("missing-pack-metadata"));
   assert.ok(invalidCodes.has("duplicate-id"));
+  assert.equal(run("index").status, 1);
+  const duplicateResult = run("show", "CTX-duplicate");
+  assert.equal(duplicateResult.status, 1);
+  assert.match(duplicateResult.stderr, /\[duplicate-id\]/);
+  assert.deepEqual(JSON.parse(duplicateResult.stdout).packs, []);
+  const unaffectedResult = run("show", "CTX-workspace-tasks");
+  assert.equal(unaffectedResult.status, 0, unaffectedResult.stderr);
+  assert.deepEqual(JSON.parse(unaffectedResult.stdout).packs, shown.packs);
+  const unknownResult = run("show", "CTX-missing");
+  assert.equal(unknownResult.status, 1);
+  assert.match(unknownResult.stderr, /\[unknown-id\]/);
 });
 
 test("current workspace Context has a valid Core and formal Packs", () => {
@@ -670,14 +786,22 @@ test("current workspace Context has a valid Core and formal Packs", () => {
   assert.equal(result.status, 0, result.stderr);
   const validation = JSON.parse(result.stdout);
   assert.equal(validation.valid, true);
-  assert.deepEqual(validation.warnings, []);
+  const context = readFileSync(path.join(root, "tasks", "context.md"), "utf8");
+  const legacySections = ["Components", "Relationships", "Decisions and Conventions"];
+  assert.deepEqual(validation.warnings, legacySections.map((section) => ({
+    code: "unindexed-context-section",
+    message: `section \`## ${section}\` is not indexed; only Project Core and CTX-* sections are loaded`,
+    line: context.split("\n").indexOf(`## ${section}`) + 1,
+    section,
+  })));
 
   const indexResult = spawnSync(process.execPath, [script, "--workspace", root, "index"], { encoding: "utf8" });
   assert.equal(indexResult.status, 0, indexResult.stderr);
   const packs = JSON.parse(indexResult.stdout).packs;
   assert.ok(packs.some(({ id, format }) => id === "CTX-task-context" && format === "v1"));
   assert.ok(packs.every(({ format }) => format === "v1"));
-  const context = readFileSync(path.join(root, "tasks", "context.md"), "utf8");
+  assert.equal(indexResult.stderr.trim().split("\n").length, legacySections.length);
+  for (const section of legacySections) assert.ok(indexResult.stderr.includes(`## ${section}`));
   assert.match(context, /所有请求交付物文件改动（包括 trivial edits）进入 task 记录/);
   assert.match(context, /R2 执行 mandatory `task-review` 并以 `Passed` 完成/);
   assert.match(context, /R1 包括满足全部条件的小范围逻辑修改/);
@@ -703,6 +827,8 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /reopen a Completed task before changing its specification/);
   assert.match(skill, /Load Project Core, then read only the newest index entries/);
   assert.match(skill, /After the protocol aligns the current Target, query task-relevant Context Packs/);
+  assert.match(skill, /Before self-check, follow `task-context`'s Completion Gate for this task's actual changes and newly confirmed durable facts/);
+  assert.match(skill, /including affected knowledge beyond the selected Packs; respect the task's write scope/);
   assert.match(skill, /Start a new task for every independently acceptable user outcome/);
   assert.match(skill, /directly corrects, completes, or re-verifies the same outcome/);
   assert.match(skill, /Component, file, topic, or implementation overlap alone does not establish ownership/);
@@ -718,7 +844,8 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /Do not substitute inline self-review or silently switch execution modes/);
   assert.match(skill, /Infrastructure failures do not increment finding no-progress streaks/);
   assert.match(skill, /Prepare the mandatory review handoff for R2 or explicit ordinary review/);
-  assert.match(skill, /core validates assessment structure, level\/gate consistency, task-record fingerprint and evidence text, not semantic risk/);
+  assert.match(skill, /core validates assessment structure, level\/gate consistency, task-record fingerprint and evidence text/);
+  assert.match(skill, /semantic risk, actual subagent isolation, check execution and complete scope remain the host and main Agent/);
   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
   assert.match(skill, /`skipped` only with a current R0 or R1 assessment and no explicit or existing review obligation/);
   assert.match(skill, /`required` before every R2 or explicitly requested review pass/);
@@ -740,7 +867,9 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   assert.match(skill, /without a mandatory `task-review`/);
   assert.match(skill, /Independent adversarial review, a two-Agent Reviewer-Editor loop, and independent approval remain opt-in/);
   assert.match(skill, /Use `cancel <id>` for a reversible soft stop/);
-  assert.match(skill, /This is the only route to Completed and fails closed/);
+  assert.match(skill, /This and the low-risk `finalize` path are the only routes to Completed; both fail closed/);
+  assert.match(skill, /--final-verification <current-final-check-observation>/);
+  assert.match(skill, /core cannot infer a conversational obligation/);
   assert.match(skill, /Do not retrofit untouched historical record bodies/);
   assert.match(skill, /run the built-in `\$skill-quality` gate against this package/);
   assert.match(skill, /Quality failures block completion/);
@@ -760,7 +889,9 @@ test("owning tasks persist review feedback separately from the active finding le
   assert.match(task, /tasks\/artifacts\/<task-id>\/reviews\/round-<NN>\.md/);
   assert.match(task, /Never overwrite or renumber a report/);
   assert.match(task, /Index-only bookkeeping does not require `sync`/);
-  assert.match(task, /core does not validate report files or their links/);
+  assert.match(task, /core checks registered report bytes, paths and header\/index correspondence/);
+  assert.match(task, /task-review-reports\/v1/);
+  assert.match(task, /--existing-round/);
   assert.match(task, /index survives ledger resolution and completion/);
   assert.match(reviewer, /Reviewer never writes the report or task index/);
   assert.match(workflow, /If the process stops between saving and indexing/);
@@ -832,7 +963,8 @@ test("review grading has one shared authority and keeps evidence and safety boun
   assert.match(protocol, /All four conditions must have concrete, task-specific grounds/);
   assert.match(protocol, /A missing required check or unproven Target blocks completion/);
   assert.match(protocol, /never replace it with Skipped/);
-  assert.match(protocol, /does not select a semantic level, inspect the supplied external snapshot/);
+  assert.match(protocol, /does not select a semantic level, discover omitted scope/);
+  assert.match(protocol, /check-evidence <id>/);
   assert.match(protocol, /Historical records without an assessment remain readable/);
   assert.match(protocol, /no parent-owned changes is R0, not a waiver of integration verification/);
   assert.match(protocol, /Changing a Completed child's relationship requires explicitly reopening/);

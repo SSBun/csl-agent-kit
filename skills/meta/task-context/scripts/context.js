@@ -200,7 +200,14 @@ function parseContext(markdown, { missing = false } = {}) {
 
   for (const block of topSections) {
     if (block.name === "Project Core") continue;
-    if (block.name.startsWith("CTX-")) packs.push(parsePack(lines, block, errors));
+    if (block.name.startsWith("CTX-")) {
+      packs.push(parsePack(lines, block, errors));
+    } else {
+      warnings.push({
+        ...diagnostic("unindexed-context-section", `section \`## ${block.name}\` is not indexed; only Project Core and CTX-* sections are loaded`, block.startLine),
+        section: block.name,
+      });
+    }
   }
 
   const byId = new Map();
@@ -234,7 +241,7 @@ function corePayload(parsed) {
 function indexPayload(parsed) {
   return {
     schema: "csl-context.index/v1",
-    packs: parsed.packs.map(({ id, title, format, scope, paths, keywords }) => ({ id, title, format, scope, paths, keywords })),
+    packs: parsed.packs.map(({ id, title, format, scope, paths, keywords, authority, recheck }) => ({ id, title, format, scope, paths, keywords, authority, recheck })),
   };
 }
 
@@ -406,6 +413,7 @@ function run(args, io = console) {
     io.log(JSON.stringify(validationPayload(parsed), null, 2));
     return parsed.errors.length === 0 ? 0 : 1;
   }
+  printDiagnostics(parsed.warnings, io);
   if (options.command === "core") {
     const errors = parsed.errors.filter(({ id }) => !id);
     io.log(JSON.stringify(corePayload(parsed), null, 2));

@@ -1,0 +1,796 @@
+TAP version 13
+# Subtest: finalize commits R0 and R1 with every Target, grounds and final verification
+ok 1 - finalize commits R0 and R1 with every Target, grounds and final verification
+  ---
+  duration_ms: 32.714208
+  type: 'test'
+  ...
+# Subtest: finalize CLI accepts repeated results and separate R1/final verification evidence
+ok 2 - finalize CLI accepts repeated results and separate R1/final verification evidence
+  ---
+  duration_ms: 43.046625
+  type: 'test'
+  ...
+# Subtest: finalize rejects missing, duplicate, unknown or malformed Result inputs without writes
+ok 3 - finalize rejects missing, duplicate, unknown or malformed Result inputs without writes
+  ---
+  duration_ms: 10.901375
+  type: 'test'
+  ...
+# Subtest: finalize requires all R1 grounds and final verification before writing
+ok 4 - finalize requires all R1 grounds and final verification before writing
+  ---
+  duration_ms: 9.746292
+  type: 'test'
+  ...
+# Subtest: finalize cannot bypass existing review obligations, findings or a Block
+ok 5 - finalize cannot bypass existing review obligations, findings or a Block
+  ---
+  duration_ms: 33.624125
+  type: 'test'
+  ...
+# Subtest: finalize accepts only In Progress tasks
+ok 6 - finalize accepts only In Progress tasks
+  ---
+  duration_ms: 20.274541
+  type: 'test'
+  ...
+# Subtest: finalize rejects snapshot drift at its terminal check without partial evidence
+ok 7 - finalize rejects snapshot drift at its terminal check without partial evidence
+  ---
+  duration_ms: 79.486583
+  type: 'test'
+  ...
+# Subtest: finalize retains Topic freshness and unfinished Queue child gates
+ok 8 - finalize retains Topic freshness and unfinished Queue child gates
+  ---
+  duration_ms: 33.24875
+  type: 'test'
+  ...
+# Subtest: finalize rolls back task completion when the index write fails
+ok 9 - finalize rolls back task completion when the index write fails
+  ---
+  duration_ms: 8.214209
+  type: 'test'
+  ...
+# Subtest: finalize preserves concurrent task or index edits instead of overwriting them
+ok 10 - finalize preserves concurrent task or index edits instead of overwriting them
+  ---
+  duration_ms: 13.769292
+  type: 'test'
+  ...
+# Subtest: managed snapshots are rechecked at unchanged terminal writes and completion
+ok 11 - managed snapshots are rechecked at unchanged terminal writes and completion
+  ---
+  duration_ms: 189.423209
+  type: 'test'
+  ...
+# Subtest: managed reviews require the latest matching independent report and immutable feedback
+ok 12 - managed reviews require the latest matching independent report and immutable feedback
+  ---
+  duration_ms: 213.454208
+  type: 'test'
+  ...
+# Subtest: report digests detect invalid UTF-8 byte changes during checks and recovery
+ok 13 - report digests detect invalid UTF-8 byte changes during checks and recovery
+  ---
+  duration_ms: 85.207291
+  type: 'test'
+  ...
+# Subtest: reports cannot certify changed Target or Result using the same snapshot
+ok 14 - reports cannot certify changed Target or Result using the same snapshot
+  ---
+  duration_ms: 220.113167
+  type: 'test'
+  ...
+# Subtest: managed reports enforce review outcomes for owner-attested snapshots
+ok 15 - managed reports enforce review outcomes for owner-attested snapshots
+  ---
+  duration_ms: 60.709459
+  type: 'test'
+  ...
+# Subtest: report registration refuses legacy prose without losing historical content
+ok 16 - report registration refuses legacy prose without losing historical content
+  ---
+  duration_ms: 71.445125
+  type: 'test'
+  ...
+# Subtest: report registration recovers an orphan without overwriting or renumbering
+ok 17 - report registration recovers an orphan without overwriting or renumbering
+  ---
+  duration_ms: 74.4645
+  type: 'test'
+  ...
+# Subtest: failed report registration leaves no artifact or task mutation
+ok 18 - failed report registration leaves no artifact or task mutation
+  ---
+  duration_ms: 40.187709
+  type: 'test'
+  ...
+# Subtest: report registration rolls back artifact and task after an index write failure
+ok 19 - report registration rolls back artifact and task after an index write failure
+  ---
+  duration_ms: 55.265833
+  type: 'test'
+  ...
+# Subtest: evidence CLI reports mechanical boundaries without claiming semantic approval
+ok 20 - evidence CLI reports mechanical boundaries without claiming semantic approval
+  ---
+  duration_ms: 104.8325
+  type: 'test'
+  ...
+# Subtest: the shared CLI creates and validates a host-neutral workspace
+ok 21 - the shared CLI creates and validates a host-neutral workspace
+  ---
+  duration_ms: 106.765125
+  type: 'test'
+  ...
+# Subtest: creates a task and keeps the canonical record and newest-first index aligned
+ok 22 - creates a task and keeps the canonical record and newest-first index aligned
+  ---
+  duration_ms: 4.0105
+  type: 'test'
+  ...
+# Subtest: metadata renders as a two-column table with a clickable artifacts value
+ok 23 - metadata renders as a two-column table with a clickable artifacts value
+  ---
+  duration_ms: 4.692917
+  type: 'test'
+  ...
+# Subtest: legacy metadata is read without rewriting and converted only on lifecycle writes
+ok 24 - legacy metadata is read without rewriting and converted only on lifecycle writes
+  ---
+  duration_ms: 4.701666
+  type: 'test'
+  ...
+# Subtest: all task kinds link existing artifact directories without creating missing ones
+ok 25 - all task kinds link existing artifact directories without creating missing ones
+  ---
+  duration_ms: 11.397833
+  type: 'test'
+  ...
+# Subtest: lifecycle writes add late artifact links, stay idempotent, and remove stale links
+ok 26 - lifecycle writes add late artifact links, stay idempotent, and remove stale links
+  ---
+  duration_ms: 10.079833
+  type: 'test'
+  ...
+# Subtest: artifact navigation added after assessment does not stale review or completion
+ok 27 - artifact navigation added after assessment does not stale review or completion
+  ---
+  duration_ms: 10.334
+  type: 'test'
+  ...
+# Subtest: artifact-like body content is still covered by the review fingerprint
+ok 28 - artifact-like body content is still covered by the review fingerprint
+  ---
+  duration_ms: 6.302083
+  type: 'test'
+  ...
+# Subtest: queue links and child reopening refresh only the records they write
+ok 29 - queue links and child reopening refresh only the records they write
+  ---
+  duration_ms: 17.831
+  type: 'test'
+  ...
+# Subtest: writes Queue records and reads legacy Auto parents without accepting new Auto records
+ok 30 - writes Queue records and reads legacy Auto parents without accepting new Auto records
+  ---
+  duration_ms: 4.551375
+  type: 'test'
+  ...
+# Subtest: cancel and resume are reversible state transitions
+ok 31 - cancel and resume are reversible state transitions
+  ---
+  duration_ms: 6.20025
+  type: 'test'
+  ...
+# Subtest: no-file completion fails closed until targets, skipped review, and verification have evidence
+ok 32 - no-file completion fails closed until targets, skipped review, and verification have evidence
+  ---
+  duration_ms: 9.191166
+  type: 'test'
+  ...
+# Subtest: historical free-form Review sections stay compatible while marked ledgers fail closed
+ok 33 - historical free-form Review sections stay compatible while marked ledgers fail closed
+  ---
+  duration_ms: 57.465667
+  type: 'test'
+  ...
+# Subtest: no-file tasks honor explicitly requested adversarial review without task-review
+ok 34 - no-file tasks honor explicitly requested adversarial review without task-review
+  ---
+  duration_ms: 22.261666
+  type: 'test'
+  ...
+# Subtest: file-changing tasks complete from In Review after task-review passes
+ok 35 - file-changing tasks complete from In Review after task-review passes
+  ---
+  duration_ms: 15.668834
+  type: 'test'
+  ...
+# Subtest: queue tasks keep reciprocal ordered children and resume at the first unfinished child
+ok 36 - queue tasks keep reciprocal ordered children and resume at the first unfinished child
+  ---
+  duration_ms: 36.9555
+  type: 'test'
+  ...
+# Subtest: a no-file Queue parent can honor explicit adversarial review without task-review
+ok 37 - a no-file Queue parent can honor explicit adversarial review without task-review
+  ---
+  duration_ms: 19.964916
+  type: 'test'
+  ...
+# Subtest: reopening a Queue child invalidates its active parent and rejects a completed parent
+ok 38 - reopening a Queue child invalidates its active parent and rejects a completed parent
+  ---
+  duration_ms: 34.995583
+  type: 'test'
+  ...
+# Subtest: Queue parents and children require distinct normalized titles
+ok 39 - Queue parents and children require distinct normalized titles
+  ---
+  duration_ms: 7.991208
+  type: 'test'
+  ...
+# Subtest: a child can have only one parent
+ok 40 - a child can have only one parent
+  ---
+  duration_ms: 4.7705
+  type: 'test'
+  ...
+# Subtest: blocked and review states require their lifecycle sections
+ok 41 - blocked and review states require their lifecycle sections
+  ---
+  duration_ms: 9.283833
+  type: 'test'
+  ...
+# Subtest: a stalled mandatory review blocks completion and preserves its ledger across resume
+ok 42 - a stalled mandatory review blocks completion and preserves its ledger across resume
+  ---
+  duration_ms: 11.842041
+  type: 'test'
+  ...
+# Subtest: sync invalidates terminal review and verification after direct task specification edits
+ok 43 - sync invalidates terminal review and verification after direct task specification edits
+  ---
+  duration_ms: 15.683375
+  type: 'test'
+  ...
+# Subtest: result and Queue graph changes invalidate completed review evidence
+ok 44 - result and Queue graph changes invalidate completed review evidence
+  ---
+  duration_ms: 22.634958
+  type: 'test'
+  ...
+# Subtest: a completed Queue parent must be reopened before its graph changes
+ok 45 - a completed Queue parent must be reopened before its graph changes
+  ---
+  duration_ms: 19.772291
+  type: 'test'
+  ...
+# Subtest: R1 includes verified small logic changes and preserves final verification
+ok 46 - R1 includes verified small logic changes and preserves final verification
+  ---
+  duration_ms: 11.253375
+  type: 'test'
+  ...
+# Subtest: R1 requires all concrete grounds and a snapshot without partial writes
+ok 47 - R1 requires all concrete grounds and a snapshot without partial writes
+  ---
+  duration_ms: 4.081208
+  type: 'test'
+  ...
+# Subtest: R2 and existing review obligations cannot be skipped or downgraded after failure
+ok 48 - R2 and existing review obligations cannot be skipped or downgraded after failure
+  ---
+  duration_ms: 15.926292
+  type: 'test'
+  ...
+# Subtest: R1 exemptions do not cancel explicit ordinary or adversarial review
+ok 49 - R1 exemptions do not cancel explicit ordinary or adversarial review
+  ---
+  duration_ms: 24.629292
+  type: 'test'
+  ...
+# Subtest: sync, Result and snapshot changes invalidate low-risk exemptions
+ok 50 - sync, Result and snapshot changes invalidate low-risk exemptions
+  ---
+  duration_ms: 34.930458
+  type: 'test'
+  ...
+# Subtest: direct specification drift is caught even if sync was omitted
+ok 51 - direct specification drift is caught even if sync was omitted
+  ---
+  duration_ms: 6.484166
+  type: 'test'
+  ...
+# Subtest: assessment schema rejects duplicates, unknown versions and malformed fields
+ok 52 - assessment schema rejects duplicates, unknown versions and malformed fields
+  ---
+  duration_ms: 4.764875
+  type: 'test'
+  ...
+# Subtest: historical records remain readable but new completion needs an assessment
+ok 53 - historical records remain readable but new completion needs an assessment
+  ---
+  duration_ms: 10.974584
+  type: 'test'
+  ...
+# Subtest: link rejects a Completed child's new relationship without partial writes
+ok 54 - link rejects a Completed child's new relationship without partial writes
+  ---
+  duration_ms: 11.252292
+  type: 'test'
+  ...
+# Subtest: identical reciprocal links preserve Completed evidence and parent review
+ok 55 - identical reciprocal links preserve Completed evidence and parent review
+  ---
+  duration_ms: 22.049
+  type: 'test'
+  ...
+# Subtest: all findings resolved can atomically clear the ledger and pass without regrading
+ok 56 - all findings resolved can atomically clear the ledger and pass without regrading
+  ---
+  duration_ms: 12.216958
+  type: 'test'
+  ...
+# Subtest: report indexing preserves assessment and survives ledger resolution, completion and reopen
+ok 57 - report indexing preserves assessment and survives ledger resolution, completion and reopen
+  ---
+  duration_ms: 12.117167
+  type: 'test'
+  ...
+# Subtest: report indexes do not hide substantive drift or bypass explicit sync
+ok 58 - report indexes do not hide substantive drift or bypass explicit sync
+  ---
+  duration_ms: 9.038792
+  type: 'test'
+  ...
+# Subtest: ledger resolution rejects missing, stale or mismatched identity without clearing findings
+ok 59 - ledger resolution rejects missing, stale or mismatched identity without clearing findings
+  ---
+  duration_ms: 8.671416
+  type: 'test'
+  ...
+# Subtest: CLI ledger clearance is restricted to Passed and preserves the current assessment
+ok 60 - CLI ledger clearance is restricted to Passed and preserves the current assessment
+  ---
+  duration_ms: 40.694709
+  type: 'test'
+  ...
+# Subtest: the CLI records and exposes grading grounds without running checks
+ok 61 - the CLI records and exposes grading grounds without running checks
+  ---
+  duration_ms: 94.374917
+  type: 'test'
+  ...
+# Subtest: explicit non-Git snapshots are deterministic, sorted, immutable plans
+ok 62 - explicit non-Git snapshots are deterministic, sorted, immutable plans
+  ---
+  duration_ms: 83.506125
+  type: 'test'
+  ...
+# Subtest: verification detects declared content drift and preserves historical manifests
+ok 63 - verification detects declared content drift and preserves historical manifests
+  ---
+  duration_ms: 76.237292
+  type: 'test'
+  ...
+# Subtest: reference, manifest bytes and schema tampering fail closed
+ok 64 - reference, manifest bytes and schema tampering fail closed
+  ---
+  duration_ms: 13.829
+  type: 'test'
+  ...
+# Subtest: invalid scope, directories, missing files and self-reference are rejected
+ok 65 - invalid scope, directories, missing files and self-reference are rejected
+  ---
+  duration_ms: 130.94875
+  type: 'test'
+  ...
+# Subtest: symlink scope and storage paths cannot escape the workspace
+ok 66 - symlink scope and storage paths cannot escape the workspace
+  ---
+  duration_ms: 26.514375
+  type: 'test'
+  ...
+# Subtest: Git snapshots detect staged-only drift with unchanged working tree bytes
+ok 67 - Git snapshots detect staged-only drift with unchanged working tree bytes
+  ---
+  duration_ms: 333.462333
+  type: 'test'
+  ...
+# Subtest: Git HEAD identity is per-file and unrelated commits do not invalidate scope
+ok 68 - Git HEAD identity is per-file and unrelated commits do not invalidate scope
+  ---
+  duration_ms: 338.498917
+  type: 'test'
+  ...
+# Subtest: only tracked deletions can produce missing-file snapshots
+ok 69 - only tracked deletions can produce missing-file snapshots
+  ---
+  duration_ms: 314.737791
+  type: 'test'
+  ...
+# Subtest: unborn repositories preserve index identity and tracked missing additions
+ok 70 - unborn repositories preserve index identity and tracked missing additions
+  ---
+  duration_ms: 223.920417
+  type: 'test'
+  ...
+# Subtest: nested workspaces use literal paths relative to the actual repository root
+ok 71 - nested workspaces use literal paths relative to the actual repository root
+  ---
+  duration_ms: 371.16875
+  type: 'test'
+  ...
+# Subtest: task index and review reports resolve to isolated same-slug files
+ok 72 - task index and review reports resolve to isolated same-slug files
+  ---
+  duration_ms: 62.185209
+  type: 'test'
+  ...
+# Subtest: task index checker accepts the current format without migrating legacy siblings
+ok 73 - task index checker accepts the current format without migrating legacy siblings
+  ---
+  duration_ms: 4.401875
+  type: 'test'
+  ...
+# Subtest: task index checker rejects incompatible paths and canonical mismatches
+ok 74 - task index checker rejects incompatible paths and canonical mismatches
+  ---
+  duration_ms: 6.757167
+  type: 'test'
+  ...
+# Subtest: task links to deleted reports fail validation
+ok 75 - task links to deleted reports fail validation
+  ---
+  duration_ms: 0.776334
+  type: 'test'
+  ...
+# Subtest: cross-linked task and report slugs fail validation
+ok 76 - cross-linked task and report slugs fail validation
+  ---
+  duration_ms: 0.380875
+  type: 'test'
+  ...
+# Subtest: task artifact producers use stable task-owned paths
+ok 77 - task artifact producers use stable task-owned paths
+  ---
+  duration_ms: 0.713
+  type: 'test'
+  ...
+# Subtest: task workflow skills own canonical records and routes
+ok 78 - task workflow skills own canonical records and routes
+  ---
+  duration_ms: 2.460166
+  type: 'test'
+  ...
+# Subtest: workspace context contract supports dispatch-ready retrieval and durable admission
+ok 79 - workspace context contract supports dispatch-ready retrieval and durable admission
+  ---
+  duration_ms: 0.539917
+  type: 'test'
+  ...
+# Subtest: workspace context value cases enforce admission and temporary exits
+ok 80 - workspace context value cases enforce admission and temporary exits
+  ---
+  duration_ms: 0.373583
+  type: 'test'
+  ...
+# Subtest: workspace context query cases cover session, task, write, and failure gates
+ok 81 - workspace context query cases cover session, task, write, and failure gates
+  ---
+  duration_ms: 0.142917
+  type: 'test'
+  ...
+# Subtest: workspace context lifecycle scenarios have complete inputs and consistent expected references
+ok 82 - workspace context lifecycle scenarios have complete inputs and consistent expected references
+  ---
+  duration_ms: 0.940542
+  type: 'test'
+  ...
+# Subtest: workspace context CLI loads Core, queries only v1 Packs, and fails closed
+ok 83 - workspace context CLI loads Core, queries only v1 Packs, and fails closed
+  ---
+  duration_ms: 457.109084
+  type: 'test'
+  ...
+# Subtest: current workspace Context has a valid Core and formal Packs
+ok 84 - current workspace Context has a valid Core and formal Packs
+  ---
+  duration_ms: 75.927292
+  type: 'test'
+  ...
+# Subtest: CSL task contract keeps acceptance, evidence, and review gates explicit
+ok 85 - CSL task contract keeps acceptance, evidence, and review gates explicit
+  ---
+  duration_ms: 1.564125
+  type: 'test'
+  ...
+# Subtest: owning tasks persist review feedback separately from the active finding ledger
+ok 86 - owning tasks persist review feedback separately from the active finding ledger
+  ---
+  duration_ms: 0.471125
+  type: 'test'
+  ...
+# Subtest: workspace task ownership defaults independent and ambiguous outcomes to new records
+ok 87 - workspace task ownership defaults independent and ambiguous outcomes to new records
+  ---
+  duration_ms: 0.398541
+  type: 'test'
+  ...
+# Subtest: workspace review-gate cases distinguish R0, R1, R2 and explicit review
+ok 88 - workspace review-gate cases distinguish R0, R1, R2 and explicit review
+  ---
+  duration_ms: 0.398166
+  type: 'test'
+  ...
+# Subtest: review grading has one shared authority and keeps evidence and safety boundaries
+ok 89 - review grading has one shared authority and keeps evidence and safety boundaries
+  ---
+  duration_ms: 1.173417
+  type: 'test'
+  ...
+# Subtest: workspace task-review stall cases block after two per-finding no-progress re-reviews
+ok 90 - workspace task-review stall cases block after two per-finding no-progress re-reviews
+  ---
+  duration_ms: 6.973292
+  type: 'test'
+  ...
+# Subtest: workspace lesson contract queries before work and confirms every persistent write
+ok 91 - workspace lesson contract queries before work and confirms every persistent write
+  ---
+  duration_ms: 0.580125
+  type: 'test'
+  ...
+# Subtest: workspace lesson CLI indexes v1 and legacy records and rejects malformed v1
+ok 92 - workspace lesson CLI indexes v1 and legacy records and rejects malformed v1
+  ---
+  duration_ms: 145.917875
+  type: 'test'
+  ...
+# Subtest: adversarial review report presents compact human-readable dialogue
+ok 93 - adversarial review report presents compact human-readable dialogue
+  ---
+  duration_ms: 1.611875
+  type: 'test'
+  ...
+# Subtest: new Topics start Active and accept implementation without activation
+ok 94 - new Topics start Active and accept implementation without activation
+  ---
+  duration_ms: 20.349333
+  type: 'test'
+  ...
+# Subtest: legacy Draft is unchanged by reads and converts only through an explicit versioned command
+ok 95 - legacy Draft is unchanged by reads and converts only through an explicit versioned command
+  ---
+  duration_ms: 48.360709
+  type: 'test'
+  ...
+# Subtest: standalone tasks do not create Topic storage
+ok 96 - standalone tasks do not create Topic storage
+  ---
+  duration_ms: 14.941375
+  type: 'test'
+  ...
+# Subtest: persistent Topic has immutable spec revisions and a separate index
+ok 97 - persistent Topic has immutable spec revisions and a separate index
+  ---
+  duration_ms: 24.411416
+  type: 'test'
+  ...
+# Subtest: changed external specification blocks assessment and terminal gates without editing task
+ok 98 - changed external specification blocks assessment and terminal gates without editing task
+  ---
+  duration_ms: 29.411209
+  type: 'test'
+  ...
+# Subtest: adoption preserves Required review and exits In Review
+ok 99 - adoption preserves Required review and exits In Review
+  ---
+  duration_ms: 19.790833
+  type: 'test'
+  ...
+# Subtest: legacy Draft maintenance can finish, while implementation requires explicit conversion
+ok 100 - legacy Draft maintenance can finish, while implementation requires explicit conversion
+  ---
+  duration_ms: 18.869
+  type: 'test'
+  ...
+# Subtest: archive blocks active members and preserves completed historical evidence
+ok 101 - archive blocks active members and preserves completed historical evidence
+  ---
+  duration_ms: 21.162625
+  type: 'test'
+  ...
+# Subtest: archive maintenance owner can finish after archiving its own Topic
+ok 102 - archive maintenance owner can finish after archiving its own Topic
+  ---
+  duration_ms: 21.20575
+  type: 'test'
+  ...
+# Subtest: stale association cannot adopt a new revision without impact evidence
+ok 103 - stale association cannot adopt a new revision without impact evidence
+  ---
+  duration_ms: 9.319917
+  type: 'test'
+  ...
+# Subtest: duplicate binding, stale writes, missing snapshots and unsafe paths fail closed
+ok 104 - duplicate binding, stale writes, missing snapshots and unsafe paths fail closed
+  ---
+  duration_ms: 10.102834
+  type: 'test'
+  ...
+# Subtest: pinned dependencies are rechecked even when the Topic text is unchanged
+ok 105 - pinned dependencies are rechecked even when the Topic text is unchanged
+  ---
+  duration_ms: 11.878167
+  type: 'test'
+  ...
+# Subtest: explicit repair follows task authority and index rebuild does not alter specs
+ok 106 - explicit repair follows task authority and index rebuild does not alter specs
+  ---
+  duration_ms: 12.3825
+  type: 'test'
+  ...
+# Subtest: cross-repository binding requires permission, exact mapping and pinned origin identity
+ok 107 - cross-repository binding requires permission, exact mapping and pinned origin identity
+  ---
+  duration_ms: 512.8255
+  type: 'test'
+  ...
+# Subtest: failed detach and rollback retain a durable terminal blocker until exact repair
+ok 108 - failed detach and rollback retain a durable terminal blocker until exact repair
+  ---
+  duration_ms: 13.581334
+  type: 'test'
+  ...
+# Subtest: repair reconciles the task index after an In Review detach and rollback failure
+ok 109 - repair reconciles the task index after an In Review detach and rollback failure
+  ---
+  duration_ms: 20.118
+  type: 'test'
+  ...
+# Subtest: successful rollback also requires explicit verification and pending repair
+ok 110 - successful rollback also requires explicit verification and pending repair
+  ---
+  duration_ms: 10.833042
+  type: 'test'
+  ...
+# Subtest: stale specification allows failure evidence and cancellation without adopting
+ok 111 - stale specification allows failure evidence and cancellation without adopting
+  ---
+  duration_ms: 16.995667
+  type: 'test'
+  ...
+# Subtest: malformed candidate Markdown is rejected before Topic, index or snapshot writes
+ok 112 - malformed candidate Markdown is rejected before Topic, index or snapshot writes
+  ---
+  duration_ms: 4.104334
+  type: 'test'
+  ...
+# Subtest: concurrent member additions reject a stale writer instead of losing a backlink
+ok 113 - concurrent member additions reject a stale writer instead of losing a backlink
+  ---
+  duration_ms: 50.218542
+  type: 'test'
+  ...
+# Subtest: new Topics provide a shared resources directory and clickable classified index
+ok 114 - new Topics provide a shared resources directory and clickable classified index
+  ---
+  duration_ms: 5.074542
+  type: 'test'
+  ...
+# Subtest: reference metadata and content changes do not stale a bound task
+ok 115 - reference metadata and content changes do not stale a bound task
+  ---
+  duration_ms: 12.062542
+  type: 'test'
+  ...
+# Subtest: normative resource changes use the existing revision and terminal gates
+ok 116 - normative resource changes use the existing revision and terminal gates
+  ---
+  duration_ms: 15.403125
+  type: 'test'
+  ...
+# Subtest: resource classification and removal change the normative projection only when applicable
+ok 117 - resource classification and removal change the normative projection only when applicable
+  ---
+  duration_ms: 5.935542
+  type: 'test'
+  ...
+# Subtest: legacy Topics keep their shape and digest until explicit resource initialization
+ok 118 - legacy Topics keep their shape and digest until explicit resource initialization
+  ---
+  duration_ms: 4.1065
+  type: 'test'
+  ...
+# Subtest: resource registration rejects unsafe sources, duplicates, stale versions and archived writes
+ok 119 - resource registration rejects unsafe sources, duplicates, stale versions and archived writes
+  ---
+  duration_ms: 11.91875
+  type: 'test'
+  ...
+# Subtest: the same normative source cannot acquire conflicting resource and dependency pins
+ok 120 - the same normative source cannot acquire conflicting resource and dependency pins
+  ---
+  duration_ms: 2.936834
+  type: 'test'
+  ...
+# Subtest: normative source deduplication uses the same separator handling as file reads
+ok 121 - normative source deduplication uses the same separator handling as file reads
+  ---
+  duration_ms: 3.133583
+  type: 'test'
+  ...
+# Subtest: resource CLI updates expose the index and directory without copying source content
+ok 122 - resource CLI updates expose the index and directory without copying source content
+  ---
+  duration_ms: 35.664959
+  type: 'test'
+  ...
+# Subtest: new Topic Tasks tables link formal members and history without reopening completed tasks
+ok 123 - new Topic Tasks tables link formal members and history without reopening completed tasks
+  ---
+  duration_ms: 19.084792
+  type: 'test'
+  ...
+# Subtest: history does not block archive or satisfy a formal backlink
+ok 124 - history does not block archive or satisfy a formal backlink
+  ---
+  duration_ms: 15.404625
+  type: 'test'
+  ...
+# Subtest: repair preserves genuine history and history removal never detaches a member
+ok 125 - repair preserves genuine history and history removal never detaches a member
+  ---
+  duration_ms: 10.166083
+  type: 'test'
+  ...
+# Subtest: explicit formatting converts legacy JSON Tasks without changing task evidence or revisions
+ok 126 - explicit formatting converts legacy JSON Tasks without changing task evidence or revisions
+  ---
+  duration_ms: 9.44125
+  type: 'test'
+  ...
+# Subtest: reference files and folders expose openable encoded links for Chinese and spaces
+ok 127 - reference files and folders expose openable encoded links for Chinese and spaces
+  ---
+  duration_ms: 5.240541
+  type: 'test'
+  ...
+# Subtest: task records cannot be newly registered as Resources while reports remain eligible
+ok 128 - task records cannot be newly registered as Resources while reports remain eligible
+  ---
+  duration_ms: 7.990917
+  type: 'test'
+  ...
+# Subtest: legacy task Resource links remain readable but must be explicitly removed on update
+ok 129 - legacy task Resource links remain readable but must be explicitly removed on update
+  ---
+  duration_ms: 10.212166
+  type: 'test'
+  ...
+# Subtest: historical task CLI and show links do not mutate the referenced task
+ok 130 - historical task CLI and show links do not mutate the referenced task
+  ---
+  duration_ms: 43.869334
+  type: 'test'
+  ...
+# Subtest: new CLI entry, spec package and manifest expose Topic without adding a task kind
+ok 131 - new CLI entry, spec package and manifest expose Topic without adding a task kind
+  ---
+  duration_ms: 29.435292
+  type: 'test'
+  ...
+1..131
+# tests 131
+# suites 0
+# pass 131
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2263.941791

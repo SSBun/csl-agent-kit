@@ -1,0 +1,25 @@
+{
+  "schema": "csl-context.validation/v1",
+  "valid": true,
+  "errors": [],
+  "warnings": [
+    {
+      "code": "unindexed-context-section",
+      "message": "section `## Components` is not indexed; only Project Core and CTX-* sections are loaded",
+      "line": 328,
+      "section": "Components"
+    },
+    {
+      "code": "unindexed-context-section",
+      "message": "section `## Relationships` is not indexed; only Project Core and CTX-* sections are loaded",
+      "line": 336,
+      "section": "Relationships"
+    },
+    {
+      "code": "unindexed-context-section",
+      "message": "section `## Decisions and Conventions` is not indexed; only Project Core and CTX-* sections are loaded",
+      "line": 344,
+      "section": "Decisions and Conventions"
+    }
+  ]
+}

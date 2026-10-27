@@ -23,9 +23,9 @@
 - 独立 adversarial review 只在用户明确要求时运行；普通验证与自审不能替代，也不会自动触发该流程；权威规则为 `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 与 `skills/meta/task/SKILL.md`。
 
 ## CTX-task-context — Workspace Context dispatch and maintenance
-- Scope: Workspace Context loading, task-relevant retrieval, source-backed maintenance, and default lifecycle consumers.
+- Scope: Workspace Context orientation, project coverage, iterative task retrieval, impact-based maintenance, local Core repair, and lifecycle consumers.
 - Paths: `tasks/context.md`, `skills/meta/task-context/`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
-- Keywords: task context, workspace context, project core, context pack, task fingerprint, dispatch, authority
+- Keywords: task context, workspace context, project core, context pack, task fingerprint, coverage, seed packs, change gate, authority, unindexed content
 - Authority: `skills/meta/task-context/SKILL.md`, `skills/meta/task-context/scripts/context.js`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `skills/meta/task/SKILL.md`, `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `tests/task-files.test.mjs`
 - Recheck: When the Context schema, task activation order, query lifecycle, write permissions, or default consumer wording changes.
 
@@ -35,17 +35,20 @@
 ### Structure
 - `tasks/context.md` 是单一 canonical 文件，由始终加载的 Project Core 与任务按需选择的完整 Context Packs 组成；不生成持久 index、cache 或 selected-ID state。
 - Project Core 固定包含 Purpose、Global Vocabulary、System Map 与 Global Invariants；正式 Pack 使用稳定 `CTX-*` ID、Scope/Paths/Keywords/Authority/Recheck metadata 和非空适用正文 sections。
-- `scripts/context.js` 只读解析标准 Core 与正式 `CTX-*` Packs，提供 `core/index/show/validate/--self-test`；非标准顶层内容不进入 Pack 索引，Agent 负责 Task Fingerprint、语义匹配、Authority 验证和写入判断。
+- `scripts/context.js` 只读解析标准 Core 与正式 `CTX-*` Packs，提供 `core/index/show/validate/--self-test`；index 包含 Authority/Recheck，非标准顶层段落产生 `unindexed-context-section` warning 并保留原文，查询 stderr 与 validate JSON 均可见。Agent 负责 Task Fingerprint、语义匹配、覆盖充分性、来源验证和写入判断；结构通过不证明知识完整或准确。
 
 ### Relationships
 - `skills/meta/agent-hooks/references/csl-agent-kit-contract.md` 是自动注入的稳定行为契约，要求 session 边界恢复 Context、先按 outcome 选择 task family、实质工作前完成 Task Target 对齐并消费相关 Context 与 Lessons，同时把具体操作细节留给对应 Skill 和共享协议。
 
 ### Workflows
-- Session start、resume 或 compaction 先运行 `core`；已有文件缺少有效 Core 时从最小权威来源重建并验证，文件缺失时展示完整最小 Core 提案并取得确认后才创建。随后具体 outcome 才激活 canonical task；共享协议独占 Target 详细语义，稳定行为是新的或实质修订后的非平凡等价 Target 完整展示后等待用户核对目标理解；明确授权不等于用户接受，只有可恢复真实接受且未变的目标才免重复核对，并保留其他强制 checkpoint。实质差异显示 changed dimensions 并等待批准、用户歧义先澄清，以及纯琐碎等价文件编辑可直接继续。对齐后才检索相关 Packs。
+- Session start、resume 或 compaction 先恢复最小 Core；缺失文件仍需精确提案确认。已有 Core 无效时只修复可明确划分的 Core 或安全插入缺失 Core，保留其他 Pack 和非标准内容；边界不明、证据不足或校验失败则披露并回退探索，不整文件重写。权威为 `task-context/SKILL.md` 的 Standard Context Bootstrap。
+- Task Target 对齐后按任务范围检查用途与词汇、组件职责、入口与产物、数据/控制流、来源与生成关系、跨组件约束、验证信号七个维度；只持久化已确认且改变决策的事实，缺口留在任务或会话。Core-only 或缺少相关 Pack 时补齐高价值 seed Packs，普通任务不做全仓深度审计。Core 和关键 Pack 结论须能追到具体来源及符号/章节。
+- 检索先按 metadata 初选，再核实来源与任务覆盖；一至三包只是初始批次，业务别名、遗漏关系或新依赖触发补检。Change Gate 在任务边界变化或来源冲突时重建 fingerprint；来源不可用时暂停依赖相关结论，不能据此认定事实不存在或直接删除。
+- 自检前从本任务实际改动和新确认事实扫描 metadata index，维护集合包括已选 Pack、其他 Paths/Authority 或关系受影响的 Pack、相关 Core 和新事实；逐项选择 Add/Update/Delete/No-op。`task/SKILL.md` 的 Completion 接入此检查，Contract 只保留稳定触发；其他并行任务的 dirty files 不归本任务。
 
 ### Decision and Verification Boundaries
-- Authority 与 Context 冲突时 Authority 优先；source-backed ordinary Pack 可在所属任务内自动维护并校验，已有文件缺少有效 Core 时可自动重写，缺失文件的创建及其他有效 Project Core 持久变更必须先展示精确内容并取得用户确认。
-- 重写失败时恢复原文件；缺失文件未获确认、无可信相关 Packs、相关 malformed/duplicate Pack 或 Authority 冲突时披露并回退普通探索。Core 不得使用占位事实，CLI self-test、实际 Context validation 和 `tests/task-files.test.mjs` 共同验证格式与消费者。
+- Authority 与 Context 冲突时按该断言的权威范围核实；source-backed ordinary Pack 可在所属任务授权范围内自动维护，缺失文件创建及有效 Core 语义变更仍须精确内容确认。局部修复不得丢弃其他知识；删除稳定 ID 前核对活跃引用，合并保留所有独有有效知识与来源。
+- 写前重读防止覆盖并行修改，失败回滚仅撤销本任务的写入；无法核实的事实不进入 Context。`evals/lifecycle_cases.json` 提供覆盖、检索、维护与恢复场景；语法、结构和事件断言不证明 Agent 行为，测试与 self-test 仅在明确授权后运行。现有非标准段落的 warning 需显式处理，不能为了零警告自动迁移历史内容。
 
 ## CTX-skill-quality — Built-in Skill package quality gate
 - Scope: 日常 Skill package 的确定性结构、资源、上下文预算与 routing fixture 验证，以及共享和项目本地 package 的检查入口。
@@ -82,7 +85,7 @@
 - `.agents/skills/task-target-alignment-eval` 是指向 canonical skill source 的唯一相对 symlink 发现入口。Pi 会跟随 project `.agents/skills` 目录链接，共享 CLI 只枚举根 `skills/`，因此该 skill 只在受信任的当前项目中激活。
 
 ### Workflows
-- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`、针对 symlink package 的 Skill Quality 和 Context validation；`--self-test` 与项目测试须当前请求明确授权。v5 `prepare` 请求不含 oracle；`authorizedClauses` 只表示授权来源，独立的 `confirmationItems`／`goal_recheck` 表示用户目标复核，二者可重叠。`continue_unchanged` 需要完整候选及逐条真实接受来源；`show_continue` 只作为可识别的策略错误评分。score／compare 分别评测可见性、等待、重复确认、错误复用、覆盖遗漏、组合原因与展示 Target 一致性，以及 main-session L0–L4、delegated handoff、Safety 和 transition；comparison 要求相同 v5 dataset hash。固定候选与出处索引不证明自由生成目标、语义蕴含或真实等待，需另获授权后在新上下文观察；结果保持 provisional／report-only。
+- 修改评测 suite、skill 或发现边界后运行 layout check、evaluator `validate`、针对 symlink package 的 Skill Quality 和 Context validation；`--self-test` 与项目测试须当前请求明确授权。v6 `prepare` 请求不含 oracle，`workType` 区分当前探索／实现工作；等价探索用 null level 的 `continue_exploration`，不产生接受证据。`authorizedClauses` 只表示授权来源，`confirmationItems`／`goal_recheck` 表示需要的用户目标复核；`continue_unchanged` 仍需完整候选及真实接受来源，`show_continue` 仍是策略错误。scorer 检查探索误确认、实现／用户暂停漏等待、越界继续、接受复用、覆盖、原因、展示、委派和 Safety；comparison 只接受相同 v6 dataset hash，旧报告不证明当前策略。固定候选与索引不证明语义、自由生成或真实工具时序，须另获授权后观察；结果保持 provisional／report-only。权威为 `evals/scripts/evaluate-task-target-alignment.js` 和 `evals/task-target-alignment/cases.json`。
 
 ### Decision and Verification Boundaries
 - Oracle cases、schema、固定 prediction samples 和确定性脚本可提交；当前 Task Target labels 在人工 adjudication 前保持 provisional／report-only。付费模型 run 需要当前用户明确授权，prediction／报告默认写入 ignored `results/`。不得保存 chain-of-thought、凭据、客户数据或未脱敏完整会话。
@@ -137,6 +140,7 @@
 - 有有效关联时，TUI 把该任务单列于 `This Session`，其余近期任务列于 `Workspace`；无关联或失效关联回退普通共享列表。已完成任务保持关联，直到被替换或清除。
 - TUI 对非空任务只注册一次自定义 Component，每 5 秒清除当前工作区进度缓存、重读任务并原位更新；空列表注销组件，重复启动释放旧 timer，`session_shutdown` 最终清理。
 - 支持 OSC 8 的 TUI 将 Tasks/Workspace 标题链接到当前工作区 `tasks/tasks.md`，Topics 标题链接到 `tasks/topics.md`；This Session 标题保持纯文本。在任务 widget 与 `/tasks` 通知中将 canonical `tasks/<task-slug>.md` 标题链接到对应绝对文件 URL；不支持 hyperlink 的终端及非 canonical 路径保持纯文本。RPC 忽略 session 分组并保持可序列化纯字符串数组，headless 不注册 widget。
+- 任务条目只展示标题、状态和 Target 进度；`This Session`、`Workspace`、无有效 focus 的普通列表、RPC widget 与 `/tasks` 均不读取或展示恢复详情。Plan／Block 的完整交接信息仍由 canonical task 与共享 core／CLI JSON 承载，面板不依赖 `recoveryOf(text)`；查看导航不会改写任务记录。
 
 ### Decision and Verification Boundaries
 - 只有符合 `tasks/[a-z0-9-]+.md` 的 canonical index path 才能被关联或生成文件链接；`pathToFileURL` 负责绝对路径和特殊字符编码。
@@ -152,23 +156,27 @@
 ### Purpose and Boundaries
 - `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，同时对齐计划任务最终要实现的 Target；该 Target 的接受不授权执行。`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
 - `Task Summary` 是 Agent 在完成自检与 assessment 前维护的单一改动摘要章节，不是 CLI 自动生成字段；按实际修改的组件分段，记录组件根目录与具体变化，不替代 Result／Verification。Queue parent 只记录 parent-owned 改动；正文变化仍走 `sync` 与证据失效流程。权威为 `skills/meta/task/SKILL.md` 和 `skills/meta/task-queue/SKILL.md`。
+- 常驻Contract只保留稳定触发、顺序、授权与停止边界；模式存储/确认分级细节归共享Target协议，assessment细节归Task/Grading，ledger格式/计数/恢复归Task与Review Workflow。独立分析本身可验收时走Task，面向后续实现的调查才走Task Plan；详细规则仍须通过选定Skill加载，去重不豁免任何门槛。
 
 ### Structure
 - 三个 workflow 直接位于 `skills/meta/`，进入或在上下文丢失后恢复时均须读取 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`；该普通 Markdown runtime contract 是全部 Target 对齐语义的唯一详细 Authority，不参与 skill discovery。各 consumer 只拥有激活时机、workflow-specific Target 含义、对齐前 lifecycle writes 与对齐后下一步。
-- 三个 workflow 共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 只维护 Markdown 状态、证据、父子关系和索引一致性，不持久化会话 alignment 或 confirmation，也不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
+- 三个 workflow 共享 `skills/meta/csl-tasks/shared/lib/task-core.js` 与 `skills/meta/csl-tasks/shared/scripts/csl-tasks.js`；core 维护 Markdown 状态、证据、父子关系和索引一致性，并通过 `task-evidence.js`／`task-reports.js` 校验明确登记的文件快照和报告。它不持久化会话 alignment 或 confirmation，不启动嵌套宿主 CLI、worker、daemon 或任意验证命令。
 - Core 将 Status、Kind、可选 Artifacts 与 Parent 投影到 canonical record 顶部的 `Field`／`Value` 两列表格，状态值保持 `<state> (<YYYY-MM-DD HH:MM>)`；兼容读取旧式 `Name: value` 元数据，并仅在该记录下次写入时转换，展示格式转换不改变 review fingerprint。canonical `#`／`##` record headings 固定从 column zero 开始，indented 或 container-nested headings 仅是内容。Core 在 `tasks/tasks.md` 维护对应标题、状态与 `tasks/<task-slug>.md` 链接；record 在索引不一致时仍是权威。
 - 新队列父任务只写入 `Kind: Queue`；读取现有历史 `Kind: Auto` 时在内存中归一为 queue 以继续执行，但创建新记录不接受 `auto`。
+- 未完成任务的恢复事实保留在既有 Plan 的可选单行 `Current artifacts`／`Next action`／`Required input` 及 Block 的 `Reason`／`Unblock when` 中。core `recoveryOf(text)` 与 CLI JSON 只投影明确顶层字段，跳过 fenced／HTML／嵌套示例及歧义重复字段，不猜测步骤、不新增状态或恢复游标；缺字段不影响旧记录有效性。提示不能替代实际产物与解除条件的重新核对。
 - Core 在每次写入 Task／Plan／Queue record 时，按对应 `tasks/artifacts/<task-id>/` 是否为目录，在顶部元数据表维护 `Artifacts` 行及 `[Artifacts](../artifacts/<task-id>/)` 链接；不会创建空目录或批量回填，读取与校验不写入。仅这个固定格式的顶部导航字段不参与 review fingerprint，正文中的同类文本仍参与；`sync` 的既有证据失效行为不变。
 
 ### Workflows
-- 默认 confirm 模式下，文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：授权自检通过只表示可向用户展示目标，不表示用户已核对 Agent 的理解。首次明确请求、实质修订与澄清收敛后的非平凡等价 Target 均完整展示并结束当前轮等待；局部答案、原始请求或旧 `show_continue` 不构成整体目标接受。只有已展示、真实接受且未变仍适用的目标可 `continue_unchanged`；用户要求、material Plan graph 和无法恢复接受依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权／接受，复用必须检查提案及后续接受来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
+- 默认 confirm 模式下，具体非平凡探索与文件变更都先激活／聚焦 owning record，再应用共享对齐协议。主会话的等价探索（检查、分析、研究与只读规划）用 `continue_exploration`，无需目标确认或先前接受证据；明确用户暂停、真正阻塞的用户决策和承诺变化仍保留对应检查。探索可写任务记录及明确请求的调查报告，不能擅自实施；“调查并修复”属于实现。用户后来要求执行同一 canonical plan 时正常应用实现确认，只有已展示且真实接受、未变仍适用的完整实现 Target 才可复用。探索结束不等于 Target 接受。实现的首次、实质修订与澄清收敛后非平凡等价 Target 仍完整展示并等待；L3／L4、接受来源和组合效果检查保留。子会话按完整当前 Plan packet 继续或返回主会话，不自行询问用户；范围内调查重排和缺失接受不单独制造探索暂停。协议选中探索继续后即可加载 task-relevant Context、Lessons 和直接来源。权威为 `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`。
 - 主 Agent 按原始要求、有效修订与已接受约束自检并记录逐 Target 证据后，按独立于 Task Target 的 R0／R1／R2 协议分类实际结果：R0 无交付物变更；R1 是结果明确、影响可界定、低风险且验证充分的简单变更，包括符合条件的小范围逻辑修改；R2 是复杂、高风险或存在重要不确定性的变更。R0／R1 在没有显式或既有审查义务时可 `Skipped`，R2 或显式普通审查进入 Required／In Review／fresh 只读 `task-review` 修复循环。R2 的显式 adversarial approval 需保留 ordinary pass；R0／R1 可因显式 adversarial 请求直接进入 Required／In Review／Approved。所有等级保留最终验证。
-- `assess-review` 在 In Progress 写入唯一 `task-review-assessment/v1` Review Assessment，保留等级、Current／Stale、具体依据、外部内容身份、自检证据和任务指纹；R1 另需四项成立依据。core 校验结构、等级／gate 一致性及任务记录指纹，不执行语义评级、检查命令或外部文件监控。`sync`、Result 更新、reopen 和相关 Queue 关系变化会使 assessment 失效、清除 Verification、移除 Skipped 或将 Passed／Approved 恢复 Required；外部内容漂移须由宿主和主 Agent 现场核对后重新自检、判级与必要复审。历史记录仍可读，活动任务在新的终态 gate／完成前须有当前 assessment。最终 fresh pass 确认所有 finding 解决后，由 `review passed --resolve-ledger --snapshot` 原子清理 ledger 并写入 Passed；该路径要求当前任务指纹与相同 snapshot、无 stalled finding，保留未变的 assessment 而清除 Verification，不能通过手删 ledger 后 sync 来代替。
+- `assess-review` 在 In Progress 写入唯一 `task-review-assessment/v1` Review Assessment，保留等级、Current／Stale、具体依据、外部内容身份、自检证据和任务指纹；R1 另需四项成立依据。core 校验结构、等级／gate 一致性及任务记录指纹，不执行语义评级、检查命令或外部文件监控。`snapshot <id> --file ...` 为明确文件范围生成不可变 `task-snapshot/v1` manifest，记录文件字节与 Git HEAD/index 身份，返回 `snapshot:...#<sha256>`；此类身份在 assessment 和终态写入现场核对，旧自由文本身份保留 owner-attested 边界。`sync`、Result 更新、reopen 和相关 Queue 关系变化会使 assessment 失效、清除 Verification、移除 Skipped 或将 Passed／Approved 恢复 Required；外部内容漂移仍须刷新自检、判级与必要复审。历史记录仍可读，活动任务在新的终态 gate／完成前须有当前 assessment。最终 fresh pass 确认所有 finding 解决后，由 `review passed --resolve-ledger --snapshot` 原子清理 ledger 并写入 Passed；该路径要求当前任务指纹与相同 snapshot、无 stalled finding，保留未变的 assessment 而清除 Verification，不能通过手删 ledger 后 sync 来代替。
+- `finalize <id> <R0|R1>` 复用 Result、assessment、Skipped、Verification 与完成门槛，以一次锁定事务更新任务和索引；替换前备齐新内容和原件备份，终态任务最后提交，恢复通过重命名而不重新分配内容；若恢复也受文件系统拒绝，保留备份并明确报告未恢复路径。重复 `--result` 必须覆盖每个 Target，R1 仍需四项依据，`--final-verification` 必须提供实际最终核对。工具不推断语义风险、会话显式审查义务或检查运行；Required／ledger／Block／证据漂移／未完成 child 拒绝收尾。完整观察集中在 Result，其他证据可引用而不重复叙述；R2 与显式审查仍走正常流程。
+- `task/SKILL.md#capability-preflight` 在对齐后的准备阶段核对实际依赖的runtime、验证授权、fresh/read-only Reviewer能力和证据持久化路径；Task Plan／Queue只引用该权威。复用已有授权与作用域内例外，不运行占位审查或提前判级；缺项进入既有Plan/Block和恢复条件，不弱化终态门槛。未来执行能力缺失只作为计划交接前提，除非妨碍当前规划决策或验证。
 - `task-review` 的既有 `references/review_workflow.md` 承载固定 Reviewer Prompt 与当次事实包契约，不另建 Agent 注册文件。Reviewer 先对照需求与产物，再核对作者检查证据，分别报告独立执行的检查与继承证据；原始要求不能被作者摘要替代，被审查材料不能反向授予工具或审批权限。该顺序减少上下文锚定，但不保证盲审或消除同模型偏差。
-- Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能因失败将 R2 降级，也不能把既有 Required 义务改为 Skipped；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检、assessment 和 fresh pass；当前 core 不证明实际隔离、检查运行或外部文件内容未变，这些证据由宿主与主 Agent 建立。
+- Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能因失败将 R2 降级，也不能把既有 Required 义务改为 Skipped；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检、assessment 和 fresh pass；当前 core 不证明实际隔离、检查运行或未登记范围的内容身份；托管快照仅核对明确范围在检查时的内容，这些语义与范围证据由宿主与主 Agent 建立。
 - Mandatory review 用带 `task-review-ledger/v1` marker 的唯一 task-local `## Review` current ledger 持久化单调 `TR-n` IDs 与逐 finding no-progress streak；Core 只把 fenced／indented／list-container code 与 HTML block/comment 之外的 column-zero H2 当作 record section；重复 Review sections、未知 ledger schema 与使用 alternate list markers／whitespace 的 ledger-like malformed 内容 fail closed，单个无 marker 的历史自由格式 Review 保持可读。Finding 初见为 0，同一根因／required outcome 的 fresh re-review 连续无实质 artifact／evidence 进展时递增，到 2 即保留 ledger、写入精确 Block／Unblock 条件并进入 Blocked，请求用户决策且不得自动 `Passed`；对应 streak 在新证据下重置前，Core 拒绝 resume。有效进展、证据化重分类或解决会重置／移除对应 finding，不设总 pass 上限。
 
-- 普通 `task-review` 返回只读反馈后，由 owning task 主 Agent 将每轮反馈保存到 `tasks/artifacts/<task-id>/reviews/round-<NN>.md`，并在独立持久的 `## Review Reports` 中记录相对链接、审查快照和结论；它不是第二份问题台账，不随临时 `## Review` 清理。文件和索引共同决定下一未用编号，resume／reopen 不覆盖历史报告。Task fingerprint 排除这个纯索引区块，但不会验证外部文件和链接，主 Agent 仍负责现场核对报告与快照；规范或实质证据变化仍触发既有失效流程。独立 adversarial-review 保留其自己的报告契约。
+- 普通 `task-review` 返回只读反馈后，由 owning task 主 Agent 用 `review-report` 将每轮反馈保存到 `tasks/artifacts/<task-id>/reviews/round-<NN>.md`，并在独立持久的 `## Review Reports` 中登记链接、快照、结论和 SHA256。新登记采用 `task-review-reports/v1`，已有行明确标为 legacy，不追认旧证据；编号由文件和索引共同决定，孤立已保存报告可用 `--existing-round` 核对后登记，不覆盖历史。写入复用锁与异常回滚，不保证跨文件崩溃事务。Task fingerprint 排除此索引；`check-evidence` 和终态门槛核对托管报告字节、路径、头部对应，托管快照或报告索引的 Passed 还要求最新报告同时匹配当前快照与 Task fingerprint，并记载独立审查无阻断问题；含旧说明文字的索引拒绝自动迁移，需先保留文字再操作。语义结论、实际 Reviewer 隔离和遗漏范围仍归主 Agent。独立 adversarial-review 保留其自己的报告契约。
 
 ### Decision and Verification Boundaries
 - 共享对齐协议的 Confirmation Modes 定义 SOLO 独立执行路径：有效 solo 在 L0–L4 分级前使用 `continue_solo`，仍激活／聚焦并展示完整 Target，跳过原二次确认分级，目标范围内操作选择由 Agent 根据证据与有界默认值处理；已授权发布／X／SOP 的框架确认改为动作说明，不能仅因 SOP 要求询问而暂停。保留实质防护、真实用户暂停、命令范围、宿主审批和上级安全限制，缺少无法查证的必要事实／授权时如实报告阻塞；质量审查和验证不变。查询／切换模式不恢复旧批次，默认或配置错误仍为 confirm。权威为 `skills/meta/csl-tasks/shared/lib/task-mode.js`、`scripts/task-mode.js` 和共享对齐协议。

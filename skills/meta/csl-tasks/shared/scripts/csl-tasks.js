@@ -2,6 +2,7 @@
 "use strict";
 
 const path = require("node:path");
+const fs = require("node:fs");
 const core = require("../lib/task-core.js");
 const topics = require("../lib/topic-core.js");
 const topicCli = require("../lib/topic-cli.js");
@@ -22,12 +23,18 @@ Commands:
   link <parent-id> <child-id>
   next <queue-id> [--json]
   result <id> <Tn> --evidence <text>
+  snapshot <id> --file <workspace-relative-file> [--file ...]
+  check-evidence <id> [--include-legacy]
+  review-report <id> --input <feedback-file> --snapshot <identity> --outcome <outcome> --mode <actual-mode> [--run <identity>]
+    recover an unindexed managed report with --existing-round <NN> instead
   assess-review <id> <R0|R1|R2> --reason <text> --snapshot <identity> --evidence <text>
     R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>
   review <id> <skipped|required|passed|approved> --evidence <text>
     passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve
   verify <id> <passed|failed> --evidence <text>
   complete <id>
+  finalize <id> <R0|R1> --result "T1: observation" [--result ...] --reason <text> --snapshot <identity> --evidence <text> --final-verification <text>
+    R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>
   topic <command> [arguments]
 
 ${topicCli.HELP}`;
@@ -56,6 +63,7 @@ function summary(task) {
     parent: task.parent || null,
     children: task.children.map(({ id }) => id),
     reviewAssessment: task.reviewAssessment || null,
+    ...(Object.keys(task.recovery).length ? { recovery: task.recovery } : {}),
     ...(task.topic ? { topic: task.topic } : {}),
   };
 }
@@ -167,6 +175,35 @@ function run(argv, io = console) {
         output = summary(core.recordReviewAssessment(workspace, id, level, options));
         break;
       }
+      case "snapshot": {
+        const id = args.shift();
+        const files = takeOption(args, "--file", { many: true });
+        if (!id || !files.length || args.length) throw new Error("snapshot needs a task id and explicit --file paths");
+        output = core.recordSnapshot(workspace, id, files);
+        break;
+      }
+      case "check-evidence": {
+        const id = args.shift();
+        const includeLegacy = args.includes("--include-legacy");
+        if (includeLegacy) args.splice(args.indexOf("--include-legacy"), 1);
+        if (!id || args.length) throw new Error("check-evidence needs one task id");
+        output = core.checkEvidence(workspace, id, { includeLegacy });
+        break;
+      }
+      case "review-report": {
+        const id = args.shift();
+        const input = takeOption(args, "--input");
+        const snapshot = takeOption(args, "--snapshot");
+        const outcome = takeOption(args, "--outcome");
+        const mode = takeOption(args, "--mode");
+        const run = takeOption(args, "--run");
+        const existingRound = takeOption(args, "--existing-round");
+        if (!id || args.length || (existingRound ? input || snapshot || outcome || mode || run : !input || !snapshot || !outcome || !mode)) {
+          throw new Error("review-report needs --input/--snapshot/--outcome/--mode, or only --existing-round");
+        }
+        output = core.recordReviewReport(workspace, id, existingRound ? { existingRound } : { feedback: fs.readFileSync(path.resolve(input), "utf8"), snapshot, outcome, mode, run });
+        break;
+      }
       case "review": {
         const [id, decision] = args.splice(0, 2);
         const evidence = takeOption(args, "--evidence");
@@ -190,6 +227,16 @@ function run(argv, io = console) {
         if (args.length !== 1) throw new Error("complete needs one task id");
         output = summary(core.completeTask(workspace, args[0]));
         break;
+      case "finalize": {
+        const [id, level] = args.splice(0, 2);
+        const options = Object.fromEntries(["reason", "snapshot", "evidence", "clarity", "impact", "risk", "verification"]
+          .map((key) => [key, takeOption(args, `--${key}`)]));
+        options.results = takeOption(args, "--result", { many: true });
+        options.finalVerification = takeOption(args, "--final-verification");
+        if (!id || !level || args.length) throw new Error("finalize needs a task id, R0|R1, per-Target --result, assessment options, and --final-verification");
+        output = summary(core.finalizeTask(workspace, id, level, options));
+        break;
+      }
       default:
         throw new Error(`unknown command: ${command}`);
     }

@@ -1,0 +1,57 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "fix-contract-delegation-assertions",
+  "files": [
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "82eb9ef48a79700847cfd6df34f4c620dd6ed85ef13be66f1cb52f2423bc7f5a",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8490121210a18e013407dc055f90bc7d39512c16"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8490121210a18e013407dc055f90bc7d39512c16",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/agent-hooks.test.js",
+      "sha256": "997b7650e06f0c68ba80e98e347c05039c4fcdfea5250c638f8b6b34329e318b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "e70f367f8cef9d024deb48eb5214fe829fd112fe"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "e70f367f8cef9d024deb48eb5214fe829fd112fe",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "55b869eb0f1f5c8b15637b249eb2b6b7e4dd198e6e91124694daf2261861c4bd",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}
