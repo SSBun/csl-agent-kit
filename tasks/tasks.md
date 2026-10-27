@@ -1,6 +1,6 @@
 # 任务索引
 
-- [提交全部本地改动并发布新的 minor 版本](tasks/release-local-minor-version.md) — In Progress (2026-10-27 19:21)
+- [提交全部本地改动并发布新的 minor 版本](tasks/release-local-minor-version.md) — Blocked (2026-10-27 19:27)
 
 - [同步委派契约的两处测试断言](tasks/fix-contract-delegation-assertions.md) — Completed (2026-10-27 14:33)
 
