@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | In Progress (2026-10-27 19:30) |
+| Status | Blocked (2026-10-27 19:32) |
 | Artifacts | [Artifacts](../artifacts/release-local-minor-version/) |
 | Kind | Task |
 
@@ -19,8 +19,8 @@
 5. 对实际结果执行自检、R2 独立只读审查和最终核对，记录证据与未完成边界。
 
 - Current artifacts: 本地发布准备提交 3f4dbd2977bc6efb143dbb285180ac9f5ae22001；版本 5.2.0；../artifacts/release-local-minor-version/evidence/。
-- Next action: 提交本任务恢复记录，执行非强制 git push origin main，核对 remote main 与 local HEAD 及自动触发的 exact-head CI。
-- Required input: 当前推送无额外输入；tag／npm 发布已按用户最新指令暂停，不能自动恢复。
+- Next action: 仅在用户明确要求时修复 CI 或恢复完整发布；当前 Git 推送已完成，不自动重跑测试、修复源码、创建 tag 或发布 npm。
+- Required input: CI 修复或完整发布的新授权；完整发布另需 npm 身份校验成功。
 
 ## Decisions
 
@@ -46,3 +46,10 @@
 - 验证脚本首次读取到并行生成中尚未完成的 JSON；生成命令结束后重新执行，全部 JSON 解析通过。详情见 static-checks.json，不将该次脚本失败归为项目故障。
 - T1: 全部原始 tracked／untracked 本地改动、5.2.0 元数据与本轮检查证据已提交 3f4dbd2977bc6efb143dbb285180ac9f5ae22001（97 files）；提交后 git status --short 为空。后续仅记录本任务的发布阻塞与恢复信息。
 - 后续范围：用户仅选择推送到远端 Git，tag 与 npm 发布暂停，不声称 T2 完成；npm 身份此前 E401。发布阶段的 R2 自检、独立只读 task-review 与最终验证仍待实际发布结果和证据，不沿用之前单次本地审查作为发布完成门槛。
+- Git 推送：git push origin main 成功，将全部领先提交推至 6d5e741e8d2f0b47d9b4a1641be9d4992a33a5ad；ls-remote 与本地 HEAD 一致，工作区干净。未执行 tag 或 npm publish。
+- CI 观察：https://github.com/SSBun/csl-agent-kit/actions/runs/40496722856 的 headSha 精确匹配 6d5e741e8d2f0b47d9b4a1641be9d4992a33a5ad，结论 failure。日志确认 cli-install-output.test.js:214 的 Codex plugin exports root skills and uses the root hook manifest 用例断言 true !== false；未运行本地测试，不擅自修复。此次仅再推送本记录更新，最终 HEAD 的 CI 将在聊天中报告，不将前一 run 冒充最终检查。
+
+## Block
+
+- Reason: 用户要求仅推送 Git，推送已完成；tag／npm 发布明确暂停，且自动 CI 已发现未修复失败，不能声称完整发布完成。
+- Unblock when: 用户明确授权 CI 修复或恢复完整发布；后者还需 npm whoami 成功、指定最终 HEAD 的 CI 通过及既有 R2 审查和发布确认。
