@@ -4,12 +4,9 @@ import { dirname, join } from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 const STATUS_KEY = "openai-codex-fast";
-const FAST_SERVICE_TIER = "priority";
+const SERVICE_TIERS = { fast: "priority", ultrafast: "ultrafast" } as const;
+type SpeedMode = "off" | keyof typeof SERVICE_TIERS;
 const CONFIG_PATH = join(getPiAgentDir(), "csl", "openai-codex-fast.json");
-
-interface FastModeConfig {
-	enabled?: boolean;
-}
 
 export default function openAICodexFast(pi: ExtensionAPI) {
 	pi.registerFlag("fast", {
@@ -18,86 +15,107 @@ export default function openAICodexFast(pi: ExtensionAPI) {
 		default: false,
 	});
 
-	let enabled = loadConfig();
+	pi.registerFlag("ultrafast", {
+		description: "Enable and persist OpenAI Codex Ultrafast Mode (higher usage)",
+		type: "boolean",
+		default: false,
+	});
+
+	let mode = loadConfig();
 
 	pi.on("session_start", async (_event, ctx) => {
-		if (pi.getFlag("fast") === true) {
-			enabled = true;
-			saveConfig(enabled);
-		} else {
-			enabled = loadConfig();
-		}
-
-		updateDisplay(pi, ctx, enabled);
+		const requestedMode = pi.getFlag("ultrafast") === true ? "ultrafast"
+			: pi.getFlag("fast") === true ? "fast" : undefined;
+		if (requestedMode) saveConfig(requestedMode);
+		mode = requestedMode ?? loadConfig();
+		updateDisplay(pi, ctx, mode);
 	});
 
 	pi.on("model_select", async (_event, ctx) => {
-		updateDisplay(pi, ctx, enabled);
+		updateDisplay(pi, ctx, mode);
 	});
 
 	pi.registerCommand("fast", {
-		description: "Persistently control OpenAI Codex Fast Mode: /fast on|off|toggle|status",
+		description: "Select Codex speed, or use /fast on|ultrafast|off|toggle|status",
 		handler: async (args, ctx) => {
-			const action = args.trim().toLowerCase() || "toggle";
-			let changed = false;
+			let action = args.trim().toLowerCase();
+			if (!action) {
+				if (!ctx.hasUI) {
+					ctx.ui.notify("Usage: /fast on|ultrafast|off|toggle|status", "warning");
+					return;
+				}
+				const selected = await ctx.ui.select(`Codex speed (current: ${mode})`, ["ultrafast", "fast", "off"]);
+				if (!selected) return;
+				action = selected === "fast" ? "on" : selected;
+			}
+			let nextMode = mode;
 
 			if (action === "on") {
-				enabled = true;
-				changed = true;
+				nextMode = "fast";
+			} else if (action === "ultrafast") {
+				nextMode = "ultrafast";
 			} else if (action === "off") {
-				enabled = false;
-				changed = true;
+				nextMode = "off";
 			} else if (action === "toggle") {
-				enabled = !enabled;
-				changed = true;
+				nextMode = mode === "off" ? "fast" : "off";
 			} else if (action !== "status") {
-				ctx.ui.notify("Usage: /fast on|off|toggle|status", "warning");
+				ctx.ui.notify("Usage: /fast on|ultrafast|off|toggle|status", "warning");
 				return;
 			}
 
-			if (changed) {
-				saveConfig(enabled);
+			if (action !== "status") {
+				saveConfig(nextMode);
+				mode = nextMode;
 			}
 
-			updateDisplay(pi, ctx, enabled);
-			ctx.ui.notify(formatStatus(ctx, enabled), "info");
+			updateDisplay(pi, ctx, mode);
+			ctx.ui.notify(formatStatus(ctx, mode), "info");
 		},
 	});
 
 	pi.on("before_provider_request", (event, ctx) => {
-		if (!enabled || !isEligibleCodexModel(ctx)) return;
+		if (mode === "off" || !isEligibleCodexModel(ctx, mode)) return;
 		if (!isRecord(event.payload)) return;
 
 		return {
 			...event.payload,
-			service_tier: FAST_SERVICE_TIER,
+			service_tier: SERVICE_TIERS[mode],
 		};
 	});
 }
 
-function isEligibleCodexModel(ctx: ExtensionContext): boolean {
-	const provider = ctx.model?.provider;
-	const modelId = ctx.model?.id;
-
-	return provider === "openai-codex" && isFastModeModel(modelId);
+function isEligibleCodexModel(ctx: ExtensionContext, mode: SpeedMode): boolean {
+	if (ctx.model?.provider !== "openai-codex" || mode === "off") return false;
+	const modelId = ctx.model.id;
+	if (mode === "ultrafast") return modelId === "gpt-6-astra" || modelId === "gpt-6.1-sol";
+	return /^gpt-5\.(4|5)(?:$|[-.])/.test(modelId) || isCurrentFastModel(modelId);
 }
 
-function isFastModeModel(modelId: string | undefined): boolean {
-	if (!modelId) return false;
-	return /^gpt-5\.(4|5)(?:$|[-.])/.test(modelId);
+function isCurrentFastModel(modelId: string): boolean {
+	return ["gpt-5.6", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna", "gpt-6.1-sol", "gpt-6.1-terra"].includes(modelId);
 }
 
-function formatStatus(ctx: ExtensionContext, enabled: boolean): string {
+function speedLabel(ctx: ExtensionContext, mode: SpeedMode): string {
+	if (mode === "off") return "off (no tier override)";
+	if (!isEligibleCodexModel(ctx, mode)) return `${mode} inactive (unsupported model; quota n/a)`;
+	if (!ctx.model || !ctx.modelRegistry.isUsingOAuth(ctx.model)) return `${mode} requested (usage ?x; API billing)`;
+	// Published Codex rates, not measured token counts or account entitlement.
+	// https://learn.chatgpt.com/docs/agent-configuration/speed
+	const quota = mode === "ultrafast" ? "quota 8x / credits 6x"
+		: isCurrentFastModel(ctx.model.id) ? "quota 2.5x / credits 2x" : "quota ?x / credits ?x";
+	return `${mode} requested (${quota})`;
+}
+
+function formatStatus(ctx: ExtensionContext, mode: SpeedMode): string {
 	const model = ctx.model ? `${ctx.model.provider}/${ctx.model.id}` : "none";
-	const eligibility = isEligibleCodexModel(ctx) ? "eligible" : "not eligible";
-	return `OpenAI Codex Fast Mode: ${enabled ? "on" : "off"} (${eligibility}; model: ${model})`;
+	return `OpenAI Codex speed: ${speedLabel(ctx, mode)}; model: ${model}`;
 }
 
-function updateDisplay(pi: ExtensionAPI, ctx: ExtensionContext, enabled: boolean): void {
-	ctx.ui.setStatus(STATUS_KEY, ctx.mode === "tui" ? undefined : enabled ? "fast" : undefined);
+function updateDisplay(pi: ExtensionAPI, ctx: ExtensionContext, mode: SpeedMode): void {
+	ctx.ui.setStatus(STATUS_KEY, ctx.mode === "tui" || mode === "off" ? undefined : speedLabel(ctx, mode));
 
 	if (ctx.mode !== "tui") return;
-	if (!enabled) {
+	if (mode === "off") {
 		ctx.ui.setFooter(undefined);
 		return;
 	}
@@ -159,7 +177,7 @@ function updateDisplay(pi: ExtensionAPI, ctx: ExtensionContext, enabled: boolean
 
 				const modelName = ctx.model?.id || "no-model";
 				const thinking = piThinkingLevelLabel(pi, ctx);
-				let rightSide = `${modelName}${thinking} • fast`;
+				let rightSide = `${modelName}${thinking}`;
 				if (footerData.getAvailableProviderCount() > 1 && ctx.model) {
 					const withProvider = `(${ctx.model.provider}) ${rightSide}`;
 					if (visibleWidth(withProvider) < Math.floor(width / 2)) rightSide = withProvider;
@@ -177,6 +195,7 @@ function updateDisplay(pi: ExtensionAPI, ctx: ExtensionContext, enabled: boolean
 				return [
 					truncateToWidth(theme.fg("dim", cwd), width),
 					theme.fg("dim", statsLine),
+					truncateToWidth(theme.fg("dim", speedLabel(ctx, mode)), width),
 					...(extraStatuses ? [truncateToWidth(extraStatuses, width)] : []),
 				];
 			},
@@ -230,21 +249,24 @@ function stripAnsi(text: string): string {
 	return text.replace(/\x1b\[[0-9;]*m/g, "");
 }
 
-function loadConfig(): boolean {
-	if (!existsSync(CONFIG_PATH)) return false;
+function loadConfig(): SpeedMode {
+	if (!existsSync(CONFIG_PATH)) return "off";
 
 	try {
-		const config = JSON.parse(readFileSync(CONFIG_PATH, "utf8")) as FastModeConfig;
-		return config.enabled === true;
+		const config: unknown = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
+		if (!isRecord(config)) return "off";
+		if (config.mode === "off" || config.mode === "fast" || config.mode === "ultrafast") return config.mode;
+		if (config.mode === undefined && config.enabled === true) return "fast";
+		return "off";
 	} catch {
-		return false;
+		return "off";
 	}
 }
 
-function saveConfig(enabled: boolean): void {
+function saveConfig(mode: SpeedMode): void {
 	const tmpPath = `${CONFIG_PATH}.tmp`;
 	mkdirSync(dirname(CONFIG_PATH), { recursive: true });
-	writeFileSync(tmpPath, `${JSON.stringify({ enabled }, null, 2)}\n`, "utf8");
+	writeFileSync(tmpPath, `${JSON.stringify({ mode }, null, 2)}\n`, "utf8");
 	renameSync(tmpPath, CONFIG_PATH);
 }
 

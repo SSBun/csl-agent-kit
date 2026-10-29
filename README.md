@@ -210,7 +210,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/` as Pi-specific extensions.
 - `pi/extensions/csl-skill-commands.ts`，动态发现 `skills/` 下的叶子 `SKILL.md`，并添加 `/repo-map`、`/task-review`、`/brainstorming` 等 Cursor/Codex 风格别名。
 - `pi/extensions/csl-context-hooks.ts`：桥接 Agent Hooks 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
-- `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
+- `pi/extensions/openai-codex-fast.ts`：提供持久化的 OpenAI Codex Fast／Ultrafast 控制，以及档位与用量消耗倍率展示。
 - `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
 - `pi/extensions/csl-settings.ts`：通过 `/csl-settings` 配置审查模型、思考强度与三层 Task 确认模式；`/task-mode` 快捷管理确认偏好，`csl_review_config` 只解析审查启动参数，不启动子 Agent。
 - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
@@ -359,22 +359,40 @@ CLI 成功输出 JSON，错误写入 stderr 并返回 1；`show` 不写文件，
 
 在 Pi 中执行 `/preset list` 查看当前预设，执行 `/preset` 交互选择，或直接执行 `/preset flash-max`、`/preset sol-xhigh`。执行 `/quick <prompt>` 会临时切换到 `quick` 预设，完成后恢复原模型与 thinking level。配置文件每次执行时重新读取，修改后无需 `/reload`。
 
-Fast Mode usage:
+Fast／Ultrafast 用法：
 
 ```bash
 pi --fast
+pi --ultrafast
 ```
 
-Inside Pi:
+在 Pi 中执行 `/fast` 打开选择菜单，选项依次为 `ultrafast`、`fast`、`off`；菜单标题显示当前档位，取消选择不会修改设置。也可以直接使用带参数命令：
 
 ```text
+/fast
 /fast on
+/fast ultrafast
 /fast off
 /fast toggle
 /fast status
 ```
 
-The Fast Mode setting is persisted in `~/.pi/agent/csl/openai-codex-fast.json`, so new Pi sessions reuse the configured value. When enabled, the footer status area shows `fast` next to Pi's other status indicators. The extension injects `service_tier: "priority"` only for eligible `openai-codex` models such as `gpt-5.4` and `gpt-5.5`. Actual availability depends on Codex/ChatGPT authentication and account entitlement; regular OpenAI API keys may not receive Fast Mode credits.
+`on` 选择 Fast，`ultrafast` 选择 Ultrafast，`off` 停止覆盖请求档位并恢复默认页脚。`toggle` 在关闭与 Fast 之间切换；从任一加速档位切换都会先关闭，不会意外启用 Ultrafast。无参数时只打开菜单；无交互 UI 时提示使用带参数命令，不自动切换档位。两个启动参数同时提供时，显式的 `--ultrafast` 优先。
+
+设置仍保存在 `~/.pi/agent/csl/openai-codex-fast.json`（遵循 `PI_CODING_AGENT_DIR`），以 `mode: "off" | "fast" | "ultrafast"` 持久化。旧的 `{ "enabled": true }` 读取为 Fast，不会升级到 Ultrafast；新会话复用保存的档位。
+
+扩展只处理 `openai-codex`：Fast 保留 `service_tier: "priority"`，支持原有 GPT-5.4／5.5 系列和 GPT-5.6、GPT-6 Astra／Sol／Luna、GPT-6.1 Sol／Terra；Ultrafast 发送 `service_tier: "ultrafast"`，仅适用于 `gpt-6-astra` 和 `gpt-6.1-sol`。其他模型不会注入该参数，状态显示 `inactive`。
+
+页脚和 `/fast status` 显示所请求的档位，以及相对标准模式的消耗倍率：
+
+| 档位 | 订阅内额度 `quota` | 购买的 credits／企业按量计费 `credits` |
+| --- | --- | --- |
+| Fast | 2.5x | 2x |
+| Ultrafast | 8x | 6x |
+
+倍率依据 [OpenAI 速度说明](https://learn.chatgpt.com/docs/agent-configuration/speed)，核对日期为 2026-10-29。示例 `ultrafast requested (quota 8x / credits 6x)` 表示请求参数和公开计费规则，不代表服务端已确认档位、剩余额度或实测扣费；原始 token 数不会乘上倍率。旧型号未确认的倍率显示 `?x`；非 OAuth 的 API 计费同样显示未知，不套用订阅倍率。不支持的模型显示 `quota n/a`。
+
+实际可用性仍取决于账号权益；Ultrafast 目前要求 Pro $500 或符合条件的 Enterprise／Edu。插件不能查询具体订阅、当前扣费来源或解锁权益，也不会自动回退到另一收费档位。
 
 context hooks 从 `<data-root>/hooks/*.md` 和 `<data-root>/sops/*.md` 读取用户数据；Pi 在每次 agent turn 前重建 context。修改后的本地开发环境请重启 Pi 或运行 `/reload`。
 
