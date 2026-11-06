@@ -59,7 +59,7 @@ interface AgentHooksModule {
 	runEvent(
 		payload: object,
 		options: { host: string; workspace: string; hookInputs?: Record<string, object> },
-	): { prompts: TriggerPrompt[]; diagnostics: string[]; blocked: boolean };
+	): { prompts: TriggerPrompt[]; diagnostics: string[]; blocked: boolean; reason?: string };
 }
 
 interface AgentHooksRuleEntry {
@@ -367,14 +367,18 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 	});
 
 	pi.on("tool_call", async (event, ctx) => {
-		// before-tool: Pi has no inject channel into the in-flight tool call,
-		// so only run-script side effects fire here.
 		const input = (event as { input?: { command?: string } }).input ?? {};
-		triggerScripts("before-tool", ctx.cwd, {
-			toolName: event.toolName,
-			toolCommand: input.command,
-			nativeEvent: "tool_call",
-		});
+		try {
+			const payload = buildPayload("before-tool", ctx.cwd, {
+				toolName: event.toolName,
+				toolCommand: input.command,
+				nativeEvent: "tool_call",
+			});
+			const result = agentHooks.runEvent(payload, { host: "pi", workspace: ctx.cwd });
+			if (result.blocked) return { block: true, reason: result.reason || "Blocked by Agent Hooks" };
+		} catch (error) {
+			return { block: true, reason: `Agent Hooks 检查失败：${error instanceof Error ? error.message : String(error)}` };
+		}
 
 		if (toolReminderShown || activeCandidates.length === 0 || !MUTATING_TOOLS.has(event.toolName)) {
 			return undefined;

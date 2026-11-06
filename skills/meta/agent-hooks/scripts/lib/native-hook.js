@@ -24,7 +24,8 @@ const NATIVE_EVENTS = {
 
 function normalizePayload(native, host, event, workspace) {
   const toolName = native.tool_name ?? null;
-  const command = typeof native.tool_input?.command === "string" ? native.tool_input.command : null;
+  const command = typeof native.tool_input?.command === "string" ? native.tool_input.command
+    : typeof native.tool_input?.cmd === "string" ? native.tool_input.cmd : null;
   return createEvent({
     event,
     host,
@@ -53,7 +54,7 @@ function normalizePayload(native, host, event, workspace) {
 }
 
 function toolCategory(name) {
-  if (name === "Bash") return "shell";
+  if (["Bash", "bash", "exec_command", "shell_command"].includes(name)) return "shell";
   if (["apply_patch", "Edit", "Write"].includes(name)) return "file";
   if (typeof name === "string" && name.startsWith("mcp__")) return "mcp";
   return name ? "tool" : null;
@@ -95,8 +96,10 @@ function dispatch(input = fs.readFileSync(0, "utf8"), env = process.env, io = pr
     } else if (["Stop", "SubagentStop"].includes(native.hook_event_name)) io.stdout.write("{}\n");
     return 0;
   } catch (error) {
-    io.stderr.write(`Agent Hooks runtime error (fail-open): ${bounded(error.message)}\n`);
-    return 0;
+    let beforeTool = false;
+    try { beforeTool = JSON.parse(input || "{}").hook_event_name === "PreToolUse"; } catch {}
+    io.stderr.write(`Agent Hooks runtime error (${beforeTool ? "blocked" : "fail-open"}): ${bounded(error.message)}\n`);
+    return beforeTool ? 2 : 0;
   }
 }
 

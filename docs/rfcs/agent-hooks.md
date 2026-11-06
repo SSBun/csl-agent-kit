@@ -132,6 +132,8 @@ stop
 
 未知 capability 必须按 unsupported 处理。事件名相同不能作为能力相同的证据。
 
+当前 Pi 适配的 `before-tool` 已使用 `tool_call` 返回 `{ block: true, reason }`，支持执行前阻断；它没有 prompt 注入通道。其他 Pi 事件的阻断能力不因此扩大。
+
 ## 7. 目录与文件生命周期
 
 ### 7.1 全局规则
@@ -229,6 +231,7 @@ Agent Hooks 不建立独立的隐式 trust 数据库。适配器无法复用或�
 | `when` | 否 | 缺失表示无条件匹配 |
 | `script` | 条件必需 | `run-script` 必须提供 |
 | `timeout` | 否 | 正整数秒；必须受运行时默认值和上限约束 |
+| `on-error` | 否 | 仅 `before-tool` / `run-script` 支持 `block`，检查失败时拒绝执行；缺省保留尽力执行语义 |
 | Markdown 正文 | 条件必需 | `inject-prompt` 必须为非空正文 |
 
 未知字段使规则 invalid，避免拼写错误被静默忽略。
@@ -679,7 +682,9 @@ Invalid rule：
 - 不执行。
 - 必须出现在 `list` 中。
 - 必须在 `show` 中提供文件、位置和具体错误。
-- 不阻止其他有效规则运行。
+- 通常不阻止其他有效规则运行；已解析且声明 `on-error: block` 的当前 before-tool 规则若因脚本不可用等原因 invalid，则阻断工具调用。
+
+`on-error: block` 也覆盖条件 unknown、脚本启动失败、超时、信号终止和非零退出。before-tool 的发现/事件预算耗尽及适配器未处理异常会阻断，不能把未完成检查当作通过。其他事件和未声明该策略的普通脚本维持原有失败语义。无法解析的规则不构成有效保护，必须通过 CLI 修复并核对实际宿主状态。
 
 重复 runtime diagnostic 应在会话内去重，避免每次事件刷屏。
 
@@ -694,8 +699,9 @@ Invalid rule：
 - Regex 和条件树必须有深度、节点数、pattern 长度和求值预算。
 - Prompt 注入不能覆盖更高优先级指令，也不能递归触发。
 - Agent Hooks 继承宿主 sandbox，不宣称提供额外隔离。
-- `before-tool` 的 commit 检查只是 Agent 内提前反馈，最终约束应复用 Git `pre-commit` 或 CI。
-- Runtime error 默认 fail-open，因此 Agent Hooks V1 不是安全强制边界。
+- `before-tool` 的 commit 检查保护 Agent 可见的工具调用；外部终端、GUI 和任意隐藏脚本不在覆盖范围，跨客户端强制约束仍需 Git `pre-commit` 或 CI。
+- `commit-guard` 拥有提交内容检查逻辑与保护规范；`inner:code-inline-review-commit` 保留原 ID 和受控薄入口，以兼容已有启用／禁用设置。该规则检查完整暂存文件中的保留审查标记；干净暂存内容允许工作区保留说明。检查失败或不支持的提交形式阻断，不自动清理或暂存。`code-inline-review` 只负责说明的编写、维护与清理；当前不检查推送历史。
+- Runtime error 默认尽力执行；`on-error: block` 的 before-tool 检查采用失败阻断。此机制不提供沙箱隔离，也不消除检查与提交之间的外部并发变更。
 
 ## 22. 示例
 

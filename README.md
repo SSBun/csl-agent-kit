@@ -29,6 +29,8 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
 | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |
 | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
+| code-inline-review | `/csl:code-inline-review` | `/code-inline-review` | 明确调用时生成、维护或清理按逻辑组关联的源码审查说明。 |
+| commit-guard | `/csl:commit-guard` | `/commit-guard` | 维护提交内容保护与阻断诊断；内置 CSL hook 阻止审查说明进入 Agent 提交，暂不检查推送历史。 |
 | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
 | align | `/csl:align` | `/align` | Re-explain prior messages with evidence and confidence levels. |
 | tldr | `/csl:tldr` | `/tldr` | 按请求中的明确标准生成简略概览或带来源的深入会话报告。 |

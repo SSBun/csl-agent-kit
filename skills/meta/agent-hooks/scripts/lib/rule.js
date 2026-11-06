@@ -19,7 +19,7 @@ const EVENTS = new Set([
   "session-end",
 ]);
 const ACTIONS = new Set(["inject-prompt", "run-script"]);
-const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout", "inject-output"]);
+const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout", "inject-output", "on-error"]);
 const MAX_TIMEOUT = 60;
 const MAX_DESCRIPTION = 160;
 const MAX_CONDITION_DEPTH = 32;
@@ -93,6 +93,9 @@ function validateRule(rule, body, scope, file) {
   }
   if (rule.timeout !== undefined && (!Number.isInteger(rule.timeout) || rule.timeout < 1 || rule.timeout > MAX_TIMEOUT)) {
     errors.push(issue("timeout-invalid", `${file}: timeout must be an integer from 1 to ${MAX_TIMEOUT}`));
+  }
+  if (rule["on-error"] !== undefined && (rule["on-error"] !== "block" || rule.action !== "run-script" || rule.event !== "before-tool")) {
+    errors.push(issue("on-error-invalid", `${file}: on-error: block requires before-tool / run-script`));
   }
   if (rule.action === "inject-prompt") {
     if (!body.trim()) errors.push(issue("prompt-empty", `${file}: inject-prompt requires a non-empty Markdown body`));
@@ -303,7 +306,7 @@ function globRegex(pattern) {
 function serialize(rule) {
   const body = rule.body || "";
   const frontmatter = {};
-  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "inject-output", "when"]) {
+  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "inject-output", "on-error", "when"]) {
     if (rule[field] !== undefined) frontmatter[field] = rule[field];
   }
   const suffix = body ? `\n${body.replace(/^\n+/, "")}` : "";

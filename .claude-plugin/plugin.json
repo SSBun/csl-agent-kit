@@ -67,6 +67,8 @@
     "./skills/meta/agent-hooks",
     "./skills/meta/agent-sops",
     "./skills/dev/brainstorming",
+    "./skills/dev/code-inline-review",
+    "./skills/dev/commit-guard",
     "./skills/domain/figma-describe",
     "./skills/dev/align",
     "./skills/dev/tldr"

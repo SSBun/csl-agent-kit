@@ -38,13 +38,13 @@ delete CLAUDE_CODE_CAPABILITIES["session-end"];
 
 // Pi has no native hook protocol; triggers run inside the csl-context-hooks
 // extension via pi.on(event, handler). Inject only works where the handler can
-// rewrite model-facing content (systemPrompt / tool_result). Block is not
-// physically possible (Pi handlers cannot stop tool or agent execution).
+// rewrite model-facing content (systemPrompt / tool_result). tool_call can
+// block execution; other shared events remain nonblocking on this adapter.
 // Permission/subagent events have no Pi equivalent.
 const PI_CAPABILITIES = {
   "session-start": { inject: true, script: true, block: false },
   "prompt-submit": { inject: true, script: true, block: false },
-  "before-tool": { inject: false, script: true, block: false },
+  "before-tool": { inject: false, script: true, block: true },
   "after-tool": { inject: true, script: true, block: false },
   "before-compact": { inject: false, script: true, block: false },
   "after-compact": { inject: false, script: true, block: false },
@@ -142,6 +142,7 @@ function runEvent(payload, options = {}) {
   const workspace = options.workspace || payload.workspace.root;
   const prompts = [];
   const diagnostics = [];
+  const failure = (reason) => ({ prompts: [], diagnostics, blocked: Boolean(capability.block), reason });
   const deadline = Date.now() + (options.eventBudgetMs || EVENT_BUDGET);
   let entries;
   let discoveringScope = "global";
@@ -152,30 +153,44 @@ function runEvent(payload, options = {}) {
     entries = [...globalEntries, ...innerEntries];
   } catch (error) {
     if (error.code === "AGENT_HOOKS_BUDGET") {
-      return { prompts, diagnostics: [`${discoveringScope}:${error.reason}`], blocked: false };
+      diagnostics.push(`${discoveringScope}:${error.reason}`);
+      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：发现规则时超出预算，请修复后重试。");
+      return { prompts, diagnostics, blocked: false };
     }
     throw error;
   }
+  // A host adapter may dispatch one dedicated hook at a narrower native
+  // lifecycle boundary without firing unrelated rules for the shared event.
+  const selectedHooks = options.onlyHooks === undefined ? null : new Set(options.onlyHooks);
   for (const entry of entries.sort((left, right) => compareUtf8(left.id, right.id))) {
+    if (selectedHooks && !selectedHooks.has(entry.id)) continue;
+    const mustCheck = entry.rule?.enabled && entry.rule?.event === payload.event && entry.rule?.["on-error"] === "block";
     if (entry.scope === "inner" && entry.innerConfigValid === false) {
+      if (mustCheck) return failure(`${entry.id}: hook 配置无效，无法完成检查。`);
       if (!diagnostics.includes("inner:config-invalid")) diagnostics.push("inner:config-invalid");
       continue;
     }
     if (entry.scope === "inner" && entry.innerDisabled) continue;
     if (!entry.valid) {
       diagnostics.push(...entry.errors.map((error) => `${entry.id}:${error.code}`));
+      if (mustCheck) return failure(`${entry.id}: 检查器不可用，请修复 hook 后重试。`);
       continue;
     }
     if (!entry.rule.enabled || entry.rule.event !== payload.event) continue;
     if (Date.now() >= deadline) {
       diagnostics.push(`${entry.id}:event-budget-exhausted`);
+      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
       break;
     }
     const condition = evaluateCondition(entry.rule.when, payload, deadline);
-    if (condition.value === "unknown") diagnostics.push(`${entry.id}:condition-unknown`);
+    if (condition.value === "unknown") {
+      diagnostics.push(`${entry.id}:condition-unknown`);
+      if (mustCheck) return failure(`${entry.id}: 无法判定检查条件，请修复后重试。`);
+    }
     if (condition.value !== "true") continue;
     if (Date.now() >= deadline) {
       diagnostics.push(`${entry.id}:event-budget-exhausted`);
+      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
       break;
     }
     if (entry.rule.action === "inject-prompt") {
@@ -195,12 +210,17 @@ function runEvent(payload, options = {}) {
       const remaining = deadline - Date.now();
       if (remaining <= 0) {
         diagnostics.push(`${entry.id}:event-budget-exhausted`);
+        if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
         break;
       }
       result = executeScript(entry, payload, workspace, remaining, options.hookInputs?.[entry.id]);
     } catch {
       diagnostics.push(`${entry.id}:runtime-error`);
+      if (mustCheck) return failure(`${entry.id}: 检查执行失败，请修复后重试。`);
       continue;
+    }
+    if (result.status !== 0 && mustCheck && result.status !== 2) {
+      return failure(`${entry.id}: 检查未完成。${result.stderr || "请修复检查器后重试。"}`);
     }
     if (result.status === 2) {
       if (capability.block) return { prompts: [], diagnostics, blocked: true, reason: result.stderr || `${entry.id} blocked the event` };

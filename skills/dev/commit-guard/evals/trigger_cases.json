@@ -1,0 +1,15 @@
+{
+  "should_trigger": [
+    "Use commit-guard to inspect why my commit was blocked.",
+    "检查暂存内容是否含禁止提交的 code-review 说明。",
+    "诊断内置提交保护 hook，确认当前宿主能否阻断提交。",
+    "解释为什么工作区有审查说明，但提交保护检查仍然通过。"
+  ],
+  "should_not_trigger": [
+    "用 code-inline-review 给本次改动添加源码内临时审查说明。",
+    "清理本次改动中的临时审查说明，保留普通注释。",
+    "Review this diff for bugs.",
+    "设计 Git pre-push 的历史扫描能力。",
+    "扫描仓库中的密钥和凭证。"
+  ]
+}
