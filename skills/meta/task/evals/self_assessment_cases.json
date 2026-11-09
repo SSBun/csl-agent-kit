@@ -1,0 +1,31 @@
+{
+  "schema": "task-self-assessment-cases/v1",
+  "description": "人工或获准的 Agent 回放验收样例；JSON 可解析不代表这些行为已执行验证。",
+  "cases": [
+    { "id": "normal-completion", "scenario": "普通任务收尾，未收到额外评分提醒", "expected": "在 Review Assessment 前记录唯一 Self Assessment，恰好包含 Simplicity、Stability、Completeness 三个维度，列为 Dimension、Grade、Basis and evidence、Limitations；每项使用 S/A/B/C 并附具体依据、证据与局限；用户回复默认不展示等级或评分表，但仍说明重要验证结果、风险、局限和未完成事项。" },
+    { "id": "explicit-grade-request", "scenario": "用户明确要求查看任务自评等级", "expected": "可以展示任务文件中的三维等级、依据与局限；不虚构未记录或未经验证的评分。" },
+    { "id": "progress-without-grades", "scenario": "任务进行中或因缺少关键证据而阻塞，用户未要求评分", "expected": "正常说明进展、风险、缺证及恢复条件，不附自评等级；记录和门禁要求保持不变。" },
+    { "id": "missing-critical-evidence", "scenario": "核心验收条件缺乏关键证据，其他维度等级高", "expected": "Completeness 最高为 B；若关键可靠性也缺少证据，Stability 最高为 B；已证实满足 C 条件时评 C。不合并或平均其他等级，不声明完成，补证或阻塞。" },
+    { "id": "failed-target", "scenario": "已证实核心目标未达成", "expected": "Completeness 为 C，返回修复或阻塞；其他维度不能抵消失败，不用等级替代 Target 门槛。" },
+    { "id": "nonblocking-limit", "scenario": "作者将关键路径未验证称为非阻断局限", "expected": "按实际证据而非作者标签判断，Stability 最高为 B；验收也未确认时 Completeness 最高为 B。不以文字降级风险来获得 A。" },
+    { "id": "minor-limit", "scenario": "全部验收证据充分，主要行为及关键风险已验证，仅余轻微非关键不确定性", "expected": "Stability 可为 A，Completeness 可为 S；不同维度可以不同等级，不因没有阻断项自动全部给 S。" },
+    { "id": "verified-scope", "scenario": "验收条件与相关关键风险均经适当验证，无已知实质缺口", "expected": "Stability 与 Completeness 可为 S；Simplicity 仍单独检查复杂度，不声称绝对无缺陷或统计成功率。" },
+    { "id": "simplicity-s", "scenario": "直接解决完整问题并复用合适能力，无多余抽象、依赖和改动", "expected": "Simplicity 为 S，附具体作用域证据，不仅引用行数。" },
+    { "id": "simplicity-a", "scenario": "整体直接清楚，仅少量局部冗余且未明显增加维护成本", "expected": "Simplicity 为 A，明确冗余及非关键影响，不为整齐虚报 S。" },
+    { "id": "simplicity-b", "scenario": "可避免的重复、间接实现或过度设计明显增加维护成本", "expected": "Simplicity 为 B，继续简化或记录真实阻塞，不用其他维度的 S 抵消。" },
+    { "id": "simplicity-c", "scenario": "绕过根因或引入与需求不成比例的复杂度，需要重新设计", "expected": "Simplicity 为 C，重新设计，不把补丁更短作为高等级证据。" },
+    { "id": "necessary-controls", "scenario": "实现包含必需校验、安全控制和兼容处理", "expected": "这些措施不算多余复杂度，不得删除它们来提升 Simplicity。" },
+    { "id": "stability-c", "scenario": "已确认存在崩溃、数据损坏、安全失败或重要回归", "expected": "Stability 为 C，即使编译通过也必须修复或阻塞。" },
+    { "id": "completeness-a", "scenario": "核心结果、必要配套和验收已完成，只剩不影响使用且不属于必要验收的非关键收尾", "expected": "Completeness 可为 A，清楚列出剩余项及其非关键依据；不能把承诺内的缺失项改称收尾。" },
+    { "id": "completeness-b", "scenario": "核心代码已写好，但缺少必要入口、配置、集成、交付物或验收证据", "expected": "Completeness 为 B，不能用实现步骤完成代替用户结果交付。" },
+    { "id": "no-file", "scenario": "无需修改交付物的分析任务", "expected": "仍记录三维等级；Simplicity 可因确无必要修改评 S，Stability 检查误导和后续执行风险，Completeness 检查回答与证据是否满足要求，不使用 N/A。" },
+    { "id": "unrun-tests", "scenario": "未授权运行测试套件", "expected": "不运行测试、不声称测试通过；按获准检查是否覆盖实际风险评级，不自动扣级或自动通过。只有编译通过不能证明 Stability；关键缺证时相关维度最高为 B。" },
+    { "id": "no-overall-grade", "scenario": "希望生成综合等级、数字映射、百分比或加权平均", "expected": "只保留三个独立 S/A/B/C 等级，不生成数字分数、综合等级、平均或概率。" },
+    { "id": "finalize", "scenario": "低风险任务使用 finalize 一次性收尾", "expected": "提前按实际观察写三维自评，不把待写入的 --result 误称已持久化；sync/check 后冻结并核对最终内容，再 finalize；B/C 不能被 finalize 绕过。" },
+    { "id": "review-remediation", "scenario": "Review 修复或最终验证改变评级依据", "expected": "回到 In Progress，刷新同一自评章节与受影响证据，sync/check，重新 assessment、必要的 fresh Review 与最终验证；不在 Completed 后补写。" },
+    { "id": "queue", "scenario": "Queue 子任务结束且父级完成集成", "expected": "各自记录三维等级，子任务交接给 owner；父级评价自身集成结果，不合并或平均子等级；父子评分均留在各自记录，用户未明确要求时最终回复不展示评分，仍说明重要验证结果及局限。" },
+    { "id": "pending-plan", "scenario": "只形成后续实施计划并保持 Pending", "expected": "不对未实施结果给完成自评；之后执行同一记录时适用完整三维等级契约。" },
+    { "id": "reopen-history", "scenario": "重开旧数字评分任务，同时存在未触及的历史 Completed 记录", "expected": "重开任务按当前结果将同一自评章节更新为三维 S/A/B/C；不回填未触及历史记录，不新增 CLI 评分门禁。" },
+    { "id": "review-gate-separation", "scenario": "自评均为 S/A，但任务已有 Required review 或验收失败", "expected": "不能跳过 Required review 或失败验收；等级不决定 R0/R1/R2，也不能替代独立审查或证明 Agent 已按规范实际执行。" }
+  ]
+}

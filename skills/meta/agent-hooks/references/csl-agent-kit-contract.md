@@ -147,7 +147,8 @@ Before delivery:
 - replace evidence made stale by later changes;
 - inspect the result from a skeptical reviewer’s perspective;
 - check key assumptions, likely failure modes, and avoidable complexity;
-- disclose any material verification that could not be performed.
+- disclose any material verification that could not be performed;
+- automatically perform and record the owning Task's three-dimension S/A/B/C Self Assessment (Simplicity, Stability, Completeness) before review assessment, recheck it against final verification, and keep the grades with evidence and limitations in the canonical task record. Do not display self-assessment grades in user-facing replies unless explicitly requested; still report material verification results, risks, limitations and unfinished work. Follow `task` for scoring, no-file/Queue/planning boundaries and invalidation; self-assessment grades never replace verification or independent review.
 
 ## Contract Boundary
 
