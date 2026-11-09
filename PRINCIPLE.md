@@ -1,5 +1,7 @@
 # CSL Agent Kit：工作流与设计思想
 
+数据归属遵守[统一存储规范](docs/storage.md)：Kit 管理的数据统一位于项目级或用户级 `.csl-agent-kit` 数据根，工具源码与宿主入口不迁移。本文路径描述目标布局；当前阶段不宣称运行时已切换，旧项目须经 `agent-migration` 检查能力并显式迁移，禁止双写。
+
 CSL Agent Kit 把规则注入、任务管理、上下文恢复、纠错学习和验证门禁组织成一套工作流。它让 Agent 在不同任务和会话中持续遵守规则、理解目标、保留必要上下文，并用证据证明工作已经完成。
 
 整个系统以两族 meta 工作流为核心：
@@ -147,7 +149,7 @@ Hook 的完整工作流是：识别 timing/action/scope/condition → 用 CLI �
 | 用户可以直接说 | Skill 转换后的统一 Hook |
 |---|---|
 | “以后每次新会话开始，都提醒我先检查最终远端 CI。” | global `session-start` + `inject-prompt`；作为一条经确认的持久指令 |
-| “只要 `tasks/tasks/*.md` 被修改，就发一个可点击的 macOS 通知。” | after-tool + `changed_files` 条件 + `run-script` |
+| “只要 `.csl-agent-kit/tasks/tasks/*.md` 被修改，就发一个可点击的 macOS 通知。” | after-tool + `changed_files` 条件 + `run-script` |
 | “执行 `git push --force` 前阻止操作并说明风险。” | command 条件 + block；Codex/Claude Code 可启用，Pi 明确显示 unsupported |
 | “工具改动 Swift 文件后运行检查脚本，并把脚本输出反馈给 Agent。” | after-tool + changed-file 条件 + `run-script`；在可注入事件上设置 `inject-output: true` |
 | “关闭内置的 workspace workflow gates。” | 修改 inner hook 的 configured override，保留只读源文件，并用 `show` 确认 effective 状态 |
@@ -213,7 +215,7 @@ SOP 遵循四条边界：
 - 激活发生在实质讨论、探索、规划、委派和编辑之前；
 - 宿主提供 focus 机制时，必须真实调用 `task_focus(<id>)`；
 - 创建、恢复、聚焦、同步与对齐所需的任务写入是启动例外，但不授权编辑交付物；
-- `tasks/tasks/<slug>.md` 是权威记录，`tasks/tasks.md` 只做最新优先索引。
+- `.csl-agent-kit/tasks/tasks/<slug>.md` 是权威记录，`.csl-agent-kit/tasks/tasks.md` 只做最新优先索引。
 
 先确定结果归属，再开始工作。否则状态、证据和会话会彼此脱离。
 
@@ -329,7 +331,7 @@ Task Target 最重要的作用是让用户再次检查 Agent 是否理解了真�
 
 ### 5.4 Archive：保存原始历史，不制造新的权威状态
 
-`archive` 把用户指定的一段 Pi 对话按原始顺序逐字保存到 `tasks/conversations/`。它不总结、不翻译、不修正，也不包含系统提示、thinking、工具调用或压缩摘要。
+`archive` 把用户指定的一段 Pi 对话按原始顺序逐字保存到 `.csl-agent-kit/tasks/conversations/`。它不总结、不翻译、不修正，也不包含系统提示、thinking、工具调用或压缩摘要。
 
 归档文件只作为历史上下文，不是任务状态、决定或实施指导。没有可靠原始 session 边界时直接失败，不凭记忆重建。
 

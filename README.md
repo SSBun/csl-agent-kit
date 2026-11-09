@@ -2,12 +2,16 @@
 
 Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-code), [Cursor](https://cursor.com/docs/plugins), [Codex](https://developers.openai.com/codex/skills), and [Pi](https://pi.dev). It packages reusable skills, plugins, commands, hooks, and Pi extensions. Skills follow the open [Agent Skills](https://agentskills.io) standard; CSL recursively discovers leaf `SKILL.md` files below `skills/`.
 
+## 统一存储规范
+
+CSL Agent Kit 所属持久数据统一归属项目级 `.csl-agent-kit/` 或用户数据根（`CSL_AGENT_KIT_HOME`，默认 `~/.csl-agent-kit/`）。下文数据路径描述目标布局，**本阶段只更新规范与技能，运行时尚未统一切换**。实际读写方未就绪时保留原有位置，不双写；旧项目须明确调用 `agent-migration` 完成兼容性检查和安全迁移。源码、随包资源及宿主发现入口不搬迁。详见[统一存储规范](docs/storage.md)。
+
 ## Skills
 
 | Skill | Claude | Cursor / Codex / Pi extension | Description |
 |-------|--------|------------------------------|-------------|
 | create-app-icon | `/csl:create-app-icon` | `/create-app-icon` | Choose from 10 built-in styles, generate and approve an app icon, then create a transparent master and optional platform materials. |
-| archive | `/csl:archive` | `/archive` | 将当前 Pi Session 中指定范围的 User 与 Agent 可见文本逐字保存到 `tasks/conversations/`。 |
+| archive | `/csl:archive` | `/archive` | 将当前 Pi Session 中指定范围的 User 与 Agent 可见文本逐字保存到 `.csl-agent-kit/tasks/conversations/`（目标布局）。 |
 | venom-cli | `/csl:venom-cli` | `/venom-cli` | Manage Zhihu iOS component dependencies and builds. |
 | task-grill | `/csl:task-grill` | `/task-grill` | 以逐题拷问压测计划或决策；既有任务不写入拷问过程，独立话题新建任务记录结论。 |
 | task-review | `/csl:task-review` | `/task-review` | 对 canonical task、PR、diff、文件或无文件结果执行一次只反馈审查，并作为文件改动 Task 的强制完成前审查。 |
@@ -18,6 +22,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
 | bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
+| agent-migration | `/csl:agent-migration` | `/agent-migration` | 显式盘点并安全迁移旧项目的 Kit 数据；检查运行时兼容性、冲突、引用及恢复能力，不自动搬迁。 |
 | agent-memory | `/csl:agent-memory` | `/agent-memory` | 用户级与项目级 Markdown 记忆读写规范：普通文件工具按需读取、主题聚合、写作预算和可恢复条件写入；不预设主题。 |
 | topic | `/csl:topic` | `/topic` | 管理长期维护主题的共享规格、版本及任务引用；支持实现、Bug 修复和审查，不限于多平台。 |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
@@ -36,7 +41,7 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Memory 读取与后台维护分工、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.csl-agent-kit/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.csl-agent-kit/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Memory 读取与后台维护分工、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
 
 ## Markdown Memory
 
@@ -50,7 +55,7 @@ Memory 以用户级和项目级 Markdown 为权威内容，用 `title` 表达动
 
 Topic 保存一个长期主题的当前有效规格，不是另一个任务类型或执行队列。可直接说“创建一个 Topic：账号注销，先讨论需求”“在账号注销 Topic 下排查 Bug”或“继续这个 Topic，查看相关任务”。建立 Topic 不会自动实施全部任务；所有任务完成也不会关闭 Topic。
 
-- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；长期共享资料位于该 Topic 的 `resources` 目录，不可变规格快照位于 `revisions` 目录。
+- Topic 权威记录位于工作区的 `.csl-agent-kit/tasks/topics/<topic-id>.md`，可重建导航位于 `.csl-agent-kit/tasks/topics.md`；长期共享资料位于该 Topic 的 `resources` 目录，不可变规格快照位于 `revisions` 目录。
 - 主文档的 Resources 表记录资料链接、用途及 `normative`（有效约定）/`reference`（参考材料）分类。通过 `topic update-resources --resources-json` 更新完整索引；有效约定固定文件摘要并纳入规格核对，参考资料不使任务证据失效。已有权威文件仅链接，不自动复制；单次任务的报告和日志仍保存在任务产物中。旧 Topic 不批量迁移，保留原版本可读。
 - Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Tasks 使用可点击表格，区分 `member`（正式关联）与 `history`（历史参考）；后者只登记来源，不修改或重开旧任务，也不参与成员生命周期检查。任务状态现场读取，不存副本。
 - 历史任务用 `topic reference-task` / `unreference-task` 登记和移除，不再放进 Resources。旧 JSON 任务列表仍可读；仅对明确选定的 Topic 执行 `topic format` 转成表格，不批量迁移。实际混排资料需要先确认位置与变更清单。
@@ -222,7 +227,7 @@ The Pi package manifest in `package.json` exposes:
 - `pi/extensions/openai-codex-fast.ts`：提供持久化的 OpenAI Codex Fast／Ultrafast 控制，以及档位与用量消耗倍率展示。
 - `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
 - `pi/extensions/csl-settings.ts`：通过 `/csl-settings` 配置审查模型、思考强度与三层 Task 确认模式；`/task-mode` 快捷管理确认偏好，`csl_review_config` 只解析审查启动参数，不启动子 Agent。
-- `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
+- `pi/extensions/csl-task-overlay.ts`：只读浮层，当前仍从旧路径 `<cwd>/tasks/tasks.md` 渲染（目标为 `<cwd>/.csl-agent-kit/tasks/tasks.md`，需后续运行时适配），展示最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
 
 - `pi/extensions/csl-ansi.ts`：注册 `render_ansi` 工具，直接在会话中渲染 ANSI 彩色字符与等宽图，不添加工具标题或成功状态背景。
 

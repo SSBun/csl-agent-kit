@@ -9,11 +9,13 @@ Manage unconditional Agent behavior rules loaded at session start.
 
 ## Storage and loading
 
+遵守[统一存储规范](../agent-migration/references/storage.md)的目标布局与过渡门禁。先核实实际注入器支持新路径；旧项目由 `agent-migration` 显式迁移，禁止双写或将尚未支持的路径报告为已生效。
+
 | Scope | Path | Purpose |
 |---|---|---|
 | Built-in | `skills/meta/agent-rules/agent-rules.md` | Read-only defaults distributed with CSL Agent Kit. |
 | User | `$CSL_AGENT_KIT_HOME/agent-rules.md` (default `~/.csl-agent-kit/agent-rules.md`) | Writable rules that apply across projects. |
-| Project | `<workspace>/.agents/agent-rules.md` | Writable rules for one workspace. |
+| Project | `<workspace>/.csl-agent-kit/agent-rules.md` | Writable rules for one workspace. |
 
 The built-in Agent Hooks rule `inner:agent-rules` loads these files in built-in, user, then project order. It injects all non-empty content under one `## Agent Rules` heading without modifying any source.
 

@@ -5,6 +5,8 @@ description: Create, find, resume, update, link tasks to, or archive a persisten
 
 # Topic
 
+遵守[统一存储规范](../agent-migration/references/storage.md)的目标布局与过渡门禁。实际运行时未支持新根时继续原有工作流；旧项目使用 `agent-migration` 显式迁移，保持 Task/Topic 关联与证据，不双写。
+
 A Topic owns a bounded, persistent specification and references to related tasks. It is not a Task Kind, Queue parent, progress cache, execution authorization, or conversation archive. Tasks may remain independent. Completing all members never closes a Topic.
 
 ## Entry and Ownership

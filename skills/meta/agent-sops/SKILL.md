@@ -9,11 +9,13 @@ Manage Standard Operating Procedure (SOP) files. SOPs are Agent behavior rules l
 
 ## Storage and precedence
 
+遵守[统一存储规范](../agent-migration/references/storage.md)及其过渡门禁。下表是目标布局，不代表当前发现器已支持；旧项目迁移使用 `agent-migration`，读写方未就绪时不创建新旧两份 SOP。
+
 | Scope | Path | Purpose |
 |---|---|---|
 | Built-in | `skills/meta/agent-sops/sops/*.md` | SOPs distributed with the package. |
-| User | `~/.csl-agent-kit/sops/*.md` | User-created SOPs that apply across projects. |
-| Project | `<workspace>/.agents/sops/*.md` | Version-controlled SOPs specific to the current workspace. |
+| User | `$CSL_AGENT_KIT_HOME/sops/*.md` (default `~/.csl-agent-kit/sops/*.md`) | User-created SOPs that apply across projects. |
+| Project | `<workspace>/.csl-agent-kit/sops/*.md` | Version-controlled SOPs specific to the current workspace. |
 
 For the same frontmatter `name`, precedence is project, then user, then built-in. Only the highest-precedence SOP is listed or routed.
 
@@ -97,7 +99,7 @@ Create an SOP:
    - Specific exception handling rather than only "ask user".
    - Checkbox completion criteria.
 6. Create the selected directory when absent.
-7. Write project SOPs to `<workspace>/.agents/sops/{name}.md` or user SOPs to `~/.csl-agent-kit/sops/{name}.md`. Do not write built-in SOPs unless the user explicitly requests a package change.
+7. Write project SOPs to `<workspace>/.csl-agent-kit/sops/{name}.md` or user SOPs to `$CSL_AGENT_KIT_HOME/sops/{name}.md` (default `~/.csl-agent-kit/sops/{name}.md`). Do not write built-in SOPs unless the user explicitly requests a package change.
 
 ### `agent-sops learn`
 
@@ -115,7 +117,7 @@ Integrate reusable error patterns, missed steps, user corrections, or review fin
 
 Inspect one SOP:
 
-1. Search `<workspace>/.agents/sops/`, then `~/.csl-agent-kit/sops/`, then `skills/meta/agent-sops/sops/`.
+1. Search `<workspace>/.csl-agent-kit/sops/`, then `$CSL_AGENT_KIT_HOME/sops/` (default `~/.csl-agent-kit/sops/`), then `skills/meta/agent-sops/sops/`.
 2. Prefer an exact filename, then match frontmatter `name`.
 3. Read and summarize the complete highest-precedence SOP. Do not edit it unless the user explicitly asks.
 

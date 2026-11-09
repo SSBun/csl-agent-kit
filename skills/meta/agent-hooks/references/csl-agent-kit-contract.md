@@ -76,6 +76,10 @@ For a new or materially revised non-trivial Target outside that exemption, displ
 
 After alignment, continue independently within the accepted outcome and boundaries.
 
+## Unified Data Ownership
+
+CSL Agent Kit-owned persistent data belongs under the workspace `.csl-agent-kit/` or the user data root (`CSL_AGENT_KIT_HOME`, default `~/.csl-agent-kit/`). Package source, bundled resources and host-required discovery entries stay in their native locations. Follow the authoritative storage specification and the owning Skill's transition gate: a new target path is not proof that installed readers and writers support it. Preserve the existing runtime workflow until verified cutover; never dual-write or silently migrate legacy projects. Explicit old-project migration belongs to `agent-migration`, not routine task activation or memory housekeeping.
+
 ## Task and Memory
 
 Keep responsibilities distinct:

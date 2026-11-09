@@ -4,11 +4,11 @@ Run `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <r
 
 ## Storage
 
-- Canonical Topic: `<workspace>/tasks/topics/<topic-id>.md`.
-- Rebuildable navigation: `<workspace>/tasks/topics.md`, containing title/link and lifecycle state, not task progress.
-- Long-lived shared files: `<workspace>/tasks/topics/<topic-id>/resources/`. New Topics create this directory; older Topics are not scanned or migrated. Existing authoritative source files stay in place and are linked, not copied.
-- Immutable normative snapshot: `<workspace>/tasks/topics/<topic-id>/revisions/<sha256>.md`. This records normative text and pinned source identities, not duplicate copies of linked file contents; retain source history in its authoritative location.
-- Incomplete association marker: `<task-workspace>/tasks/topic-transactions/<task-id>.json`. It pins the exact old/new Topic identities before the first relationship write and is removed only after reciprocal relationships are verified. It is recovery state, not a second ownership record.
+- Canonical Topic: `<workspace>/.csl-agent-kit/tasks/topics/<topic-id>.md`.
+- Rebuildable navigation: `<workspace>/.csl-agent-kit/tasks/topics.md`, containing title/link and lifecycle state, not task progress.
+- Long-lived shared files: `<workspace>/.csl-agent-kit/tasks/topics/<topic-id>/resources/`. New Topics create this directory; older Topics are not scanned or migrated. Existing authoritative source files stay in place and are linked, not copied.
+- Immutable normative snapshot: `<workspace>/.csl-agent-kit/tasks/topics/<topic-id>/revisions/<sha256>.md`. This records normative text and pinned source identities, not duplicate copies of linked file contents; retain source history in its authoritative location.
+- Incomplete association marker: `<task-workspace>/.csl-agent-kit/tasks/topic-transactions/<task-id>.json`. It pins the exact old/new Topic identities before the first relationship write and is removed only after reciprocal relationships are verified. It is recovery state, not a second ownership record.
 - Tasks retain their existing canonical location. An optional unique `## Topic` section holds a `task-topic/v1` binding; task Kind and Queue Parent are unchanged.
 - Topic metadata uses `topic/v1`, stable ID, Active/Archived state (Draft is accepted only for legacy records), and the SHA-256 of canonical normative sections. `show.version` hashes the whole Topic file for optimistic writes; it is different from `revision`, which excludes member references and lifecycle display.
 - Topic sections are Scope, Spec Context, Decisions, Dependencies, Resources and Tasks. Resources is a clickable Markdown table; it remains optional when reading older `topic/v1` records. Existing records retain their shape unless resources are explicitly updated. Empty/reference-only Resources do not change the legacy normative digest. New Tasks sections are clickable tables with Task, Relation, Reference, Purpose and Repository columns. `member` rows are the checked reverse index of authoritative task bindings; `history` rows are read-only source references. Neither stores task status. Legacy JSON-line Tasks with `reference`, `repository`, `purpose` are still parsed as formal members and retain their original shape until explicit formatting.
@@ -46,7 +46,7 @@ Legacy Draft records remain readable and retain their stored state on reads and 
 ```json
 [
   {"label":"API contract","target":"contracts/account.json","purpose":"Shared deletion behavior","kind":"normative","sha256":"<actual SHA-256>"},
-  {"label":"Design notes","target":"tasks/topics/account/resources/design notes.md","purpose":"Background alternatives","kind":"reference"},
+  {"label":"Design notes","target":".csl-agent-kit/tasks/topics/account/resources/design notes.md","purpose":"Background alternatives","kind":"reference"},
   {"label":"External design","target":"https://example.com/design","purpose":"Visual reference","kind":"reference"}
 ]
 ```

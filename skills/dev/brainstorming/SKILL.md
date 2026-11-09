@@ -39,7 +39,7 @@ Do **not** use for bug fixes, typo edits, or changes with an already-approved sp
 - Do not create a standalone design file by default. Create one only when the user requests a document artifact or the validated design needs a durable handoff for later implementation.
 - Before writing the artifact, require the owning canonical task ID. If it is missing, return to task activation instead of creating an unowned file.
 - Ask for confirmation before persisting an inferred durable handoff; do not ask again when the user explicitly requested a design doc, plan file, RFC, or written spec.
-- Write the validated design to `tasks/artifacts/<task-id>/specs/YYYY-MM-DD-<topic>-design.md`. Keep that path when the design later becomes accepted, implemented, or superseded.
+- Write the validated design to `.csl-agent-kit/tasks/artifacts/<task-id>/specs/YYYY-MM-DD-<topic>-design.md`（目标布局；按 `task` 的存储过渡门禁使用实际 owning Task 根）. Keep that path when the design later becomes accepted, implemented, or superseded.
 - Add `../artifacts/<task-id>/specs/YYYY-MM-DD-<topic>-design.md` to the owning task record's `Plan` section, then follow the task workflow's sync and check requirements. Do not copy the design body into the record.
 - Use clear, concise prose (no dependency on external writing skills)
 

@@ -14,6 +14,7 @@
     "Capture this correction as a reusable lesson.",
     "Reorganize src/components to match the application's new architecture.",
     "Scan the entire repository and migrate every old directory.",
+    "将整个旧项目的 CSL Agent Kit 数据从 tasks 和 .agents 迁入 .csl-agent-kit。",
     "Automatically run Task cleanup every month.",
     "Rewrite every historical task record into the latest schema."
   ],

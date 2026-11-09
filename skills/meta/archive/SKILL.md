@@ -1,9 +1,11 @@
 ---
 name: archive
-description: Archives an exact user-selected range of visible User and Agent messages from the current Pi session into `tasks/conversations/`. Use for `/archive` or explicit requests to preserve part of the current conversation verbatim. Do not use for summaries, task state, implementation guidance, or external transcripts.
+description: Archives an exact user-selected range of visible User and Agent messages from the current Pi session into `.csl-agent-kit/tasks/conversations/`. Use for `/archive` or explicit requests to preserve part of the current conversation verbatim. Do not use for summaries, task state, implementation guidance, or external transcripts.
 ---
 
 # Archive Conversation
+
+遵守[统一存储规范](../agent-migration/references/storage.md)的目标布局与过渡门禁。归档与 owning Task 使用同一实际数据根；不得在旧项目未切换时另建新根，也不迁移或改写既有逐字归档。
 
 Save a verbatim historical transcript from the current Pi session. The command argument is a selection instruction, never transcript content.
 
@@ -47,7 +49,7 @@ Save a verbatim historical transcript from the current Pi session. The command a
 
 ## Output and Failure
 
-Write `tasks/conversations/YYYY-MM-DD-HHmm-<topic>.md` without overwriting. Mark it as historical context, not authoritative task state, decisions, or implementation guidance.
+Write `.csl-agent-kit/tasks/conversations/YYYY-MM-DD-HHmm-<topic>.md` without overwriting. Mark it as historical context, not authoritative task state, decisions, or implementation guidance.
 
 Fail closed when the raw session, active branch, endpoint, or semantic range is unreliable. Never substitute a summary or best-effort reconstruction.
 

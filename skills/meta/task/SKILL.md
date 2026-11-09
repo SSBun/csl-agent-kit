@@ -17,8 +17,10 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
 
 ## Storage and Core
 
-- `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
-- `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
+遵守[统一存储规范](../agent-migration/references/storage.md)。下列路径是目标布局；当前运行时尚未切换时，继续由原有 CLI 管理旧记录，不双写或手工搬移。旧项目仅通过显式请求的 `agent-migration` 切换，不能把文档更新当作运行时已支持。
+
+- `.csl-agent-kit/tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
+- `.csl-agent-kit/tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
 - Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
 - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Execution Log, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
 - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
@@ -33,7 +35,7 @@ Create a new task for a new bug, enhancement or bounded review under the same To
 
 ## Task Artifacts
 
-Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:
+Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `.csl-agent-kit/tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:
 
 - `discussions`: user-visible discussion or synthesis; never private reasoning, role exchanges, or hidden state.
 - `specs`: RFCs, PRDs, ADRs, designs, and separately requested implementation or migration plans.
@@ -255,7 +257,7 @@ Use exactly one temporary `## Review` section with the exact `task-review-ledger
 
 Keep one persistent `## Review Reports` section, separate from the temporary `## Review` ledger. It is an append-only report index, not another finding ledger or source of task requirements. Save returned feedback with `review-report <id> --input <feedback-file> --snapshot <assessment-identity> --outcome <outcome> --mode <actual-mode> [--run <run-id>]` while In Review/Required. Outcomes are `findings`, `no blocking findings`, `incomplete`, or `invalidated by drift`; modes are `independent subagent`, `non-independent self-review`, or `incomplete`. These are owner attestations, never proof of independence or approval. The CLI allocates the next report number across files and index rows, preserves feedback bytes under an owner header bound to the assessment snapshot and Task fingerprint, and registers its SHA256 with the owning task in one locked, rollback-capable write. It does not provide a cross-file crash transaction. Use task-relative Markdown links in stored records; apply host path-display rules in chat.
 
-Reports remain at `tasks/artifacts/<task-id>/reviews/round-<NN>.md`; the CLI adds the index's schema and digest column when registering the first managed report.
+Reports remain at `.csl-agent-kit/tasks/artifacts/<task-id>/reviews/round-<NN>.md`; the CLI adds the index's schema and digest column when registering the first managed report.
 
 - Choose the next unused number above both existing report filenames and index entries, including after resume or reopen; pad to at least two digits. Never overwrite or renumber a report. This artifact number is not the active ledger's `Pass` counter.
 - Preserve the returned user-visible feedback, including findings, stable IDs, prior-item dispositions, checks actually performed, inherited evidence and coverage limits. Add a clearly separated owner header with task ID, round, review mode, actual run identity when available, and the reviewed snapshot. Keep owner conclusions distinct from Reviewer feedback. Never save private reasoning, full tool transcripts or secrets; explicitly mark any necessary redaction.

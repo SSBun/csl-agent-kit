@@ -3,6 +3,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import storage from "../../csl-tasks/shared/lib/task-storage.js";
 
 const { positionals, values } = parseArgs({
 	allowPositionals: true,
@@ -125,7 +126,7 @@ function selectRange(messages, from, to) {
 
 function saveArchive({ workspace, title, selection, sessionId, messages }) {
 	const now = new Date();
-	const outputDir = join(resolve(workspace), "tasks", "conversations");
+	const outputDir = storage.taskPath(resolve(workspace), "conversations");
 	mkdirSync(outputDir, { recursive: true });
 	const stem = `${localTimestamp(now)}-${slugify(title)}`;
 	const output = uniquePath(outputDir, stem);

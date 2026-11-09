@@ -13,6 +13,35 @@ const topics = require("../skills/meta/csl-tasks/shared/lib/topic-core.js");
 const taskCore = require("../skills/meta/csl-tasks/shared/lib/task-core.js");
 import cslTaskOverlay from "../pi/extensions/csl-task-overlay.ts";
 
+test("panel and session focus follow an explicit Task root cutover", { concurrency: false }, async () => {
+  const cwd = mkdtempSync(path.join(os.tmpdir(), "csl-panel-cutover-"));
+  const migration = require("../skills/meta/csl-tasks/shared/scripts/migrate-task-storage.js");
+  mkdirSync(path.join(cwd, ".csl-agent-kit/migrations"), { recursive: true });
+  taskCore.createTask(cwd, { id: "sample", title: "Migration task", kind: "task", targets: ["T1: Preserve focus"] });
+  const { handlers, tools, entries } = installFakeExtension();
+  let widget;
+  const ctx = { cwd, hasUI: true, mode: "tui", sessionManager: { getBranch: () => entries }, ui: {
+    setWidget(_key, value) { widget = typeof value === "function" ? value({ requestRender() {} }, { bold: s => s, fg: (_c, s) => s }) : undefined; },
+    notify() {},
+  } };
+  setCapabilities({ images: null, trueColor: true, hyperlinks: true });
+  try {
+    await handlers.get("session_start")({}, ctx);
+    await tools.get("task_focus").execute("focus", { taskId: "sample" }, undefined, undefined, ctx);
+    migration.prepare(cwd, "cutover"); migration.apply(cwd, "cutover");
+    await handlers.get("session_tree")({}, ctx);
+    const rendered = widget.render(200).join("\n");
+    assert.match(rendered, /This Session/);
+    assert.match(rendered, /0\/1/);
+    assert.ok(rendered.includes(".csl-agent-kit/tasks/tasks/sample.md"));
+    await tools.get("task_focus").execute("focus-again", { taskId: "sample" }, undefined, undefined, ctx);
+  } finally {
+    await handlers.get("session_shutdown")?.({}, ctx);
+    resetCapabilitiesCache();
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
 function installFakeExtension() {
   const handlers = new Map();
   const commands = new Map();

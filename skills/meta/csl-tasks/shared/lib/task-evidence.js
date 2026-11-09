@@ -5,6 +5,7 @@ const path = require("node:path");
 const { createHash } = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const { safePath } = require("./topic-core.js");
+const storage = require("./task-storage.js");
 
 const SCHEMA = "task-snapshot/v1";
 const DIGEST = /^[a-f0-9]{64}$/;
@@ -18,7 +19,7 @@ function assertId(id) {
 
 function scopeName(taskId, relative) {
   if (typeof relative !== "string" || !relative || path.isAbsolute(relative) || /[\\\u0000-\u001f\u007f]/.test(relative) || relative.split("/").some((part) => !part || part === "." || part === "..")) throw new Error("snapshot scope requires canonical workspace-relative file paths");
-  const reserved = relative.toLowerCase();
+  const reserved = relative.toLowerCase().replace(/^\.csl-agent-kit\//, "");
   if (reserved === "tasks/tasks.md" || reserved === `tasks/tasks/${taskId}.md` || new RegExp(`^tasks/artifacts/${taskId}/evidence/[a-f0-9]{64}\\.json$`).test(reserved)) {
     throw new Error(`snapshot scope cannot include its own lifecycle files: ${relative}`);
   }
@@ -135,7 +136,7 @@ function prepareSnapshot(workspace, taskId, files) {
   const manifest = { schema: SCHEMA, taskId, files: capture(root, taskId, [...files].sort()) };
   const text = `${JSON.stringify(manifest, null, 2)}\n`;
   const digest = hash(text);
-  const relative = `tasks/artifacts/${taskId}/evidence/${digest}.json`;
+  const relative = storage.relative(root, `tasks/artifacts/${taskId}/evidence/${digest}.json`);
   const file = safePath(root, relative);
   try {
     if (!fs.lstatSync(file).isFile() || !fs.readFileSync(file).equals(Buffer.from(text))) throw new Error(`existing immutable snapshot is corrupt: ${relative}`);
@@ -146,7 +147,7 @@ function prepareSnapshot(workspace, taskId, files) {
 function verifySnapshot(workspace, taskId, reference, { current = true } = {}) {
   assertId(taskId);
   if (typeof current !== "boolean") throw new Error("snapshot current option must be boolean");
-  const match = typeof reference === "string" && reference.match(/^snapshot:tasks\/artifacts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/evidence\/([a-f0-9]{64})\.json#([a-f0-9]{64})$/);
+  const match = typeof reference === "string" && reference.match(/^snapshot:(?:\.csl-agent-kit\/)?tasks\/artifacts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/evidence\/([a-f0-9]{64})\.json#([a-f0-9]{64})$/);
   if (!match || match[1] !== taskId || match[2] !== match[3]) throw new Error("invalid snapshot reference or task identity");
   const root = fs.realpathSync(path.resolve(workspace));
   const file = safePath(root, `tasks/artifacts/${taskId}/evidence/${match[2]}.json`);
@@ -159,7 +160,9 @@ function verifySnapshot(workspace, taskId, reference, { current = true } = {}) {
   if (current) {
     const actual = capture(root, taskId, manifest.files.map((item) => item.path));
     for (let i = 0; i < actual.length; i++) {
-      if (actual[i].sha256 !== manifest.files[i].sha256 || gitSignature(actual[i].git) !== gitSignature(manifest.files[i].git)) throw new Error(`snapshot content or Git identity changed: ${actual[i].path}`);
+      const snapshotPath = reference.slice("snapshot:".length).split("#")[0];
+      const sha256 = snapshotPath.startsWith("tasks/") ? storage.originalHash(root, actual[i].path, actual[i].sha256, snapshotPath) : actual[i].sha256;
+      if (sha256 !== manifest.files[i].sha256 || gitSignature(actual[i].git) !== gitSignature(manifest.files[i].git)) throw new Error(`snapshot content or Git identity changed: ${actual[i].path}`);
     }
   }
   return manifest;

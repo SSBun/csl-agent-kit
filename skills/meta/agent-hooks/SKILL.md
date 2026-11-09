@@ -5,6 +5,8 @@ description: Create, inspect, update, enable, disable, delete, and audit persist
 
 # Agent Hooks
 
+遵守[统一存储规范](../agent-migration/references/storage.md)及其过渡门禁：目标路径不表示当前运行时已切换。旧项目使用 `agent-migration` 显式迁移；切换前保留现有 CLI 管理位置，不双写。迁移位置不改变项目 Hooks 的 metadata-only 权限。
+
 Use the bundled CLI as the validation and status authority.
 
 Run `node scripts/agent-hooks.js <command> --help` before unfamiliar operations. Never hand-edit managed rules or use project RFCs as runtime guidance.
@@ -13,7 +15,7 @@ Validate proposed rule files with `node scripts/validate-rules.js [--scope globa
 
 ## Boundaries
 
-- Use global hook rules for runtime execution; project hook rules remain metadata-only. Global rules and scripts live under `$CSL_AGENT_KIT_HOME/hooks/` (default `~/.csl-agent-kit/hooks/`); project rules and scripts live under `<workspace>/.agents/hooks/`.
+- Use global hook rules for runtime execution; project hook rules remain metadata-only. Global rules and scripts live under `$CSL_AGENT_KIT_HOME/hooks/` (default `~/.csl-agent-kit/hooks/`); project rules and scripts live under `<workspace>/.csl-agent-kit/hooks/`.
 - Inner scope (`inner:*`) ships hooks with the agent-hooks skill (e.g. `inner:agent-rules` and `inner:csl-agent-kit-contract`). Hook source is read-only: do not create, update, or delete it through the CLI. All inner hooks default enabled; `enable`/`disable` persists user choices in `$CSL_AGENT_KIT_HOME/hooks/config.json` (default `~/.csl-agent-kit/hooks/config.json`). Optional `hookSettings` are keyed by qualified inner ID; runtime passes only the matching object to that script as JSON in `AGENT_HOOKS_HOOK_CONFIG`. `inner:csl-agent-kit-contract` injects the stable behavioral contract from `references/csl-agent-kit-contract.md`; `inner:agent-rules` merges the built-in, user, and project `agent-rules.md` files in that order, and disabling that hook suppresses all three rule sources.
 - Codex is the reference host; each event supports only the actions in its capability table. Claude Code retains the shared event surface. `interrupt` and `session-end` are Codex-only, nonblocking script events, registered through the Codex manifest's supplemental lifecycle file with a three-second native timeout. Pi/Claude Code adapters are unchanged.
 - Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result). `before-tool` uses Pi's `tool_call` gate and returns `{ block: true, reason }` before execution. Other script events remain best-effort; permission/subagent events remain unsupported. A `run-script` rule with `inject-output: true` additionally surfaces stdout on inject-capable events.

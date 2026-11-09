@@ -1,9 +1,11 @@
 ---
 name: task-maintenance
-description: Perform explicitly requested cleanup of stale Markdown memory or Task-owned historical paths after an exact approved change set. Use for a user-directed historical cleanup, duplicate consolidation, or legacy Task artifact move. Exclude routine background memory maintenance, automatic data upgrades, whole-repository cleanup, and scheduling.
+description: Perform explicitly requested cleanup of stale Markdown memory or Task-owned historical paths after an exact approved change set. Use for a user-directed historical cleanup, duplicate consolidation, or legacy Task artifact move. Exclude unified .csl-agent-kit root migrations (use agent-migration), routine background memory maintenance, automatic data upgrades, whole-repository cleanup, and scheduling.
 ---
 
 # Task Maintenance
+
+遵守[统一存储规范](../agent-migration/references/storage.md)及其过渡门禁。把旧项目整体切换到统一数据根属于 `agent-migration`，不属于本 Skill 的历史文件整理；不得依据目标文档绕过尚未支持的运行时。
 
 Maintain accumulated Task workspace state without turning cleanup into a new source of truth. Background Memory Agents own routine knowledge maintenance; task owners retain their record and artifact duties. This Skill is only an explicitly requested cleanup backstop, not a second memory system.
 
@@ -47,7 +49,7 @@ Build a fresh map for every structure run. For each Task-owned carrier, record:
 
 The current contracts normally cover Memory entries and indexes, canonical task records, task-owned artifacts, and verbatim conversation archives. Treat that list only as a discovery starting point: include a path only when a current Authority claims it, and let newer Authority override this summary.
 
-A path beneath `tasks/` is not automatically Task-owned, and a historical Task-owned source may exist outside the current `tasks/` root. Include an obsolete source only when explicit evidence proves past Task-system ownership. Exclude project source, long-lived project documentation, build output, user data, and any path without current destination Authority plus source-ownership evidence. Never scan the rest of the repository for generic architecture cleanup.
+A path beneath `.csl-agent-kit/tasks/` is not automatically Task-owned, and a historical Task-owned source may exist outside that root (including legacy `tasks/`). Include an obsolete source only when explicit evidence proves past Task-system ownership. Exclude project source, long-lived project documentation, build output, user data, and any path without current destination Authority plus source-ownership evidence. Never scan the rest of the repository for generic architecture cleanup.
 
 An explicit maintenance run may read selected canonical data files and Task-owned historical trees completely after lifecycle activation and preflight. This is task-direct cleanup, not ordinary Memory orientation.
 
@@ -161,7 +163,7 @@ This explicit cleanup confirmation is distinct from routine automatic Memory mai
 
 ## Apply Structure Changes
 
-Treat each approved candidate as an independent transaction under its exact operation. Quarantine is transaction-local rollback state, not a persistent ledger; restore or remove it before returning, or report an unresolved recovery failure.
+Treat each approved candidate as an independent transaction under its exact operation. Quarantine is transaction-local rollback state, not a persistent ledger; restore or remove it before returning, or report an unresolved recovery failure. 隔离位置也必须在 `.csl-agent-kit` 数据根内；若后续步骤要求的同文件系统 sibling quarantine 无法同时满足此条件，停止该候选并交给 `agent-migration`，不得在旧数据根外新建恢复材料。
 
 ### Apply Migrate
 

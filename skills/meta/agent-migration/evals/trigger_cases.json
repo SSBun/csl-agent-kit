@@ -1,0 +1,31 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "$agent-migration",
+    "使用 agent-migration 迁移当前项目。",
+    "执行 agent-migration，先检查最新 Memory 结构，再完成 Memory 和目录迁移。",
+    "将旧项目的 CSL Agent Kit 数据统一迁移到 .csl-agent-kit。",
+    "预览 MyTwitter 的 tasks 和 .agents/sops 迁入统一数据根的清单，先不要移动。",
+    "恢复中断的 agent-migration，检查新旧目录冲突。",
+    "将已确认属于 Kit 的用户级旧数据迁入新的用户数据根。",
+    "把这个旧项目的 Context 和 Lessons 迁入新版 Memory，先检查现有升级能力。",
+    "只升级当前项目 Memory，不迁移 Task 或其他目录。",
+    "将已有 Memory v2 升级到当前支持的最新结构，先核对项目与用户索引布局。",
+    "检查旧工作区同时需要目录迁移和 Memory 升级的哪些步骤，先不要执行。",
+    "恢复中断的 Memory 迁移，先核对审计和已提交的部分效果。"
+  ],
+  "should_not_trigger": [
+    "创建一个普通任务，不要迁移旧项目。",
+    "将第三方技能安装到 .agents/skills。",
+    "整理整个仓库的源码目录。",
+    "修改 SOP 的内容，不改变存储位置。",
+    "正常进入工作区，由现有宿主处理首次 Memory 格式升级，不另建迁移任务。",
+    "读取 Memory 查找项目约定。",
+    "让后台 Memory Agent 整理本次会话的新知识。"
+  ],
+  "near_neighbor": [
+    "使用 task-maintenance 清理已经迁移并验证过的重复 Task 产物。",
+    "使用 agent-memory dashboard 查看已有 Memory 状态，不执行迁移。",
+    "更新统一存储规范，但不执行旧项目迁移。"
+  ]
+}

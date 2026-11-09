@@ -1,0 +1,95 @@
+{
+  "schema": "agent-migration-cases/v1",
+  "cases": [
+    {
+      "id": "bare-invocation",
+      "request": "$agent-migration",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["memory", "directory"],
+        "requirements": ["写入前核对最新可用Memory结构和实际运行时能力", "完成Task必要对齐后连续执行就绪分支", "不再询问迁移哪一类", "两类分别验收"]
+      }
+    },
+    {
+      "id": "preview-only",
+      "request": "使用 agent-migration 预览当前项目，先不要执行。",
+      "expected": {
+        "mode": "read-only",
+        "scope": "current-project",
+        "branches": ["memory", "directory"],
+        "requirements": ["只读核对结构和范围", "不执行真实upgrade、prepare、apply或reindex；upgrade --dry-run只读预览可用", "不因默认组合模式覆盖用户暂停要求"]
+      }
+    },
+    {
+      "id": "memory-only",
+      "request": "只升级当前项目 Memory，不搬 Task 或其他目录。",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["memory"],
+        "requirements": ["先核对目标schema及project索引布局", "不迁移目录或user数据"]
+      }
+    },
+    {
+      "id": "directory-only",
+      "request": "仅将旧 Task 目录迁到 .csl-agent-kit，不升级 Memory。",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["directory"],
+        "requirements": ["只读核对Memory最新结构、旧源定位和恢复材料依赖", "不执行Memory升级", "保持Task及历史证据身份"]
+      }
+    },
+    {
+      "id": "stale-runtime",
+      "request": "agent-migration：规范已经更新，但已安装升级器还不支持目标结构。",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["memory", "directory"],
+        "requirements": ["报告目标规范与安装版本差异", "阻止依赖不支持结构的迁移", "不伪造版本标记或自动安装更新", "只继续已证明不受影响的分支"]
+      }
+    },
+    {
+      "id": "split-index-layout",
+      "request": "迁移当前项目；它应使用单索引，用户记忆仍使用卡片与主题。",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["memory", "directory"],
+        "requirements": ["依据预检核实的目标结构验收", "不要求project存在cards/topics/manifest", "不写入user范围"]
+      }
+    },
+    {
+      "id": "already-current",
+      "request": "$agent-migration；当前项目的Memory和目录已完成迁移。",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["memory", "directory"],
+        "requirements": ["核对最新目标结构与实际健康状态", "两分支仅验证，不重复转换", "current不代替索引及引用完整性验证"]
+      }
+    },
+    {
+      "id": "directory-conflict",
+      "request": "执行 agent-migration；Memory可升级，但目录目标已有不同内容。",
+      "expected": {
+        "mode": "execute",
+        "scope": "current-project",
+        "branches": ["memory", "directory"],
+        "requirements": ["目录冲突需用户决策，不自动覆盖", "只继续无依赖影响的Memory分支", "报告部分结果，不能将整体任务标为完成"]
+      }
+    },
+    {
+      "id": "explicit-user-scope",
+      "request": "只迁移用户级 Memory，不处理任何项目目录。",
+      "expected": {
+        "mode": "execute",
+        "scope": "user",
+        "branches": ["memory"],
+        "requirements": ["核对user目标布局与实际升级器能力", "不将project单索引要求套到user", "共享服务操作核对其他工作区影响"]
+      }
+    }
+  ]
+}

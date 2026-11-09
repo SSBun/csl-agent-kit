@@ -6,6 +6,7 @@ const { createHash } = require("node:crypto");
 const topics = require("./topic-core.js");
 const evidence = require("./task-evidence.js");
 const reports = require("./task-reports.js");
+const storage = require("./task-storage.js");
 const readVersions = new Map();
 
 const STATE_DISPLAY = {
@@ -31,11 +32,11 @@ const REVIEW_LEDGER_ENTRY_PATTERN = /^- `(TR-([1-9]\d*))` \| no-progress=([012])
 const HTML_BLOCK_TAGS = new Set("address article aside base basefont blockquote body caption center col colgroup dd details dialog dir div dl dt fieldset figcaption figure footer form frame frameset h1 h2 h3 h4 h5 h6 head header hr html iframe legend li link main menu menuitem nav noframes ol optgroup option p param search section summary table tbody td tfoot th thead title tr track ul".split(" "));
 
 function tasksDir(workspace) {
-  return path.join(fs.realpathSync(path.resolve(workspace)), "tasks", "tasks");
+  return storage.taskPath(workspace, "tasks");
 }
 
 function indexPath(workspace) {
-  return path.join(fs.realpathSync(path.resolve(workspace)), "tasks", "tasks.md");
+  return storage.taskPath(workspace, "tasks.md");
 }
 
 function taskPath(workspace, id) {
@@ -399,20 +400,20 @@ function withoutArtifactsLink(text) {
   return text.slice(0, headerEnd).replace(ARTIFACTS_FIELD_PATTERN, "$1") + text.slice(headerEnd);
 }
 
-function reviewTaskFingerprint(text) {
+function reviewTaskFingerprint(text, file) {
   text = normalizeMetadata(text);
   for (const name of ["Review Assessment", "Review", "Review Reports", "Verification", "Block"]) text = replaceSection(text, name, undefined);
   const result = section(text, "Result");
   if (result) text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
   text = withoutArtifactsLink(text);
   text = text.replace(STATUS_PATTERN, "").replace(/\n{3,}/g, "\n\n").trim();
-  return createHash("sha256").update(text).digest("hex");
+  return storage.originalFingerprint(file, createHash("sha256").update(text).digest("hex"));
 }
 
 function requireCurrentReviewAssessment(task) {
   const assessment = task.reviewAssessment;
   if (!assessment) throw new Error("record a Review Assessment with assess-review before a terminal review gate or completion");
-  if (assessment.state !== "Current" || assessment.fingerprint !== reviewTaskFingerprint(task.text)) {
+  if (assessment.state !== "Current" || assessment.fingerprint !== reviewTaskFingerprint(task.text, task.file)) {
     throw new Error("stale Review Assessment; refresh self-check, snapshot, and assess-review");
   }
   return assessment;
@@ -435,7 +436,7 @@ function reviewAssessmentText(task, level, options) {
   let text = invalidateReviewGate(task.text, "Review assessment changed; rerun the applicable review");
   text = replaceSection(text, "Review Assessment", [
     `- Schema: ${REVIEW_ASSESSMENT_SCHEMA}`, `- Level: ${value}`, "- State: Current",
-    ...fields, `- Task fingerprint: ${reviewTaskFingerprint(text)}`,
+    ...fields, `- Task fingerprint: ${reviewTaskFingerprint(text, task.file)}`,
   ]);
   return text;
 }
@@ -620,7 +621,7 @@ function atomicWrite(file, text) {
 function withArtifactsLink(workspace, id, text) {
   assertId(id);
   text = normalizeMetadata(text);
-  const directory = path.join(path.resolve(workspace), "tasks", "artifacts", id);
+  const directory = storage.taskPath(workspace, `artifacts/${id}`);
   let exists = false;
   try {
     exists = fs.statSync(directory).isDirectory();
@@ -1135,6 +1136,7 @@ function listTasks(workspace) {
 }
 
 module.exports = {
+  reviewTaskFingerprint,
   atomicWrite,
   sectionsOf,
   replaceSection,

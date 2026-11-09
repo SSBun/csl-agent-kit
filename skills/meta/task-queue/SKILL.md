@@ -5,6 +5,8 @@ description: Decompose and run a multi-task outcome as one Queue parent with ord
 
 # Task Queue
 
+遵守[统一存储规范](../agent-migration/references/storage.md)及 `task` 的存储过渡门禁。父子任务共用同一实际存储根；不得自动搬移、双写或跨新旧根拆分队列。旧项目切换交给显式请求的 `agent-migration`。
+
 Coordinate multiple canonical tasks through the current host Agent. This is host-native interactive execution: use the host's existing tools and subagents, never nested `codex exec`, `pi --print`, `pi-worker-*`, a daemon, watchdog, or unattended supervisor.
 
 ## Required Runtime Protocol

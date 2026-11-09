@@ -5,6 +5,8 @@ description: Review a canonical task or supplied result once and return feedback
 
 # Task Review
 
+遵守[统一存储规范](../agent-migration/references/storage.md)及 owning Task 的存储过渡状态；审查证据与记录使用同一实际数据根。审查过程不执行迁移，也不改写不可变历史证据以适配新路径。
+
 Run one evidence-based review pass without changing the reviewed work. The owning task's main Agent self-checks first; the Reviewer independently looks for omissions and unsupported assumptions, not a predetermined verdict.
 
 ## Contract

@@ -6,6 +6,7 @@ const os = require("node:os");
 const { createHash } = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const { pathToFileURL } = require("node:url");
+const storage = require("./task-storage.js");
 
 const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const PROJECT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
@@ -35,6 +36,7 @@ function safePath(workspace, relative) {
   if (typeof relative !== "string" || !relative || path.isAbsolute(relative) || relative.split(/[\\/]/).some((part) => !part || part === ".." || part === ".")) {
     throw new Error(`unsafe relative path: ${relative}`);
   }
+  relative = storage.relative(base, relative.replaceAll("\\", "/"));
   let current = base;
   for (const part of relative.split(/[\\/]/)) {
     current = path.join(current, part);
@@ -236,22 +238,24 @@ function validateResources(input, { allowTaskReferences = false } = {}) {
   });
 }
 
-function resourceLink(target, type) {
+function resourceLink(target, type, workspace) {
   if (/^https?:\/\//.test(target)) return target;
-  return path.posix.relative("tasks/topics", target).split("/").map(encodeURIComponent).join("/") + (type === "directory" ? "/" : "");
+  const base = workspace ? `${storage.layout(workspace).root}/topics` : "tasks/topics";
+  const destination = workspace ? storage.relative(workspace, target) : target;
+  return path.posix.relative(base, destination).split("/").map(encodeURIComponent).join("/") + (type === "directory" ? "/" : "");
 }
 
 function resourceViews(workspace, topic) {
   return (topic.resources || []).map((item) => ({ ...item, href: /^https?:\/\//.test(item.target) ? item.target : pathToFileURL(safePath(workspace, item.target)).href + (item.type === "directory" ? "/" : "") }));
 }
 
-function renderResources(resources) {
+function renderResources(resources, workspace) {
   if (resources === undefined) return "";
-  const rows = resources.map((item) => `| [${item.label}](<${resourceLink(item.target, item.type)}>) | ${item.kind} | ${item.purpose} | ${item.sha256 || "-"} |`);
+  const rows = resources.map((item) => `| [${item.label}](<${resourceLink(item.target, item.type, workspace)}>) | ${item.kind} | ${item.purpose} | ${item.sha256 || "-"} |`);
   return `\n## Resources\n\n| Resource | Kind | Purpose | SHA-256 |\n| --- | --- | --- | --- |\n${rows.length ? `${rows.join("\n")}\n` : ""}`;
 }
 
-function parseResources(text) {
+function parseResources(text, workspace) {
   const sections = core().sectionsOf(text, "Resources");
   if (!sections.length) return undefined;
   const lines = body(text, "Resources").split("\n");
@@ -260,7 +264,8 @@ function parseResources(text) {
     const match = entry.match(/^\| \[([^\]]+)\]\(<([^>]+)>\) \| (normative|reference) \| (.+) \| (-|[a-f0-9]{64}) \|$/);
     if (!match) throw new Error("invalid Resources row");
     const [, label, link, kind, purpose, digest] = match;
-    const target = /^https?:\/\//.test(link) ? link : path.posix.normalize(`tasks/topics/${decodeURIComponent(link)}`).replace(/\/$/, "");
+    const base = workspace ? `${storage.layout(workspace).root}/topics` : "tasks/topics";
+    const target = /^https?:\/\//.test(link) ? link : path.posix.normalize(`${base}/${decodeURIComponent(link)}`).replace(/\/$/, "").replace(/^\.csl-agent-kit\/tasks\//, "tasks/");
     return { label, target, purpose, kind, ...(!/^https?:\/\//.test(link) && link.endsWith("/") ? { type: "directory" } : {}), ...(digest === "-" ? {} : { sha256: digest }) };
   }), { allowTaskReferences: true });
 }
@@ -329,17 +334,17 @@ function tableTopic(workspace, topic) {
 }
 
 function render(topic) {
-  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}${renderResources(topic.resources)}\n## Tasks\n\n${renderTasks(topic)}\n`;
+  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}${renderResources(topic.resources, topic.workspace)}\n## Tasks\n\n${renderTasks(topic)}\n`;
 }
 
-function parseTopic(id, text) {
+function parseTopic(id, text, workspace) {
   const title = text.match(/^# (.+)\n/)?.[1];
   if (!title) throw new Error("topic title missing");
   const split = text.indexOf("\n## ");
   const meta = fields(text.slice(text.indexOf("\n") + 1, split), ["Schema", "Id", "State", "Revision"]);
   if (meta.Schema !== "topic/v1" || meta.Id !== id || !STATES.has(meta.State) || !DIGEST.test(meta.Revision)) throw new Error("invalid topic metadata");
   const spec = validateSpec({ scope: body(text, "Scope"), spec: body(text, "Spec Context"), decisions: body(text, "Decisions"), dependencies: jsonLines(body(text, "Dependencies"), "dependency") });
-  const resources = parseResources(text);
+  const resources = parseResources(text, workspace);
   if (hash(normative(spec, resources)) !== meta.Revision) throw new Error("topic specification changed outside update-spec/update-resources; use the last valid revision and an explicit update");
   const { tasks, tasksFormat } = parseTasks(text);
   const seen = new Set();
@@ -352,14 +357,14 @@ function parseTopic(id, text) {
     if (entry.repository !== "local" && !DIGEST.test(entry.repository)) throw new Error("invalid repository identity");
     seen.add(entry.reference);
   }
-  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, resources, tasks, tasksFormat, text, version: hash(text) };
+  const topic = { workspace, id, title, state: meta.State, revision: meta.Revision, spec, resources, tasks, tasksFormat, text, version: hash(text) };
   if (render(topic) !== text) throw new Error("noncanonical Topic structure; use Topic commands rather than editing fields or sections");
   return topic;
 }
 
 function readTopic(workspace, id) {
   const file = topicPath(workspace, id);
-  const topic = parseTopic(id, fs.readFileSync(file, "utf8"));
+  const topic = parseTopic(id, fs.readFileSync(file, "utf8"), workspace);
   const snapshot = fs.readFileSync(revisionPath(workspace, id, topic.revision), "utf8");
   if (snapshot !== normative(topic.spec, topic.resources)) throw new Error("topic snapshot missing or corrupt");
   return { ...topic, file };
@@ -380,8 +385,8 @@ function topicIndex(workspace, topic) {
 }
 
 function saveTopic(workspace, topic, before) {
-  const candidate = render(topic);
-  parseTopic(topic.id, candidate);
+  const candidate = render({ ...topic, workspace });
+  parseTopic(topic.id, candidate, workspace);
   const revision = revisionPath(workspace, topic.id, topic.revision);
   const existing = fileText(revision);
   const content = normative(topic.spec, topic.resources);

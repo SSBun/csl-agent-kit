@@ -1,7 +1,7 @@
 /**
  * csl-task-overlay — Pi widget that surfaces workspace tasks.
  *
- * Renders a live panel above the editor from `<cwd>/tasks/tasks.md`. Task state
+ * Renders a live panel above the editor from the active Task storage root. Task state
  * stays workspace-shared; a Pi custom entry stores only the current session's
  * focused task.
  *
@@ -27,7 +27,12 @@ import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import { Container, getCapabilities, hyperlink, Text, truncateToWidth, visibleWidth, type TUI } from "@earendil-works/pi-tui";
 
 const require = createRequire(import.meta.url);
+// Reload the complete Task dependency group, not just the panel's direct module.
+for (const name of ["topic-core", "task-core", "task-evidence", "task-reports", "task-storage"]) {
+	delete require.cache[require.resolve(`../../skills/meta/csl-tasks/shared/lib/${name}.js`)];
+}
 const topics = require("../../skills/meta/csl-tasks/shared/lib/topic-core.js");
+const storage = require("../../skills/meta/csl-tasks/shared/lib/task-storage.js");
 const TOPIC_LIMIT = 5;
 
 interface TopicRow {
@@ -83,7 +88,7 @@ function loadTopicRows(cwd: string, focusedTaskId?: string): TopicRow[] {
 }
 
 function renderIndexHeading(label: string, cwd: string, index: string, linkTitles: boolean): string {
-	return linkTitles ? hyperlink(label, pathToFileURL(join(cwd, "tasks", index)).href) : label;
+	return linkTitles ? hyperlink(label, pathToFileURL(join(cwd, storage.layout(cwd).root, index)).href) : label;
 }
 
 function renderTopicLines(rows: TopicRow[], linkTitles: boolean, theme: Theme, cwd: string): string[] {
@@ -98,7 +103,7 @@ function renderTopicLines(rows: TopicRow[], linkTitles: boolean, theme: Theme, c
 
 const WIDGET_KEY = "csl-tasks";
 const FOCUS_ENTRY_TYPE = "csl-task-focus";
-const TASK_INDEX = join("tasks", "tasks.md");
+const TASK_INDEX = "tasks.md";
 const REFRESH_INTERVAL_MS = 5_000;
 
 /** One parsed index entry. `progress` is filled lazily from the task file. */
@@ -163,14 +168,14 @@ function parseStatus(tail: string): Status {
 }
 
 /**
- * Read and parse `<cwd>/tasks/tasks.md`. Returns [] when the file is missing or
+ * Read and parse the active Task index. Returns [] when the file is missing or
  * unreadable — the overlay stays hidden. Synchronous and cheap: the index is a
  * flat list, not the task bodies. `path` is filled for later progress lookup.
  */
 function loadTasks(cwd: string): TaskRow[] {
 	let text: string;
 	try {
-		text = readFileSync(join(cwd, TASK_INDEX), "utf8");
+		text = readFileSync(storage.taskPath(cwd, TASK_INDEX), "utf8");
 	} catch {
 		return [];
 	}
@@ -192,7 +197,7 @@ const progressCache = new Map<string, string | undefined>();
 
 /** Drop progress cache entries whose source file lives under `<cwd>/tasks/`. */
 function invalidateProgressCache(cwd: string): void {
-	const root = join(cwd, "tasks");
+	const root = storage.taskPath(cwd);
 	for (const key of progressCache.keys()) {
 		if (key.startsWith(root)) progressCache.delete(key);
 	}
@@ -212,7 +217,8 @@ const CHECKBOX = /^\s*-\s+\[([ xX])\]/;
  * root (`tasks/slug.md`), so resolve under `tasks/`.
  */
 function loadProgress(cwd: string, indexPath: string): string | undefined {
-	const abs = join(cwd, "tasks", indexPath);
+	let abs: string;
+	try { abs = storage.taskPath(cwd, indexPath); } catch { return undefined; }
 	if (progressCache.has(abs)) return progressCache.get(abs);
 	let result: string | undefined;
 	try {
@@ -273,7 +279,7 @@ function taskIdForRow(row: TaskRow): string | undefined {
 
 function renderTaskTitle(row: TaskRow, cwd: string, linkTitles: boolean): string {
 	return linkTitles && taskIdForRow(row)
-		? hyperlink(row.title, pathToFileURL(join(cwd, "tasks", row.path)).href)
+		? hyperlink(row.title, pathToFileURL(join(cwd, storage.layout(cwd).root, row.path)).href)
 		: row.title;
 }
 
@@ -367,6 +373,12 @@ interface RefreshState {
  */
 function refresh(ctx: RefreshCtx, state: RefreshState): void {
 	if (!ctx.hasUI) return;
+	try { storage.layout(ctx.cwd); } catch (error) {
+		progressCache.clear();
+		state.widget = undefined;
+		ctx.ui.setWidget(WIDGET_KEY, [`⚠ Task storage unavailable: ${String(error)}`], { placement: "aboveEditor" });
+		return;
+	}
 	invalidateProgressCache(ctx.cwd);
 	const rows = renderRows(
 		loadTasks(ctx.cwd),
@@ -474,18 +486,19 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 				// Live mirror first: appendEntry may not be reflected on the branch yet.
 				const current = refreshState.focusedTaskId ?? restoreFocusedTask(ctx.sessionManager.getBranch());
 				return {
-					content: [{ type: "text", text: current ? `Focused task: ${current}` : "No focused task in this session." }],
-					details: { taskId: current ?? null },
+					content: [{ type: "text", text: `${current ? `Focused task: ${current}` : "No focused task in this session."}\nTask storage schema: csl-task-storage/v1` }],
+					details: { taskId: current ?? null, storageRoot: storage.taskPath(ctx.cwd), storageSchema: "csl-task-storage/v1" },
 				};
 			}
+			if (typeof params.taskId !== "string") throw new Error("taskId must be a string");
 			const taskId = params.taskId.trim();
 			if (!TASK_ID.test(taskId) || !loadTasks(ctx.cwd).some((row) => taskId === taskIdForRow(row))) {
 				throw new Error(`Canonical task not found: ${taskId}`);
 			}
 			setFocusedTask(taskId, ctx as RefreshCtx);
 			return {
-				content: [{ type: "text", text: `Focused this session on task: ${taskId}` }],
-				details: { taskId },
+				content: [{ type: "text", text: `Focused this session on task: ${taskId}\nTask storage schema: csl-task-storage/v1` }],
+				details: { taskId, storageRoot: storage.taskPath(ctx.cwd), storageSchema: "csl-task-storage/v1" },
 			};
 		},
 	});
@@ -536,7 +549,7 @@ export default function cslTaskOverlay(pi: ExtensionAPI): void {
 		handler: async (_args, ctx) => {
 			const rows = loadTasks(ctx.cwd).slice(0, TASKS_COMMAND_LIMIT);
 			if (rows.length === 0) {
-				ctx.ui.notify("No tasks in tasks/tasks.md.", "info");
+				ctx.ui.notify("No tasks in the active Task index.", "info");
 				return;
 			}
 			const lines = formatGrouped(rows, ctx.cwd, ctx.mode === "tui" && getCapabilities().hyperlinks);

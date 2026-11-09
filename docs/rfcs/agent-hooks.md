@@ -1,5 +1,7 @@
 # RFC: Agent Hooks 事件驱动自动化机制
 
+存储位置以[统一存储规范](../storage.md)为准。本文项目路径已更新为目标布局；当前实现的读写与发现能力须单独核验，旧项目由 `agent-migration` 显式迁移，不能因 RFC 更新宣称运行时已切换。
+
 - 状态：Accepted
 - 日期：2026-07-22
 - 优先宿主：Codex、Claude Code、Pi
@@ -150,7 +152,7 @@ stop
 ### 7.2 项目规则
 
 ```text
-<workspace>/.agents/hooks/
+<workspace>/.csl-agent-kit/hooks/
 ├── format-and-lint-swift.local.md
 ├── check-before-commit.md
 └── scripts/

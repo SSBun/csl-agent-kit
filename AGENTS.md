@@ -7,5 +7,6 @@
 
 ## Task Files
 
-- Store each task in `tasks/tasks/<task-slug>.md` and add its title, current status, and relative link at the top of the newest-first `tasks/tasks.md` index.
+- Follow `docs/storage.md`: the target layout stores each task in `.csl-agent-kit/tasks/tasks/<task-slug>.md` and its title, status and relative link in `.csl-agent-kit/tasks/tasks.md`.
+- This is a specification-first transition: until the actual task runtime supports the new root and an explicit `agent-migration` completes cutover, keep this workspace's existing `tasks/` records under the current CLI. Never dual-write or manually relocate active tasks to satisfy the target layout.
 - Update only the owning task file and its exact index entry; do not rewrite unrelated task records. Reusable knowledge follows `agent-memory`; do not recreate legacy Context/Lessons stores.

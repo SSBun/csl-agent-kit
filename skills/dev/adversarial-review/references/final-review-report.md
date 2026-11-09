@@ -1,6 +1,6 @@
 # Final Review Report Contract
 
-Maintain at most one Markdown report per review at `tasks/artifacts/<task-id>/reports/adversarial-review.md`, where `<task-id>` is the owning canonical task ID.
+Maintain at most one Markdown report per review at `.csl-agent-kit/tasks/artifacts/<task-id>/reports/adversarial-review.md`（目标布局；过渡期继承 owning Task 的实际存储根，不双写）, where `<task-id>` is the owning canonical task ID.
 
 ## Lifecycle
 
