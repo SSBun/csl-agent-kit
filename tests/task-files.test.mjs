@@ -809,6 +809,34 @@ test("current workspace Context has a valid Core and formal Packs", () => {
   assert.doesNotMatch(context, /未明确要求时记录 `Skipped` 并在常规验证通过后直接完成/);
 });
 
+test("task workflows use event logs without turning history into authorization or a resume cursor", () => {
+  const task = readFileSync(path.join(cslTasksDir, "task", "SKILL.md"), "utf8");
+  const plan = readFileSync(path.join(cslTasksDir, "task-plan", "SKILL.md"), "utf8");
+  const queue = readFileSync(path.join(cslTasksDir, "task-queue", "SKILL.md"), "utf8");
+  const log = task.split("### Execution Log\n")[1].split("\n### ")[0];
+  assert.match(task, /Do not maintain the former `Current artifacts:`, `Next action:`, or `Required input:` recovery bullets/);
+  assert.doesNotMatch(task, /keep a concise recovery note in this same section/);
+  assert.match(task, /Plan, Decisions, Execution Log, Block/);
+  assert.match(log, /Append promptly/);
+  assert.match(log, /stable increasing ordinal/);
+  assert.match(log, /unfinished or unknown outcome/);
+  assert.match(log, /never private reasoning, role transcripts, secrets or full tool logs/);
+  assert.match(log, /appending an explicit reference to its ordinal/);
+  assert.match(log, /cannot amend requirements or grant authorization/);
+  assert.match(log, /Unexpected interruption may prevent the latest event from being recorded/);
+  assert.match(log, /recheck actual artifacts and relevant external state/);
+  assert.match(log, /unknown external action outcome must be checked before retrying/);
+  assert.match(log, /included in the review fingerprint/);
+  assert.match(log, /no append-only bookkeeping exemption/);
+  assert.match(log, /freeze the log with the reviewed scope/);
+  assert.match(log, /not an Execution Log summary/);
+  assert.match(log, /Missing logs remain valid for historical records/);
+  for (const consumer of [plan, queue]) assert.match(consumer, /\[Task Execution Log\]\(\.\.\/task\/SKILL\.md#execution-log\)/);
+  assert.match(plan, /Log planning events, not unperformed implementation/);
+  assert.match(queue, /child discoveries, decisions and execution results stay in that child's log/);
+  assert.match(queue, /Log order does not select a child or permit skipping a blocked one/);
+});
+
 test("CSL task contract keeps acceptance, evidence, and review gates explicit", () => {
   const skillDir = path.join(cslTasksDir, "task");
   const skill = readFileSync(path.join(skillDir, "SKILL.md"), "utf8");
@@ -816,7 +844,7 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit", 
   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
     assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
   }
-  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Review Reports", "Verification", "Block"]) {
+  for (const section of ["Scope", "Target", "Plan", "Execution Log", "Result", "Review Assessment", "Review", "Review Reports", "Verification", "Block"]) {
     assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
   }
   assert.equal(skill.includes("### Checklist"), false);

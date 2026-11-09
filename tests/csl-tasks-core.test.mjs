@@ -58,7 +58,7 @@ function finalization(level = "R0", overrides = {}) {
   };
 }
 
-test("recovery projects explicit visible Plan and Block facts without guessing a current step", () => {
+test("legacy recovery projects explicit visible Plan and Block facts without guessing a current step", () => {
   const text = [
     "# Recovery", "", "## Target", "- Next action: Outside Plan", "", "## Plan",
     "1. First step is not a cursor", "- Current artifacts: [Draft](../artifacts/demo/draft.md)",
@@ -77,7 +77,7 @@ test("recovery projects explicit visible Plan and Block facts without guessing a
   assert.deepEqual(core.recoveryOf("## Plan\n- Next action: First\n## Plan\n- Next action: Second\n## Block\n- Reason: Waiting\n"), { blockReason: "Waiting" });
 });
 
-test("core and CLI expose recorded recovery notes without migrating historical or completed tasks", (t) => {
+test("core and CLI retain legacy recovery notes without migrating historical or completed tasks", (t) => {
   const root = workspace(t);
   core.createTask(root, { id: "queue", title: "Queue", kind: "queue", targets: ["T1: Integrate"] });
   core.createTask(root, { id: "notes", title: "Notes", targets: ["T1: Finish"] });
@@ -97,6 +97,66 @@ test("core and CLI expose recorded recovery notes without migrating historical o
   core.resumeTask(root, "notes");
   core.finalizeTask(root, "notes", "R0", finalization());
   assert.deepEqual(json("show", "notes").recovery, expected);
+});
+
+test("execution logs survive Task, Plan and Queue writes without generating recovery fields", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "legacy", title: "Legacy", targets: ["T1: Finish"] });
+  const legacy = rawBody(root, "legacy");
+  const log = [
+    "### 001 — Shared-layer decision", "", "Confirmed both callers use the shared parser; chose one fix.", "",
+    "### 002 — Compatibility correction", "", "Supersedes 001: old inputs need a default. Runtime behavior remains unverified.",
+  ].join("\n");
+  for (const kind of ["task", "plan", "queue"]) {
+    core.createTask(root, { id: kind, title: kind, kind, targets: ["T1: Finish"] });
+    assert.doesNotMatch(rawBody(root, kind), /## Execution Log/);
+    writeFileSync(core.taskPath(root, kind), core.replaceSection(rawBody(root, kind), "Execution Log", [log]));
+    core.syncIndex(root, kind);
+    core.resumeTask(root, kind);
+    if (kind === "queue") {
+      core.createTask(root, { id: "queue-child", title: "Queue child", targets: ["T1: Child output"] });
+      core.linkChild(root, kind, "queue-child");
+      core.resumeTask(root, "queue-child");
+      core.finalizeTask(root, "queue-child", "R0", finalization());
+    }
+    core.recordResult(root, kind, "T1", "Fixture result observed after execution");
+    core.finalizeTask(root, kind, "R0", finalization());
+    core.reopenTask(root, kind);
+    const before = rawBody(root, kind);
+    const shown = execFileSync(process.execPath, [cli, "--workspace", root, "show", kind], { encoding: "utf8" });
+    assert.equal(core.sectionsOf(shown, "Execution Log").length, 1);
+    assert.ok(shown.includes(log));
+    assert.deepEqual(core.readTask(root, kind).recovery, {});
+    assert.doesNotMatch(shown, /Current artifacts:|Next action:|Required input:/);
+    assert.equal(rawBody(root, kind), before);
+    assert.equal(core.checkTaskIndex(root, kind), true);
+  }
+  assert.equal(rawBody(root, "legacy"), legacy);
+  assert.deepEqual(core.validateWorkspace(root), []);
+});
+
+test("execution log appends invalidate reviewed evidence, including drift before sync", (t) => {
+  const root = workspace(t);
+  core.createTask(root, { id: "logged", title: "Logged", targets: ["T1: Finish"] });
+  core.resumeTask(root, "logged");
+  const initial = "### 001 — Decision\n\nChose the shared implementation.";
+  writeFileSync(core.taskPath(root, "logged"), core.replaceSection(rawBody(root, "logged"), "Execution Log", [initial]));
+  core.syncIndex(root, "logged");
+  core.recordResult(root, "logged", "T1", "Original result observed");
+  assess(root, "logged");
+  core.setReviewGate(root, "logged", "required", "Independent review needed");
+  core.setState(root, "logged", "in_review");
+  core.setReviewGate(root, "logged", "passed", "Original scope reviewed");
+  core.recordVerification(root, "logged", true, "Original result verified");
+  const updated = `${initial}\n\n### 002 — Correction\n\nSupersedes 001: an edge remains unverified.`;
+  writeFileSync(core.taskPath(root, "logged"), core.replaceSection(rawBody(root, "logged"), "Execution Log", [updated]));
+  assert.throws(() => core.completeTask(root, "logged"), /stale Review Assessment/);
+  core.syncIndex(root, "logged");
+  const task = core.readTask(root, "logged");
+  assert.equal(task.reviewAssessment.state, "Stale");
+  assert.equal(task.review[1], "Required");
+  assert.equal(task.verification, null);
+  assert.ok(task.text.includes(updated));
 });
 
 test("finalize commits R0 and R1 with every Target, grounds and final verification", (t) => {
