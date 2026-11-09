@@ -1,0 +1,87 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "compare-memory-index-strategies",
+  "files": [
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "4be2252da42217a75cef4b4af03b75c41e85d62c64a87532a7a8a2c4714ad44f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "399cc31dd573ca80e4d9fdc634b4852b4a60b2de0d3650970dba49263b091b01",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "07b673f804f8d17e5344dd74f24eeda95f325101"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "07b673f804f8d17e5344dd74f24eeda95f325101",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/evidence/analysis.json",
+      "sha256": "ded4888f357a1c4effe27f79e3e7a4306ef45c751c606c10249f25c675de1618",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/evidence/analyze.cjs",
+      "sha256": "b4851a53efb00f5ea4563c50f5d882ff0dbc51c0cf7025622e8f859201636a87",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/evidence/pilot-manifest.json",
+      "sha256": "9974417eb18a2925db3066925c2afe7ab28ac1c2329bc78f4889e0a95b2f26f2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/evidence/pilot-results.jsonl",
+      "sha256": "24eb7b8947b1f853ad6292c5bf418724e2aff4fadc01988a4e8f51a7b437b5f5",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/evidence/pilot-summary.json",
+      "sha256": "6b3662d9b46a07b970e75fb7cdbe9436c44f202c2ab34a019c1a1f5157728aff",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/evidence/pilot.cjs",
+      "sha256": "03ee55b5b0b88efd5b41e3c6b219379e2bc3793382041fa5917116bf32e2f9df",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/compare-memory-index-strategies/reports/pilot-report.md",
+      "sha256": "05e8768fed921f0964d7faf3272c5adc8b76b51c1d600e50eca47364e690645c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

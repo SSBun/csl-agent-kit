@@ -1,0 +1,22 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "fix-memory-characters-runtime",
+  "files": [
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "4be2252da42217a75cef4b4af03b75c41e85d62c64a87532a7a8a2c4714ad44f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "bb8550a36f0366f6e1a75981606be56d44b21ccedc5dac25b4bd9f4502fd4542",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

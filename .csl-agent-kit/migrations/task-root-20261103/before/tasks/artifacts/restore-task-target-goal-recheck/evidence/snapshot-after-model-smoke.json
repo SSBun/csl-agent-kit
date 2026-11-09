@@ -1,0 +1,115 @@
+{
+  "schema": "task-content-snapshot/v1",
+  "head": "20583fbcf0f0cae3f9e53496d94e2175eb4a1a13",
+  "branch": "main",
+  "cwd": "/Users/caishilin/Desktop/personal/skills",
+  "files": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/PRINCIPLE.md",
+      "sha256": "7ba17049988020cc191591d6ffd00f78b4e9a2143ddf11872de3a0360ad93e9a",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/scripts/evaluate-task-target-alignment.js",
+      "sha256": "d3e5b830b79f71b07c61df08a4c0cb49ce28a4661398390ce7e86a2d3cb83da7",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/skills/task-target-alignment-eval/SKILL.md",
+      "sha256": "6b291f4f117d00bb1b8f45ba86f32226994fac7348579f8e7bae3a73356c9729",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/README.md",
+      "sha256": "045e9cc0025f0244accd2602e9a08960a7df0bd3a14aa2fb08105282738f66b1",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/cases.json",
+      "sha256": "15481185ff94865d937ace7b6494a1958984dbd16ca24c18e52680e00f37f212",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "5282d6aaa269d5afee2c5ca833b6fd0af127cd5585cec55a862d90dcfa322550",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "757d44bef2858f4fc53a72111875d8640d0f2e9cd779c5c26418cd00ccfa343b",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tasks/context.md",
+      "sha256": "1ab9f27d6b2875c63c69a6757e78ac3133211f9d31f3752dc3100c3d7f42abc8",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs",
+      "sha256": "948331019d67a10c0e33233712870bd4379b4ef2cdd77b74b923f66636192687",
+      "role": "changed"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task/SKILL.md",
+      "sha256": "7d8bd6dcd3165928cbb262139c298dbceac2ce85cf7a655d8611cde3db0a489a",
+      "role": "unchanged-consumer"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task-plan/SKILL.md",
+      "sha256": "f77303f0af25218a8ed2731743f1776457a1c46212a8d63ad49115fe02281b37",
+      "role": "unchanged-consumer"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/task-queue/SKILL.md",
+      "sha256": "68bb105755702e8d3cf0aff95e1b024649822dd9fa7d9b4f8b26c5b8332662db",
+      "role": "unchanged-consumer"
+    }
+  ],
+  "patchSha256": "2af537c7dd7e9dc9cb50ffce41094fcb5060036f73193ffdbc3b921a8aac860e",
+  "stagedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "unstagedDiffSha256": "2af537c7dd7e9dc9cb50ffce41094fcb5060036f73193ffdbc3b921a8aac860e",
+  "evidence": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tasks/artifacts/restore-task-target-goal-recheck/evidence/local-scorer-self-test.log",
+      "sha256": "fdf6fdfda3521e1df5cf41c5d4fddb7fb7f53c94ebecff2c4aeffd0dc5a13915"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tasks/artifacts/restore-task-target-goal-recheck/evidence/local-task-contract-tests.log",
+      "sha256": "621c3b43e87526daf43121d03dd00668bb14ab012fe4e210b951ccb7b4961d36"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tasks/artifacts/restore-task-target-goal-recheck/evidence/local-goal-recheck-tests.log",
+      "sha256": "231b08cab7cc6ab26aa8984166874e068bea3b56b21a0dff95939d69f7e0aefe"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/tasks/artifacts/restore-task-target-goal-recheck/evidence/unrelated-maintenance-baseline.json",
+      "sha256": "dabc29da66763e9cc92e40f6fbe387f87ed9e2da4b77d8a2f41bcd0b25f6a576"
+    }
+  ],
+  "modelEvidence": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/results/astra-goal-recheck-smoke-20260914-164433/run-metadata.json",
+      "sha256": "336d224316fc6577223f3bb73b24e953949e63368774f639debf59c870d742af"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/results/astra-goal-recheck-smoke-20260914-164433/model-run-receipts.json",
+      "sha256": "894a43972f38251792ad2d6d48a70dae8611fc04f6314bd927cd4379f10c879f"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/results/astra-goal-recheck-smoke-20260914-164433/predictions.jsonl",
+      "sha256": "84b3ac3b51b0cf70f2c195c515f3db3ad637f31e452c23917d4233f8391c9096"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/results/astra-goal-recheck-smoke-20260914-164433/full-corpus-scoring.json",
+      "sha256": "3a50541b78d85a384a37b84b9b6c27e35fb8519718331f68e8d209a4fce3c2cf"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/results/astra-goal-recheck-smoke-20260914-164433/scope-summary.json",
+      "sha256": "b6e2a3817c51a1237e093df235f8d1d08d64193e62c0d58000ebb6f3a71407a5"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/evals/task-target-alignment/results/astra-goal-recheck-smoke-20260914-164433/summary.md",
+      "sha256": "e2459ce8f19922ec004a3616a861c41e9e8fcf7c801d8065173900e8e4f49a22"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "design-recall-first-memory-index",
+  "files": [
+    {
+      "path": "tasks/artifacts/design-recall-first-memory-index/specs/2026-11-03-recall-first-memory-architecture.md",
+      "sha256": "de9da0e7594e4b4cf02cbd76836b0436cb99025b907806fd6eca8d452eb509b6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

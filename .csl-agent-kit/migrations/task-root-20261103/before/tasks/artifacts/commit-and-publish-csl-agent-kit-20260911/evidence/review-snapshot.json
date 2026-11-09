@@ -1,0 +1,181 @@
+{
+  "branch": "main",
+  "head": "c71cbef05c95ad053aaafb086843e0f82d88b57f",
+  "baseRevision": "45d5a6aca33f9d6fe851d05b1635370abaa846e1",
+  "sourceDiffSha256": "77ed4cc0a49567c57ca73a582de32aa78813e855d6fe1f27ce0efa55cf770268",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "6db8293cef1ba83c2746d2e6daa94cd83c696412db70e52f2c536fc398ce4614"
+    },
+    {
+      "path": "PRINCIPLE.md",
+      "sha256": "633f692ef436a0dc44a3f2de7a5025b98c49c3542f7a88dd0cb01944a5a37ef4"
+    },
+    {
+      "path": "README.md",
+      "sha256": "304b50cf1d7d24d1a4d47bc3ec6d833c027e3b43d53f740b9a1afd547ea8b7c8"
+    },
+    {
+      "path": "bin/csl-agent-kit.js",
+      "sha256": "a9fbebe02e62a070211dd536915e974bcb0d7c18a8fef8c28c337698cf11db79"
+    },
+    {
+      "path": "evals/scripts/README.md",
+      "sha256": "c36a694868dd837a12c206e9533ffb194549dda4240e8aee59b3335e90a8a2ab"
+    },
+    {
+      "path": "evals/scripts/evaluate-task-target-alignment.js",
+      "sha256": "7c4e9330bc65cfbac8b5d971e85eb58f95beeded603d6d1c39e4647454782e5f"
+    },
+    {
+      "path": "evals/skills/task-target-alignment-eval/SKILL.md",
+      "sha256": "086d8074242085e94deee198f9b4961c9de4362492d83ac2f0ba1af247f559d2"
+    },
+    {
+      "path": "evals/task-target-alignment/README.md",
+      "sha256": "1c7f6785f32cd5adee886da4847a87a75d5e9bf000ef81f4589c51b7c37a9359"
+    },
+    {
+      "path": "evals/task-target-alignment/cases.json",
+      "sha256": "d8223a584f0287b334489510dae0ad56281db3518d6a95b2bca12f2ab395d04a"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "a776c05dd234f0550f8d0ab75a3c725a177e9b55654222a7d4334dbf63caf35d"
+    },
+    {
+      "path": "package.json",
+      "sha256": "993c5ed370a4dd391b316c24a69e55a5ff38408e3e713b426b9dc4a73fa1761a"
+    },
+    {
+      "path": "skills/dev/adversarial-review/SKILL.md",
+      "sha256": "fa5c61e50c5e6255cf644f40a98b6ef2baf50bbcbedb1493de05f501f583b90c"
+    },
+    {
+      "path": "skills/domain/yunxiao/scripts/yunxiao.mjs",
+      "sha256": "197e29e87da06e7b8183aa15f3146ed7c30f088da3764834c5985ae85dcfccb8"
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "fcb7fb0a3e16d2a8f372925ed033040ab2c81c224bbddf519365544406a27cbf"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "035754f8882b0a97b3d82ddb6783718db121a868ae13377bd2d669d821457963"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "9d7828e86fc3f038023264dedda19c003e41319f022fd4e37aa7911ce275a317"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "sha256": "7ffbeccaa817198b45bb45c3bde76c42a28e276bd379dc5bc6c1ca401338b7d7"
+    },
+    {
+      "path": "skills/meta/task-context/SKILL.md",
+      "sha256": "75c3a28332b0762f4bb0ee819c9fc119453a3beb5a58b3265e089068e97a57fe"
+    },
+    {
+      "path": "skills/meta/task-context/evals/trigger_cases.json",
+      "sha256": "02878427bfef0d2bd365aa107e799ff042db178ef4aedd7dfc9f3f87a01d3c6d"
+    },
+    {
+      "path": "skills/meta/task-lessons/SKILL.md",
+      "sha256": "315400ce7971a1661fbcd5ef837a027f53d5ee06765c39206fbb48471bc1e172"
+    },
+    {
+      "path": "skills/meta/task-lessons/evals/trigger_cases.json",
+      "sha256": "e7c95076b0d007936000e3097d890419898c6ed548c32582306579ad162f6e2d"
+    },
+    {
+      "path": "skills/meta/task-maintenance/SKILL.md",
+      "sha256": "5f06d1b89131426974303848c92490ba9d893f2952556b557b183687b14e3d76"
+    },
+    {
+      "path": "skills/meta/task-maintenance/agents/openai.yaml",
+      "sha256": "a4dc088ba47341c5c09040242cc4780e7333fdd8fc3ab61c1ac86f9a42147548"
+    },
+    {
+      "path": "skills/meta/task-maintenance/evals/semantic_config.json",
+      "sha256": "612c10fa19aabd3d25b3a76d82dbac3ed056da169e7f72d6fdf220b8f7b5fe57"
+    },
+    {
+      "path": "skills/meta/task-maintenance/evals/structure_operation_cases.json",
+      "sha256": "d055c2acc6ea7f88e637786abc1adf3511004c6180d1e2c576471fd8abab3db7"
+    },
+    {
+      "path": "skills/meta/task-maintenance/evals/trigger_cases.json",
+      "sha256": "71b44023856b8c27368f5ea6bcaca8d76ffb08ed131a5e5295f3b567fb5068b4"
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "f77303f0af25218a8ed2731743f1776457a1c46212a8d63ad49115fe02281b37"
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "e00db5dea7146116c134b47f663a552d8b2a96316de280603b85c8b930224b88"
+    },
+    {
+      "path": "skills/meta/task-review/SKILL.md",
+      "sha256": "704b7bcb6815ae476d1319e7aff999f093f27dda66ea84265bc79346b5c44964"
+    },
+    {
+      "path": "skills/meta/task-review/evals/contract_cases.json",
+      "sha256": "c4713ffd1ff303c4d4c95da14e3090f8ff5508f160a8737489afed1529ff8033"
+    },
+    {
+      "path": "skills/meta/task-review/evals/semantic_config.json",
+      "sha256": "77c891385abd185d3ef10fb7177d8da35170df53bf7cecbec30ff24b0a2a548e"
+    },
+    {
+      "path": "skills/meta/task-review/evals/trigger_cases.json",
+      "sha256": "29778c373f5eede5a5c8082a9927d528dff897e17811ff601a09e161abc75019"
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "65380ac60b91af93f2cda77918d58a3333567d6c734a4a2e4e092376c7c541ea"
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "7ad15204747c04ff734422a4c482c8b6010469b38f5b81891855d76371cd8805"
+    },
+    {
+      "path": "skills/meta/task/evals/review_gate_cases.json",
+      "sha256": "0fb5badd7de6c29e3ac1521f24e487a63d543fe470c2d80b5cbd53479469b8d0"
+    },
+    {
+      "path": "skills/meta/task/evals/review_stall_cases.json",
+      "sha256": "bbc503eacadb521464570fd02b3418a8da014c3bf9a3e4401b7b68164e24650e"
+    },
+    {
+      "path": "skills/meta/task/evals/semantic_config.json",
+      "sha256": "ff23d2018de1cd1780ec2c37030fc3550bd6df1411f01c14126b36eb9ef56c1e"
+    },
+    {
+      "path": "skills/meta/task/evals/trigger_cases.json",
+      "sha256": "df10abd58f41eff53f7896acb80ae00324fa31bdf785617c548a1985bca63a31"
+    },
+    {
+      "path": "tests/cli-install-output.test.js",
+      "sha256": "185abb8c7fa32ccfe51e7b910282d427a4cb182b04325d93d09b7ae8bbe379c1"
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "a813ac26289acc59e31ee7fdb3b1d4bd2f21b7111aea0ebe6c655a561af06e75"
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "cc755750bf883eb52b2a086cd21e32861ffac9643a69a2b713f9cee0bfa6e86e"
+    }
+  ],
+  "scope": "v5.0.0..HEAD source and release metadata; tasks lifecycle and evidence excluded from frozen source scope",
+  "deletedPaths": [
+    "skills/domain/yunxiao.zip"
+  ],
+  "initialCommitStatus": "clean after c71cbef; all 26 then-present changed/untracked paths committed",
+  "evidenceHashes": {
+    "checks-post-commit.json": "ae1e4c36018a3b934336c47b2f7b689bd6a86e4fe9ae0ffa95067124f41126ce",
+    "checks-pre-release.json": "606b7ffd5e8424cd2d5f699da3b8ad4640cd43e525451b46cc5de75a61802a68"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "base": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": {
+    "skills/meta/task/SKILL.md": "7c1fa4fd71f081aac5380c5d6d8dc3ec98fc1b673f3c888c23005c9986d8896a",
+    "skills/meta/task-review/SKILL.md": "d25a1766679bb2a191aea6dae9202b66adcfeb7ad47395d9b9a7fc53e40f2ac0",
+    "skills/meta/task-review/references/review_workflow.md": "1f0260d36a21c615fdde183b7d20c61027e76d59f6a7e46ed8ea52aa0da75c24",
+    "skills/meta/task-review/evals/contract_cases.json": "6bf9d07b37e2520d5bfdc16ccf127e4cfc64f74e6b6efa8ad38845ebdfed6300",
+    "skills/meta/task-queue/SKILL.md": "43df96d3f955bfc8ddf94f8f76048ed884c018080495709d99d1733c8117bab8",
+    "skills/meta/csl-tasks/shared/lib/task-core.js": "57da974e680d8ec88109a912c0a8ca0d92ad6ba295fe07a8b9a322fffae0fadb",
+    "skills/meta/csl-tasks/shared/protocols/task-review-grading.md": "d0e591f5949cbca10a9fc2a9d42355010d11a4604602297ea7bfb7afb7ce9fd5",
+    "tests/csl-tasks-core.test.mjs": "b4afe645af4a50deef0554d3fbd2a2560db618d424ff1ddab8f95cfa77240be6",
+    "tests/task-files.test.mjs": "ee18ab89e770038bf7f47c4ac0456b6d3844978562b9ec7c0df890b49068a501",
+    "tasks/context.md": "c4f0d5c193ab56545d89aaa98dcece0efb0a81f1bcf29191b7a46db51fa16cd0"
+  },
+  "status": " M skills/meta/csl-tasks/shared/lib/task-core.js\n M skills/meta/csl-tasks/shared/protocols/task-review-grading.md\n M skills/meta/task-queue/SKILL.md\n M skills/meta/task-review/SKILL.md\n M skills/meta/task-review/evals/contract_cases.json\n M skills/meta/task-review/references/review_workflow.md\n M skills/meta/task/SKILL.md\n M tasks/context.md\n M tests/csl-tasks-core.test.mjs\n M tests/task-files.test.mjs\n",
+  "patch_sha256": "f9dfe73db4ae46f803fc40d5d67dee3fec5bb2652b924720f9cf140caff88ebc"
+}

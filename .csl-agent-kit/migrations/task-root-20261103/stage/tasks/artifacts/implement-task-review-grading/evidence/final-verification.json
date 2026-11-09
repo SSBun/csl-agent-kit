@@ -1,0 +1,157 @@
+{
+  "reviewRun": "3048ce7f-316c-4fe6-8c07-ef120056fb2e",
+  "reviewFindings": [],
+  "resolvedFindings": [
+    "TR-1",
+    "TR-2"
+  ],
+  "snapshotId": "2e0bcce1e95a8527cbded54cf79f4b0feb4706fbb5b48e402beead12fe8a6701",
+  "identity": {
+    "fileAndModeDrift": [],
+    "patchMatches": true,
+    "stagedMatches": true,
+    "headMatches": true
+  },
+  "checksAfterPassed": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "skills/meta/csl-tasks/shared/lib/task-core.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "skills/meta/csl-tasks/shared/scripts/csl-tasks.js"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/csl-tasks-core.test.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/task-files.test.mjs"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/task"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m task — /Users/caishilin/Desktop/personal/skills/skills/meta/task\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 5528.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/task-review"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m task-review — /Users/caishilin/Desktop/personal/skills/skills/meta/task-review\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1979.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/task-queue"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m task-queue — /Users/caishilin/Desktop/personal/skills/skills/meta/task-queue\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1994.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/meta/agent-hooks"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m agent-hooks — /Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1311.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/skill-quality/scripts/check.js",
+        "skills/dev/adversarial-review"
+      ],
+      "exitCode": 0,
+      "stdout": "\u001b[33;1mWARNING\u001b[0m adversarial-review — /Users/caishilin/Desktop/personal/skills/skills/dev/adversarial-review\n  \u001b[33mwarning [context-budget]\u001b[0m Estimated initial-load tokens exceed the 1000-token budget: 1345.\nSummary: 0 passed, 1 warning, 0 failed.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/task-context/scripts/context.js",
+        "--workspace",
+        ".",
+        "validate"
+      ],
+      "exitCode": 0,
+      "stdout": "{\n  \"schema\": \"csl-context.validation/v1\",\n  \"valid\": true,\n  \"errors\": [],\n  \"warnings\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+        "--workspace",
+        ".",
+        "validate"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"valid\":true}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+        "--help"
+      ],
+      "exitCode": 0,
+      "stdout": "Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]\n\nCommands:\n  create <id> --title <title> --kind task|plan|queue --target \"T1: ...\" [--target ...]\n  list [--json]\n  show <id> [--json]\n  validate [id]\n  check <id|task-file>\n  sync <id>\n  status <id> <pending|in-progress|in-review|blocked|cancelled>\n  cancel <id>\n  resume <id>\n  reopen <id>\n  link <parent-id> <child-id>\n  next <queue-id> [--json]\n  result <id> <Tn> --evidence <text>\n  assess-review <id> <R0|R1|R2> --reason <text> --snapshot <identity> --evidence <text>\n    R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>\n  review <id> <skipped|required|passed|approved> --evidence <text>\n    passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve\n  verify <id> <passed|failed> --evidence <text>\n  complete <id>\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "testsRun": false,
+  "limitations": [
+    "5 个 Skill package 仅存在 context-budget warning。",
+    "未运行单元或项目测试，静态验证不能冒充全分支运行证明。"
+  ],
+  "atomicLedgerClearance": "真实 owning task 已使用 Passed --resolve-ledger 收尾，assessment 保持 Current，随后重新验证。"
+}

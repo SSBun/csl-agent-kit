@@ -1,0 +1,61 @@
+{
+  "valid": true,
+  "scenarios": 61,
+  "cases": 122,
+  "families": [
+    "added",
+    "ambiguity",
+    "boundary",
+    "compatibility",
+    "delegated",
+    "equivalent",
+    "exploration",
+    "implementation_only",
+    "no_task",
+    "omitted",
+    "outcome",
+    "plan",
+    "preserved_behavior",
+    "queue",
+    "revision",
+    "safety_gate",
+    "side_effect",
+    "tradeoff",
+    "trivial",
+    "weakened"
+  ],
+  "preferredLevels": [
+    "L0_NO_TASK",
+    "L1_TRIVIAL_PASS",
+    "L2_VISIBLE_CHECKPOINT",
+    "L3_CLARIFICATION_HOLD",
+    "L4_TARGET_CHANGE_APPROVAL"
+  ],
+  "preferredActions": [
+    "clarify",
+    "continue_delegated",
+    "continue_exploration",
+    "continue_unchanged",
+    "no_task",
+    "return_to_main",
+    "show_change_wait",
+    "show_checkpoint",
+    "trivial_pass"
+  ],
+  "sessionRoles": [
+    "delegated",
+    "main"
+  ],
+  "workTypes": [
+    "exploration",
+    "implementation"
+  ],
+  "planChanges": [
+    "implementation_only",
+    "material_graph",
+    "none"
+  ],
+  "oracleStatus": "provisional",
+  "gateMode": "report-only",
+  "errors": []
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "HEAD^",
+      "HEAD",
+      "--",
+      ".",
+      ":(exclude)tasks/artifacts/optimize-task-review-self-check-and-independent-review/evidence/review-pass-1.patch"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--numstat",
+      "/Users/caishilin/Desktop/personal/skills/tasks/artifacts/optimize-task-review-self-check-and-independent-review/evidence/review-pass-1.patch"
+    ],
+    "exitCode": 0,
+    "stdout": "8\t5\tskills/meta/agent-hooks/references/csl-agent-kit-contract.md\n16\t11\tskills/meta/task-review/SKILL.md\n155\t4\tskills/meta/task-review/evals/contract_cases.json\n82\t12\tskills/meta/task-review/references/review_workflow.md\n19\t5\tskills/meta/task/SKILL.md\n3\t1\ttasks/context.md\n71\t0\ttests/cli-install-output.test.js\n14\t0\ttests/task-files.test.mjs\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "v5.0.0",
+      "HEAD",
+      "--",
+      ".",
+      ":(exclude)tasks/"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "check": "历史补丁原始哈希匹配且语法有效；保留 Git patch 所需空白上下文标记",
+    "sha256": "87e0bee57c12124ba5a39aa178b62301a94e31e9bb4db6d50f7c739a182bf507"
+  }
+]

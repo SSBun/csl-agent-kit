@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: task index and review reports resolve to isolated same-slug files
+ok 1 - task index and review reports resolve to isolated same-slug files
+  ---
+  duration_ms: 72.254
+  type: 'test'
+  ...
+# Subtest: task index checker accepts the current format without migrating legacy siblings
+ok 2 - task index checker accepts the current format without migrating legacy siblings
+  ---
+  duration_ms: 9.982833
+  type: 'test'
+  ...
+# Subtest: task index checker rejects incompatible paths and canonical mismatches
+ok 3 - task index checker rejects incompatible paths and canonical mismatches
+  ---
+  duration_ms: 10.304042
+  type: 'test'
+  ...
+# Subtest: task links to deleted reports fail validation
+ok 4 - task links to deleted reports fail validation
+  ---
+  duration_ms: 1.291417
+  type: 'test'
+  ...
+# Subtest: cross-linked task and report slugs fail validation
+ok 5 - cross-linked task and report slugs fail validation
+  ---
+  duration_ms: 0.902417
+  type: 'test'
+  ...
+# Subtest: task artifact producers use stable task-owned paths
+ok 6 - task artifact producers use stable task-owned paths
+  ---
+  duration_ms: 0.847291
+  type: 'test'
+  ...
+# Subtest: task workflow skills own canonical records and routes
+ok 7 - task workflow skills own canonical records and routes
+  ---
+  duration_ms: 2.068958
+  type: 'test'
+  ...
+# Subtest: workspace context contract supports dispatch-ready retrieval and durable admission
+ok 8 - workspace context contract supports dispatch-ready retrieval and durable admission
+  ---
+  duration_ms: 1.371917
+  type: 'test'
+  ...
+# Subtest: workspace context value cases enforce admission and temporary exits
+ok 9 - workspace context value cases enforce admission and temporary exits
+  ---
+  duration_ms: 1.085541
+  type: 'test'
+  ...
+# Subtest: workspace context query cases cover session, task, write, and failure gates
+ok 10 - workspace context query cases cover session, task, write, and failure gates
+  ---
+  duration_ms: 0.481334
+  type: 'test'
+  ...
+# Subtest: workspace context lifecycle scenarios have complete inputs and consistent expected references
+ok 11 - workspace context lifecycle scenarios have complete inputs and consistent expected references
+  ---
+  duration_ms: 1.55275
+  type: 'test'
+  ...
+# Subtest: workspace context CLI loads Core, queries only v1 Packs, and fails closed
+ok 12 - workspace context CLI loads Core, queries only v1 Packs, and fails closed
+  ---
+  duration_ms: 437.833708
+  type: 'test'
+  ...
+# Subtest: current workspace Context has a valid Core and formal Packs
+ok 13 - current workspace Context has a valid Core and formal Packs
+  ---
+  duration_ms: 52.218709
+  type: 'test'
+  ...
+# Subtest: CSL task contract keeps acceptance, evidence, and review gates explicit
+ok 14 - CSL task contract keeps acceptance, evidence, and review gates explicit
+  ---
+  duration_ms: 0.642
+  type: 'test'
+  ...
+# Subtest: owning tasks persist review feedback separately from the active finding ledger
+ok 15 - owning tasks persist review feedback separately from the active finding ledger
+  ---
+  duration_ms: 0.499208
+  type: 'test'
+  ...
+# Subtest: workspace task ownership defaults independent and ambiguous outcomes to new records
+ok 16 - workspace task ownership defaults independent and ambiguous outcomes to new records
+  ---
+  duration_ms: 0.148875
+  type: 'test'
+  ...
+# Subtest: workspace review-gate cases distinguish R0, R1, R2 and explicit review
+ok 17 - workspace review-gate cases distinguish R0, R1, R2 and explicit review
+  ---
+  duration_ms: 0.184417
+  type: 'test'
+  ...
+# Subtest: review grading has one shared authority and keeps evidence and safety boundaries
+ok 18 - review grading has one shared authority and keeps evidence and safety boundaries
+  ---
+  duration_ms: 0.210958
+  type: 'test'
+  ...
+# Subtest: workspace task-review stall cases block after two per-finding no-progress re-reviews
+ok 19 - workspace task-review stall cases block after two per-finding no-progress re-reviews
+  ---
+  duration_ms: 5.522541
+  type: 'test'
+  ...
+# Subtest: workspace lesson contract queries before work and confirms every persistent write
+ok 20 - workspace lesson contract queries before work and confirms every persistent write
+  ---
+  duration_ms: 1.059208
+  type: 'test'
+  ...
+# Subtest: workspace lesson CLI indexes v1 and legacy records and rejects malformed v1
+ok 21 - workspace lesson CLI indexes v1 and legacy records and rejects malformed v1
+  ---
+  duration_ms: 123.913375
+  type: 'test'
+  ...
+# Subtest: adversarial review report presents compact human-readable dialogue
+ok 22 - adversarial review report presents compact human-readable dialogue
+  ---
+  duration_ms: 1.60525
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 776.391334

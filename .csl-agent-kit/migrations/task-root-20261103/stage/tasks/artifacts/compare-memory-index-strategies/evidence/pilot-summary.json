@@ -1,0 +1,315 @@
+{
+  "completed": 36,
+  "expected": 36,
+  "byMethod": {
+    "A": {
+      "attempts": 18,
+      "success": 18,
+      "totalTokens": 295904,
+      "tokensPerSuccess": 16439.11111111111,
+      "input": 136633,
+      "output": 3367,
+      "cacheRead": 155904,
+      "tools": 78,
+      "catalogUSD": 1.6905839999999999,
+      "medianMs": 13804,
+      "p95Ms": 42360,
+      "timeouts": 0
+    },
+    "B": {
+      "attempts": 18,
+      "success": 18,
+      "totalTokens": 1138743,
+      "tokensPerSuccess": 63263.5,
+      "input": 460352,
+      "output": 3063,
+      "cacheRead": 675328,
+      "tools": 66,
+      "catalogUSD": 5.431998,
+      "medianMs": 11122,
+      "p95Ms": 40042,
+      "timeouts": 0
+    }
+  },
+  "byScale": {
+    "50": {
+      "A": {
+        "attempts": 6,
+        "success": 6,
+        "totalTokens": 83054,
+        "tokensPerSuccess": 13842.333333333334,
+        "input": 45373,
+        "output": 1073,
+        "cacheRead": 36608,
+        "tools": 24,
+        "catalogUSD": 0.543988,
+        "medianMs": 11202,
+        "p95Ms": 15413,
+        "timeouts": 0
+      },
+      "B": {
+        "attempts": 6,
+        "success": 6,
+        "totalTokens": 77585,
+        "tokensPerSuccess": 12930.833333333334,
+        "input": 49836,
+        "output": 997,
+        "cacheRead": 26752,
+        "tools": 21,
+        "catalogUSD": 0.574962,
+        "medianMs": 15199,
+        "p95Ms": 40042,
+        "timeouts": 0
+      }
+    },
+    "200": {
+      "A": {
+        "attempts": 6,
+        "success": 6,
+        "totalTokens": 101418,
+        "tokensPerSuccess": 16903,
+        "input": 48848,
+        "output": 1114,
+        "cacheRead": 51456,
+        "tools": 26,
+        "catalogUSD": 0.595636,
+        "medianMs": 17015,
+        "p95Ms": 42360,
+        "timeouts": 0
+      },
+      "B": {
+        "attempts": 6,
+        "success": 6,
+        "totalTokens": 258557,
+        "tokensPerSuccess": 43092.833333333336,
+        "input": 122636,
+        "output": 1009,
+        "cacheRead": 134912,
+        "tools": 21,
+        "catalogUSD": 1.4117220000000001,
+        "medianMs": 9976,
+        "p95Ms": 11122,
+        "timeouts": 0
+      }
+    },
+    "1000": {
+      "A": {
+        "attempts": 6,
+        "success": 6,
+        "totalTokens": 111432,
+        "tokensPerSuccess": 18572,
+        "input": 42412,
+        "output": 1180,
+        "cacheRead": 67840,
+        "tools": 28,
+        "catalogUSD": 0.55096,
+        "medianMs": 17359,
+        "p95Ms": 24454,
+        "timeouts": 0
+      },
+      "B": {
+        "attempts": 6,
+        "success": 6,
+        "totalTokens": 802601,
+        "tokensPerSuccess": 133766.83333333334,
+        "input": 287880,
+        "output": 1057,
+        "cacheRead": 513664,
+        "tools": 24,
+        "catalogUSD": 3.445314,
+        "medianMs": 14511,
+        "p95Ms": 18400,
+        "timeouts": 0
+      }
+    }
+  },
+  "paired": [
+    {
+      "size": 200,
+      "caseId": "multi",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 26024,
+      "bTokens": 59504,
+      "aMs": 15509,
+      "bMs": 11122
+    },
+    {
+      "size": 200,
+      "caseId": "exact",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 10165,
+      "bTokens": 39723,
+      "aMs": 8776,
+      "bMs": 9486
+    },
+    {
+      "size": 1000,
+      "caseId": "multi",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 26122,
+      "bTokens": 188906,
+      "aMs": 18890,
+      "bMs": 14511
+    },
+    {
+      "size": 200,
+      "caseId": "absent",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 10024,
+      "bTokens": 39592,
+      "aMs": 17015,
+      "bMs": 9593
+    },
+    {
+      "size": 50,
+      "caseId": "multi",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 20765,
+      "bTokens": 17741,
+      "aMs": 15413,
+      "bMs": 15199
+    },
+    {
+      "size": 1000,
+      "caseId": "exact",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15251,
+      "bTokens": 94406,
+      "aMs": 17359,
+      "bMs": 13436
+    },
+    {
+      "size": 1000,
+      "caseId": "scope",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 29007,
+      "bTokens": 141653,
+      "aMs": 24454,
+      "bMs": 18400
+    },
+    {
+      "size": 200,
+      "caseId": "semantic",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15331,
+      "bTokens": 39786,
+      "aMs": 42360,
+      "bMs": 7911
+    },
+    {
+      "size": 200,
+      "caseId": "scope",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 24372,
+      "bTokens": 40002,
+      "aMs": 22242,
+      "bMs": 11042
+    },
+    {
+      "size": 50,
+      "caseId": "conditions",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 10537,
+      "bTokens": 12111,
+      "aMs": 8586,
+      "bMs": 9909
+    },
+    {
+      "size": 50,
+      "caseId": "semantic",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15556,
+      "bTokens": 11952,
+      "aMs": 9455,
+      "bMs": 7566
+    },
+    {
+      "size": 200,
+      "caseId": "conditions",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15502,
+      "bTokens": 39950,
+      "aMs": 10647,
+      "bMs": 9976
+    },
+    {
+      "size": 1000,
+      "caseId": "absent",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 10051,
+      "bTokens": 94257,
+      "aMs": 9295,
+      "bMs": 9531
+    },
+    {
+      "size": 50,
+      "caseId": "scope",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15711,
+      "bTokens": 12156,
+      "aMs": 13804,
+      "bMs": 32965
+    },
+    {
+      "size": 50,
+      "caseId": "absent",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 10170,
+      "bTokens": 11736,
+      "aMs": 11202,
+      "bMs": 9544
+    },
+    {
+      "size": 50,
+      "caseId": "exact",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 10315,
+      "bTokens": 11889,
+      "aMs": 10757,
+      "bMs": 40042
+    },
+    {
+      "size": 1000,
+      "caseId": "semantic",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15375,
+      "bTokens": 141604,
+      "aMs": 13365,
+      "bMs": 13074
+    },
+    {
+      "size": 1000,
+      "caseId": "conditions",
+      "aSuccess": true,
+      "bSuccess": true,
+      "aTokens": 15626,
+      "bTokens": 141775,
+      "aMs": 13344,
+      "bMs": 17445
+    }
+  ],
+  "estimated432CatalogUSD": 85.470984,
+  "notes": [
+    "仅试跑；六个问题模板不足以据此宣布正式赢家。",
+    "SDK目录估价，不是订阅账单；包含provider报告的缓存用量。",
+    "主实验未注入索引；未评估生产启动注入策略。",
+    "没有持久化隐藏推理内容。"
+  ]
+}

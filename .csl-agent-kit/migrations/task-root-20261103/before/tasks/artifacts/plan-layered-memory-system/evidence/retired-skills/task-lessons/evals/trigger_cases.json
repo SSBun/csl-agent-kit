@@ -1,0 +1,24 @@
+{
+  "recommended_threshold": 0.5,
+  "should_trigger": [
+    "Before starting this implementation, query the relevant lessons in tasks/lessons.md.",
+    "This session resumed with an active task; re-query tasks/lessons.md before continuing.",
+    "The implementation scope changed materially, so refresh the relevant lessons.",
+    "After this user correction, apply relevant lessons and evaluate a reusable persistent rule.",
+    "Merge this reusable correction with the existing lesson after I approve the exact diff."
+  ],
+  "should_not_trigger": [
+    "Start a session without any concrete task.",
+    "Answer this simple factual question without changing files.",
+    "Copy this file and verify that the destination hash matches.",
+    "I prefer concise answers."
+  ],
+  "near_neighbor": [
+    "At session start, read tasks/context.md.",
+    "Create the task record in tasks/tasks.md before implementation.",
+    "Clean stale historical content and merge overlapping entries across tasks/context.md and tasks/lessons.md.",
+    "Migrate Task-owned legacy files and directories to the current canonical Task architecture.",
+    "Run adversarial review on the completed change.",
+    "Update the confirmed component relationship in the workspace context."
+  ]
+}

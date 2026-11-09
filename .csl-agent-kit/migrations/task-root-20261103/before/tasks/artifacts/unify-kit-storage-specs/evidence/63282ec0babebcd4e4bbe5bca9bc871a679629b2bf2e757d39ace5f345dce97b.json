@@ -1,0 +1,412 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "unify-kit-storage-specs",
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "f7b81d4960432b8adab0d6f76636b67ef7b89b5200330194439604b819b36e64",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2f9b1996137eebc5603fd87e19410f344275b303"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2f9b1996137eebc5603fd87e19410f344275b303",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "966fd44eb243ea36ea79fb629c822b79a0591f84894ebd1c7c5e333a9339e640",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a7a52354d7fec91b96b3f93add1b812ded74ecc3"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a7a52354d7fec91b96b3f93add1b812ded74ecc3",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "PRINCIPLE.md",
+      "sha256": "1540bbd0937a8ac13a17a09a1df5148ca140c3720fd401adbd335a60ebb8047a",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "49fdddd35212e0a74ea036f75399d8f64658e527"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "49fdddd35212e0a74ea036f75399d8f64658e527",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "README.md",
+      "sha256": "6f91b297b406041ab9efe7882ddb8bec12eae27492aca19f7729840417bbecf5",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "bf26e2bd52a10a00fe5f27d553667db8d7209b98"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "bf26e2bd52a10a00fe5f27d553667db8d7209b98",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "docs/rfcs/agent-hooks.md",
+      "sha256": "54aa361fc06603baa96aa55435308e0d23c11c74256b8383225c49f2d03e8e3d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fed9296eef588cbec81dc06480b256edb2f9bce9"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fed9296eef588cbec81dc06480b256edb2f9bce9",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "docs/storage.md",
+      "sha256": "35c4cfb47234864a736bcc3c9d75c6e19b7f5891f6781eef40d54ecf97999bc2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/adversarial-review/references/final-review-report.md",
+      "sha256": "b8651a7325eaf9759ec848ed6a2279b9de389393d13d9b81c022213896f3f8f4",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8b70c5291d4e68d8d56226d737a3dd8accf3d40c"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8b70c5291d4e68d8d56226d737a3dd8accf3d40c",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/brainstorming/SKILL.md",
+      "sha256": "845cb951841bb9c52f37e8ce7dff4f7ae4bef38c46b07a637f4d561b55eec252",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "ef81ffa0684b5ecc64b25e7f175c41d2668807ac"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "ef81ffa0684b5ecc64b25e7f175c41d2668807ac",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/deliberate/SKILL.md",
+      "sha256": "7b22b150f75d419ef0f4e77da2ae3756924c3291743aa6ba856ade2cb8a023ea",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d4959804ec19dfb29a278a6526f461e65574c24e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d4959804ec19dfb29a278a6526f461e65574c24e",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/SKILL.md",
+      "sha256": "9f678df12c652c579b57cc211f10e0c6040d24512258d63a6c8b697cddef4e12",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c8fa359df7298632db565091d94f21e36aa6c9df"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c8fa359df7298632db565091d94f21e36aa6c9df",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "a67a73ecad0e8d97cb84b40e2da233a201a617eb9d5446f95f7c9b10e7b49255",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fef85a9281efe0ea6674b6842015a32db53d756d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fef85a9281efe0ea6674b6842015a32db53d756d",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/SKILL.md",
+      "sha256": "2eb5d072662580574cff64abaceaad9272a9808a2f872fd69485314b7098b9fc",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/evals/trigger_cases.json",
+      "sha256": "c398e6c137b525897592c9d3ae634dcdb3f7a9e7b96a85184d8c773428620b0f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/storage.md",
+      "sha256": "be04fd7cdd685b1adc1e88ae84ad7666f14e4929ddae74665d4f9edc03993fbf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-rules/SKILL.md",
+      "sha256": "70954cbbb8d14fad4590587e544482ef187f52805a10d74db0451c4035942159",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "26768e607332867b452851276ba6439bcd0c7b69"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "26768e607332867b452851276ba6439bcd0c7b69",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-sops/SKILL.md",
+      "sha256": "081c9217e029c57e8400db49de6494c6a775f4e5e90ca5a0416255dfb148386d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "dc474274a87f7ec214dbc22e468c4334a0a78c89"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "dc474274a87f7ec214dbc22e468c4334a0a78c89",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/archive/SKILL.md",
+      "sha256": "c123f1a7a33a018ef268519f19513b592b4185cfe4fa56fae51ad10244da24aa",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4d301ec1d9e381ffa100a818a70155d436a9b634"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4d301ec1d9e381ffa100a818a70155d436a9b634",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-maintenance/SKILL.md",
+      "sha256": "302994f3d6564c07239697b9e6f2658b702f0c16a8bb595eba72fd09b16f4795",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "04323ef8e08453178478e72d8657d482aa644480"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "04323ef8e08453178478e72d8657d482aa644480",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-maintenance/evals/trigger_cases.json",
+      "sha256": "2eb8e6c95c8ff54da1682dc20f32971c6d1ac841e3b26024186d80c1cbcbd07c",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a086060406782c2ce9a6dcbb1897690807af0c40"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a086060406782c2ce9a6dcbb1897690807af0c40",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "a7a5c41f04c31cf970efa5e4cef407254f8049bbf04875e2dca22ececaab6d1a",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8ee40d6368ff52e887155ccb7815115334812945"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8ee40d6368ff52e887155ccb7815115334812945",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "de5ddfdcd11f5ac4f58cee679f83f7492f9897d97193ffd01a0e1eca1bd827c8",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4b26d58aba8b9217d279bb3c1c73df1b757feb93"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4b26d58aba8b9217d279bb3c1c73df1b757feb93",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/SKILL.md",
+      "sha256": "f9b58aec804692687f0e05cf032bef7558b62d8c6b7e267ee0b8a36346f7e4c5",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a1aecbe1bdb732173fa585b524becee3b2c1eb51"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a1aecbe1bdb732173fa585b524becee3b2c1eb51",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "0adb26ff788a69cedd1ce7df390050f92be75adde56fef2c6a03043a8848d9a0",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "73d824fbe3167cf53086d57c6696f86fe932ae51"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "73d824fbe3167cf53086d57c6696f86fe932ae51",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "176aa0c1e9824f80c7abde4d90bcf37cd0de5b57b67880a658eb1c26af8ad082",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d77016f45f2050ccad4246a453455ba3616d2841"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d77016f45f2050ccad4246a453455ba3616d2841",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/topic/SKILL.md",
+      "sha256": "9e66eb479b0a3bc8d934c72b6c0a2abc13e9e091c3c2027a6e13c4cf5e6c8c9a",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c584bd68572491f798905a0ca3b4e9b003df2fee"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c584bd68572491f798905a0ca3b4e9b003df2fee",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/topic/references/topic-contract.md",
+      "sha256": "76db83c554c10d0f6ec7e9f683a4a9b157a9fe117aa2c3591cbc120558b9771b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4b831e556666a78405c1c69a260e7328701af14b"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4b831e556666a78405c1c69a260e7328701af14b",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

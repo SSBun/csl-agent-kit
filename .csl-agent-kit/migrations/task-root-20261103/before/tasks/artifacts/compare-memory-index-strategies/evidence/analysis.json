@@ -1,0 +1,486 @@
+{
+  "schema": "memory-index-pilot-analysis/v1",
+  "checks": "36个唯一请求及配对顺序、冻结hash、全部答案与来源、工具访问路径和token算术已重新核对",
+  "manifestSHA256": "9974417eb18a2925db3066925c2afe7ab28ac1c2329bc78f4889e0a95b2f26f2",
+  "byMethod": {
+    "A": {
+      "requests": 18,
+      "success": 18,
+      "totalTokens": 295904,
+      "meanTokens": 16439.11111111111,
+      "tokensPerSuccess": 16439.11111111111,
+      "input": 136633,
+      "output": 3367,
+      "cacheRead": 155904,
+      "toolCalls": 78,
+      "toolBytes": 177322,
+      "medianSeconds": 13.5845,
+      "p95Seconds": 42.36,
+      "summedSeconds": 282.473,
+      "catalogUSD": 1.6905839999999999
+    },
+    "B": {
+      "requests": 18,
+      "success": 18,
+      "totalTokens": 1138743,
+      "meanTokens": 63263.5,
+      "tokensPerSuccess": 63263.5,
+      "input": 460352,
+      "output": 3063,
+      "cacheRead": 675328,
+      "toolCalls": 66,
+      "toolBytes": 935967,
+      "medianSeconds": 11.082,
+      "p95Seconds": 40.042,
+      "summedSeconds": 260.752,
+      "catalogUSD": 5.431998
+    }
+  },
+  "byScale": {
+    "50": {
+      "A": {
+        "requests": 6,
+        "success": 6,
+        "totalTokens": 83054,
+        "meanTokens": 13842.333333333334,
+        "tokensPerSuccess": 13842.333333333334,
+        "input": 45373,
+        "output": 1073,
+        "cacheRead": 36608,
+        "toolCalls": 24,
+        "toolBytes": 56149,
+        "medianSeconds": 10.9795,
+        "p95Seconds": 15.413,
+        "summedSeconds": 69.217,
+        "catalogUSD": 0.543988
+      },
+      "B": {
+        "requests": 6,
+        "success": 6,
+        "totalTokens": 77585,
+        "meanTokens": 12930.833333333334,
+        "tokensPerSuccess": 12930.833333333334,
+        "input": 49836,
+        "output": 997,
+        "cacheRead": 26752,
+        "toolCalls": 21,
+        "toolBytes": 65139,
+        "medianSeconds": 12.554,
+        "p95Seconds": 40.042,
+        "summedSeconds": 115.225,
+        "catalogUSD": 0.574962
+      }
+    },
+    "200": {
+      "A": {
+        "requests": 6,
+        "success": 6,
+        "totalTokens": 101418,
+        "meanTokens": 16903,
+        "tokensPerSuccess": 16903,
+        "input": 48848,
+        "output": 1114,
+        "cacheRead": 51456,
+        "toolCalls": 26,
+        "toolBytes": 61208,
+        "medianSeconds": 16.262,
+        "p95Seconds": 42.36,
+        "summedSeconds": 116.549,
+        "catalogUSD": 0.595636
+      },
+      "B": {
+        "requests": 6,
+        "success": 6,
+        "totalTokens": 258557,
+        "meanTokens": 43092.833333333336,
+        "tokensPerSuccess": 43092.833333333336,
+        "input": 122636,
+        "output": 1009,
+        "cacheRead": 134912,
+        "toolCalls": 21,
+        "toolBytes": 251451,
+        "medianSeconds": 9.7845,
+        "p95Seconds": 11.122,
+        "summedSeconds": 59.13,
+        "catalogUSD": 1.4117220000000001
+      }
+    },
+    "1000": {
+      "A": {
+        "requests": 6,
+        "success": 6,
+        "totalTokens": 111432,
+        "meanTokens": 18572,
+        "tokensPerSuccess": 18572,
+        "input": 42412,
+        "output": 1180,
+        "cacheRead": 67840,
+        "toolCalls": 28,
+        "toolBytes": 59965,
+        "medianSeconds": 15.362,
+        "p95Seconds": 24.454,
+        "summedSeconds": 96.707,
+        "catalogUSD": 0.55096
+      },
+      "B": {
+        "requests": 6,
+        "success": 6,
+        "totalTokens": 802601,
+        "meanTokens": 133766.83333333334,
+        "tokensPerSuccess": 133766.83333333334,
+        "input": 287880,
+        "output": 1057,
+        "cacheRead": 513664,
+        "toolCalls": 24,
+        "toolBytes": 619377,
+        "medianSeconds": 13.9735,
+        "p95Seconds": 18.4,
+        "summedSeconds": 86.397,
+        "catalogUSD": 3.445314
+      }
+    }
+  },
+  "byCategory": {
+    "multi": {
+      "A": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 72911,
+        "meanTokens": 24303.666666666668,
+        "tokensPerSuccess": 24303.666666666668,
+        "input": 24570,
+        "output": 725,
+        "cacheRead": 47616,
+        "toolCalls": 17,
+        "toolBytes": 30644,
+        "medianSeconds": 15.509,
+        "p95Seconds": 18.89,
+        "summedSeconds": 49.812,
+        "catalogUSD": 0.329566
+      },
+      "B": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 266151,
+        "meanTokens": 88717,
+        "tokensPerSuccess": 88717,
+        "input": 81208,
+        "output": 623,
+        "cacheRead": 184320,
+        "toolCalls": 13,
+        "toolBytes": 156900,
+        "medianSeconds": 14.511,
+        "p95Seconds": 15.199,
+        "summedSeconds": 40.832,
+        "catalogUSD": 1.0275500000000002
+      }
+    },
+    "exact": {
+      "A": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 35731,
+        "meanTokens": 11910.333333333334,
+        "tokensPerSuccess": 11910.333333333334,
+        "input": 17228,
+        "output": 455,
+        "cacheRead": 18048,
+        "toolCalls": 10,
+        "toolBytes": 27133,
+        "medianSeconds": 10.757,
+        "p95Seconds": 17.359,
+        "summedSeconds": 36.892,
+        "catalogUSD": 0.21307800000000002
+      },
+      "B": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 146018,
+        "meanTokens": 48672.666666666664,
+        "tokensPerSuccess": 48672.666666666664,
+        "input": 74422,
+        "output": 428,
+        "cacheRead": 71168,
+        "toolCalls": 9,
+        "toolBytes": 155307,
+        "medianSeconds": 13.436,
+        "p95Seconds": 40.042,
+        "summedSeconds": 62.964,
+        "catalogUSD": 0.8367880000000001
+      }
+    },
+    "absent": {
+      "A": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 30245,
+        "meanTokens": 10081.666666666666,
+        "tokensPerSuccess": 10081.666666666666,
+        "input": 16469,
+        "output": 336,
+        "cacheRead": 13440,
+        "toolCalls": 9,
+        "toolBytes": 25597,
+        "medianSeconds": 11.202,
+        "p95Seconds": 17.015,
+        "summedSeconds": 37.512,
+        "catalogUSD": 0.19493
+      },
+      "B": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 145585,
+        "meanTokens": 48528.333333333336,
+        "tokensPerSuccess": 48528.333333333336,
+        "input": 74212,
+        "output": 333,
+        "cacheRead": 71040,
+        "toolCalls": 9,
+        "toolBytes": 154293,
+        "medianSeconds": 9.544,
+        "p95Seconds": 9.593,
+        "summedSeconds": 28.668,
+        "catalogUSD": 0.8298099999999999
+      }
+    },
+    "scope": {
+      "A": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 69090,
+        "meanTokens": 23030,
+        "tokensPerSuccess": 23030,
+        "input": 42407,
+        "output": 827,
+        "cacheRead": 25856,
+        "toolCalls": 18,
+        "toolBytes": 36459,
+        "medianSeconds": 22.242,
+        "p95Seconds": 24.454,
+        "summedSeconds": 60.5,
+        "catalogUSD": 0.491276
+      },
+      "B": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 193811,
+        "meanTokens": 64603.666666666664,
+        "tokensPerSuccess": 64603.666666666664,
+        "input": 75111,
+        "output": 684,
+        "cacheRead": 118016,
+        "toolCalls": 13,
+        "toolBytes": 156646,
+        "medianSeconds": 18.4,
+        "p95Seconds": 32.965,
+        "summedSeconds": 62.407,
+        "catalogUSD": 0.903326
+      }
+    },
+    "semantic": {
+      "A": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 46262,
+        "meanTokens": 15420.666666666666,
+        "tokensPerSuccess": 15420.666666666666,
+        "input": 18113,
+        "output": 501,
+        "cacheRead": 27648,
+        "toolCalls": 12,
+        "toolBytes": 28598,
+        "medianSeconds": 13.365,
+        "p95Seconds": 42.36,
+        "summedSeconds": 65.18,
+        "catalogUSD": 0.233828
+      },
+      "B": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 193342,
+        "meanTokens": 64447.333333333336,
+        "tokensPerSuccess": 64447.333333333336,
+        "input": 80251,
+        "output": 451,
+        "cacheRead": 112640,
+        "toolCalls": 10,
+        "toolBytes": 156005,
+        "medianSeconds": 7.911,
+        "p95Seconds": 13.074,
+        "summedSeconds": 28.551,
+        "catalogUSD": 0.9377
+      }
+    },
+    "conditions": {
+      "A": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 41665,
+        "meanTokens": 13888.333333333334,
+        "tokensPerSuccess": 13888.333333333334,
+        "input": 17846,
+        "output": 523,
+        "cacheRead": 23296,
+        "toolCalls": 12,
+        "toolBytes": 28891,
+        "medianSeconds": 10.647,
+        "p95Seconds": 13.344,
+        "summedSeconds": 32.577,
+        "catalogUSD": 0.227906
+      },
+      "B": {
+        "requests": 3,
+        "success": 3,
+        "totalTokens": 193836,
+        "meanTokens": 64612,
+        "tokensPerSuccess": 64612,
+        "input": 75148,
+        "output": 544,
+        "cacheRead": 118144,
+        "toolCalls": 12,
+        "toolBytes": 156816,
+        "medianSeconds": 9.976,
+        "p95Seconds": 17.445,
+        "summedSeconds": 37.33,
+        "catalogUSD": 0.896824
+      }
+    }
+  },
+  "paired": [
+    {
+      "size": 200,
+      "caseId": "multi",
+      "tokenRatioAOverB": 0.43734874966388815,
+      "timeDifferenceSecondsAminusB": 4.387
+    },
+    {
+      "size": 200,
+      "caseId": "exact",
+      "tokenRatioAOverB": 0.2558970873297586,
+      "timeDifferenceSecondsAminusB": -0.71
+    },
+    {
+      "size": 1000,
+      "caseId": "multi",
+      "tokenRatioAOverB": 0.13828041459773643,
+      "timeDifferenceSecondsAminusB": 4.379
+    },
+    {
+      "size": 200,
+      "caseId": "absent",
+      "tokenRatioAOverB": 0.2531824611032532,
+      "timeDifferenceSecondsAminusB": 7.422
+    },
+    {
+      "size": 50,
+      "caseId": "multi",
+      "tokenRatioAOverB": 1.170452623865622,
+      "timeDifferenceSecondsAminusB": 0.214
+    },
+    {
+      "size": 1000,
+      "caseId": "exact",
+      "tokenRatioAOverB": 0.16154693557612865,
+      "timeDifferenceSecondsAminusB": 3.923
+    },
+    {
+      "size": 1000,
+      "caseId": "scope",
+      "tokenRatioAOverB": 0.2047750488870691,
+      "timeDifferenceSecondsAminusB": 6.054
+    },
+    {
+      "size": 200,
+      "caseId": "semantic",
+      "tokenRatioAOverB": 0.385336550545418,
+      "timeDifferenceSecondsAminusB": 34.449
+    },
+    {
+      "size": 200,
+      "caseId": "scope",
+      "tokenRatioAOverB": 0.6092695365231738,
+      "timeDifferenceSecondsAminusB": 11.2
+    },
+    {
+      "size": 50,
+      "caseId": "conditions",
+      "tokenRatioAOverB": 0.8700355049128891,
+      "timeDifferenceSecondsAminusB": -1.323
+    },
+    {
+      "size": 50,
+      "caseId": "semantic",
+      "tokenRatioAOverB": 1.3015394912985274,
+      "timeDifferenceSecondsAminusB": 1.889
+    },
+    {
+      "size": 200,
+      "caseId": "conditions",
+      "tokenRatioAOverB": 0.38803504380475595,
+      "timeDifferenceSecondsAminusB": 0.671
+    },
+    {
+      "size": 1000,
+      "caseId": "absent",
+      "tokenRatioAOverB": 0.10663399004848446,
+      "timeDifferenceSecondsAminusB": -0.236
+    },
+    {
+      "size": 50,
+      "caseId": "scope",
+      "tokenRatioAOverB": 1.2924481737413622,
+      "timeDifferenceSecondsAminusB": -19.161
+    },
+    {
+      "size": 50,
+      "caseId": "absent",
+      "tokenRatioAOverB": 0.8665644171779141,
+      "timeDifferenceSecondsAminusB": 1.658
+    },
+    {
+      "size": 50,
+      "caseId": "exact",
+      "tokenRatioAOverB": 0.8676087139372529,
+      "timeDifferenceSecondsAminusB": -29.285
+    },
+    {
+      "size": 1000,
+      "caseId": "semantic",
+      "tokenRatioAOverB": 0.10857744131521709,
+      "timeDifferenceSecondsAminusB": 0.291
+    },
+    {
+      "size": 1000,
+      "caseId": "conditions",
+      "tokenRatioAOverB": 0.11021689296420384,
+      "timeDifferenceSecondsAminusB": -4.101
+    }
+  ],
+  "exploratoryClusterBootstrap": {
+    "unit": "六个问题模板；每次重采样保留同题三个规模",
+    "iterations": 10000,
+    "tokenRatioAOverB": 0.25985143267620525,
+    "interval95": [
+      0.2224504971152034,
+      0.30115291234904207
+    ],
+    "limitation": "仅六个模板，区间仅描述当前试跑；全成功不能证明总体质量等价或非劣。"
+  },
+  "catalogEstimate": {
+    "pilotUSD": 7.1225819999999995,
+    "projected432USD": 85.47098399999999,
+    "projectionBasis": "仅按相同规模/难度/缓存分布线性外推；不是报价、费用保证或订阅实际账单。",
+    "stopThresholdUSD": 25
+  },
+  "statisticsCorrection": "冻结pilot.cjs的初步report使用偶数样本的上中位数。此分析独立从原始记录以中间两值均值计算标准中位数，原始记录与冻结运行器未改动；正式报告以本文件为准。",
+  "limitations": [
+    "单模型、每题每规模单次；没有进行正式432次实验。",
+    "语义题仍包含精确对象名，覆盖的是表达变化，不代表无关键词的困难语义召回。",
+    "所有请求成功，无法由本试跑估计困难样本质量差异。",
+    "两组可自由搜索，但实际均先read索引；未比较强制或明确提示search-first的完整索引策略。",
+    "未评估生产首页注入，也没有后台写入或真实用户数据。",
+    "thinking固定medium；SDK reasoning字段均为0，仅表示返回值，不证明服务端没有推理开销。",
+    "耗时包含服务端与网络抖动，p95基于每组18次，精度有限。",
+    "没有隐藏推理正文被写入实验产物。"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "proactive-memory-maintenance",
+  "files": [
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "3feeb48689230eb9f7924f0dceb9967f52c12b55b9fc517db68489cacbc14906",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "b3987929f62603d96a3ba281ce778e99427b526757ab0a1ce26ae669bfe97433",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/maintenance.js",
+      "sha256": "d352e70eb0f8eb7f9bf01c62414709cec5a11bea4cc3389585f0e1d9c893039f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/queue.js",
+      "sha256": "bcd44cc143a548b686c428d50fdf5ba54670a6d40008c346a226cb77f7cc6e6e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "4ac99a213a34ba18075a4e023b7dc789fd7a27cbfbc609ea309a0419c5baefaa",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "8d69a4c11f488801595296bce5476dd54c64e58d470582c6a83608d466e834c2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

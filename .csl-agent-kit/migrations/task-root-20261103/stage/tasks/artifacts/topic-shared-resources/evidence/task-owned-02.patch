@@ -1,0 +1,483 @@
+--- before/skills/meta/csl-tasks/shared/lib/topic-core.js
++++ after/skills/meta/csl-tasks/shared/lib/topic-core.js
+@@ -200,18 +200,74 @@
+   return out;
+ }
+ 
+-function normative(spec) {
+-  return `## Scope\n\n${spec.scope}\n\n## Spec Context\n\n${spec.spec}\n\n## Decisions\n\n${spec.decisions}\n\n## Dependencies\n\n${spec.dependencies.map((dep) => `- ${JSON.stringify({ path: dep.path, sha256: dep.sha256 })}`).join("\n")}\n`;
+-}
+-
+-function checkDependencies(workspace, spec) {
+-  for (const dep of spec.dependencies) {
++function validateResources(input) {
++  if (!Array.isArray(input)) throw new Error("resources must be an array");
++  const seen = new Set();
++  return input.map((item) => {
++    if (!item || typeof item !== "object" || Array.isArray(item) || !["normative", "reference"].includes(item.kind)) throw new Error("resource kind must be normative or reference");
++    const keys = item.kind === "normative" ? "kind,label,purpose,sha256,target" : "kind,label,purpose,target";
++    if (Object.keys(item).sort().join(",") !== keys) throw new Error("invalid resource fields; only normative resources have sha256");
++    const label = line(item.label, "resource label"), purpose = line(item.purpose, "resource purpose");
++    if (/[\[\]|<>\\]/.test(label) || /[|<>\\]/.test(purpose)) throw new Error("resource label/purpose cannot contain Markdown delimiters");
++    const target = line(item.target, "resource target");
++    if (/^https?:\/\//.test(target)) {
++      const url = new URL(target);
++      if (item.kind !== "reference" || url.username || url.password || /[|<>\\]/.test(target) || url.href !== target) throw new Error("URLs must be canonical credential-free reference links; normative sources require a pinned local file");
++    } else if (path.isAbsolute(target) || /[:\\\u0000-\u001f\u007f]/.test(target) || target.split("/").some((part) => !part || part === "." || part === "..")) {
++      throw new Error("resource target must be an owner-repository-relative file or an HTTP(S) reference");
++    }
++    if (seen.has(target)) throw new Error("duplicate resource target");
++    seen.add(target);
++    const resource = { label, target, purpose, kind: item.kind };
++    if (item.kind === "normative") {
++      if (!DIGEST.test(item.sha256)) throw new Error("normative resource needs a SHA-256 digest");
++      resource.sha256 = item.sha256;
++    }
++    return resource;
++  });
++}
++
++function resourceLink(target) {
++  return /^https?:\/\//.test(target) ? target : path.posix.relative("tasks/topics", target).split("/").map(encodeURIComponent).join("/");
++}
++
++function renderResources(resources) {
++  if (resources === undefined) return "";
++  const rows = resources.map((item) => `| [${item.label}](<${resourceLink(item.target)}>) | ${item.kind} | ${item.purpose} | ${item.sha256 || "-"} |`);
++  return `\n## Resources\n\n| Resource | Kind | Purpose | SHA-256 |\n| --- | --- | --- | --- |\n${rows.length ? `${rows.join("\n")}\n` : ""}`;
++}
++
++function parseResources(text) {
++  const sections = core().sectionsOf(text, "Resources");
++  if (!sections.length) return undefined;
++  const lines = body(text, "Resources").split("\n");
++  if (lines.shift() !== "| Resource | Kind | Purpose | SHA-256 |" || lines.shift() !== "| --- | --- | --- | --- |") throw new Error("invalid Resources table");
++  return validateResources(lines.map((entry) => {
++    const match = entry.match(/^\| \[([^\]]+)\]\(<([^>]+)>\) \| (normative|reference) \| (.+) \| (-|[a-f0-9]{64}) \|$/);
++    if (!match) throw new Error("invalid Resources row");
++    const [, label, link, kind, purpose, digest] = match;
++    const target = /^https?:\/\//.test(link) ? link : path.posix.normalize(`tasks/topics/${decodeURIComponent(link)}`);
++    return { label, target, purpose, kind, ...(digest === "-" ? {} : { sha256: digest }) };
++  }));
++}
++
++function normative(spec, resources = []) {
++  const selected = resources.filter((item) => item.kind === "normative");
++  const base = `## Scope\n\n${spec.scope}\n\n## Spec Context\n\n${spec.spec}\n\n## Decisions\n\n${spec.decisions}\n\n## Dependencies\n\n${spec.dependencies.map((dep) => `- ${JSON.stringify({ path: dep.path, sha256: dep.sha256 })}`).join("\n")}\n`;
++  return selected.length ? `${base}\n## Normative Resources\n\n${selected.map((item) => `- ${JSON.stringify(item)}`).join("\n")}\n` : base;
++}
++
++function checkDependencies(workspace, spec, resources = []) {
++  const legacyPaths = new Set(spec.dependencies.map((dep) => safePath(workspace, dep.path)));
++  if (resources.some((item) => item.kind === "normative" && legacyPaths.has(safePath(workspace, item.target)))) throw new Error("a normative source must not be duplicated in Dependencies and Resources; move the declaration explicitly");
++  const dependencies = [...spec.dependencies, ...resources.filter((item) => item.kind === "normative").map((item) => ({ path: item.target, sha256: item.sha256 }))];
++  for (const dep of dependencies) {
+     if (hash(fs.readFileSync(safePath(workspace, dep.path))) !== dep.sha256) throw new Error(`normative dependency changed: ${dep.path}`);
+   }
+ }
+ 
+ function render(topic) {
+-  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}\n## Tasks\n\n${topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n")}\n`;
++  return `# ${topic.title}\n\n- Schema: topic/v1\n- Id: ${topic.id}\n- State: ${topic.state}\n- Revision: ${topic.revision}\n\n${normative(topic.spec)}${renderResources(topic.resources)}\n## Tasks\n\n${topic.tasks.map((entry) => `- ${JSON.stringify(entry)}`).join("\n")}\n`;
+ }
+ 
+ function parseTopic(id, text) {
+@@ -221,7 +277,8 @@
+   const meta = fields(text.slice(text.indexOf("\n") + 1, split), ["Schema", "Id", "State", "Revision"]);
+   if (meta.Schema !== "topic/v1" || meta.Id !== id || !STATES.has(meta.State) || !DIGEST.test(meta.Revision)) throw new Error("invalid topic metadata");
+   const spec = validateSpec({ scope: body(text, "Scope"), spec: body(text, "Spec Context"), decisions: body(text, "Decisions"), dependencies: jsonLines(body(text, "Dependencies"), "dependency") });
+-  if (hash(normative(spec)) !== meta.Revision) throw new Error("topic specification changed outside update-spec; use the last valid revision and an explicit update");
++  const resources = parseResources(text);
++  if (hash(normative(spec, resources)) !== meta.Revision) throw new Error("topic specification changed outside update-spec/update-resources; use the last valid revision and an explicit update");
+   const tasks = jsonLines(body(text, "Tasks"), "task");
+   const seen = new Set();
+   for (const entry of tasks) {
+@@ -231,7 +288,7 @@
+     if (entry.repository !== "local" && !DIGEST.test(entry.repository)) throw new Error("invalid repository identity");
+     seen.add(entry.reference);
+   }
+-  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, tasks, text, version: hash(text) };
++  const topic = { id, title, state: meta.State, revision: meta.Revision, spec, resources, tasks, text, version: hash(text) };
+   if (render(topic) !== text) throw new Error("noncanonical Topic structure; use Topic commands rather than editing fields or sections");
+   return topic;
+ }
+@@ -240,7 +297,7 @@
+   const file = topicPath(workspace, id);
+   const topic = parseTopic(id, fs.readFileSync(file, "utf8"));
+   const snapshot = fs.readFileSync(revisionPath(workspace, id, topic.revision), "utf8");
+-  if (snapshot !== normative(topic.spec)) throw new Error("topic snapshot missing or corrupt");
++  if (snapshot !== normative(topic.spec, topic.resources)) throw new Error("topic snapshot missing or corrupt");
+   return { ...topic, file };
+ }
+ 
+@@ -263,8 +320,9 @@
+   parseTopic(topic.id, candidate);
+   const revision = revisionPath(workspace, topic.id, topic.revision);
+   const existing = fileText(revision);
+-  const content = normative(topic.spec);
++  const content = normative(topic.spec, topic.resources);
+   if (existing !== undefined && existing !== content) throw new Error("immutable topic revision conflict");
++  if (topic.resources !== undefined) fs.mkdirSync(safePath(workspace, `tasks/topics/${topic.id}/resources`), { recursive: true });
+   commit([
+     { file: revision, before: existing, after: content },
+     { file: topicPath(workspace, topic.id), before, after: candidate },
+@@ -281,7 +339,7 @@
+     if (fileText(topicPath(workspace, id)) !== undefined) throw new Error(`topic already exists: ${id}`);
+     const spec = validateSpec(input);
+     checkDependencies(workspace, spec);
+-    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, tasks: [] }, undefined);
++    return saveTopic(workspace, { id, title, state: "Draft", revision: hash(normative(spec)), spec, resources: [], tasks: [] }, undefined);
+   });
+ }
+ 
+@@ -291,8 +349,23 @@
+     if (topic.version !== expected) throw new Error("topic changed; reread before update-spec");
+     if (topic.state === "Archived") throw new Error("restore Archived topic before changing its specification");
+     const spec = validateSpec(input);
+-    checkDependencies(workspace, spec);
+-    return saveTopic(workspace, { ...topic, spec, revision: hash(normative(spec)) }, topic.text);
++    checkDependencies(workspace, spec, topic.resources);
++    return saveTopic(workspace, { ...topic, spec, revision: hash(normative(spec, topic.resources)) }, topic.text);
++  });
++}
++
++function updateResources(workspace, id, expected, input) {
++  return withLocks([workspace], () => {
++    const topic = readTopic(workspace, id);
++    if (topic.version !== expected) throw new Error("topic changed; reread before update-resources");
++    if (topic.state === "Archived") throw new Error("restore Archived topic before changing resources");
++    const resources = validateResources(input);
++    for (const item of resources) {
++      if (item.kind === "normative" && item.target === `tasks/topics/${id}.md`) throw new Error("a Topic cannot pin its own mutable document as a normative resource");
++      if (!/^https?:\/\//.test(item.target) && !fs.statSync(safePath(workspace, item.target)).isFile()) throw new Error(`resource is not a file: ${item.target}`);
++    }
++    checkDependencies(workspace, topic.spec, resources);
++    return saveTopic(workspace, { ...topic, resources, revision: hash(normative(topic.spec, resources)) }, topic.text);
+   });
+ }
+ 
+@@ -363,7 +436,7 @@
+   if (hash(snapshot) !== binding.revision) throw new Error("adopted topic snapshot corrupt");
+   if (binding.revision !== topic.revision) throw new Error("Topic specification changed; analyze impact, align if needed, and explicitly adopt the current revision");
+   if (binding.mode === "implementation" && topic.state !== "Active") throw new Error("implementation requires an Active Topic; status does not replace authorization");
+-  checkDependencies(target.workspace, topic.spec);
++  checkDependencies(target.workspace, topic.spec, topic.resources);
+   return { applicable: true, topic: binding.reference, revision: binding.revision, state: topic.state };
+ }
+ 
+@@ -411,7 +484,7 @@
+       if (topic.state === "Archived") throw new Error("restore Archived topic before adding tasks");
+       if (!["maintenance", "implementation"].includes(options.mode)) throw new Error("association requires explicit implementation or maintenance mode");
+       if (options.mode === "implementation" && topic.state !== "Active") throw new Error("implementation requires Active topic");
+-      checkDependencies(target.workspace, topic.spec);
++      checkDependencies(target.workspace, topic.spec, topic.resources);
+       binding = { ...refFor(workspace, target.workspace, target.id), revision: topic.revision, applies: line(options.applies, "applies"), mode: options.mode };
+     }
+     const text = changedTask(task, binding);
+@@ -496,7 +569,7 @@
+       }
+       if (members(workspace, topic).some((entry) => !["Completed", "Cancelled"].includes(entry.status) && entry.reference !== ownerReference)) throw new Error("resolve active or inaccessible members before archive");
+     }
+-    if (state === "Active") checkDependencies(workspace, topic.spec);
++    if (state === "Active") checkDependencies(workspace, topic.spec, topic.resources);
+     return saveTopic(workspace, { ...topic, state }, topic.text);
+   });
+ }
+@@ -548,4 +621,4 @@
+   });
+ }
+ 
+-module.exports = { hash, safePath, withLocks, createTopic, readTopic, updateSpec, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };
++module.exports = { hash, safePath, withLocks, createTopic, readTopic, updateSpec, updateResources, taskTopic, pendingTransaction, fresh, freshness, association, adopt, members, setState, repair, listTopics, check, rebuildIndex };
+--- before/skills/meta/csl-tasks/shared/lib/topic-cli.js
++++ after/skills/meta/csl-tasks/shared/lib/topic-cli.js
+@@ -9,6 +9,7 @@
+   show <topic-id>
+   create <topic-id> --title <title> --spec-json <file>
+   update-spec <topic-id> --expected <topic-version> --spec-json <file>
++  update-resources <topic-id> --expected <topic-version> --resources-json <file>
+   activate|archive|restore <topic-id> --expected <topic-version>
+     archive may name --owner-task <project:task-id|self:task-id> for its active maintenance task
+   check <topic-id>
+@@ -25,10 +26,12 @@
+ 
+ show returns the full Topic and a version for optimistic writes; task returns the task version and freshness.
+ Spec JSON: {"scope":"...","spec":"...","decisions":"...","dependencies":[{"path":"repo-relative-file","sha256":"..."}]}
++Resources JSON: [{"label":"...","target":"repo-relative-file or https://...","purpose":"...","kind":"reference"}]
++Normative resources use kind normative and require sha256 of an existing local file; reference resources do not have sha256.
+ Topic state and maintenance mode do not grant execution authorization. Cross-workspace writes require separate user authorization.`;
+ 
+ function summary(workspace, topic) {
+-  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
++  return { id: topic.id, title: topic.title, state: topic.state, revision: topic.revision, version: topic.version, file: topic.file, spec: topic.spec, resources: topic.resources || [], resourcesDirectory: topics.safePath(workspace, `tasks/topics/${topic.id}/resources`), tasks: topics.members(workspace, topic), ...(Object.hasOwn(topic, "pendingAssociation") ? { pendingAssociation: topic.pendingAssociation } : {}) };
+ }
+ 
+ function run(workspace, input, takeOption) {
+@@ -45,9 +48,10 @@
+   const evidence = takeOption(args, "--evidence");
+   const title = takeOption(args, "--title");
+   const specFile = takeOption(args, "--spec-json");
+-  const values = { expected, expectedTopic, purpose, ownerTask, applies, mode, evidence, title, specFile, allowCross: allowCross || undefined };
++  const resourcesFile = takeOption(args, "--resources-json");
++  const values = { expected, expectedTopic, purpose, ownerTask, applies, mode, evidence, title, specFile, resourcesFile, allowCross: allowCross || undefined };
+   const allowed = {
+-    list: [], show: [], create: ["title", "specFile"], "update-spec": ["expected", "specFile"],
++    list: [], show: [], create: ["title", "specFile"], "update-spec": ["expected", "specFile"], "update-resources": ["expected", "resourcesFile"],
+     activate: ["expected"], archive: ["expected", "ownerTask"], restore: ["expected"], check: [], "rebuild-index": [], task: [],
+     attach: ["expected", "expectedTopic", "purpose", "applies", "mode", "allowCross"],
+     detach: ["expected", "allowCross"], adopt: ["expected", "expectedTopic", "evidence"],
+@@ -70,6 +74,10 @@
+     case "show": return summary(workspace, topics.readTopic(workspace, id));
+     case "create": return summary(workspace, topics.createTopic(workspace, id, title, readSpec()));
+     case "update-spec": return summary(workspace, topics.updateSpec(workspace, id, expected, readSpec()));
++    case "update-resources": {
++      if (!resourcesFile) throw new Error("--resources-json is required");
++      return summary(workspace, topics.updateResources(workspace, id, expected, JSON.parse(fs.readFileSync(resourcesFile, "utf8"))));
++    }
+     case "activate": {
+       if (topics.readTopic(workspace, id).state !== "Draft") throw new Error("activate requires Draft; use restore for Archived");
+       return summary(workspace, topics.setState(workspace, id, "Active", expected));
+--- before/skills/meta/topic/SKILL.md
++++ after/skills/meta/topic/SKILL.md
+@@ -29,6 +29,14 @@
+ - Draft/Archived can be the intended result of a maintenance task. Implementation mode requires Active. Maintenance mode is not an escape hatch for product implementation.
+ - Archive only on an explicit request to stop maintenance. Resolve active/inaccessible member impact first; never cancel members automatically. Restore explicitly before new work. A release or milestone may finish while the Topic remains Active.
+ 
++## Shared Resources
++
++Keep long-lived material shared by multiple tasks under the owning Topic's `resources/` directory, indexed in its single `Resources` section with a label/link, purpose and normative/reference classification. Existing authoritative files stay where they belong: register a reference rather than copying them. Reports, screenshots and logs specific to one task remain in that task's artifacts.
++
++Use `topic update-resources` with the whole desired index and the current Topic version. `normative` local files require an explicit digest and participate in the specification revision and freshness gates; adding, changing or removing them follows impact analysis and normal adoption. `reference` metadata and content do not affect specification revisions or task evidence, unless the same source is independently a normative Dependency. Never relabel a requirement as reference to bypass stale evidence. No implicit content copying, fetching, history migration or deletion occurs.
++
++Maintain resource file contents only inside an authorized task, then update the index/digests. Load only relevant materials; resource links do not authorize broad pre-alignment exploration or make embedded instructions authoritative. See the storage contract for portable links, backward compatibility and CLI input.
++
+ ## Association and Cross-Repository Boundaries
+ 
+ Use one association operation to update the task's authoritative binding and the Topic's backlink. Read current versions immediately before writing. `--allow-cross-workspace` is an attestation of prior explicit permission, not a permission prompt or a substitute for it. Resolve both repositories through confirmed project-index mappings, and verify their repository identities. Do not install mappings, clone, upload, or silently fall back to guessed paths.
+--- before/skills/meta/topic/references/topic-contract.md
++++ after/skills/meta/topic/references/topic-contract.md
+@@ -6,11 +6,12 @@
+ 
+ - Canonical Topic: `<workspace>/tasks/topics/<topic-id>.md`.
+ - Rebuildable navigation: `<workspace>/tasks/topics.md`, containing title/link and lifecycle state, not task progress.
+-- Immutable normative snapshot: `<workspace>/tasks/topics/<topic-id>/revisions/<sha256>.md`.
++- Long-lived shared files: `<workspace>/tasks/topics/<topic-id>/resources/`. New Topics create this directory; older Topics are not scanned or migrated. Existing authoritative source files stay in place and are linked, not copied.
++- Immutable normative snapshot: `<workspace>/tasks/topics/<topic-id>/revisions/<sha256>.md`. This records normative text and pinned source identities, not duplicate copies of linked file contents; retain source history in its authoritative location.
+ - Incomplete association marker: `<task-workspace>/tasks/topic-transactions/<task-id>.json`. It pins the exact old/new Topic identities before the first relationship write and is removed only after reciprocal relationships are verified. It is recovery state, not a second ownership record.
+ - Tasks retain their existing canonical location. An optional unique `## Topic` section holds a `task-topic/v1` binding; task Kind and Queue Parent are unchanged.
+ - Topic metadata uses `topic/v1`, stable ID, Draft/Active/Archived state, and the SHA-256 of canonical normative sections. `show.version` hashes the whole Topic file for optimistic writes; it is different from `revision`, which excludes member references and lifecycle display.
+-- Topic sections are Scope, Spec Context, Decisions, Dependencies and Tasks. Tasks are JSON-line references with `reference`, `repository`, `purpose`; they never store status. The task binding is authoritative, the Topic list is its checked reverse index.
++- Topic sections are Scope, Spec Context, Decisions, Dependencies, Resources and Tasks. Resources is a clickable Markdown table; it remains optional when reading older `topic/v1` records. Existing records retain their shape unless resources are explicitly updated. Empty/reference-only Resources do not change the legacy normative digest. Tasks are JSON-line references with `reference`, `repository`, `purpose`; they never store status. The task binding is authoritative, the Topic list is its checked reverse index.
+ - Spec input is a JSON object with non-empty `scope` and `spec`, optional `decisions`, and optional `dependencies`. Text may have paragraphs and H3+ headings, but no H1/H2 headings; the CLI owns those structural boundaries.
+ - A normative dependency is `{ "path": "repository-relative-file", "sha256": "<digest>" }` in the Topic owner repository. Vendor a permitted immutable copy or otherwise obtain an explicit local source before relying on an external contract. Arbitrary remote URL fetching and floating external references are not supported by the first version. Informational links do not become checked dependencies.
+ - Cross-project references use `<project-id>:<topic-or-task-id>`; local references use `self:<id>`. Existing project-index data resolves roots. Cross-project mappings must point to Git roots with an origin; the stored hash of that origin pins repository identity without exposing the URL. A changed identity requires explicit diagnosis/rebinding, not silent acceptance. Equivalent but differently spelled origin URLs also require confirmation.
+@@ -28,12 +29,35 @@
+ 
+ ```text
+ topic update-spec <id> --expected <version> --spec-json <file>
++topic update-resources <id> --expected <version> --resources-json <file>
+ topic activate <id> --expected <version>
+ topic archive <id> --expected <version>
+ topic restore <id> --expected <version>
+ ```
+ 
+ `activate` requires Draft; `restore` requires Archived. Archiving rejects active or inaccessible listed members, except its exact owning In Progress maintenance task when explicitly named with `--owner-task <project:task-id|self:task-id>`. That task must be currently bound to this Topic and fresh; it may finish with Archived as its intended result. This exception does not cover product implementation or other maintenance tasks. The user must decide how to handle other active members; the CLI never cancels them. A successful command does not prove that the Agent obtained consent.
++
++## Resource Index
++
++`update-resources` replaces the complete index using an explicit JSON array; omitted entries are unregistered, never deleted from disk. It requires a current whole-file `version`, rejects Archived Topics, validates the complete candidate before committing, and creates the Topic's resources directory when explicitly initializing an old record. `show` returns normalized `resources` and the owning `resourcesDirectory` path (the path alone is not a claim that old storage already exists).
++
++```json
++[
++  {"label":"API contract","target":"contracts/account.json","purpose":"Shared deletion behavior","kind":"normative","sha256":"<actual SHA-256>"},
++  {"label":"Design notes","target":"tasks/topics/account/resources/design notes.md","purpose":"Background alternatives","kind":"reference"},
++  {"label":"External design","target":"https://example.com/design","purpose":"Visual reference","kind":"reference"}
++]
++```
++
++Targets are owner-repository-relative files, not paths relative to the Topic MD; rendering converts them to portable, percent-encoded Topic-relative Markdown links. Local files must exist when registering. Absolute paths, traversal, symlinks, duplicate targets and malformed table labels/purposes are rejected. Labels cannot contain brackets, pipes, angle brackets or backslashes; purposes cannot contain pipes, angle brackets or backslashes. HTTP(S) URLs must be canonical and credential-free, and are reference-only; no network request is made. Do not record secrets in links or documents.
++
++Normative entries require `sha256`; their metadata and identity enter the specification projection and are rechecked anywhere existing Dependencies are checked, including activation, binding, adoption and terminal gates. A byte change fails freshness even before the index is updated; register the authorized new digest and explicitly adopt the resulting specification revision. Normative entries are recorded in revision snapshots; their source contents must remain recoverable at the original authoritative location.
++
++Reference entries must omit `sha256`. Their labels, purposes, links, additions/removals and file contents do not enter the normative digest. A reference deleted later may become a broken informational link, but does not invalidate task evidence. A separately declared normative Dependency on the same source still applies. Do not declare the same normative file in both Dependencies and Resources; move that declaration explicitly to avoid conflicting authority and incompatible digest updates. Changing classification to/from normative is itself a specification change, not a bypass.
++
++Empty old Topics without Resources remain readable with their original revisions and are not rewritten by listing/showing/checking. Index maintenance never moves task artifacts, copies source files, rewrites shared documents, or deletes unregistered material. Task-specific evidence stays with its owning task.
++
++## Task Association
+ 
+ Associate an active or pending task after reading `topic task <task-id>` and `topic show <topic-id>`:
+ 
+--- before/skills/meta/task/SKILL.md
++++ after/skills/meta/task/SKILL.md
+@@ -40,6 +40,8 @@
+ - `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.
+ 
+ The shared core maintains an `Artifacts` row with `[Artifacts](../artifacts/<task-id>/)` in the top-level metadata table whenever the corresponding directory exists. This applies to Task, Plan, and Queue records at creation and on subsequent lifecycle writes, including same-state resume. After creating artifacts, run the next normal task lifecycle update before handoff so the directory link appears. Read-only commands do not refresh it. Missing or non-directory paths omit the field; removing the directory removes the generated field on the next write. Never create an empty directory just for the link or backfill untouched records. This generated navigation field is excluded from the review fingerprint, not a substitute for per-artifact evidence links; normal `sync` invalidation remains unchanged.
++
++Material intentionally shared across future tasks of an established Topic belongs in that Topic's `resources/` directory and Resources index instead; register existing authoritative documents by reference rather than copying them. Use `topic`'s normative/reference classification and version checks. A task's own reports, logs, screenshots and review evidence remain task artifacts. Do not automatically move historical task artifacts or create a Topic merely to store a file.
+ 
+ The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.
+ 
+--- before/tests/topics.test.mjs
++++ after/tests/topics.test.mjs
+@@ -314,6 +314,148 @@
+   assert.equal(topics.check(root, "account").valid, true);
+ });
+ 
++test("new Topics provide a shared resources directory and clickable classified index", (t) => {
++  const root = workspace(t);
++  const current = topic(root);
++  const relative = "tasks/topics/account/resources/design notes #1.md";
++  fs.writeFileSync(path.join(root, relative), "Background notes");
++  const updated = topics.updateResources(root, "account", current.version, [
++    { label: "Design notes", target: relative, purpose: "Long-lived reference", kind: "reference" },
++    { label: "Remote design", target: "https://example.com/design", purpose: "External reference", kind: "reference" },
++  ]);
++  assert.equal(updated.revision, current.revision);
++  assert.match(updated.text, /\[Design notes\]\(<account\/resources\/design%20notes%20%231.md>\)/);
++  assert.equal(updated.resources[0].target, relative);
++  assert.equal(fs.readFileSync(path.join(root, relative), "utf8"), "Background notes");
++  assert.equal(topics.check(root, "account").valid, true);
++});
++
++test("reference metadata and content changes do not stale a bound task", (t) => {
++  const root = workspace(t);
++  topic(root); task(root); attach(root);
++  const record = core.readTask(root, "ios");
++  const initial = topics.readTopic(root, "account");
++  fs.writeFileSync(path.join(root, "notes.md"), "v1");
++  const resource = { label: "Notes", target: "notes.md", purpose: "Background only", kind: "reference" };
++  let updated = topics.updateResources(root, "account", initial.version, [resource]);
++  fs.writeFileSync(path.join(root, "notes.md"), "v2");
++  updated = topics.updateResources(root, "account", updated.version, [{ ...resource, purpose: "Updated reference description" }]);
++  assert.equal(topics.fresh(root, core.readTask(root, "ios")).revision, initial.revision);
++  assert.equal(core.readTask(root, "ios").text, record.text);
++  topics.updateResources(root, "account", updated.version, []);
++  assert.equal(fs.readFileSync(path.join(root, "notes.md"), "utf8"), "v2");
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, true);
++});
++
++test("normative resource changes use the existing revision and terminal gates", (t) => {
++  const root = workspace(t);
++  const initial = topic(root);
++  fs.writeFileSync(path.join(root, "api.json"), "v1");
++  const resource = { label: "API", target: "api.json", purpose: "Shared contract", kind: "normative", sha256: topics.hash("v1") };
++  const first = topics.updateResources(root, "account", initial.version, [resource]);
++  assert.notEqual(first.revision, initial.revision);
++  task(root); attach(root); core.resumeTask(root, "ios");
++  fs.writeFileSync(path.join(root, "api.json"), "v2");
++  assert.throws(() => core.recordVerification(root, "ios", true, "Fixture"), /dependency changed/);
++  const second = topics.updateResources(root, "account", topics.readTopic(root, "account").version, [{ ...resource, sha256: topics.hash("v2") }]);
++  assert.notEqual(second.revision, first.revision);
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, false);
++  topics.adopt(root, "ios", { expectedTask: topics.hash(core.readTask(root, "ios").text), expectedTopic: second.version, evidence: "Aligned API v2" });
++  assert.equal(topics.freshness(root, core.readTask(root, "ios")).current, true);
++  assert.match(fs.readFileSync(path.join(root, "tasks/topics/account/revisions", `${first.revision}.md`), "utf8"), /## Normative Resources/);
++  assert.equal(fs.existsSync(path.join(root, "tasks/topics/account/resources/api.json")), false);
++  const third = topics.updateSpec(root, "account", second.version, { ...spec, decisions: "Updated choice" });
++  assert.equal(third.resources[0].sha256, topics.hash("v2"));
++  assert.equal(topics.readTopic(root, "account").revision, third.revision);
++});
++
++test("resource classification and removal change the normative projection only when applicable", (t) => {
++  const root = workspace(t);
++  const initial = topic(root);
++  fs.writeFileSync(path.join(root, "notes.md"), "contract");
++  const reference = { label: "Notes", target: "notes.md", purpose: "Notes", kind: "reference" };
++  const normative = { ...reference, kind: "normative", sha256: topics.hash("contract") };
++  const first = topics.updateResources(root, "account", initial.version, [reference]);
++  const second = topics.updateResources(root, "account", first.version, [normative]);
++  assert.notEqual(second.revision, first.revision);
++  const third = topics.updateResources(root, "account", second.version, [reference]);
++  assert.equal(third.revision, initial.revision);
++  assert.equal(fs.readFileSync(path.join(root, "notes.md"), "utf8"), "contract");
++});
++
++test("legacy Topics keep their shape and digest until explicit resource initialization", (t) => {
++  const root = workspace(t);
++  const initial = topic(root);
++  const legacy = initial.text.replace(/\n## Resources\n\n\| Resource \| Kind \| Purpose \| SHA-256 \|\n\| --- \| --- \| --- \| --- \|\n/, "");
++  fs.writeFileSync(initial.file, legacy);
++  fs.rmSync(path.join(root, "tasks/topics/account/resources"), { recursive: true });
++  const loaded = topics.readTopic(root, "account");
++  assert.equal(loaded.resources, undefined);
++  assert.equal(loaded.revision, initial.revision);
++  topics.listTopics(root); topics.check(root, "account");
++  assert.equal(fs.readFileSync(initial.file, "utf8"), legacy);
++  assert.equal(fs.existsSync(path.join(root, "tasks/topics/account/resources")), false);
++  const updated = topics.updateResources(root, "account", loaded.version, []);
++  assert.equal(updated.revision, loaded.revision);
++  assert.ok(fs.statSync(path.join(root, "tasks/topics/account/resources")).isDirectory());
++});
++
++test("resource registration rejects unsafe sources, duplicates, stale versions and archived writes", (t) => {
++  const root = workspace(t);
++  const initial = topic(root);
++  fs.writeFileSync(path.join(root, "api.json"), "v1");
++  const reference = { label: "API", target: "api.json", purpose: "Reference", kind: "reference" };
++  const invalid = [
++    [{ ...reference, target: "../escape" }],
++    [{ ...reference, target: path.join(root, "api.json") }],
++    [{ ...reference, kind: "normative" }],
++    [{ ...reference, kind: "normative", sha256: topics.hash("wrong") }],
++    [{ ...reference, sha256: topics.hash("v1") }],
++    [{ ...reference, target: "https://user:password@example.com/" }],
++    [{ ...reference, kind: "normative", target: "https://example.com/", sha256: topics.hash("v1") }],
++    [reference, reference],
++    [{ ...reference, label: "bad|label" }],
++  ];
++  for (const resources of invalid) {
++    assert.throws(() => topics.updateResources(root, "account", initial.version, resources));
++    assert.equal(topics.readTopic(root, "account").text, initial.text);
++  }
++  fs.symlinkSync(path.join(root, "api.json"), path.join(root, "alias.json"));
++  assert.throws(() => topics.updateResources(root, "account", initial.version, [{ ...reference, target: "alias.json" }]), /symlinks/);
++  assert.throws(() => topics.updateResources(root, "account", "outdated", [reference]), /reread/);
++  const archived = topics.setState(root, "account", "Archived", initial.version);
++  assert.throws(() => topics.updateResources(root, "account", archived.version, []), /restore Archived/);
++});
++
++test("the same normative source cannot acquire conflicting resource and dependency pins", (t) => {
++  const root = workspace(t);
++  fs.writeFileSync(path.join(root, "api.json"), "v1");
++  const current = topics.createTopic(root, "account", "Account", { ...spec, dependencies: [{ path: "api.json", sha256: topics.hash("v1") }] });
++  assert.throws(() => topics.updateResources(root, "account", current.version, [{ label: "API", target: "api.json", purpose: "Contract", kind: "normative", sha256: topics.hash("v1") }]), /must not be duplicated/);
++  assert.equal(topics.readTopic(root, "account").revision, current.revision);
++});
++
++test("normative source deduplication uses the same separator handling as file reads", (t) => {
++  const root = workspace(t);
++  fs.mkdirSync(path.join(root, "contracts"));
++  fs.writeFileSync(path.join(root, "contracts/api.json"), "v1");
++  const current = topics.createTopic(root, "account", "Account", { ...spec, dependencies: [{ path: "contracts\\api.json", sha256: topics.hash("v1") }] });
++  assert.throws(() => topics.updateResources(root, "account", current.version, [{ label: "API", target: "contracts/api.json", purpose: "Contract", kind: "normative", sha256: topics.hash("v1") }]), /must not be duplicated/);
++  assert.equal(topics.readTopic(root, "account").text, current.text);
++});
++
++test("resource CLI updates expose the index and directory without copying source content", (t) => {
++  const root = workspace(t);
++  const current = topic(root);
++  fs.writeFileSync(path.join(root, "notes.md"), "Existing authority");
++  const input = path.join(root, "resources.json");
++  fs.writeFileSync(input, JSON.stringify([{ label: "Notes", target: "notes.md", purpose: "Reference", kind: "reference" }]));
++  const output = JSON.parse(execFileSync(process.execPath, [cli, "--workspace", root, "topic", "update-resources", "account", "--expected", current.version, "--resources-json", input], { encoding: "utf8" }));
++  assert.equal(output.resources[0].target, "notes.md");
++  assert.equal(output.resourcesDirectory, path.join(root, "tasks/topics/account/resources"));
++  assert.deepEqual(fs.readdirSync(output.resourcesDirectory), []);
++});
++
+ test("new CLI entry, spec package and manifest expose Topic without adding a task kind", () => {
+   const help = execFileSync(process.execPath, [cli, "--help"], { encoding: "utf8" });
+   assert.match(help, /topic <command>/);
+--- before/README.md
++++ after/README.md
+@@ -41,7 +41,8 @@
+ 
+ Topic 保存一个长期主题的当前有效规格，不是另一个任务类型或执行队列。可直接说“创建一个 Topic：账号注销，先讨论需求”“在账号注销 Topic 下排查 Bug”或“继续这个 Topic，查看相关任务”。建立 Topic 不会自动实施全部任务；所有任务完成也不会关闭 Topic。
+ 
+-- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；不可变规格快照位于该 Topic 的 `revisions` 目录。
++- Topic 权威记录位于工作区的 `tasks/topics/<topic-id>.md`，可重建导航位于 `tasks/topics.md`；长期共享资料位于该 Topic 的 `resources` 目录，不可变规格快照位于 `revisions` 目录。
++- 主文档的 Resources 表记录资料链接、用途及 `normative`（有效约定）/`reference`（参考材料）分类。通过 `topic update-resources --resources-json` 更新完整索引；有效约定固定文件摘要并纳入规格核对，参考资料不使任务证据失效。已有权威文件仅链接，不自动复制；单次任务的报告和日志仍保存在任务产物中。旧 Topic 不批量迁移，保留原版本可读。
+ - Task 可选关联一个 Topic，保留自己的 Target、Result、审查、验证与 Task Summary；未关联的任务照常运行。Topic 的任务列表只存引用和职责，状态现场读取。
+ - Topic 使用 Draft、Active、Archived；归档和恢复均需明确意图。Queue 仍管理本地串行依赖，与 Topic 归属分开。
+ - 通过共享 CLI 的 `topic` 子命令读写；`--help` 列出创建、更新规格、关联、采用新版本、校验和修复命令。版本变化会在评估及终态关卡被检查，不能只改 hash 消除过期。

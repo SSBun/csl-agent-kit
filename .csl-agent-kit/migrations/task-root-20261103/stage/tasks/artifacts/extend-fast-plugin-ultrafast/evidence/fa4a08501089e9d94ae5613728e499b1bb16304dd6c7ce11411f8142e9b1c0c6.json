@@ -1,0 +1,40 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "extend-fast-plugin-ultrafast",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "11d7c2d9e74ed11ccc497ab12848b09aec20a5f849f1666253d4b3d06f21139f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "9cc6e23317845fa9df40025ddbe4beec31eae937"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "9cc6e23317845fa9df40025ddbe4beec31eae937",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "pi/extensions/openai-codex-fast.ts",
+      "sha256": "3233e67129762b1e9c4eab7485e54cc21e0d49949d15ff40a8350a1826917937",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "cee9c17cdb6fd70f6f605b058b8e50937065a123"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "cee9c17cdb6fd70f6f605b058b8e50937065a123",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

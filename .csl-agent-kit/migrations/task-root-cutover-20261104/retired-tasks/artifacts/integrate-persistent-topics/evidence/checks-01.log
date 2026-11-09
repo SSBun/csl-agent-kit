@@ -1,0 +1,28 @@
+WARNING topic — /Users/caishilin/Desktop/personal/skills/skills/meta/topic
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1409.
+Summary: 0 passed, 1 warning, 0 failed.
+WARNING task — /Users/caishilin/Desktop/personal/skills/skills/meta/task
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 7777.
+Summary: 0 passed, 1 warning, 0 failed.
+WARNING task-plan — /Users/caishilin/Desktop/personal/skills/skills/meta/task-plan
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1799.
+Summary: 0 passed, 1 warning, 0 failed.
+WARNING task-queue — /Users/caishilin/Desktop/personal/skills/skills/meta/task-queue
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 2409.
+Summary: 0 passed, 1 warning, 0 failed.
+WARNING task-context — /Users/caishilin/Desktop/personal/skills/skills/meta/task-context
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 3734.
+Summary: 0 passed, 1 warning, 0 failed.
+WARNING task-review — /Users/caishilin/Desktop/personal/skills/skills/meta/task-review
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 2083.
+Summary: 0 passed, 1 warning, 0 failed.
+WARNING agent-hooks — /Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1311.
+Summary: 0 passed, 1 warning, 0 failed.
+{
+  "schema": "csl-context.validation/v1",
+  "valid": true,
+  "errors": [],
+  "warnings": []
+}
+{"valid":true}

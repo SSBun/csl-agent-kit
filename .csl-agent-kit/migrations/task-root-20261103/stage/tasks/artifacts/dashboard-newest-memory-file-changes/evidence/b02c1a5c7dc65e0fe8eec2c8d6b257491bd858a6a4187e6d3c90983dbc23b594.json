@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-newest-memory-file-changes",
+  "files": [
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "c97d37aa7a27137b19ce51726e6ecac8e64800085e863e4cdfba0a80764829dc",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/queue.js",
+      "sha256": "93853fc0f55baf8d2c66d57667c73471062f93c71841c49ff9b0c2c369061ecd",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "eb2537fb76d32b860d48f4767ac82134accc19467cd5e7149af9dba3af9a1a82",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "d3cbdde8ea176aece1cd0d7228af7e9ae5f296e601f404f612f0b2c039a2a28e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "46776ea8fc4a8fa9afdc160fdfd8ac56919d158590757469e9a9cd9712768060",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

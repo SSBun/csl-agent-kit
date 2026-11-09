@@ -1,0 +1,87 @@
+diff --git a/README.md b/README.md
+index 5002c29..8c99aa1 100644
+--- a/README.md
++++ b/README.md
+@@ -195,6 +195,7 @@ The Pi package manifest in `package.json` exposes:
+ - `pi/extensions/csl-context-hooks.ts`：桥接 Agent Hooks 到 Pi 的事件总线——`session-start`/`prompt-submit` 注入 systemPrompt，`after-tool` 注入 tool_result，`before-tool`/`before-compact`/`after-compact`/`stop` 执行脚本副作用；同时加载匹配的 SOP context、在变更前显示一次 SOP 提醒，并在 Figma/MasterGo 设计数据获取后追加 `figma-describe` 指引。Pi 不支持 block 与 permission/subagent 事件。
+ - `pi/extensions/openai-codex-fast.ts`, adding persistent OpenAI Codex Fast Mode controls and a footer status indicator.
+ - `pi/extensions/csl-model-presets.ts`：通过 `/preset` 同时切换模型与 thinking level；`/quick <prompt>` 临时使用名为 `quick` 的预设执行一次 prompt，结束后恢复原模型。预设来自 `~/.pi/agent/presets.json`，每次执行命令时重新读取。
++- `pi/extensions/csl-settings.ts`：通过 `/csl-settings` 打开 CSL Agent Kit 通用设置面板，首批支持审查模型与思考强度；`csl_review_config` 为 CSL 审查流程解析启动参数，不启动子 Agent。
+ - `pi/extensions/csl-task-overlay.ts`：只读浮层，从 `<cwd>/tasks/tasks.md` 渲染最近 6 个任务的实时进度与可点击标题；通过 `task_focus` 或 `/task-focus` 保存当前 session 的任务关注，并用 `/tasks` 按状态打印最近 20 个带可点击标题的任务。
+ 
+ - `pi/extensions/csl-ansi.ts`：注册 `render_ansi` 工具，直接在会话中渲染 ANSI 彩色字符与等宽图，不添加工具标题或成功状态背景。
+@@ -220,6 +221,31 @@ pi config -l       # 项目级：覆盖全局设置（写入 .pi/settings.json
+ 
+ TUI 里 Tab 切换 global / project-local scope，空格切换启用状态。无需手动编辑 `settings.json`。
+ 
++#### CSL Agent Kit 通用设置
++
++在 Pi TUI 中执行 `/csl-settings`，选择配置项后点击“保存设置”；取消或退出主面板会丢弃本次未保存修改。该入口用于 CSL Agent Kit 的通用设置，审查配置是首批项目，后续设置沿用此面板。
++
++审查模型和思考强度可独立选择“继承父 Agent”。默认两项均未配置，因此在每次新审查启动前继承父会话**当时实际使用的**模型与思考强度，而不是 Pi 新会话默认值或 reviewer 自带的 `high`。`off` 表示明确关闭思考，不表示继承。
++
++设置保存在 `~/.csl-agent-kit/settings.json`；设置了 `CSL_AGENT_KIT_HOME` 时使用该目录。最小示例：
++
++```json
++{
++  "review": {
++    "model": "provider/model-id",
++    "thinking": "medium"
++  }
++}
++```
++
++删除字段、空字符串或 `null` 均表示该项继承；文件不存在或内容为 `{}` 表示全部继承。不要给 `review.model` 添加思考强度后缀。保存只更新这两项，保留其他设置；格式损坏会报错，不会静默覆盖。
++
++Pi 中的 CSL `task-review` 和 `adversarial-review` Reviewer 启动前，主 Agent 按 `csl_review_config` 的工具指引读取配置，将返回的 `launch.model` 原样传入现有 `subagent` 调用；脚本工作流应在每个 Reviewer 子调用中传入，而不是覆盖整个工作流。该值包含 `provider/model:thinking`，因此优先于 carrier 的默认模型和思考强度。配置解析失败时应停止，不自动换模型或降级；原有 subagent 模型范围、思考上限、隔离和授权限制仍然有效。
++
++这是 CSL 审查流程的显式启动参数接入，不是对全部 subagent 调用的拦截。手动 `/run reviewer`、其他流程及 Editor 等非审查角色不受影响。工具指引要求在父会话或设置改变后重新解析；已启动或恢复的子 Agent 保留原启动契约，需要新配置时启动新的审查子 Agent。配置保存后后续解析立即生效，无需重载；初次加载新扩展仍需 `/reload`。非 TUI 模式不能打开设置面板，但仍可调用只读解析工具。没有加载此扩展的宿主不使用此 Pi 配置。
++
++#### 模型预设
++
+ 模型与 thinking level 预设写在 `~/.pi/agent/presets.json`：
+ 
+ ```json
+diff --git a/tasks/context.md b/tasks/context.md
+index f0b3d22..022c90a 100644
+--- a/tasks/context.md
++++ b/tasks/context.md
+@@ -107,6 +107,17 @@
+ - `third-party-skills.js status` 按来源与 ref 复用临时上游检出并比较导入 commit；`diff` 区分导入后的上游变化与当前上游相对本地副本的差异，只有 `--patch` 输出逐行补丁。
+ - 导入、更新或移除第三方 skill 时使用项目内整合流程，并同步验证来源元数据、共享发现、当前 manifests、README、测试与发布包内容。
+ 
++## CTX-pi-settings — Pi 通用设置与审查配置
++- Scope: CSL Agent Kit 的 Pi 通用设置面板、审查配置存储与启动参数解析边界。
++- Paths: `pi/extensions/csl-settings.ts`, `pi/lib/csl-settings.ts`, `tests/pi-settings.test.mjs`
++- Keywords: Pi, csl-settings, review model, thinking, parent inheritance, csl_review_config
++- Authority: `pi/extensions/csl-settings.ts`, `pi/lib/csl-settings.ts`, `README.md`
++- Recheck: 当设置字段、数据目录、Pi 工具指引或 subagent 的模型后缀覆盖语义变化时复核。
++
++### Purpose and Boundaries
++- `/csl-settings` 是通用配置入口；首批 `review.model` 与 `review.thinking` 保存到 `CSL_AGENT_KIT_HOME` 或默认 CSL 用户数据目录的 `settings.json`，不修改 Pi 或 pi-subagents 的配置。
++- `csl_review_config` 是只读解析工具，不是启动器。其工具指引要求 CSL 审查的主 Agent 将返回的 `launch.model` 放到实际 Reviewer 子调用中；未设置的项读取调用时父会话实际值。该接入不拦截所有 subagent，不覆盖 Editor，也不会改变已有子 Agent 的恢复契约。
++
+ ## CTX-pi-task-overlay — Pi task overlay rendering
+ - Scope: Pi task widget parsing, session focus persistence, progress rendering, refresh lifecycle, mode boundaries, and clickable task titles.
+ - Paths: `pi/extensions/csl-task-overlay.ts`, `tests/pi-task-overlay.test.mjs`, `tasks/tasks.md`, `tasks/tasks/`
+@@ -151,6 +162,8 @@
+ - Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能因失败将 R2 降级，也不能把既有 Required 义务改为 Skipped；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检、assessment 和 fresh pass；当前 core 不证明实际隔离、检查运行或外部文件内容未变，这些证据由宿主与主 Agent 建立。
+ - Mandatory review 用带 `task-review-ledger/v1` marker 的唯一 task-local `## Review` current ledger 持久化单调 `TR-n` IDs 与逐 finding no-progress streak；Core 只把 fenced／indented／list-container code 与 HTML block/comment 之外的 column-zero H2 当作 record section；重复 Review sections、未知 ledger schema 与使用 alternate list markers／whitespace 的 ledger-like malformed 内容 fail closed，单个无 marker 的历史自由格式 Review 保持可读。Finding 初见为 0，同一根因／required outcome 的 fresh re-review 连续无实质 artifact／evidence 进展时递增，到 2 即保留 ledger、写入精确 Block／Unblock 条件并进入 Blocked，请求用户决策且不得自动 `Passed`；对应 streak 在新证据下重置前，Core 拒绝 resume。有效进展、证据化重分类或解决会重置／移除对应 finding，不设总 pass 上限。
+ 
++- 普通 `task-review` 返回只读反馈后，由 owning task 主 Agent 将每轮反馈保存到 `tasks/artifacts/<task-id>/reviews/round-<NN>.md`，并在独立持久的 `## Review Reports` 中记录相对链接、审查快照和结论；它不是第二份问题台账，不随临时 `## Review` 清理。文件和索引共同决定下一未用编号，resume／reopen 不覆盖历史报告。Task fingerprint 排除这个纯索引区块，但不会验证外部文件和链接，主 Agent 仍负责现场核对报告与快照；规范或实质证据变化仍触发既有失效流程。独立 adversarial-review 保留其自己的报告契约。
++
+ ### Decision and Verification Boundaries
+ - User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
+ - 新请求默认创建独立 task；明确执行 implementation-ready plan 时 resume 该 plan 的 exact record，`task-plan` → `task` 阶段变化本身不产生新 ownership。其他情况下，只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。Completed child 只能在 parent 已激活后 reopen；该动作会原子失效 parent 的 assessment、终态 review／Verification，并将 In Review parent 退回 In Progress，防止 parent 以旧 integration evidence 完成。改变 Completed child 的关系前须显式 reopen；完全相同的 reciprocal link 为 no-op，不能清除任一已完成记录的证据。
+diff --git a/tests/run-pi-tests.js b/tests/run-pi-tests.js
+index abe0730..fbd2646 100644
+--- a/tests/run-pi-tests.js
++++ b/tests/run-pi-tests.js
+@@ -12,6 +12,7 @@ const result = spawnSync(process.execPath, [
+   "--test",
+   "tests/pi-context-hooks.test.mjs",
+   "tests/pi-model-presets.test.mjs",
++  "tests/pi-settings.test.mjs",
+   "tests/pi-skill-commands.test.mjs",
+   "tests/pi-task-overlay.test.mjs",
+ ], { stdio: "inherit" });

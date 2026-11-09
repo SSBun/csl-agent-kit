@@ -1,0 +1,40 @@
+{
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "cb56eb3ff25c159127c03d9f9dc570c7d301808f6150daa8a75a82939db86dcb"
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "4b038cb076c1a079a67cbdc6a5e691c1287cb37b10e1fa8f633c22b6c2d94bad"
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "cd10957ec3b680ebaf8332e49db9044e72aa0352efcc45670673c6dcbeccda7e"
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "63a86d1ac055fdb5c6eb86600e1466ac7e770bdeea3d333e52afd0229318962c"
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "54710323f24a123186ebc7ca69365b134f671551445bda63e4e775a59672f107"
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "60c26216dfba53b6ee60604f0d84a397fc546ed1ce9abd9940e40def34c93857"
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "e0a4667224d8af554d1149198fa6532a4065c63634ba6fd3928d2c69e25633ab"
+    }
+  ],
+  "scope": "共享 Task 顶部元数据和 artifacts 目录链接；scope-02.patch 是从此任务开始前基线到当前的五文件差异。tests/task-files.test.mjs 仅新增表格 Status 读取分支，tasks/context.md 仅本次任务元数据事实；其他既有未提交变更不属于本任务。",
+  "checks": [
+    "隔离 CLI Task/Plan/Queue 创建、状态、result、assessment、review、verify、complete、父子 link 与 reopen 成功",
+    "旧式元数据 check 不写入，verify 自动转表格且旧评估保持有效，complete 成功",
+    "marked 解析实际任务文件为 Field/Value 两列表格，Artifacts 单元格渲染为有效相对链接",
+    "核心及两份测试源码 node --check 通过，git diff --check 通过",
+    "三个 Skill Quality 无失败，保留上下文预算警告；未运行单元测试或项目测试套件"
+  ]
+}

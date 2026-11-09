@@ -1,0 +1,31 @@
+{
+  "安装结果": "pi-subagents 0.66.0 → 0.67.0；npm报告changed 1 package",
+  "依赖声明变化": {
+    "before": "^0.66.0",
+    "after": "^0.67.0"
+  },
+  "锁文件变化": [
+    "",
+    "node_modules/pi-subagents"
+  ],
+  "边界": "其他依赖声明与锁条目逐对象一致；未安装重复pi-tui/pi-coding-agent；用户和仓库AGENTS哈希不变",
+  "原生导入对照": {
+    "cwd": "/Users/caishilin/.pi/agent/npm/node_modules/pi-subagents",
+    "仅JITI_ALIAS退出码": 1,
+    "加入上游preload退出码": 0,
+    "输出": "NATIVE_PEER_IMPORT_OK"
+  },
+  "完整runner加载": {
+    "退出码": 0,
+    "输出": "RUNNER_IMPORT_OK",
+    "stderr": ""
+  },
+  "检查适用范围": "使用插件目录中的真实原生import及Text导出验证；不是require.resolve，也不是可能有项目依赖掩盖故障的仓库目录eval。",
+  "内容身份": {
+    "/Users/caishilin/.pi/agent/npm/package.json": "865abc11a11efe21485f2635718a61953f6a9eaa3511a046a9ee897879aef1f7",
+    "/Users/caishilin/.pi/agent/npm/package-lock.json": "3368b782f4da3244e67eb6c9298fff79c6259c68a61472ea10fb111ed28c6478",
+    "/Users/caishilin/.pi/agent/npm/node_modules/pi-subagents/package.json": "00b5ffcd328f4cf4004ed45cfce44e21f91802fbe7861218b2103b2db6ae864e",
+    "/Users/caishilin/.pi/agent/npm/node_modules/pi-subagents/runner-peer-preload.mjs": "dfa65d9ad2125524035f6abed6b3f5aa7dafa5499a12ce6072b10c768fe0ee33"
+  },
+  "局限": "未运行测试；当前会话尚未reload，实际subagent端到端调用和fresh独立审查待重新加载后执行。"
+}

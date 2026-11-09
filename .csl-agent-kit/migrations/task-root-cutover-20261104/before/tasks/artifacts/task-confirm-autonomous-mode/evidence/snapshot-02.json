@@ -1,0 +1,94 @@
+{
+  "identity": "sha256:86f7745d18732eaed9ebc25fc5f3aa6613831dfbd489fc380bc6070c037d024b",
+  "head": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "c1186cd8397f7f8b2f79763c9a918052e0c4d0bd6066251098952b35146a4cbc"
+    },
+    {
+      "path": "package.json",
+      "sha256": "8e412b6f850c86799b3fb5dbaf5fca174676aafcd4e3ace832bf54f0c78a766f"
+    },
+    {
+      "path": "pi/lib/csl-settings.ts",
+      "sha256": "c47c133ed927f03f8a0eea44f19f9d65f60d3c151570d5563173a45a1ea829fb"
+    },
+    {
+      "path": "pi/extensions/csl-settings.ts",
+      "sha256": "6f3504c83235b788313ca65c8328be8808be267181d33e493b0c115d697365e0"
+    },
+    {
+      "path": "pi/extensions/csl-context-hooks.ts",
+      "sha256": "dcc8f354b0ab03a84522162afbb60fa0d60cefe4239f017f82822fad76ed5ed4"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-mode.js",
+      "sha256": "7ecf388dd916eccb97545fe17ded87165fe1224494d34cc1102cbeee849b25c0"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/task-mode.js",
+      "sha256": "b90b7c685d243738dd7fab16695a53974ff6ce1af79f14fcb14baa248624118c"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "785b86b02dcb54416dd20fc5d22c9a353fc10fff0e8bc31054fbcdab673f57df"
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js",
+      "sha256": "3119aad0b4ba9178f3c6376b882e45be58f5778e2a2c3d6d6794b058195043ff"
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "74d69924435994a272eb4030fa0e2fa5ceb192285c5e09c114aa53eac6638dd4"
+    },
+    {
+      "path": "tests/task-mode.test.js",
+      "sha256": "59bcf1a6173648ec818162674d9980be6443eeeec18e2a6318cc8cba3500d704"
+    },
+    {
+      "path": "tests/pi-settings.test.mjs",
+      "sha256": "259c947a972d72d1a001011161dcf6343094fd68843ba0bf20df011455c664dd"
+    },
+    {
+      "path": "tests/pi-context-hooks.test.mjs",
+      "sha256": "71933b24f15838dd360ed6f5adcf0780a2c06ced7daf1f730c423c4ccd0fabf5"
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "5813d38f3114cf54f462a0ab537057d31fdf8df375b2bd149e92b4b3f7bb731f"
+    },
+    {
+      "path": "tasks/artifacts/task-confirm-autonomous-mode/evidence/self-check.md",
+      "sha256": "43d3643785d4d27e92e4574f963691c19141d199ead35330545e1a6805a62e6b"
+    },
+    {
+      "path": "skills/meta/task-mode/SKILL.md",
+      "sha256": "10affbbe5bbc6bb4bf128ff4f804a2346217f1f3b4e33df932243c131fc5e035"
+    },
+    {
+      "path": "skills/meta/task-mode/evals/trigger_cases.json",
+      "sha256": "6f69eee6ff4b5639d24e65ed8a60e34755d28709ff490461cf75375bd18020e5"
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "40828d876ec79c667659e1fefcf94480ce78fe8fd9040b61cdcb5715df18333d"
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "sha256": "ffe5f1ed5026cd536bc9d03314a6bb374822fd94a97dffaacd84b7ffda2101cd"
+    },
+    {
+      "path": "pi/extensions/csl-skill-commands.ts",
+      "sha256": "5487bb55d7e7a98107a75857512df68ba025603867b83052b694651f3b458a3b"
+    },
+    {
+      "path": "tests/pi-skill-commands.test.mjs",
+      "sha256": "e3040160d5ba767ca51f4d43ab2992fc6677dd4db480b465f5ed218106f92d0f"
+    },
+    {
+      "path": "tasks/artifacts/task-confirm-autonomous-mode/evidence/self-check-02.md",
+      "sha256": "68da20aae206176a9eb011bf3e365515e634c7d831da8af7d631efa5999024b3"
+    }
+  ]
+}

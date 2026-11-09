@@ -1,0 +1,106 @@
+{
+  "syntax": [
+    {
+      "file": "evals/scripts/evaluate-task-target-alignment.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "skills/meta/csl-tasks/shared/lib/task-evidence.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "skills/meta/csl-tasks/shared/lib/task-reports.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "skills/meta/task-context/scripts/context.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "tests/agent-hooks.test.js",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "tests/csl-tasks-core.test.mjs",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "tests/pi-task-overlay.test.mjs",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "tests/task-evidence.test.mjs",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "tests/task-files.test.mjs",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "file": "tests/task-mode.test.js",
+      "exitCode": 0,
+      "stderr": ""
+    }
+  ],
+  "jsonFiles": [
+    "evals/task-target-alignment/cases.json",
+    "package-lock.json",
+    "package.json",
+    "skills/meta/task-context/evals/context_value_cases.json",
+    "skills/meta/task-context/evals/lifecycle_cases.json",
+    "skills/meta/task-context/evals/query_cases.json",
+    "skills/meta/task-context/evals/trigger_cases.json",
+    "skills/meta/task-plan/evals/trigger_cases.json",
+    "skills/meta/task/evals/trigger_cases.json",
+    "tasks/artifacts/compact-task-panel/evidence/1599215f5e417f26fba6571f052f7833d8e5eec181d2a19e1b25da5ec792880f.json",
+    "tasks/artifacts/exploration-without-target-checkpoint/evidence/89e7c9498843b1543c93a251a7089565afd8f8f9d046997f657e47259178c2e6.json",
+    "tasks/artifacts/fix-contract-delegation-assertions/evidence/94804c916cf5457a1804dca86f64499a5abdeea71ca037257acd5d2745d2f64b.json",
+    "tasks/artifacts/optimize-context-lifecycle/evidence/53b22e79c7f25d745e41c74f82abeb18140ac4bbbf8466b04f94044811535816.json",
+    "tasks/artifacts/optimize-task-workflow/evidence/2334ee7f8d29a209a7c9b1d9da20345eb2a66269bd35d9f315714bc3865dc66c.json",
+    "tasks/artifacts/release-local-minor-version/evidence/alignment-validation.json",
+    "tasks/artifacts/release-local-minor-version/evidence/context-validation.json",
+    "tasks/artifacts/release-local-minor-version/evidence/install-dry-run.json",
+    "tasks/artifacts/release-local-minor-version/evidence/npm-pack.json",
+    "tasks/artifacts/release-local-minor-version/evidence/npm-publish-dry-run.json",
+    "tasks/artifacts/release-local-minor-version/evidence/skill-quality.json",
+    "tasks/artifacts/session-only-task-details/evidence/9e75e695c2d35d3b07f7a15addf3684f405dd792fa9cd1706c9694fbd8b19a3d.json",
+    "tasks/artifacts/task-capability-preflight/evidence/f85b3bd89b2fbda1d16e4c9c5d2778bf4744694e584e7adc4c7c2441af2b55e7.json",
+    "tasks/artifacts/task-contract-dedup/evidence/d9170575cdb53e7cab2a4aa6318eb3edd60f4a4da5f328c3aeb93a21287de292.json",
+    "tasks/artifacts/task-evidence-tools/evidence/543f5327b9c4604becdd2f2124a35edf6387257ec8c60a958beb0229cda7ce41.json",
+    "tasks/artifacts/task-evidence-tools/evidence/f5ecbf4a6ff263bcaf8e4d8713cbf344d2d0c703da45bd990d8c06ad9d71c9fa.json",
+    "tasks/artifacts/task-finalize-low-risk/evidence/1d30fbacddbffba1a033bc8eee45bf25ea8031431462d5bd1bb3f77a332ef18b.json",
+    "tasks/artifacts/task-finalize-low-risk/evidence/57ba7aecfad1c4686a21905dc5b36383031a8fd60a0fb75c8fdd840d5881855d.json",
+    "tasks/artifacts/task-recovery-navigation/evidence/56a079ebebb5a8417b2b90cd9c3106342f04881ef086fb17248c70612c77428e.json"
+  ],
+  "invalidJson": [],
+  "credentialPatternMatches": [],
+  "limitations": [
+    "未运行测试；语法和结构检查不证明运行时行为。",
+    "模式扫描不保证不存在所有敏感信息。",
+    "首次检查读到了并行生成中尚未完成的JSON；本次在所有生成命令退出后重新检查。"
+  ]
+}

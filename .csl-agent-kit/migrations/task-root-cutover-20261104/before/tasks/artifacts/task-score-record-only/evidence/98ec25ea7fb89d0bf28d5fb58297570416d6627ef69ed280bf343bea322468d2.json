@@ -1,0 +1,65 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-score-record-only",
+  "files": [
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "30d3c0e7f4f258a906a2b6a73a783fe352b377ebd91f9076b50d09ec96fec5ca",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fef85a9281efe0ea6674b6842015a32db53d756d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fef85a9281efe0ea6674b6842015a32db53d756d",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "4e338b74703810dc6b2dac9e69e127eddf40155b1b0da52beb287b22c97195f2",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4b26d58aba8b9217d279bb3c1c73df1b757feb93"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4b26d58aba8b9217d279bb3c1c73df1b757feb93",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "ef64a11be2cf243c0f80b1e2ed3e85ccee2e2cf3c64e9f362db1e815dd5ad001",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d77016f45f2050ccad4246a453455ba3616d2841"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d77016f45f2050ccad4246a453455ba3616d2841",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/evals/self_assessment_cases.json",
+      "sha256": "6573e10de415dae7dc18e3b442d2fcc48eaf13f76ed2f4ac9a86bf934183765e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

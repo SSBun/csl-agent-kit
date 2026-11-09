@@ -1,0 +1,1479 @@
+TAP version 13
+# Subtest: managed snapshots are rechecked at unchanged terminal writes and completion
+ok 1 - managed snapshots are rechecked at unchanged terminal writes and completion
+  ---
+  duration_ms: 165.369584
+  type: 'test'
+  ...
+# Subtest: managed reviews require the latest matching independent report and immutable feedback
+ok 2 - managed reviews require the latest matching independent report and immutable feedback
+  ---
+  duration_ms: 147.39175
+  type: 'test'
+  ...
+# Subtest: reports cannot certify changed Target or Result using the same snapshot
+ok 3 - reports cannot certify changed Target or Result using the same snapshot
+  ---
+  duration_ms: 255.783709
+  type: 'test'
+  ...
+# Subtest: managed reports enforce review outcomes for owner-attested snapshots
+ok 4 - managed reports enforce review outcomes for owner-attested snapshots
+  ---
+  duration_ms: 99.718958
+  type: 'test'
+  ...
+# Subtest: report registration refuses legacy prose without losing historical content
+ok 5 - report registration refuses legacy prose without losing historical content
+  ---
+  duration_ms: 96.26725
+  type: 'test'
+  ...
+# Subtest: report registration recovers an orphan without overwriting or renumbering
+ok 6 - report registration recovers an orphan without overwriting or renumbering
+  ---
+  duration_ms: 85.623792
+  type: 'test'
+  ...
+# Subtest: failed report registration leaves no artifact or task mutation
+ok 7 - failed report registration leaves no artifact or task mutation
+  ---
+  duration_ms: 53.489042
+  type: 'test'
+  ...
+# Subtest: report registration rolls back artifact and task after an index write failure
+ok 8 - report registration rolls back artifact and task after an index write failure
+  ---
+  duration_ms: 50.749166
+  type: 'test'
+  ...
+# Subtest: evidence CLI reports mechanical boundaries without claiming semantic approval
+ok 9 - evidence CLI reports mechanical boundaries without claiming semantic approval
+  ---
+  duration_ms: 84.081917
+  type: 'test'
+  ...
+# Subtest: the shared CLI creates and validates a host-neutral workspace
+ok 10 - the shared CLI creates and validates a host-neutral workspace
+  ---
+  duration_ms: 91.703333
+  type: 'test'
+  ...
+# Subtest: creates a task and keeps the canonical record and newest-first index aligned
+ok 11 - creates a task and keeps the canonical record and newest-first index aligned
+  ---
+  duration_ms: 3.997208
+  type: 'test'
+  ...
+# Subtest: metadata renders as a two-column table with a clickable artifacts value
+ok 12 - metadata renders as a two-column table with a clickable artifacts value
+  ---
+  duration_ms: 4.021417
+  type: 'test'
+  ...
+# Subtest: legacy metadata is read without rewriting and converted only on lifecycle writes
+ok 13 - legacy metadata is read without rewriting and converted only on lifecycle writes
+  ---
+  duration_ms: 4.906916
+  type: 'test'
+  ...
+# Subtest: all task kinds link existing artifact directories without creating missing ones
+ok 14 - all task kinds link existing artifact directories without creating missing ones
+  ---
+  duration_ms: 10.995833
+  type: 'test'
+  ...
+# Subtest: lifecycle writes add late artifact links, stay idempotent, and remove stale links
+ok 15 - lifecycle writes add late artifact links, stay idempotent, and remove stale links
+  ---
+  duration_ms: 11.328708
+  type: 'test'
+  ...
+# Subtest: artifact navigation added after assessment does not stale review or completion
+ok 16 - artifact navigation added after assessment does not stale review or completion
+  ---
+  duration_ms: 11.190083
+  type: 'test'
+  ...
+# Subtest: artifact-like body content is still covered by the review fingerprint
+ok 17 - artifact-like body content is still covered by the review fingerprint
+  ---
+  duration_ms: 5.389208
+  type: 'test'
+  ...
+# Subtest: queue links and child reopening refresh only the records they write
+ok 18 - queue links and child reopening refresh only the records they write
+  ---
+  duration_ms: 21.496084
+  type: 'test'
+  ...
+# Subtest: writes Queue records and reads legacy Auto parents without accepting new Auto records
+ok 19 - writes Queue records and reads legacy Auto parents without accepting new Auto records
+  ---
+  duration_ms: 7.465334
+  type: 'test'
+  ...
+# Subtest: cancel and resume are reversible state transitions
+ok 20 - cancel and resume are reversible state transitions
+  ---
+  duration_ms: 6.298875
+  type: 'test'
+  ...
+# Subtest: no-file completion fails closed until targets, skipped review, and verification have evidence
+ok 21 - no-file completion fails closed until targets, skipped review, and verification have evidence
+  ---
+  duration_ms: 16.469667
+  type: 'test'
+  ...
+# Subtest: historical free-form Review sections stay compatible while marked ledgers fail closed
+ok 22 - historical free-form Review sections stay compatible while marked ledgers fail closed
+  ---
+  duration_ms: 76.804875
+  type: 'test'
+  ...
+# Subtest: no-file tasks honor explicitly requested adversarial review without task-review
+ok 23 - no-file tasks honor explicitly requested adversarial review without task-review
+  ---
+  duration_ms: 25.971959
+  type: 'test'
+  ...
+# Subtest: file-changing tasks complete from In Review after task-review passes
+ok 24 - file-changing tasks complete from In Review after task-review passes
+  ---
+  duration_ms: 13.94475
+  type: 'test'
+  ...
+# Subtest: queue tasks keep reciprocal ordered children and resume at the first unfinished child
+ok 25 - queue tasks keep reciprocal ordered children and resume at the first unfinished child
+  ---
+  duration_ms: 40.213291
+  type: 'test'
+  ...
+# Subtest: a no-file Queue parent can honor explicit adversarial review without task-review
+ok 26 - a no-file Queue parent can honor explicit adversarial review without task-review
+  ---
+  duration_ms: 25.83425
+  type: 'test'
+  ...
+# Subtest: reopening a Queue child invalidates its active parent and rejects a completed parent
+ok 27 - reopening a Queue child invalidates its active parent and rejects a completed parent
+  ---
+  duration_ms: 45.216458
+  type: 'test'
+  ...
+# Subtest: Queue parents and children require distinct normalized titles
+ok 28 - Queue parents and children require distinct normalized titles
+  ---
+  duration_ms: 22.452917
+  type: 'test'
+  ...
+# Subtest: a child can have only one parent
+ok 29 - a child can have only one parent
+  ---
+  duration_ms: 19.136583
+  type: 'test'
+  ...
+# Subtest: blocked and review states require their lifecycle sections
+ok 30 - blocked and review states require their lifecycle sections
+  ---
+  duration_ms: 14.786833
+  type: 'test'
+  ...
+# Subtest: a stalled mandatory review blocks completion and preserves its ledger across resume
+ok 31 - a stalled mandatory review blocks completion and preserves its ledger across resume
+  ---
+  duration_ms: 18.096917
+  type: 'test'
+  ...
+# Subtest: sync invalidates terminal review and verification after direct task specification edits
+ok 32 - sync invalidates terminal review and verification after direct task specification edits
+  ---
+  duration_ms: 13.344625
+  type: 'test'
+  ...
+# Subtest: result and Queue graph changes invalidate completed review evidence
+ok 33 - result and Queue graph changes invalidate completed review evidence
+  ---
+  duration_ms: 24.425
+  type: 'test'
+  ...
+# Subtest: a completed Queue parent must be reopened before its graph changes
+ok 34 - a completed Queue parent must be reopened before its graph changes
+  ---
+  duration_ms: 21.38
+  type: 'test'
+  ...
+# Subtest: R1 includes verified small logic changes and preserves final verification
+ok 35 - R1 includes verified small logic changes and preserves final verification
+  ---
+  duration_ms: 11.873292
+  type: 'test'
+  ...
+# Subtest: R1 requires all concrete grounds and a snapshot without partial writes
+ok 36 - R1 requires all concrete grounds and a snapshot without partial writes
+  ---
+  duration_ms: 4.067041
+  type: 'test'
+  ...
+# Subtest: R2 and existing review obligations cannot be skipped or downgraded after failure
+ok 37 - R2 and existing review obligations cannot be skipped or downgraded after failure
+  ---
+  duration_ms: 17.483458
+  type: 'test'
+  ...
+# Subtest: R1 exemptions do not cancel explicit ordinary or adversarial review
+ok 38 - R1 exemptions do not cancel explicit ordinary or adversarial review
+  ---
+  duration_ms: 30.632666
+  type: 'test'
+  ...
+# Subtest: sync, Result and snapshot changes invalidate low-risk exemptions
+ok 39 - sync, Result and snapshot changes invalidate low-risk exemptions
+  ---
+  duration_ms: 54.697417
+  type: 'test'
+  ...
+# Subtest: direct specification drift is caught even if sync was omitted
+ok 40 - direct specification drift is caught even if sync was omitted
+  ---
+  duration_ms: 8.374
+  type: 'test'
+  ...
+# Subtest: assessment schema rejects duplicates, unknown versions and malformed fields
+ok 41 - assessment schema rejects duplicates, unknown versions and malformed fields
+  ---
+  duration_ms: 5.145292
+  type: 'test'
+  ...
+# Subtest: historical records remain readable but new completion needs an assessment
+ok 42 - historical records remain readable but new completion needs an assessment
+  ---
+  duration_ms: 13.706042
+  type: 'test'
+  ...
+# Subtest: link rejects a Completed child's new relationship without partial writes
+ok 43 - link rejects a Completed child's new relationship without partial writes
+  ---
+  duration_ms: 16.107208
+  type: 'test'
+  ...
+# Subtest: identical reciprocal links preserve Completed evidence and parent review
+ok 44 - identical reciprocal links preserve Completed evidence and parent review
+  ---
+  duration_ms: 26.090167
+  type: 'test'
+  ...
+# Subtest: all findings resolved can atomically clear the ledger and pass without regrading
+ok 45 - all findings resolved can atomically clear the ledger and pass without regrading
+  ---
+  duration_ms: 12.706959
+  type: 'test'
+  ...
+# Subtest: report indexing preserves assessment and survives ledger resolution, completion and reopen
+ok 46 - report indexing preserves assessment and survives ledger resolution, completion and reopen
+  ---
+  duration_ms: 14.295417
+  type: 'test'
+  ...
+# Subtest: report indexes do not hide substantive drift or bypass explicit sync
+ok 47 - report indexes do not hide substantive drift or bypass explicit sync
+  ---
+  duration_ms: 10.396084
+  type: 'test'
+  ...
+# Subtest: ledger resolution rejects missing, stale or mismatched identity without clearing findings
+ok 48 - ledger resolution rejects missing, stale or mismatched identity without clearing findings
+  ---
+  duration_ms: 8.496458
+  type: 'test'
+  ...
+# Subtest: CLI ledger clearance is restricted to Passed and preserves the current assessment
+ok 49 - CLI ledger clearance is restricted to Passed and preserves the current assessment
+  ---
+  duration_ms: 40.303
+  type: 'test'
+  ...
+# Subtest: the CLI records and exposes grading grounds without running checks
+ok 50 - the CLI records and exposes grading grounds without running checks
+  ---
+  duration_ms: 95.816125
+  type: 'test'
+  ...
+# Subtest: explicit non-Git snapshots are deterministic, sorted, immutable plans
+ok 51 - explicit non-Git snapshots are deterministic, sorted, immutable plans
+  ---
+  duration_ms: 75.410291
+  type: 'test'
+  ...
+# Subtest: verification detects declared content drift and preserves historical manifests
+ok 52 - verification detects declared content drift and preserves historical manifests
+  ---
+  duration_ms: 73.524958
+  type: 'test'
+  ...
+# Subtest: reference, manifest bytes and schema tampering fail closed
+ok 53 - reference, manifest bytes and schema tampering fail closed
+  ---
+  duration_ms: 16.183416
+  type: 'test'
+  ...
+# Subtest: invalid scope, directories, missing files and self-reference are rejected
+ok 54 - invalid scope, directories, missing files and self-reference are rejected
+  ---
+  duration_ms: 133.107625
+  type: 'test'
+  ...
+# Subtest: symlink scope and storage paths cannot escape the workspace
+ok 55 - symlink scope and storage paths cannot escape the workspace
+  ---
+  duration_ms: 31.253125
+  type: 'test'
+  ...
+# Subtest: Git snapshots detect staged-only drift with unchanged working tree bytes
+ok 56 - Git snapshots detect staged-only drift with unchanged working tree bytes
+  ---
+  duration_ms: 261.294084
+  type: 'test'
+  ...
+# Subtest: Git HEAD identity is per-file and unrelated commits do not invalidate scope
+ok 57 - Git HEAD identity is per-file and unrelated commits do not invalidate scope
+  ---
+  duration_ms: 410.992417
+  type: 'test'
+  ...
+# Subtest: only tracked deletions can produce missing-file snapshots
+ok 58 - only tracked deletions can produce missing-file snapshots
+  ---
+  duration_ms: 367.932
+  type: 'test'
+  ...
+# Subtest: unborn repositories preserve index identity and tracked missing additions
+ok 59 - unborn repositories preserve index identity and tracked missing additions
+  ---
+  duration_ms: 237.552125
+  type: 'test'
+  ...
+# Subtest: nested workspaces use literal paths relative to the actual repository root
+ok 60 - nested workspaces use literal paths relative to the actual repository root
+  ---
+  duration_ms: 385.372167
+  type: 'test'
+  ...
+# Subtest: task index and review reports resolve to isolated same-slug files
+ok 61 - task index and review reports resolve to isolated same-slug files
+  ---
+  duration_ms: 56.867125
+  type: 'test'
+  ...
+# Subtest: task index checker accepts the current format without migrating legacy siblings
+ok 62 - task index checker accepts the current format without migrating legacy siblings
+  ---
+  duration_ms: 4.22625
+  type: 'test'
+  ...
+# Subtest: task index checker rejects incompatible paths and canonical mismatches
+ok 63 - task index checker rejects incompatible paths and canonical mismatches
+  ---
+  duration_ms: 5.29425
+  type: 'test'
+  ...
+# Subtest: task links to deleted reports fail validation
+ok 64 - task links to deleted reports fail validation
+  ---
+  duration_ms: 1.091875
+  type: 'test'
+  ...
+# Subtest: cross-linked task and report slugs fail validation
+ok 65 - cross-linked task and report slugs fail validation
+  ---
+  duration_ms: 0.536167
+  type: 'test'
+  ...
+# Subtest: task artifact producers use stable task-owned paths
+ok 66 - task artifact producers use stable task-owned paths
+  ---
+  duration_ms: 1.344708
+  type: 'test'
+  ...
+# Subtest: task workflow skills own canonical records and routes
+ok 67 - task workflow skills own canonical records and routes
+  ---
+  duration_ms: 2.881625
+  type: 'test'
+  ...
+# Subtest: injected CSL Agent Kit contract defines behavior without runtime mechanics
+not ok 68 - injected CSL Agent Kit contract defines behavior without runtime mechanics
+  ---
+  duration_ms: 0.617792
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs:383:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input was expected to not match the regular expression /The Task Target states:|L0|L1|L2|L3|L4|Authorization Ledger|Changes requiring approval/. Input:
+    
+    'CSL AGENT KIT CONTRACT ACTIVE\n' +
+      '\n' +
+      '# CSL Agent Kit Task Workflow Contract\n' +
+      '\n' +
+      'Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.\n' +
+      '\n' +
+      "- Use Task Target to let the user recheck the Agent's understanding of their goal before substantive work, not merely to check authorization.\n" +
+      '- Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.\n' +
+      '- Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.\n' +
+      "- Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.\n" +
+      '\n' +
+      'This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.\n' +
+      '\n' +
+      '## Operating Sequence\n' +
+      '\n' +
+      'Work in this order:\n' +
+      '\n' +
+      '1. **Orient** — Recover the workspace model before acting.\n' +
+      '2. **Align** — Establish and align the intended outcome before substantive work.\n' +
+      '3. **Prepare** — Consult only relevant Context, Lessons, and authoritative sources.\n' +
+      '4. **Execute** — Make the minimum correct and surgical change.\n' +
+      '5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.\n' +
+      "6. **Review** — Classify the actual result under the Task workflow's R0/R1/R2 protocol. For R2 or explicit ordinary review, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the task-review remediation loop before completion.\n" +
+      '\n' +
+      'Do not skip alignment or verification merely because the implementation appears obvious.\n' +
+      '\n' +
+      '## Engineering Judgment\n' +
+      '\n' +
+      'Start from first principles:\n' +
+      '\n' +
+      '- Define the intended outcome, governing facts, material constraints, and causal path before choosing a solution.\n' +
+      '- Make material assumptions and interpretations explicit.\n' +
+      '- Check available evidence before asking the user for implementation facts.\n' +
+      '- In `confirm`, ask a focused question when a material user-owned decision cannot be resolved from evidence. In SOLO, resolve in-scope operational choices with evidence and bounded defaults; do not invent user facts or authorization, and report a genuine blocker when no valid path remains.\n' +
+      '- Break work into the smallest independently testable results.\n' +
+      '- Reuse existing patterns only when their rationale fits the current problem.\n' +
+      '- Explain the reasoning behind material decisions without adding unrequested process narration.\n' +
+      '- Challenge unnecessary complexity and raise a simpler alternative when it materially improves the result.\n' +
+      '\n' +
+      'Understand the real flow before editing. A small change in the wrong place is not a minimal solution.\n' +
+      '\n' +
+      '## Task-Family Routing\n' +
+      '\n' +
+      "Choose exactly one workflow from the user's authorized outcome:\n" +
+      '\n' +
+      '- Use `task-plan` when the current outcome is planning, investigation, requirement resolution, or an implementation-ready handoff without executing the requested deliverable.\n' +
+      '- Use `task-queue` when the user wants multiple independently acceptable outcomes managed and executed as an ordered parent-child workflow.\n' +
+      '- Use `task` for one execution outcome and for all other file-changing work.\n' +
+      '- Skip Task workflows only for simple factual answers, open-ended conversation without a concrete outcome, and other explicit skip boundaries owned by the selected Skill.\n' +
+      '\n' +
+      'An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.\n' +
+      '\n' +
+      '## Persistent Topics\n' +
+      '\n' +
+      'When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.\n' +
+      '\n' +
+      "Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep Project Context for project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.\n" +
+      '\n' +
+      '## Task Confirmation Preference\n' +
+      '\n' +
+      'Use the runtime-resolved confirmation mode, with session > project > global > default `confirm`. The shared Task Target protocol owns storage, resolution and detailed exceptions. A configuration error falls back to normal confirmation with a diagnostic; never reuse stale autonomy or change settings yourself to avoid a gate.\n' +
+      '\n' +
+      "In `solo` (SOLO), bypass the entire L0-L4 Task second-confirmation grading procedure. Display the complete Task Target and immediately work toward the user's final result. Resolve in-scope operational choices from evidence and bounded defaults instead of asking what to do next. Skip framework/SOP confirmation-only pauses, including external publication/deployment, X posts/replies and batch confirmation, even if labeled Safety Confirmation: announce action/object/consequence and continue. An SOP's generic instruction to ask is not an explicit user pause.\n" +
+      '\n' +
+      "Do not mislabel SOLO as unlimited authority or user acceptance. Retain the user's actual pause/check-first instructions, scope, host/tool approvals, higher-priority safety constraints and substantive safeguards such as correct-account checks, duplicate-send prevention and platform restrictions. If a required fact or permission cannot be established, complete unaffected work and report the concrete blocker rather than inventing it or asking a generic confirmation. Keep task records, R0/R1/R2 quality review and final verification. Querying/changing mode alone never resumes an old batch.\n" +
+      '\n' +
+      "The graded waiting requirements below describe `confirm` mode only; SOLO follows the shared protocol's separate execution path before grading. Default behavior is unchanged. Existing stored `autonomous` preferences resolve as `solo`; new configuration uses `solo`. Implementing this feature never enables it automatically.\n" +
+      '\n' +
+      '## Task Target\n' +
+      '\n' +
+      'When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.\n' +
+      '\n' +
+      'Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.\n' +
+      '\n' +
+      "In `confirm` mode, for a new or materially revised non-trivial Target, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. In SOLO, display the same complete Target and use the shared protocol's separate execution path, without L0-L4 second-confirmation grading. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.\n" +
+      '\n' +
+      'After alignment, continue independently within the accepted outcome and boundaries.\n' +
+      '\n' +
+      '## Task, Context, and Lessons\n' +
+      '\n' +
+      'Keep the three responsibilities distinct:\n' +
+      '\n' +
+      '- **Task** owns the current outcome, scope, plan, status, evidence, and completion state.\n' +
+      '- **Context** owns confirmed, durable project facts that materially improve future orientation and decisions.\n' +
+      '- **Lessons** own reusable preventive rules that help Agents avoid repeating a class of mistakes.\n' +
+      '\n' +
+      "At session start, resume, or compaction, establish and load the minimum source-backed Project Core for orientation; creation of a missing Context still requires the skill's explicit confirmation gate. Broader project discovery waits for Task Target alignment.\n" +
+      '\n' +
+      'After Task Target alignment, establish sufficient task-relevant Context, investigate coverage gaps, and re-query when discovered boundaries change. Context accelerates orientation but never replaces authoritative source, tests, schemas, configuration, or formal decisions. Authority wins when it conflicts with Context.\n' +
+      '\n' +
+      "Before final self-check, maintain durable Context affected by the task's actual changes and newly confirmed facts, within its authorized scope. The maintenance scope is not limited to previously selected Packs; the Context skill owns the detailed coverage, retrieval, repair, and write rules.\n" +
+      '\n' +
+      'Before substantive work, apply every relevant Lesson. After a user correction, apply the correction immediately and reconsider whether an existing preventive rule should change. Do not treat task history, one-off details, speculation, or preferences as Lessons.\n' +
+      '\n' +
+      'Keep current progress out of Context and keep project facts out of Lessons.\n' +
+      '\n' +
+      '## Simplicity First\n' +
+      '\n' +
+      'Implement the minimum solution that fully satisfies the aligned outcome:\n' +
+      '\n' +
+      '- Fix root causes rather than reported symptom'... 7256 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    CSL AGENT KIT CONTRACT ACTIVE
+    
+    # CSL Agent Kit Task Workflow Contract
+    
+    Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.
+    
+    - Use Task Target to let the user recheck the Agent's understanding of their goal before substantive work, not merely to check authorization.
+    - Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.
+    - Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.
+    - Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.
+    
+    This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.
+    
+    ## Operating Sequence
+    
+    Work in this order:
+    
+    1. **Orient** — Recover the workspace model before acting.
+    2. **Align** — Establish and align the intended outcome before substantive work.
+    3. **Prepare** — Consult only relevant Context, Lessons, and authoritative sources.
+    4. **Execute** — Make the minimum correct and surgical change.
+    5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.
+    6. **Review** — Classify the actual result under the Task workflow's R0/R1/R2 protocol. For R2 or explicit ordinary review, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the task-review remediation loop before completion.
+    
+    Do not skip alignment or verification merely because the implementation appears obvious.
+    
+    ## Engineering Judgment
+    
+    Start from first principles:
+    
+    - Define the intended outcome, governing facts, material constraints, and causal path before choosing a solution.
+    - Make material assumptions and interpretations explicit.
+    - Check available evidence before asking the user for implementation facts.
+    - In `confirm`, ask a focused question when a material user-owned decision cannot be resolved from evidence. In SOLO, resolve in-scope operational choices with evidence and bounded defaults; do not invent user facts or authorization, and report a genuine blocker when no valid path remains.
+    - Break work into the smallest independently testable results.
+    - Reuse existing patterns only when their rationale fits the current problem.
+    - Explain the reasoning behind material decisions without adding unrequested process narration.
+    - Challenge unnecessary complexity and raise a simpler alternative when it materially improves the result.
+    
+    Understand the real flow before editing. A small change in the wrong place is not a minimal solution.
+    
+    ## Task-Family Routing
+    
+    Choose exactly one workflow from the user's authorized outcome:
+    
+    - Use `task-plan` when the current outcome is planning, investigation, requirement resolution, or an implementation-ready handoff without executing the requested deliverable.
+    - Use `task-queue` when the user wants multiple independently acceptable outcomes managed and executed as an ordered parent-child workflow.
+    - Use `task` for one execution outcome and for all other file-changing work.
+    - Skip Task workflows only for simple factual answers, open-ended conversation without a concrete outcome, and other explicit skip boundaries owned by the selected Skill.
+    
+    An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
+    
+    ## Persistent Topics
+    
+    When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
+    
+    Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep Project Context for project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
+    
+    ## Task Confirmation Preference
+    
+    Use the runtime-resolved confirmation mode, with session > project > global > default `confirm`. The shared Task Target protocol owns storage, resolution and detailed exceptions. A configuration error falls back to normal confirmation with a diagnostic; never reuse stale autonomy or change settings yourself to avoid a gate.
+    
+    In `solo` (SOLO), bypass the entire L0-L4 Task second-confirmation grading procedure. Display the complete Task Target and immediately work toward the user's final result. Resolve in-scope operational choices from evidence and bounded defaults instead of asking what to do next. Skip framework/SOP confirmation-only pauses, including external publication/deployment, X posts/replies and batch confirmation, even if labeled Safety Confirmation: announce action/object/consequence and continue. An SOP's generic instruction to ask is not an explicit user pause.
+    
+    Do not mislabel SOLO as unlimited authority or user acceptance. Retain the user's actual pause/check-first instructions, scope, host/tool approvals, higher-priority safety constraints and substantive safeguards such as correct-account checks, duplicate-send prevention and platform restrictions. If a required fact or permission cannot be established, complete unaffected work and report the concrete blocker rather than inventing it or asking a generic confirmation. Keep task records, R0/R1/R2 quality review and final verification. Querying/changing mode alone never resumes an old batch.
+    
+    The graded waiting requirements below describe `confirm` mode only; SOLO follows the shared protocol's separate execution path before grading. Default behavior is unchanged. Existing stored `autonomous` preferences resolve as `solo`; new configuration uses `solo`. Implementing this feature never enables it automatically.
+    
+    ## Task Target
+    
+    When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.
+    
+    Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
+    
+    In `confirm` mode, for a new or materially revised non-trivial Target, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. In SOLO, display the same complete Target and use the shared protocol's separate execution path, without L0-L4 second-confirmation grading. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation only when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the accepted current Plan inherits alignment; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
+    
+    After alignment, continue independently within the accepted outcome and boundaries.
+    
+    ## Task, Context, and Lessons
+    
+    Keep the three responsibilities distinct:
+    
+    - **Task** owns the current outcome, scope, plan, status, evidence, and completion state.
+    - **Context** owns confirmed, durable project facts that materially improve future orientation and decisions.
+    - **Lessons** own reusable preventive rules that help Agents avoid repeating a class of mistakes.
+    
+    At session start, resume, or compaction, establish and load the minimum source-backed Project Core for orientation; creation of a missing Context still requires the skill's explicit confirmation gate. Broader project discovery waits for Task Target alignment.
+    
+    After Task Target alignment, establish sufficient task-relevant Context, investigate coverage gaps, and re-query when discovered boundaries change. Context accelerates orientation but never replaces authoritative source, tests, schemas, configuration, or formal decisions. Authority wins when it conflicts with Context.
+    
+    Before final self-check, maintain durable Context affected by the task's actual changes and newly confirmed facts, within its authorized scope. The maintenance scope is not limited to previously selected Packs; the Context skill owns the detailed coverage, retrieval, repair, and write rules.
+    
+    Before substantive work, apply every relevant Lesson. After a user correction, apply the correction immediately and reconsider whether an existing preventive rule should change. Do not treat task history, one-off details, speculation, or preferences as Lessons.
+    
+    Keep current progress out of Context and keep project facts out of Lessons.
+    
+    ## Simplicity First
+    
+    Implement the minimum solution that fully satisfies the aligned outcome:
+    
+    - Fix root causes rather than reported symptoms.
+    - Reuse an existing project solution before creating another one.
+    - Prefer the standard library, native platform behavior, and already-installed dependencies over custom infrastructure.
+    - Do not add speculative features, abstractions, configuration, compatibility layers, or scaffolding.
+    - Do not create flexibility for requirements that do not exist.
+    - Prefer deletion over addition and boring code over clever code.
+    - Use the fewest files and smallest coherent diff that solve the real problem.
+    - If a solution feels indirect or hacky, reconsider the change location before adding more code.
+    
+    Never simplify away trust-boundary validation, data-loss prevention, security controls, accessibility basics, or an explicit user requirement.
+    
+    ## Surgical Changes
+    
+    Touch only what the aligned outcome requires:
+    
+    - Do not refactor, reformat, rename, or improve adjacent unaffected code.
+    - Match the existing local style.
+    - Do not remove pre-existing dead code unless requested.
+    - Remove imports, variables, functions, files, or configuration made obsolete by your own change.
+    - Mention unrelated problems instead of fixing them silently.
+    - Ensure every changed line traces to the aligned outcome or its verification.
+    
+    ## Mandatory Modification Review
+    
+    Every task must classify its actual result before the completion review gate. R0 has no requested deliverable file changes; R1 permits simple, low-risk changes, including small logic changes, only with concrete grounds for clear results, bounded impact, low consequences and sufficient authorized verification. R2 covers complex, high-risk or materially uncertain changes and must use the existing In Review state and complete a `task-review` pass before completion. Diff size or confidence alone cannot justify exemption. Task, Context, and Lessons lifecycle records alone do not count as deliverable changes. The Task workflow owns the detailed grading protocol and assessment record.
+    
+    - The main Agent first compares original requirements, effective revisions, and accepted constraints against the actual result, fixes known failures, and records per-Target observations and limitations. Do not outsource known unfinished fixes to review or claim unperformed checks.
+    - Record current Result evidence, preliminary checks and assessment. For R2 or explicit ordinary review, mark review required, then enter In Review and dispatch one read-only `task-review` pass using an actual fresh subagent. Give it factual requirements, artifacts, and accessible evidence rather than the author's implementation conversation or desired verdict. The Reviewer checks requirements and artifacts before detailed author evidence, and may inspect previously checked behavior for omissions.
+    - Mandatory independent review that is unavailable or fails Blocks the task with a concrete recovery condition; self-review cannot substitute for it or justify passed. Failure cannot downgrade R2, and an existing Required obligation cannot become Skipped. Follow host failure rules and never silently switch execution modes. A prompt alone does not establish independence.
+    - Bind self-check, review, and final verification to the actual reviewed content. Stop changing the review scope during the pass; relevant content or evidence drift invalidates its conclusions and requires refreshed self-check and fresh review.
+    - Bind the level, concrete exemption grounds, content identity and self-check evidence to one current assessment. Recheck actual external artifacts before terminal gates and completion; the core checks record consistency and explicitly managed evidence, not semantic risk, omitted scope or continuous filesystem freshness.
+    - Direct edits to an active task specification must use its sync lifecycle; sync invalidates the assessment, terminal review and Verification evidence. Reopen a Completed task before changing its specification.
+    - Any confirmed finding returns the task to In Progress for remediation. A missing-evidence risk also returns it when the gap prevents Target verification. The main Agent verifies findings against actual evidence; a suspected false positive needs counterevidence checked by a fresh pass, not unilateral removal. Refresh affected self-check and stale evidence and repeat with a fresh pass without a fixed total round limit.
+    - Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger. Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed; a single unmarked historical free-form Review remains compatible. A first finding starts at zero; each consecutive re-review with the same root problem and required outcome but no substantive artifact or evidence progress increments it. At two, stop reviewing, Block the task with the stalled IDs and an observable unblock condition, and ask the user; never convert a stall to passed.
+    - Resolved findings leave the ledger, while evidence-backed progress or valid reclassification resets that finding to zero. Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it. Resume is rejected while any stalled item remains at two.
+    - When a pass has no confirmed finding or blocking evidence gap, the interaction owner records the review as passed. The Reviewer remains feedback-only and never grants approval or changes task state.
+    - R0/R1 may skip independent review only with a current evidenced assessment and no explicit or existing review obligation; final verification remains required. If adversarial review of that no-file result or an R1 result was explicitly requested, it still enters In Review and records Approved without running the mandatory `task-review`.
+    - Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request. For R2 they do not replace the mandatory `task-review` pass; Approved evidence identifies both outcomes.
+    
+    ## Verification Before Done
+    
+    Verify the result in proportion to risk using deterministic checks, behavioral comparison, tests, logs, schemas, syntax checks, or other reproducible evidence allowed by higher-priority instructions.
+    
+    Support important claims with observed evidence. Do not report completion merely because the implementation appears correct.
+    
+    Before delivery:
+    
+    - confirm that every observable completion condition is satisfied;
+    - replace evidence made stale by later changes;
+    - inspect the result from a skeptical reviewer’s perspective;
+    - check key assumptions, likely failure modes, and avoidable complexity;
+    - disclose any material verification that could not be performed.
+    
+    Independent adversarial review, a two-Agent Reviewer–Editor loop, or independent Reviewer approval is required only when the user explicitly requests it. Do not infer that requirement from complexity, risk, or ordinary self-review.
+    
+    ## Contract Boundary
+    
+    This contract does not define the selected Skill's detailed procedure, grant permission beyond the user's request, require plan mode or subagents outside explicit workflow requirements, or replace an independent safety confirmation.
+    
+    Keep this contract behavioral and stable. Skills retain operational detail.
+    
+  operator: 'doesNotMatch'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs:426:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: workspace context contract supports dispatch-ready retrieval and durable admission
+ok 69 - workspace context contract supports dispatch-ready retrieval and durable admission
+  ---
+  duration_ms: 0.59525
+  type: 'test'
+  ...
+# Subtest: workspace context value cases enforce admission and temporary exits
+ok 70 - workspace context value cases enforce admission and temporary exits
+  ---
+  duration_ms: 0.517791
+  type: 'test'
+  ...
+# Subtest: workspace context query cases cover session, task, write, and failure gates
+ok 71 - workspace context query cases cover session, task, write, and failure gates
+  ---
+  duration_ms: 0.281708
+  type: 'test'
+  ...
+# Subtest: workspace context lifecycle scenarios have complete inputs and consistent expected references
+ok 72 - workspace context lifecycle scenarios have complete inputs and consistent expected references
+  ---
+  duration_ms: 0.696958
+  type: 'test'
+  ...
+# Subtest: workspace context CLI loads Core, queries only v1 Packs, and fails closed
+ok 73 - workspace context CLI loads Core, queries only v1 Packs, and fails closed
+  ---
+  duration_ms: 439.340458
+  type: 'test'
+  ...
+# Subtest: current workspace Context has a valid Core and formal Packs
+ok 74 - current workspace Context has a valid Core and formal Packs
+  ---
+  duration_ms: 57.389584
+  type: 'test'
+  ...
+# Subtest: CSL task contract keeps acceptance, evidence, and review gates explicit
+not ok 75 - CSL task contract keeps acceptance, evidence, and review gates explicit
+  ---
+  duration_ms: 0.641084
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs:806:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /core validates assessment structure, level\/gate consistency, task-record fingerprint and evidence text, not semantic risk/. Input:
+    
+    '---\n' +
+      'name: task\n' +
+      'description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and align its Task Target before substantive work. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.\n' +
+      '---\n' +
+      '\n' +
+      '# Task\n' +
+      '\n' +
+      "Manage one outcome through the host Agent. Use the host's existing file, shell, research, and subagent capabilities; never launch nested `codex exec`, `pi --print`, a worker daemon, or an unattended supervisor.\n" +
+      '\n' +
+      '## Required Runtime Protocol\n' +
+      '\n' +
+      'Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.\n' +
+      '\n' +
+      'This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-alignment task workflow. The shared protocol owns all Task Target alignment semantics.\n' +
+      '\n' +
+      '## Storage and Core\n' +
+      '\n' +
+      '- `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.\n' +
+      '- `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.\n' +
+      '- Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.\n' +
+      '- Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.\n' +
+      '- Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.\n' +
+      '\n' +
+      '## Optional Topic Context\n' +
+      '\n' +
+      "A task may bind to one persistent Topic through `topic`'s [storage contract](../topic/references/topic-contract.md). No binding is the normal independent-task path. Topic membership is separate from Queue Parent/Children and does not change Task Kind or grant execution permission. Load the `topic` Skill when the user names a Topic or the task has an explicit binding; do not infer membership from filenames.\n" +
+      '\n' +
+      'Use `topic task <id>` to inspect the adopted revision and freshness on start/resume. A stale or unavailable Topic permits diagnosis and explicit adoption/repair, not dependent implementation or terminal completion. The shared CLI checks current normative content, pinned dependencies and the backlink at assessment, review, passed verification and completion. Read the adopted snapshot and current specification before impact analysis; `topic adopt` records the disposition and invalidates task evidence. Material requirement changes still require realignment. A Topic-maintenance task adopts its own final specification change before self-check; maintenance mode never authorizes product implementation against Archived or legacy Draft Topics. New Topics start Active, which does not grant execution authorization.\n' +
+      '\n' +
+      "Create a new task for a new bug, enhancement or bounded review under the same Topic; reopen only under the existing same-outcome rules. Completing this task does not close the Topic. Keep Task Summary focused on actual component changes, not shared specification prose. Do not mutate a Completed task's formal binding without reopening, and do not detach to bypass a stale specification or required review. Listing that task as a Topic `history` row is different: it changes only the Topic, requires no reopen, and does not affect membership or evidence. Task records belong in the linked Tasks table, not Resources; reusable report artifacts may still be resource references.\n" +
+      '\n' +
+      '## Task Artifacts\n' +
+      '\n' +
+      'Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:\n' +
+      '\n' +
+      '- `discussions`: user-visible discussion or synthesis; never private reasoning, role exchanges, or hidden state.\n' +
+      '- `specs`: RFCs, PRDs, ADRs, designs, and separately requested implementation or migration plans.\n' +
+      '- `reports`: research, analysis, audit, and separately governed reports (including the existing adversarial-review final report).\n' +
+      '- `reviews`: immutable per-pass `task-review` feedback, including passes with findings or no findings; see Review Reports below.\n' +
+      '- `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.\n' +
+      '\n' +
+      'The shared core maintains an `Artifacts` row with `[Artifacts](../artifacts/<task-id>/)` in the top-level metadata table whenever the corresponding directory exists. This applies to Task, Plan, and Queue records at creation and on subsequent lifecycle writes, including same-state resume. After creating artifacts, run the next normal task lifecycle update before handoff so the directory link appears. Read-only commands do not refresh it. Missing or non-directory paths omit the field; removing the directory removes the generated field on the next write. Never create an empty directory just for the link or backfill untouched records. This generated navigation field is excluded from the review fingerprint, not a substitute for per-artifact evidence links; normal `sync` invalidation remains unchanged.\n' +
+      '\n' +
+      "Material intentionally shared across future tasks of an established Topic belongs in that Topic's `resources/` directory and Resources index instead; register existing authoritative documents by reference rather than copying them. Use `topic`'s normative/reference classification and version checks. A task's own reports, logs, screenshots and review evidence remain task artifacts. Do not automatically move historical task artifacts or create a Topic merely to store a file.\n" +
+      '\n' +
+      "The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.\n" +
+      '\n' +
+      '## Activation and Ownership\n' +
+      '\n' +
+      '- Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.\n' +
+      "- Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. The shared alignment protocol's narrow, read-only lookup of an explicitly selected Topic to form an honest Target is also permitted; it is not general source exploration. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.\n" +
+      '- The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.\n' +
+      '- Start a new task for every independently acceptable user outcome in the main session.\n' +
+      "- A delegated child must use the existing owning task named by the main session's current delegation packet. It must not create another task, present a user-facing checkpoint, or invent broader ownership; missing or out-of-Plan delegation returns to the main session under the shared protocol.\n" +
+      '- Reopen an existing task only when the request directly corrects, completes, or re-verifies the same outcome and leaving its Target or Result unchanged would be misleading.\n' +
+      "- When the user explicitly asks to execute an implementation-ready plan, resume that plan's exact record; the `task-plan` to `task` phase transition alone does not create new ownership.\n" +
+      '- Component, file, topic, or implementation overlap alone does not establish ownership. Create a new task when ownership is ambiguous.\n' +
+      '- Skip records only for simple factual answers and open-ended conversation that request no file mutation and establish no concrete outcome, read-only trivial deterministic operations, and routine Context or Lessons maintenance that is not itself the requested deliverable.\n' +
+      '\n' +
+      '## Start or Resume\n' +
+      '\n' +
+      '1. Load Project Core, then read only the newest index entries and plausible candidate owning records needed to resolve ownership. Do not query task-relevant Context Packs, inspect task-direct sources, or begin substantive discussion yet.\n' +
+      '2. For a new task, choose a lowercase kebab-case ID and run:\n' +
+      '   `create <id> --title <title> --kind task --target "T1: <observable condition>"`.\n' +
+      '   Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.\n' +
+      '3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before '... 24665 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    ---
+    name: task
+    description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and align its Task Target before substantive work. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
+    ---
+    
+    # Task
+    
+    Manage one outcome through the host Agent. Use the host's existing file, shell, research, and subagent capabilities; never launch nested `codex exec`, `pi --print`, a worker daemon, or an unattended supervisor.
+    
+    ## Required Runtime Protocol
+    
+    Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+    
+    This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-alignment task workflow. The shared protocol owns all Task Target alignment semantics.
+    
+    ## Storage and Core
+    
+    - `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
+    - `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
+    - Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
+    - Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
+    - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
+    
+    ## Optional Topic Context
+    
+    A task may bind to one persistent Topic through `topic`'s [storage contract](../topic/references/topic-contract.md). No binding is the normal independent-task path. Topic membership is separate from Queue Parent/Children and does not change Task Kind or grant execution permission. Load the `topic` Skill when the user names a Topic or the task has an explicit binding; do not infer membership from filenames.
+    
+    Use `topic task <id>` to inspect the adopted revision and freshness on start/resume. A stale or unavailable Topic permits diagnosis and explicit adoption/repair, not dependent implementation or terminal completion. The shared CLI checks current normative content, pinned dependencies and the backlink at assessment, review, passed verification and completion. Read the adopted snapshot and current specification before impact analysis; `topic adopt` records the disposition and invalidates task evidence. Material requirement changes still require realignment. A Topic-maintenance task adopts its own final specification change before self-check; maintenance mode never authorizes product implementation against Archived or legacy Draft Topics. New Topics start Active, which does not grant execution authorization.
+    
+    Create a new task for a new bug, enhancement or bounded review under the same Topic; reopen only under the existing same-outcome rules. Completing this task does not close the Topic. Keep Task Summary focused on actual component changes, not shared specification prose. Do not mutate a Completed task's formal binding without reopening, and do not detach to bypass a stale specification or required review. Listing that task as a Topic `history` row is different: it changes only the Topic, requires no reopen, and does not affect membership or evidence. Task records belong in the linked Tasks table, not Resources; reusable report artifacts may still be resource references.
+    
+    ## Task Artifacts
+    
+    Persist a workspace-local task artifact only when the user requests a durable file or the task needs durable evidence that does not have a more authoritative project location. Use `tasks/artifacts/<task-id>/<category>/<name>` with the owning canonical task ID and create only the category that is needed:
+    
+    - `discussions`: user-visible discussion or synthesis; never private reasoning, role exchanges, or hidden state.
+    - `specs`: RFCs, PRDs, ADRs, designs, and separately requested implementation or migration plans.
+    - `reports`: research, analysis, audit, and separately governed reports (including the existing adversarial-review final report).
+    - `reviews`: immutable per-pass `task-review` feedback, including passes with findings or no findings; see Review Reports below.
+    - `evidence`: logs, screenshots, benchmarks, and other raw verification material that cannot be represented safely by a concise observation or external link.
+    
+    The shared core maintains an `Artifacts` row with `[Artifacts](../artifacts/<task-id>/)` in the top-level metadata table whenever the corresponding directory exists. This applies to Task, Plan, and Queue records at creation and on subsequent lifecycle writes, including same-state resume. After creating artifacts, run the next normal task lifecycle update before handoff so the directory link appears. Read-only commands do not refresh it. Missing or non-directory paths omit the field; removing the directory removes the generated field on the next write. Never create an empty directory just for the link or backfill untouched records. This generated navigation field is excluded from the review fingerprint, not a substitute for per-artifact evidence links; normal `sync` invalidation remains unchanged.
+    
+    Material intentionally shared across future tasks of an established Topic belongs in that Topic's `resources/` directory and Resources index instead; register existing authoritative documents by reference rather than copying them. Use `topic`'s normative/reference classification and version checks. A task's own reports, logs, screenshots and review evidence remain task artifacts. Do not automatically move historical task artifacts or create a Topic merely to store a file.
+    
+    The category describes the artifact's stable purpose, not its lifecycle state. Draft, accepted, completed, or superseded status never moves the file. Keep source code, configuration, and long-lived authoritative project documentation at their normal project paths. Link an artifact from its task record with `../artifacts/<task-id>/<category>/<name>`; do not duplicate its body in the record. Never persist secrets, private data, or unnecessary full logs.
+    
+    ## Activation and Ownership
+    
+    - Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
+    - Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. The shared alignment protocol's narrow, read-only lookup of an explicitly selected Topic to form an honest Target is also permitted; it is not general source exploration. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only Project Core loading, the minimal index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
+    - The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.
+    - Start a new task for every independently acceptable user outcome in the main session.
+    - A delegated child must use the existing owning task named by the main session's current delegation packet. It must not create another task, present a user-facing checkpoint, or invent broader ownership; missing or out-of-Plan delegation returns to the main session under the shared protocol.
+    - Reopen an existing task only when the request directly corrects, completes, or re-verifies the same outcome and leaving its Target or Result unchanged would be misleading.
+    - When the user explicitly asks to execute an implementation-ready plan, resume that plan's exact record; the `task-plan` to `task` phase transition alone does not create new ownership.
+    - Component, file, topic, or implementation overlap alone does not establish ownership. Create a new task when ownership is ambiguous.
+    - Skip records only for simple factual answers and open-ended conversation that request no file mutation and establish no concrete outcome, read-only trivial deterministic operations, and routine Context or Lessons maintenance that is not itself the requested deliverable.
+    
+    ## Start or Resume
+    
+    1. Load Project Core, then read only the newest index entries and plausible candidate owning records needed to resolve ownership. Do not query task-relevant Context Packs, inspect task-direct sources, or begin substantive discussion yet.
+    2. For a new task, choose a lowercase kebab-case ID and run:
+       `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
+       Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
+    3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
+    4. Immediately after creation, resume, or reopen succeeds, emit the real host tool call itself—for example, `task_focus(<id>)`—in the same reply as the lifecycle command; treat both calls as one atomic batch. Planning or listing `task_focus` without emitting it does not satisfy this step. If binding fails (for example, the record lives outside the session workspace), disclose that failure explicitly instead of silently skipping.
+    5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. The gate follows activation and precedes task-direct source inspection or substantive preparation; only the protocol's focused target-forming clarification may occur within it. A main session runs the user-facing gate; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming the same implementation-ready plan record, an explicit request to execute is execution authorization, not a new Target by itself; inherit a recoverable, materially equivalent accepted Target without another checkpoint.
+    6. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
+    7. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
+    
+    ## Review Classification
+    
+    Before choosing a completion review gate, read [Task Review Grading](../csl-tasks/shared/protocols/task-review-grading.md) in full. Apply it after owner self-check and current Result evidence, independently of Task Target levels:
+    
+    - **R0:** no requested deliverable files changed; lifecycle records alone do not count. Independent review may be skipped.
+    - **R1:** simple, low-risk changes, including small logic changes, with concrete grounds for result clarity, bounded impact, low consequences and sufficient authorized verification. All four are required to skip independent review.
+    - **R2:** complex, high-risk or materially uncertain changes require the existing fresh independent `task-review` loop. Diff size and confidence alone never justify R1.
+    
+    Use `assess-review <id> <R0|R1|R2> --reason <ground> --snapshot <content-identity> --evidence <self-check-reference>` while In Progress; R1 also requires `--clarity`, `--impact`, `--risk` and `--verification`. Explicit review overrides an exemption. A Required obligation cannot become Skipped; Reviewer failure cannot downgrade R2. Keep final verification at every level. Missing required evidence can Block completion, never be concealed by an exemption.
+    
+    ## Owner Self-Check and Review Handoff
+    
+    Before classification and each mandatory review pass, the main Agent owns self-check and verification; the fresh Reviewer looks for omissions, not the author's known unfinished fixes.
+    
+    1. Compare the original request, effective revisions, accepted constraints, current Target, actual behavior, and task-owned diff. A mismatch in authorized commitments returns to the alignment protocol, not a silently revised review criterion.
+    2. For each Target, collect requirement, observed result, evidence, and limitations. Identify the checked version, check performed, and what the observation actually proves. Run only checks permitted by current authorization and host rules; never report an unrun test as passed. Fix known Target failures or required-check failures before dispatch; if unable, Block with an observable unblock condition. Disclose remaining uncertainty without marking an unproven Target complete.
+    3. Record supported Result evidence, classify the actual result and record its assessment. When a pass is required, prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
+    4. Stop editing the review scope while the Reviewer runs. Bind the pass to actual content: an exact revision for clean Git artifacts; for dirty workspaces also identify relevant staged, unstaged, untracked, deleted, and renamed content, not merely HEAD or filenames. Use content identities for non-Git artifacts. Check the same scope again before accepting feedback and before completion.
+    5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check, assessment and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
+    
+    After each dispatched pass returns, the owner persists its feedback and appends the Review Reports index before acting on the findings or recording a terminal gate. The Reviewer stays read-only. Report persistence is owner bookkeeping, not a new review pass or approval. If saving or linking fails, preserve the returned output, stop the terminal transition and record the concrete recovery condition; never fabricate a saved report.
+    
+    A mandatory pass requires an actual fresh, read-only subagent; a prompt saying “be independent” or a Markdown template is not isolation. If it is unavailable or fails, preserve self-check evidence, report the exact failure and run/workspace state, and Block with an observable recovery condition. Do not substitute inline self-review or silently switch execution modes. Infrastructure failures do not increment finding no-progress streaks. Follow stricter host failure/retry rules.
+    
+    The core validates assessment structure, level/gate consistency, task-record fingerprint and evidence text. Managed evidence also receives the mechanical checks below; semantic risk, actual subagent isolation, check execution and complete scope remain the host and main Agent's responsibility.
+    
+    For explicit workspace-local file scopes, use `snapshot <id> --file <relative-path> [--file ...]` before assessment. The returned `snapshot:...#<sha256>` identity pins an immutable manifest of file bytes and each named file's Git HEAD/index identity, including tracked deletions. Include both paths of a rename and every relevant source or evidence file; the command does not discover omitted scope, follow symlinks, run checks, or capture unstaged permission changes. Keep non-workspace and no-file identities owner-attested. Reusing an identical manifest is safe; a changed scope creates a new identity rather than overwriting evidence.
+    
+    `check-evidence <id>` checks managed snapshots and registered reports without changing state. Managed snapshots are also rechecked at terminal review, passed verification and completion, including repeated identical writes. The result distinguishes mechanical checks from owner-attested semantic review. Plain-text historical identities remain readable and owner-attested; `--include-legacy` explicitly checks historical report links without migrating them. Passing structural `check` or `validate` alone never proves external evidence or the Target.
+    
+    ## Record Contract
+    
+    Keep `# Title` followed by the core-owned two-column metadata table (`Field` and `Value`). `Status` and `Kind` each occupy a row; include `Artifacts` only when its directory exists and `Parent` when present. The core reads legacy `Name: value` metadata and renders the table on subsequent writes; do not migrate untouched historical records. Display-only conversion preserves the review fingerprint. Canonical `#` and `##` record headings start at column zero; indented or container-nested headings are content, not record sections. New records use these sections as needed:
+    
+    ### Scope
+    
+    Add only when an adjacent boundary is easy to include accidentally, the user excludes work, or expansion materially changes cost or risk. Record included and excluded outcomes without prescribing implementation.
+    
+    ### Target
+    
+    - This is the only checkbox list. Use unique stable IDs (`T1`, `T2`, ...).
+    - Each item is one observable pass-or-fail result, preserved behavior, compatibility boundary, or side-effect boundary.
+    - Do not put implementation steps, commands, workflow gates, or review state here.
+    - Never check a Target manually. Record evidence with `result <id> <Tn> --evidence <one-line evidence>`; the core checks the matching item.
+    
+    ### Plan
+    
+    Use an ordered list without checkboxes. Keep only current result nodes, dependencies, and next actions. Do not prescribe algorithms, files, functions, types, or call paths unless the user requires them.
+    
+    ### Topic
+    
+    Only for an associated task, keep one CLI-owned `task-topic/v1` section with Reference, Repository identity, adopted Revision, Applies scope and implementation/maintenance Mode. Use `topic attach`, `detach` or `adopt`, never hand-edit a binding or digest. The section participates in the task fingerprint. Topic Adoption is the current impact-disposition note, not approval evidence or another task status. The Topic contract defines cross-workspace permission, optimistic versions and partial-link repair.
+    
+    ### Task Summary
+    
+    Before completion, write exactly one `## Task Summary` section describing only the code or components actually changed by this task. Use a separate short paragraph per changed component, led by its **component name**, followed by its component-root directory link and a concrete description of what changed. Use the highest directory that still identifies the component; do not collapse unrelated components into a repository-wide label or enumerate internal files and subfolders. Qualify components by project when more than one project was modified. For a standalone root-level file with no meaningful component directory, link that file instead.
+    
+    Keep all paragraphs under this single heading, without subheadings, checkboxes, or fixed decision/verification/next-step fields. Do not repeat Target, Plan, Decisions, Result evidence, or Verification. Include only actual task-owned changes, not inspected or merely related components, proposals, or pre-existing unrelated edits. When there are no code or component changes, use one short factual sentence saying so; lifecycle record updates alone are not component changes.
+    
+    Write or refresh the summary before self-check and review assessment, compare it with the actual task-owned changes, then run `sync` and `check`. A later summary change follows normal evidence invalidation; never append it after final verification without refreshing the affected gates. On resume or reopen, update the same section rather than adding another. Leave untouched historical records unchanged. This is an Agent-authored record requirement, not a new CLI-generated field or automatic diff inventory.
+    
+    ### Result
+    
+    The core records one evidence line per Target. Evidence must name what was checked, how, and the observed result. Update evidence when it becomes stale; changing a Target or relevant deliverable invalidates verification.
+    
+    Record the review gate through `review <id> ... --evidence ...`:
+    
+    - `skipped` only with a current R0 or R1 assessment and no explicit or existing review obligation. Record the concrete exemption evidence, not an independent-review claim.
+    - `required` before every R2 or explicitly requested review pass. Complete Owner Self-Check and Review Handoff, record current Result evidence and assessment, then set `required` and move to In Review before invoking `task-review`.
+    - `passed` only after that `task-review` pass reports no Critical Finding, no Concern, and no Unverified Risk that prevents Target verification, and the main Agent confirms an independent pass covered the current snapshot. The interaction owner records this value; the read-only Reviewer never writes task state or grants approval.
+    - `approved` only after an explicitly requested `adversarial-review` approves. R2 first completes mandatory `task-review` and identifies both outcomes; R0/R1 may enter Required → In Review → Approved directly, without an automatic ordinary pass.
+    
+    When `task-review` finds a problem, return to In Progress, remediate it, refresh affected self-check, Result, assessment and verification evidence, set the gate to `required`, re-enter In Review, and invoke a new one-pass `task-review`. Check findings against actual artifacts rather than accepting suggestions mechanically. For a suspected false positive, supply observable counterevidence or authoritative constraints for the next fresh pass to verify; never remove an unresolved finding unilaterally or relabel it without evidence to obtain `passed`. Apply the Review tracking and stall guard below on every pass. Repeat without a fixed total round limit until the gate can be recorded as `passed`, the task becomes Blocked, or the user stops. Any relevant deliverable, Result or Queue graph change invalidates the assessment and terminal gate; refresh self-check and grading while preserving an existing independent-review obligation.
+    
+    Independent adversarial review, a two-Agent Reviewer-Editor loop, and independent approval remain opt-in and run only when the user explicitly requests them. They do not replace the mandatory `task-review` pass.
+    
+    ### Review Assessment
+    
+    The CLI owns exactly one `## Review Assessment` section with schema `task-review-assessment/v1`: Level, Current/Stale state, Reason, Snapshot, Evidence, R1's four grounds when applicable, and Task fingerprint. It retains the current classification, not a review transcript. Never hand-edit it or merge it into the finding ledger. All new terminal gates and completion require a current assessment; unchanged historical records remain readable without migration. The owner rechecks actual external content/evidence identity before recording a terminal gate and before completion.
+    
+    ### Review
+    
+    Use exactly one temporary `## Review` section with the exact `task-review-ledger/v1` marker while a mandatory review loop has unresolved items or is stalled. Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate Markdown list markers or whitespace fail closed; one unmarked historical free-form Review section remains compatible. Keep only the current ledger, not a pass transcript:
+    
+    ```markdown
+    ## Review
+    - Schema: task-review-ledger/v1
+    - Pass: <positive integer>
+    - Next finding: <positive integer>
+    - `TR-<n>` | no-progress=<0|1|2> | <location> | <required outcome>
+    ```
+    
+    - Give each Critical Finding, Concern, and Target-blocking Unverified Risk a stable `TR-<n>` ID. Advance `Next finding` monotonically so an ID is never reused within the active loop. A first appearance starts at `no-progress=0`; a new finding never resets another finding's streak.
+    - Give every prior ID to the next fresh Reviewer. The Reviewer must classify it as `resolved`, `substantive progress`, or `no progress` with current evidence. Keep the same ID when wording, location, or severity changes but the root problem and required outcome remain materially the same.
+    - Increment only a `no progress` item. Reset it to `0` for evidence-backed artifact progress, a valid evidence-backed reclassification, or newly actionable evidence; remove it when resolved. Text churn, restatement, unchanged checks, or unsupported relabeling is not progress.
+    - When any item reaches `no-progress=2`, stop dispatching review passes. Add `## Block` with the stalled IDs and evidence as `Reason`, name the user decision or material artifact/evidence change as `Unblock when`, then set the task Blocked. Never convert a stall to `passed`.
+    - Resume only after the unblock condition occurs. Reset affected streaks to `0` only when new evidence demonstrates substantive progress; the core rejects resume while any ledger item remains at `no-progress=2`. Once a fresh pass resolves every blocking item, use `review <id> passed --resolve-ledger --snapshot <exact-reviewed-assessment-identity> --evidence <pass-and-resolution-reference>` to remove the ledger and record Passed atomically. This core-owned lifecycle write requires In Review, Required, a current task fingerprint and matching snapshot, and no stalled item; it clears Verification but preserves the unchanged assessment. The owner must verify the actual external content and every prior ID's resolution. Do not manually delete the resolved ledger then `sync`, which conservatively invalidates the assessment and would require another pass.
+    
+    ### Review Reports
+    
+    Keep one persistent `## Review Reports` section, separate from the temporary `## Review` ledger. It is an append-only report index, not another finding ledger or source of task requirements. Save returned feedback with `review-report <id> --input <feedback-file> --snapshot <assessment-identity> --outcome <outcome> --mode <actual-mode> [--run <run-id>]` while In Review/Required. Outcomes are `findings`, `no blocking findings`, `incomplete`, or `invalidated by drift`; modes are `independent subagent`, `non-independent self-review`, or `incomplete`. These are owner attestations, never proof of independence or approval. The CLI allocates the next report number across files and index rows, preserves feedback bytes under an owner header bound to the assessment snapshot and Task fingerprint, and registers its SHA256 with the owning task in one locked, rollback-capable write. It does not provide a cross-file crash transaction. Use task-relative Markdown links in stored records; apply host path-display rules in chat.
+    
+    Reports remain at `tasks/artifacts/<task-id>/reviews/round-<NN>.md`; the CLI adds the index's schema and digest column when registering the first managed report.
+    
+    - Choose the next unused number above both existing report filenames and index entries, including after resume or reopen; pad to at least two digits. Never overwrite or renumber a report. This artifact number is not the active ledger's `Pass` counter.
+    - Preserve the returned user-visible feedback, including findings, stable IDs, prior-item dispositions, checks actually performed, inherited evidence and coverage limits. Add a clearly separated owner header with task ID, round, review mode, actual run identity when available, and the reviewed snapshot. Keep owner conclusions distinct from Reviewer feedback. Never save private reasoning, full tool transcripts or secrets; explicitly mark any necessary redaction.
+    - Append one row per saved report: round, report link, reviewed snapshot, outcome and SHA256. The managed index uses `task-review-reports/v1`; existing rows are retained as `legacy`, not retroactively certified. Legacy prose prevents automatic migration; preserve those notes outside this index before retrying. An infrastructure failure may have a diagnostic report, but must be labeled incomplete, never a completed review. Recover an already saved managed report with `review-report <id> --existing-round <NN>`; it checks the header and current assessment before adding the missing row, never overwriting the file. Compare recovered feedback with the actual returned output before relying on it.
+    - The owner verifies the link resolves inside the owning task's reviews directory and the report's round/snapshot match its row. Before a terminal gate and completion, recheck the referenced current report and actual scope. A row or a file alone never proves independence or grants Passed.
+    - The index survives ledger resolution and completion. Only the active ledger tracks current finding state; historical reports retain what was observed in their own pass. Subsequent corrections or drift are appended as explicitly labeled owner notes, never silently rewritten into past feedback.
+    - Index-only bookkeeping does not require `sync`: the Task fingerprint excludes `Review Reports`, just as it excludes the temporary ledger. This exception never covers changes to Target, Scope, Plan, Result, active ledger, reviewed artifacts or substantive evidence; apply their normal invalidation and fresh-review rules. The core checks registered report bytes, paths and header/index correspondence. With a managed snapshot or report index, Passed requires the latest report matching both the current snapshot and Task fingerprint to attest an independent pass with no blocking findings; R2 Approved retains that ordinary-pass requirement. The owner still verifies reviewer independence, actual coverage and substantive conclusions.
+    
+    Example stored index:
+    
+    ```markdown
+    ## Review Reports
+    
+    - Schema: task-review-reports/v1
+    
+    | Round | Report | Snapshot | Outcome | SHA256 |
+    | --- | --- | --- | --- | --- |
+    | 01 | [Round 01](../artifacts/example-task/reviews/round-01.md) | <assessment-identity> | findings | <report-digest> |
+    | 02 | [Round 02](../artifacts/example-task/reviews/round-02.md) | <assessment-identity> | no blocking findings | <report-digest> |
+    ```
+    
+    Do not backfill untouched historical tasks or create an empty section for a skipped review. Standalone feedback without an owning task keeps its existing no-file behavior. Explicit adversarial-review retains its own report contract; this per-pass protocol does not add an approval loop.
+    
+    ### Verification
+    
+    Run proportionate host-native checks yourself; the core never executes arbitrary commands. Record the current outcome with `verify <id> passed|failed --evidence <one-line observation>`. A failed check blocks completion. Re-run and replace verification after relevant changes.
+    
+    ### Block
+    
+    Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for a reversible soft stop; cancelled work is not completed and can resume.
+    
+    ## Completion
+    
+    1. Before self-check, follow `task-context`'s Completion Gate for this task's actual changes and newly confirmed durable facts, including affected knowledge beyond the selected Packs; respect the task's write scope. Write or refresh Task Summary against the actual task-owned changes, then `sync` and `check`. Self-check current requirements and supported per-Target Result evidence, run proportionate authorized preliminary checks, then record the actual result's R0/R1/R2 assessment. Prepare the mandatory review handoff for R2 or explicit ordinary review.
+    2. For R2, execute `required` → In Review → `task-review`, apply the existing per-finding stall guard and record `passed`. Explicit ordinary review also follows this route at any level; exemptions never cancel an existing Required obligation.
+    3. For R0/R1 without explicit or existing review obligations, record `skipped` with the current assessment's exemption grounds and remain In Progress. If the user explicitly requested adversarial review of that no-file result or an R1 result, enter Required → In Review and run it without a mandatory `task-review`, then record `approved`. For R2, explicit adversarial review runs only after `passed`; `approved` evidence names both outcomes.
+    4. After the final review decision, compare current content/evidence with the assessment snapshot and, if reviewed, the reviewed snapshot. Drift returns to self-check, assessment and any required fresh review. Rerun proportionate final verification and record it as passed because every assessment or review-gate write clears Verification. For `skipped`, do not invent an independent-review snapshot.
+    5. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
+    6. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
+    7. Run `check <id>` and `validate` before delivery.
+    
+    Do not retrofit untouched historical record bodies. All records share the new paths, while the stricter `Kind` metadata contract applies to new or reopened work.
+    
+    ## Maintainer Validation
+    
+    Keep `evals/review_gate_cases.json`, the routing fixtures and `evals/review_stall_cases.json` aligned with the shared grading protocol, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs:841:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: owning tasks persist review feedback separately from the active finding ledger
+ok 76 - owning tasks persist review feedback separately from the active finding ledger
+  ---
+  duration_ms: 0.816667
+  type: 'test'
+  ...
+# Subtest: workspace task ownership defaults independent and ambiguous outcomes to new records
+ok 77 - workspace task ownership defaults independent and ambiguous outcomes to new records
+  ---
+  duration_ms: 0.4025
+  type: 'test'
+  ...
+# Subtest: workspace review-gate cases distinguish R0, R1, R2 and explicit review
+ok 78 - workspace review-gate cases distinguish R0, R1, R2 and explicit review
+  ---
+  duration_ms: 0.462125
+  type: 'test'
+  ...
+# Subtest: review grading has one shared authority and keeps evidence and safety boundaries
+ok 79 - review grading has one shared authority and keeps evidence and safety boundaries
+  ---
+  duration_ms: 0.929292
+  type: 'test'
+  ...
+# Subtest: workspace task-review stall cases block after two per-finding no-progress re-reviews
+ok 80 - workspace task-review stall cases block after two per-finding no-progress re-reviews
+  ---
+  duration_ms: 5.964
+  type: 'test'
+  ...
+# Subtest: task maintenance separates safe structure operations and protects stable-ID consumers
+not ok 81 - task maintenance separates safe structure operations and protects stable-ID consumers
+  ---
+  duration_ms: 0.98375
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs:1027:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /delete quarantine only after every postcondition passes/. Input:
+    
+    '---\n' +
+      'name: task-maintenance\n' +
+      'description: Clean stale Context, consolidate overlapping Lessons, and migrate Task-owned historical files or directories to the current authoritative architecture after an exact user-approved change set. Use only when the user explicitly asks to remove stale Context/Lessons history, consolidate duplicate entries, clean obsolete Task paths, or migrate legacy Task artifacts and records. Exclude ordinary Context updates, correction-driven Lesson maintenance, whole-repository architecture cleanup, and automatic scheduling.\n' +
+      '---\n' +
+      '\n' +
+      '# Task Maintenance\n' +
+      '\n' +
+      'Maintain accumulated Task workspace state without turning cleanup into a new source of truth. Work that changes a fact, preventive rule, task record, or artifact still owns its immediate maintenance; this Skill is an explicit backstop.\n' +
+      '\n' +
+      'It supports two scopes:\n' +
+      '\n' +
+      '- `Data maintenance`: Delete or Merge stale and overlapping Context/Lessons content.\n' +
+      '- `Structure maintenance`: Migrate or delete historical Task-owned files and directories that no longer match the current authoritative Task architecture.\n' +
+      '\n' +
+      "A data-only Context/Lessons run uses their routine-maintenance task-record exception. Any structure-maintenance run is a concrete file-changing outcome: activate and align one canonical `$task` before the full audit, and exclude that active maintenance record and its artifacts from the current run's candidates.\n" +
+      '\n' +
+      'Do not create a persistent report, audit ledger, timestamp, schedule, compatibility link, cache, or long-lived owner.\n' +
+      '\n' +
+      '## Runtime Authorities\n' +
+      '\n' +
+      "Resolve this Skill's directory and read these sibling contracts in full before auditing:\n" +
+      '\n' +
+      '- `../task/SKILL.md`\n' +
+      '- `../task-context/SKILL.md`\n' +
+      '- `../task-lessons/SKILL.md`\n' +
+      '- `../archive/SKILL.md`\n' +
+      '\n' +
+      'Use their existing read-only validators and lifecycle tools; do not implement another parser or task-state core:\n' +
+      '\n' +
+      '```text\n' +
+      'node ../csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> validate\n' +
+      'node ../task-context/scripts/context.js --workspace <workspace> core|index|show <id>...|validate\n' +
+      'node ../task-lessons/scripts/lessons.js --workspace <workspace> index|show <id>...|validate\n' +
+      '```\n' +
+      '\n' +
+      'Also inspect current, non-historical Skill and rule sources that actively produce or consume Task workspace paths. Those live contracts define the latest destination architecture. Use canonical task links, embedded ownership metadata, formal migration decisions, or version-control history only to prove that an obsolete source belonged to the Task system; historical evidence never overrides the current destination Authority.\n' +
+      '\n' +
+      '## Current Architecture Map\n' +
+      '\n' +
+      'Build a fresh map for every structure run. For each Task-owned carrier, record:\n' +
+      '\n' +
+      '- owning runtime Authority;\n' +
+      '- canonical path pattern;\n' +
+      '- ownership key, such as canonical task ID;\n' +
+      '- allowed content or category;\n' +
+      '- active readers, writers, and validators; and\n' +
+      '- reference locations that must continue to resolve.\n' +
+      '\n' +
+      'The current contracts normally cover singleton Context/Lessons/index files, canonical task records, task-owned artifacts, and verbatim conversation archives. Treat that list only as a discovery starting point: include a path only when a current Authority claims it, and let newer Authority override this summary.\n' +
+      '\n' +
+      'A path beneath `tasks/` is not automatically Task-owned, and a historical Task-owned source may exist outside the current `tasks/` root. Include an obsolete source only when explicit evidence proves past Task-system ownership. Exclude project source, long-lived project documentation, build output, user data, and any path without current destination Authority plus source-ownership evidence. Never scan the rest of the repository for generic architecture cleanup.\n' +
+      '\n' +
+      'An explicit maintenance run may read selected canonical data files and Task-owned historical trees completely after lifecycle activation and preflight. This is task-direct maintenance, not ordinary Context orientation.\n' +
+      '\n' +
+      '## Operations\n' +
+      '\n' +
+      'Produce only these operations:\n' +
+      '\n' +
+      '- `Data Delete`: remove the smallest independently stale Context or Lessons unit.\n' +
+      '- `Data Merge`: replace compatible same-carrier Context or Lessons units with one canonical unit.\n' +
+      '- `Migrate`: copy a uniquely owned historical Task file or tree to its exact current canonical destination, preserve approved live references, verify it, then remove the source.\n' +
+      '- `Duplicate Delete`: remove a historical Task path only when a retained canonical path is byte-for-byte and structurally identical.\n' +
+      '- `Empty Directory Delete`: remove only an explicitly approved historical Task directory that is still empty immediately before deletion.\n' +
+      '\n' +
+      '`Keep` and `Defer` are internal decisions, not a general health report. Do not perform prose improvement, broad rewriting, schema modernization, content rerouting, task archival, or migration outside Task-owned carriers.\n' +
+      '\n' +
+      '## Preflight\n' +
+      '\n' +
+      '1. Require an explicit user maintenance request. A calendar, daemon, Hook, or inferred cadence is not authorization.\n' +
+      '2. Determine whether the requested scope is data-only or includes structure maintenance. Activate `$task` before structure inspection or mutation.\n' +
+      '3. Load the runtime Authorities above and build the current architecture map from live producers and consumers.\n' +
+      '4. Run the applicable Context, Lessons, and task validators before candidate discovery. Legacy Lesson warnings are compatible input; malformed current records and duplicate IDs are blockers for their carrier.\n' +
+      "5. Inventory tracked and untracked entries inside current Authority-declared Task roots and explicitly evidenced historical Task source roots. Candidate historical roots must come from the user's scope, canonical task links, embedded metadata, formal migration records, or version-control evidence—not a broad repository scan. Include hidden entries, empty directories, file type, byte size, and SHA-256 for regular files. Defer symlinks and special files unless a current Authority explicitly defines their migration semantics.\n" +
+      '6. Do not write while discovering or classifying candidates.\n' +
+      '\n' +
+      'A missing Lessons file is an empty set and must not be created merely for maintenance. A missing Context routes to `task-context` bootstrap. An invalid task graph blocks task-record or artifact structure migration; do not repair it implicitly.\n' +
+      '\n' +
+      '## Data Delete Gate\n' +
+      '\n' +
+      'Create a Data Delete candidate only when current evidence proves at least one condition:\n' +
+      '\n' +
+      '- Authority contradicts or supersedes the content.\n' +
+      '- The referenced object, path, component, or mechanism no longer exists.\n' +
+      '- A more accurate canonical unit fully preserves the same decision effect, scope, Authority, and verification boundary, leaving no unique value.\n' +
+      "- A stronger source, schema, type, test, lint rule, CI gate, or mandatory workflow fully prevents a Lesson's failure mechanism and leaves no residual Agent judgment.\n" +
+      '\n' +
+      'Age, legacy format, wording similarity, low recent use, or lack of a recent match never proves staleness. Missing, ambiguous, or conflicting evidence means Defer.\n' +
+      '\n' +
+      'Delete the smallest self-contained stale bullet or field. Delete an entire Context Pack or Lesson only when none of it remains valid.\n' +
+      '\n' +
+      'Before deleting a stable Context or Lesson ID, inventory every current non-historical consumer in Task-owned and non-Task sources. Every consumer must remain valid without that ID; otherwise Defer. Include the consumer search and result in the change set, and do not edit another carrier merely to make the deletion possible.\n' +
+      '\n' +
+      '## Data Merge Gate\n' +
+      '\n' +
+      'Create a Data Merge candidate only when every condition holds:\n' +
+      '\n' +
+      '1. All source units belong to the same carrier.\n' +
+      '2. They express the same decision boundary or prevent the same failure mechanism.\n' +
+      '3. Their scopes are compatible and their valid requirements do not conflict.\n' +
+      '4. One merged unit can retain every unique current constraint and verification boundary without weakening meaning.\n' +
+      '5. Live references can continue to resolve through the retained stable ID.\n' +
+      '\n' +
+      'For Context, keep the existing ID whose Scope and Authority best describe the result, and preserve every still-valid Authority and Recheck condition.\n' +
+      '\n' +
+      'For Lessons, prefer an existing v1 ID with the most specific applicable Trigger, never record age; preserve and deduplicate the complete Trigger, Rule, and Check sets. Retain a qualifying v1 ID when legacy records join it. When every source is legacy, create one new `L-YYYYMMDD-ascii-slug` v1 record. Leave untouched legacy records unchanged.\n' +
+      '\n' +
+      'Context and Lessons never merge into each other. A Data Merge candidate is atomic.\n' +
+      '\n' +
+      '## Structure Candidate Gates\n' +
+      '\n' +
+      'Every structure candidate first requires:\n' +
+      '\n' +
+      '1. Current Authority proves the canonical destination or empty-directory deletion outcome, while independent current or historical evidence proves that the source belonged to the Task system.\n' +
+      '2. One unique owner is established without guessing from a filename alone.\n' +
+      "3. The source's real path remains inside the current workspace and outside the current canonical layout.\n" +
+      '4. Every descendant, active reference, file type, mode, byte size, and regular-file SHA-256 is inventoried.\n' +
+      '5. Current validators can verify the resulting canonical layout.\n' +
+      '6. A same-filesystem atomic no-replace rename primitive is available and verified for quarantine rollback; otherwise Defer before writing.\n' +
+      '\n' +
+      '### Migrate Gate\n' +
+      '\n' +
+      'A Migrate candidate additionally requires one unique canonical destination inside both the workspace and an Authority-declared Task root. The destination must be absent, and the source and destination real or prospective paths must be distinct and neither may contain the other. Every descendant must map to one destination entry and every live reference must have one approved preservation or rewrite outcome.\n' +
+      '\n' +
+      '### Byte-Identical Duplicate Delete Gate\n' +
+      '\n' +
+      'A Duplicate Delete candidate requires a non-empty source and an existing retained canonical destination outside the source. Source and destination manifests must match in relative entry path, type, mode, byte size, and regular-file SHA-256; the source may contain no unique entry. Every active source refe'... 10864 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    ---
+    name: task-maintenance
+    description: Clean stale Context, consolidate overlapping Lessons, and migrate Task-owned historical files or directories to the current authoritative architecture after an exact user-approved change set. Use only when the user explicitly asks to remove stale Context/Lessons history, consolidate duplicate entries, clean obsolete Task paths, or migrate legacy Task artifacts and records. Exclude ordinary Context updates, correction-driven Lesson maintenance, whole-repository architecture cleanup, and automatic scheduling.
+    ---
+    
+    # Task Maintenance
+    
+    Maintain accumulated Task workspace state without turning cleanup into a new source of truth. Work that changes a fact, preventive rule, task record, or artifact still owns its immediate maintenance; this Skill is an explicit backstop.
+    
+    It supports two scopes:
+    
+    - `Data maintenance`: Delete or Merge stale and overlapping Context/Lessons content.
+    - `Structure maintenance`: Migrate or delete historical Task-owned files and directories that no longer match the current authoritative Task architecture.
+    
+    A data-only Context/Lessons run uses their routine-maintenance task-record exception. Any structure-maintenance run is a concrete file-changing outcome: activate and align one canonical `$task` before the full audit, and exclude that active maintenance record and its artifacts from the current run's candidates.
+    
+    Do not create a persistent report, audit ledger, timestamp, schedule, compatibility link, cache, or long-lived owner.
+    
+    ## Runtime Authorities
+    
+    Resolve this Skill's directory and read these sibling contracts in full before auditing:
+    
+    - `../task/SKILL.md`
+    - `../task-context/SKILL.md`
+    - `../task-lessons/SKILL.md`
+    - `../archive/SKILL.md`
+    
+    Use their existing read-only validators and lifecycle tools; do not implement another parser or task-state core:
+    
+    ```text
+    node ../csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> validate
+    node ../task-context/scripts/context.js --workspace <workspace> core|index|show <id>...|validate
+    node ../task-lessons/scripts/lessons.js --workspace <workspace> index|show <id>...|validate
+    ```
+    
+    Also inspect current, non-historical Skill and rule sources that actively produce or consume Task workspace paths. Those live contracts define the latest destination architecture. Use canonical task links, embedded ownership metadata, formal migration decisions, or version-control history only to prove that an obsolete source belonged to the Task system; historical evidence never overrides the current destination Authority.
+    
+    ## Current Architecture Map
+    
+    Build a fresh map for every structure run. For each Task-owned carrier, record:
+    
+    - owning runtime Authority;
+    - canonical path pattern;
+    - ownership key, such as canonical task ID;
+    - allowed content or category;
+    - active readers, writers, and validators; and
+    - reference locations that must continue to resolve.
+    
+    The current contracts normally cover singleton Context/Lessons/index files, canonical task records, task-owned artifacts, and verbatim conversation archives. Treat that list only as a discovery starting point: include a path only when a current Authority claims it, and let newer Authority override this summary.
+    
+    A path beneath `tasks/` is not automatically Task-owned, and a historical Task-owned source may exist outside the current `tasks/` root. Include an obsolete source only when explicit evidence proves past Task-system ownership. Exclude project source, long-lived project documentation, build output, user data, and any path without current destination Authority plus source-ownership evidence. Never scan the rest of the repository for generic architecture cleanup.
+    
+    An explicit maintenance run may read selected canonical data files and Task-owned historical trees completely after lifecycle activation and preflight. This is task-direct maintenance, not ordinary Context orientation.
+    
+    ## Operations
+    
+    Produce only these operations:
+    
+    - `Data Delete`: remove the smallest independently stale Context or Lessons unit.
+    - `Data Merge`: replace compatible same-carrier Context or Lessons units with one canonical unit.
+    - `Migrate`: copy a uniquely owned historical Task file or tree to its exact current canonical destination, preserve approved live references, verify it, then remove the source.
+    - `Duplicate Delete`: remove a historical Task path only when a retained canonical path is byte-for-byte and structurally identical.
+    - `Empty Directory Delete`: remove only an explicitly approved historical Task directory that is still empty immediately before deletion.
+    
+    `Keep` and `Defer` are internal decisions, not a general health report. Do not perform prose improvement, broad rewriting, schema modernization, content rerouting, task archival, or migration outside Task-owned carriers.
+    
+    ## Preflight
+    
+    1. Require an explicit user maintenance request. A calendar, daemon, Hook, or inferred cadence is not authorization.
+    2. Determine whether the requested scope is data-only or includes structure maintenance. Activate `$task` before structure inspection or mutation.
+    3. Load the runtime Authorities above and build the current architecture map from live producers and consumers.
+    4. Run the applicable Context, Lessons, and task validators before candidate discovery. Legacy Lesson warnings are compatible input; malformed current records and duplicate IDs are blockers for their carrier.
+    5. Inventory tracked and untracked entries inside current Authority-declared Task roots and explicitly evidenced historical Task source roots. Candidate historical roots must come from the user's scope, canonical task links, embedded metadata, formal migration records, or version-control evidence—not a broad repository scan. Include hidden entries, empty directories, file type, byte size, and SHA-256 for regular files. Defer symlinks and special files unless a current Authority explicitly defines their migration semantics.
+    6. Do not write while discovering or classifying candidates.
+    
+    A missing Lessons file is an empty set and must not be created merely for maintenance. A missing Context routes to `task-context` bootstrap. An invalid task graph blocks task-record or artifact structure migration; do not repair it implicitly.
+    
+    ## Data Delete Gate
+    
+    Create a Data Delete candidate only when current evidence proves at least one condition:
+    
+    - Authority contradicts or supersedes the content.
+    - The referenced object, path, component, or mechanism no longer exists.
+    - A more accurate canonical unit fully preserves the same decision effect, scope, Authority, and verification boundary, leaving no unique value.
+    - A stronger source, schema, type, test, lint rule, CI gate, or mandatory workflow fully prevents a Lesson's failure mechanism and leaves no residual Agent judgment.
+    
+    Age, legacy format, wording similarity, low recent use, or lack of a recent match never proves staleness. Missing, ambiguous, or conflicting evidence means Defer.
+    
+    Delete the smallest self-contained stale bullet or field. Delete an entire Context Pack or Lesson only when none of it remains valid.
+    
+    Before deleting a stable Context or Lesson ID, inventory every current non-historical consumer in Task-owned and non-Task sources. Every consumer must remain valid without that ID; otherwise Defer. Include the consumer search and result in the change set, and do not edit another carrier merely to make the deletion possible.
+    
+    ## Data Merge Gate
+    
+    Create a Data Merge candidate only when every condition holds:
+    
+    1. All source units belong to the same carrier.
+    2. They express the same decision boundary or prevent the same failure mechanism.
+    3. Their scopes are compatible and their valid requirements do not conflict.
+    4. One merged unit can retain every unique current constraint and verification boundary without weakening meaning.
+    5. Live references can continue to resolve through the retained stable ID.
+    
+    For Context, keep the existing ID whose Scope and Authority best describe the result, and preserve every still-valid Authority and Recheck condition.
+    
+    For Lessons, prefer an existing v1 ID with the most specific applicable Trigger, never record age; preserve and deduplicate the complete Trigger, Rule, and Check sets. Retain a qualifying v1 ID when legacy records join it. When every source is legacy, create one new `L-YYYYMMDD-ascii-slug` v1 record. Leave untouched legacy records unchanged.
+    
+    Context and Lessons never merge into each other. A Data Merge candidate is atomic.
+    
+    ## Structure Candidate Gates
+    
+    Every structure candidate first requires:
+    
+    1. Current Authority proves the canonical destination or empty-directory deletion outcome, while independent current or historical evidence proves that the source belonged to the Task system.
+    2. One unique owner is established without guessing from a filename alone.
+    3. The source's real path remains inside the current workspace and outside the current canonical layout.
+    4. Every descendant, active reference, file type, mode, byte size, and regular-file SHA-256 is inventoried.
+    5. Current validators can verify the resulting canonical layout.
+    6. A same-filesystem atomic no-replace rename primitive is available and verified for quarantine rollback; otherwise Defer before writing.
+    
+    ### Migrate Gate
+    
+    A Migrate candidate additionally requires one unique canonical destination inside both the workspace and an Authority-declared Task root. The destination must be absent, and the source and destination real or prospective paths must be distinct and neither may contain the other. Every descendant must map to one destination entry and every live reference must have one approved preservation or rewrite outcome.
+    
+    ### Byte-Identical Duplicate Delete Gate
+    
+    A Duplicate Delete candidate requires a non-empty source and an existing retained canonical destination outside the source. Source and destination manifests must match in relative entry path, type, mode, byte size, and regular-file SHA-256; the source may contain no unique entry. Every active source reference must already resolve to the retained destination or have one approved Task-owned rewrite. A different entry or unavailable destination means Defer.
+    
+    ### Empty Directory Delete Gate
+    
+    An Empty Directory Delete candidate has no destination and exclusively owns every empty-source case. The source must be a directory with no hidden or visible entry, and no active reference may require it to exist. Record its mode for rollback and recheck emptiness immediately before deletion.
+    
+    Any non-empty historical path that is not a verified byte-identical duplicate must use Migrate; deleting its unique content is forbidden. Never overwrite a destination. Ambiguous ownership, an unmapped descendant, overlapping source/destination paths, path escape, unsupported file type, or unavailable Authority means Defer.
+    
+    For task records and artifacts, derive ownership from canonical records, explicit links, producer metadata, or another unique current source—not topic similarity alone. A historical record must remain readable by the current task core; do not modernize its body merely because its path moves.
+    
+    Keep verbatim conversation content unchanged. Do not rewrite historical prose merely to remove old path text. Update only exact Task-owned links that still perform navigation after an approved migration. A live reference outside Task-owned carriers blocks the candidate and must be handled by a separately authorized task.
+    
+    ## Change Set and Safety Confirmation
+    
+    Present one exact change set grouped by carrier and give every candidate a run-local ID such as `M1`. Include:
+    
+    - exact operation (`Data Delete`, `Data Merge`, `Migrate`, `Duplicate Delete`, or `Empty Directory Delete`) and source IDs or paths;
+    - current Authority and evidence;
+    - owner and canonical destination only when the selected operation requires one;
+    - exact before/final data content for Data Delete or Data Merge, plus the complete live-consumer search for any removed stable ID;
+    - for every structure operation, the complete relative entry manifest with type, mode, size, and regular-file SHA-256, plus every active reference and approved rewrite;
+    - destination conflict and source/destination overlap results when a destination applies;
+    - source removals, the verified atomic no-replace primitive, each same-filesystem sibling quarantine path and cleanup boundary, and any separately approved empty parent directories; and
+    - deterministic postconditions and validators.
+    
+    After the change set, render one localized `**Safety Confirmation**` naming the operations, affected carriers, deletion/move consequences, and rollback boundary. The user may approve all candidates or an exact subset. This is the only cleanup confirmation; do not add a second generic prompt. Task Target acceptance never substitutes for it.
+    
+    An incomplete subset of a Data Merge, Migrate, or Duplicate Delete candidate is not approval. Questions, hesitation, or ambiguous acknowledgments do not authorize writes. If no candidate passes its evidence gate, report that result and stop.
+    
+    ## Apply Data Changes
+    
+    Treat each selected canonical data file as an independent transaction:
+    
+    1. Preserve its exact pre-write content.
+    2. Apply all approved operations for that file in one coherent edit.
+    3. Run its existing validator and index command.
+    4. Re-run the approved live-consumer search for every deleted stable ID, then re-read surviving merge targets and confirm every valid constraint remains.
+    5. On failure, restore the exact source and validate the restoration.
+    
+    The stricter Safety Confirmation applies even when ordinary Context Pack maintenance would otherwise be automatic.
+    
+    ## Apply Structure Changes
+    
+    Treat each approved candidate as an independent transaction under its exact operation. Quarantine is transaction-local rollback state, not a persistent ledger; restore or remove it before returning, or report an unresolved recovery failure.
+    
+    ### Apply Migrate
+    
+    1. Recheck the source manifest, destination absence and non-overlap, owner, and references against the approved change set.
+    2. Create only the required destination parents.
+    3. Copy every source entry while preserving type, mode, and bytes; do not delete or overwrite the source.
+    4. Compare source and destination relative paths, file and directory counts, modes, byte counts, and regular-file SHA-256.
+    5. Apply only the approved Task-owned reference rewrites; do not normalize adjacent historical text or record schema.
+    6. Run the task graph and every carrier/producer validator named by the architecture map.
+    7. Immediately recheck both manifests, destination non-overlap, and references, then atomically rename the source to a unique absent sibling quarantine path on the same filesystem.
+    8. Recompute the quarantine manifest and require it to match both the approved source manifest and destination before running postconditions.
+    9. With quarantine retained, verify source absence, destination identity, rewritten links, and the absence of unintended active old-path references.
+    10. Immediately recheck source absence, quarantine and destination identity, and rewritten references; if source reappeared, retain every path and report an unresolved recovery conflict. Delete quarantine only after every postcondition passes.
+    
+    If failure occurs before quarantine, restore changed references, remove only destinations created by this transaction, and leave the source untouched. After quarantine, immediately require source absence and use an atomic no-replace rename from quarantine to source; if the primitive is unavailable or the source exists at the call boundary, retain source, quarantine, destination, and current references and report an unresolved recovery conflict. Only after source restoration succeeds may references be restored and the created destination removed. If quarantine cleanup partially fails, reconstruct missing entries from the still-verified destination into quarantine, then apply the same no-replace restoration and conflict gate.
+    
+    ### Apply Duplicate Delete
+    
+    1. Recheck that the source is non-empty, source and retained canonical destination do not overlap, and both manifests are identical in path, type, mode, bytes, and hashes.
+    2. Apply only approved Task-owned source-reference rewrites and validate the destination, references, task graph, and carrier consumers.
+    3. Immediately recheck both manifests and references, then atomically rename the source to a unique absent sibling quarantine path on the same filesystem.
+    4. Recompute the quarantine manifest and require it to match both the approved source manifest and retained canonical destination.
+    5. With quarantine retained, verify source absence, retained destination identity, and every rewritten link.
+    6. Immediately recheck source absence, quarantine and retained destination identity, and rewritten references; if source reappeared, retain every path and report an unresolved recovery conflict. Delete quarantine only after every postcondition passes.
+    
+    On failure before quarantine, restore changed references and retain the source. After quarantine, immediately require source absence and use an atomic no-replace rename from quarantine to source; if the primitive is unavailable or the source exists at the call boundary, retain source, quarantine, canonical destination, and current references and report an unresolved recovery conflict. Restore references only after source restoration succeeds. If quarantine cleanup partially fails, reconstruct missing entries from the still-verified canonical destination into quarantine, then apply the same no-replace restoration and conflict gate.
+    
+    ### Apply Empty Directory Delete
+    
+    1. Recheck that the source has no hidden or visible entry, retains the approved mode, and has no active reference requiring its existence.
+    2. Atomically rename it to a unique absent sibling quarantine path on the same filesystem.
+    3. Recheck that quarantine is still empty and retains the approved mode.
+    4. With quarantine retained, run the approved task and carrier validators and confirm the source path remains absent.
+    5. Immediately recheck source absence, quarantine emptiness and mode, and active references; if source reappeared, retain both paths and report an unresolved recovery conflict. Delete quarantine only after every postcondition passes. On failure, immediately require source absence and use an atomic no-replace rename from quarantine to source before restoring its approved mode. If that primitive is unavailable or the source exists at the call boundary, retain both paths without overwrite or deletion and report an unresolved recovery conflict.
+    
+    Each empty parent directory requires its own approved Empty Directory Delete candidate. A successfully validated candidate remains applied if another independent candidate fails; report partial success without marking the failed candidate complete.
+    
+    ## Failure and Routing
+    
+    - Authority conflict or unavailable proof: Defer without writing.
+    - Destination conflict, ambiguous owner, unsupported entry, or external live reference: Defer and name the blocker.
+    - Malformed data, duplicate IDs, or invalid task graph: report diagnostics; do not repair them here.
+    - Required change belongs to project source, rules, SOPs, or another non-Task carrier: use a separate owning task if the user authorizes it.
+    - Automatic cleanup request: disclose that this Skill is explicit-only and do not create a scheduler, reminder, Hook, or state file.
+    
+    ## Completion
+    
+    Report approved operations applied, rejected or skipped approvals, deferred blockers, rollback outcomes, and current validators. Do not save maintenance history.
+    
+    Completion requires:
+    
+    - every changed data carrier validates;
+    - every migrated destination matches its approved source manifest;
+    - every removed source was either migrated and verified, byte-identical to a retained canonical copy, or an approved empty obsolete directory;
+    - every approved Task-owned path reference resolves, and every current non-historical consumer of a deleted stable ID remains valid;
+    - the canonical task graph validates after structure maintenance; and
+    - every failed candidate is restored or explicitly reported as an unresolved recovery failure.
+    
+    ## Maintainer Validation
+    
+    Keep `evals/trigger_cases.json`, `evals/semantic_config.json`, and `evals/structure_operation_cases.json` aligned with both data and structure maintenance boundaries. After modifying this package or sibling contracts, run the built-in `$skill-quality` gate against every changed package, validate current Context, Lessons, and tasks, verify shared Skill discovery and the Claude manifest, parse changed JSON/YAML, and run `git diff --check`.
+    
+    Run project tests only when the user and governing project rules explicitly authorize them. Quality failures block completion; review context-budget warnings without deleting required workflow guidance.
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/caishilin/Desktop/personal/skills/tests/task-files.test.mjs:1069:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: workspace lesson contract queries before work and confirms every persistent write
+ok 82 - workspace lesson contract queries before work and confirms every persistent write
+  ---
+  duration_ms: 0.48
+  type: 'test'
+  ...
+# Subtest: workspace lesson CLI indexes v1 and legacy records and rejects malformed v1
+ok 83 - workspace lesson CLI indexes v1 and legacy records and rejects malformed v1
+  ---
+  duration_ms: 176.594917
+  type: 'test'
+  ...
+# Subtest: adversarial review report presents compact human-readable dialogue
+ok 84 - adversarial review report presents compact human-readable dialogue
+  ---
+  duration_ms: 2.067833
+  type: 'test'
+  ...
+1..84
+# tests 84
+# suites 0
+# pass 81
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2041.248083

@@ -1,0 +1,41 @@
+{
+  "schema": "task-content-snapshot/v1",
+  "baseRef": "02a16f27c06e968262568ceb4b17321de63e3359",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "sha256": "8d5a5dbf7634d57e087361791acb65f137ce3c8e40b09f40bd61319306a8c4cd",
+      "beforeSha256": "50643ef8b6cc5bfedf7f6c9e6ed3c519db6799b30a1d8348f406e117ca879520"
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/topic-cli.js",
+      "sha256": "cd886b82b3fad260d39608b64e0a8609ab5391e1d989f82fe530a7419e354336",
+      "beforeSha256": "1ba2c568044c48b9439d17a79921a8239d9eba13561e157e4d632ae0e37677e2"
+    },
+    {
+      "path": "skills/meta/topic/SKILL.md",
+      "sha256": "7b2d9e6d3087746e414dc575009a59dac3f4f7ef6da8661bfbabfceb9e3b829a",
+      "beforeSha256": "9c34fe5eac3e66e954cecc254424ca620562e9e828ea22acebb7760b6a887639"
+    },
+    {
+      "path": "skills/meta/topic/references/topic-contract.md",
+      "sha256": "4b8ac5c21ed395034eb0a2b9daf7b71f1eac5d43574c17997b7b63da504a3e14",
+      "beforeSha256": "ba2549c78f62989294f027d82b7cda6b689a8e1858ab642043a45d6472a43e83"
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "b28223c799c6ee78ec8c8e826e2898edc1790d2cc7b4d32651a65561073c496d",
+      "beforeSha256": "70b91a21041f8e1af5b07483c100c0f4c40482bd2db7807f431bea3263633f7e"
+    },
+    {
+      "path": "tests/topics.test.mjs",
+      "sha256": "e9c681b1d36477153aa8c35b6114555f1c5eea2decc53606acc570bac19428e6",
+      "beforeSha256": "9dc10972b2a67689aa2b8db0e7d4d93a56d4deb0ae9742ab04977b78d36fe2da"
+    },
+    {
+      "path": "README.md",
+      "sha256": "5c1138f30ce686bde46ae4d62bd549958e696f9c295cd61eb24ba8b487f23721",
+      "beforeSha256": "0018581744f7a8d69d61b88fcf8cd4d5a86555e256d4746b90df224c7db36862"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-target-color-rendering",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "5431659e3e1bac298354f57fbc48210012713521e92d0897fed83cead4c1ee05",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "35958ef96db20da89d6e51937e4da1ca62d8bd6d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "35958ef96db20da89d6e51937e4da1ca62d8bd6d",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

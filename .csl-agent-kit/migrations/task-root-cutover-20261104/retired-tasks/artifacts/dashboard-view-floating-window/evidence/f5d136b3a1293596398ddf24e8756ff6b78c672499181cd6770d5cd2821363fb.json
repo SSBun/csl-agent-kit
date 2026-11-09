@@ -1,0 +1,30 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-view-floating-window",
+  "files": [
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "da9c043e5a539f752862a934cac3094349533c5b5cd4a59ff41a9eeacafbda58",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "ebb9a83b1ead57e6b1a3da41266eaa3e85d0cc46dd6b8e5e727dd832ada5114f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "31e1c8a74dba9ce0eacc59d139a4426915707bd99e1c781e3c4de5112f38491a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

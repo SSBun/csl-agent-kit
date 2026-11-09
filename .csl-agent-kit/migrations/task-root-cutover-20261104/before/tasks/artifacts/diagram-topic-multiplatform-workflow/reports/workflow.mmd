@@ -1,0 +1,81 @@
+flowchart TD
+    TITLE["复杂多平台需求交付 · Topic 方案（拟议设计）"]
+    subgraph SPEC ["01 · Topic 共享规格"]
+      A["收集需求 → 找到或创建 Topic → 指定维护者"]
+      B["Spec Context：公共行为、接口、平台差异、验收条款"]
+      C{"用户确认完整需求与边界？"}
+      CNO["澄清或调整规格 ↩ 回到需求确认"]
+      D["确定规格版本 · 保存可追溯的确认来源"]
+      A --> B --> C
+      C -->|否| CNO
+      C -->|是| D
+    end
+    TITLE --> A
+    subgraph SPLIT ["02 · 拆分与关联（Topic 不是 Queue）"]
+      E["按独立验收结果拆任务 · 覆盖必要平台与需求条款"]
+      F["双向引用：Topic → 任务列表；Task → Topic + 条款 + 采用版本"]
+      G["明确真实依赖；独立任务可并行，有前置条件则等待"]
+      S["服务端任务"]
+      I["iOS 任务"]
+      N["Android 任务"]
+      W["Web 任务"]
+      E --> F --> G
+      G --> S
+      G --> I
+      G --> N
+      G --> W
+    end
+    D --> E
+    subgraph EXEC ["03 · 每个任务各自执行（跨仓库、跨会话均适用）"]
+      J["① 开始或恢复：项目 Core + Topic 规格 + 当前 Task"]
+      K{"来源、版本与前置条件就绪？"}
+      WAIT["暂停受影响工作 → 补齐来源或依赖 → 回到①"]
+      L["② 对齐任务 Target 与执行权限；有效委派可复用"]
+      M["读取相关 Context Packs / 接口 → 实现本平台结果"]
+      SELF["③ 核对规格版本 → 自检 → Task Summary + Result → 审查分级"]
+      R{"R2 或明确要求独立审查？"}
+      REVIEW["独立审查 → 主 Agent 核实发现 → 修复后回到③复审"]
+      V["④ 当前版本与内容一致 → 最终验证本任务 Target"]
+      PASS{"验证通过且无阻断问题？"}
+      FIX["修复并刷新证据 ↩ 回到③；规格变化走变更处理"]
+      DONE["Task 完成：保留版本与验收证据，摘要只写实际组件改动"]
+      J --> K
+      K -->|否| WAIT
+      K -->|是| L --> M --> SELF --> R
+      R -->|是| REVIEW
+      REVIEW -->|无阻断发现| V
+      R -->|否：R0/R1 且依据充分| V
+      V --> PASS
+      PASS -->|否| FIX
+      PASS -->|是| DONE
+    end
+    S --> J
+    I --> J
+    N --> J
+    W --> J
+    subgraph INTEGRATE ["04 · 集成任务验收需求整体，不只统计已完成任务"]
+      COVER["读取各任务实际证据 · 检查所有必要平台与条款覆盖"]
+      FULL{"覆盖完整，规格与接口版本兼容？"}
+      GAP["补建或显式重开任务 ↩ 回到任务拆分与执行"]
+      INT["集成任务自检 / 适用审查 / 验证：跨端一致性、接口兼容、端到端链路"]
+      IPASS{"整体验收通过？"}
+      RELEASE["如需发布：取得独立安全确认 → 发布与交付验证"]
+      END["需求交付完成 · Topic 留规格与任务引用 · Task 留实现与证据"]
+      COVER --> FULL
+      FULL -->|否| GAP
+      FULL -->|是| INT --> IPASS
+      IPASS -->|否| GAP
+      IPASS -->|是| RELEASE --> END
+    end
+    DONE --> COVER
+    subgraph CHANGE ["贯穿全程 · 变更与阻塞处理"]
+      CH["发现公共规格变化 → 维护者分析影响 → 用户确认实质变更"]
+      VER["更新规格版本 → 调整任务覆盖 → 受影响任务回到①，刷新失效证据"]
+      BLOCK["来源不可达 / 需用户决策 / 审查停滞 / 基础设施故障 → Blocked"]
+      RESUME["解除条件满足 → 显式恢复 → 回到①重读状态"]
+      CH --> VER
+      BLOCK --> RESUME
+    end
+    WAIT -.->|不能自行解除| BLOCK
+    FIX -.->|公共约定变化| CH
+    REVIEW -.->|无法继续审查| BLOCK

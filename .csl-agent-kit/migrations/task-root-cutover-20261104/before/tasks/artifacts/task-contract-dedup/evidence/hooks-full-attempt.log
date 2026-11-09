@@ -1,0 +1,222 @@
+TAP version 13
+# Subtest: implements V1 three-valued collection and glob semantics
+ok 1 - implements V1 three-valued collection and glob semantics
+  ---
+  duration_ms: 1.158
+  type: 'test'
+  ...
+# Subtest: rejects unknown fields and non-segment double-star globs
+ok 2 - rejects unknown fields and non-segment double-star globs
+  ---
+  duration_ms: 6.845875
+  type: 'test'
+  ...
+# Subtest: validates optional single-line descriptions
+ok 3 - validates optional single-line descriptions
+  ---
+  duration_ms: 4.477666
+  type: 'test'
+  ...
+# Subtest: validates one or more trigger Markdown files with shared V1 parsing
+ok 4 - validates one or more trigger Markdown files with shared V1 parsing
+  ---
+  duration_ms: 2.475167
+  type: 'test'
+  ...
+# Subtest: CLI create, update, show, and list preserve descriptions
+ok 5 - CLI create, update, show, and list preserve descriptions
+  ---
+  duration_ms: 10.643584
+  type: 'test'
+  ...
+# Subtest: migrates legacy global and project Hook data to new paths and protocols
+ok 6 - migrates legacy global and project Hook data to new paths and protocols
+  ---
+  duration_ms: 16.308166
+  type: 'test'
+  ...
+# Subtest: CLI creates local project rules and delete preserves scripts
+ok 7 - CLI creates local project rules and delete preserves scripts
+  ---
+  duration_ms: 2.838917
+  type: 'test'
+  ...
+# Subtest: normalizes unknown changed files instead of guessing from tool input
+ok 8 - normalizes unknown changed files instead of guessing from tool input
+  ---
+  duration_ms: 0.308125
+  type: 'test'
+  ...
+# Subtest: creates host-neutral standard events for external adapters
+ok 9 - creates host-neutral standard events for external adapters
+  ---
+  duration_ms: 0.539916
+  type: 'test'
+  ...
+# Subtest: normalizes all ten Codex events into complete golden payloads
+ok 10 - normalizes all ten Codex events into complete golden payloads
+  ---
+  duration_ms: 1.263583
+  type: 'test'
+  ...
+# Subtest: supports verified session-start prompt injection on Claude Code and Pi
+ok 11 - supports verified session-start prompt injection on Claude Code and Pi
+  ---
+  duration_ms: 0.476458
+  type: 'test'
+  ...
+# Subtest: project list does not parse untrusted rule content and invalid rules remain recoverable
+ok 12 - project list does not parse untrusted rule content and invalid rules remain recoverable
+  ---
+  duration_ms: 8.348292
+  type: 'test'
+  ...
+# Subtest: marks same-scope shared/local IDs invalid without choosing a winner
+ok 13 - marks same-scope shared/local IDs invalid without choosing a winner
+  ---
+  duration_ms: 3.538
+  type: 'test'
+  ...
+# Subtest: rejects executable files without shebang and local create refuses gitignore symlinks
+ok 14 - rejects executable files without shebang and local create refuses gitignore symlinks
+  ---
+  duration_ms: 2.581375
+  type: 'test'
+  ...
+# Subtest: bounds regex execution and event runtime while preserving block short-circuit order
+not ok 15 - bounds regex execution and event runtime while preserving block short-circuit order
+  ---
+  duration_ms: 2134.195125
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:306:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:325:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: maps script success, failure, timeout, signal, post-event exit two, and symlink escape
+ok 16 - maps script success, failure, timeout, signal, post-event exit two, and symlink escape
+  ---
+  duration_ms: 1525.693833
+  type: 'test'
+  ...
+# Subtest: runs the Swift changed-file and commit-command RFC examples end to end
+ok 17 - runs the Swift changed-file and commit-command RFC examples end to end
+  ---
+  duration_ms: 186.918375
+  type: 'test'
+  ...
+# Subtest: dispatch injects prompt context once and suppresses duplicate diagnostics per session
+ok 18 - dispatch injects prompt context once and suppresses duplicate diagnostics per session
+  ---
+  duration_ms: 162.873084
+  type: 'test'
+  ...
+# Subtest: dispatch injects global session prompts for Claude Code
+ok 19 - dispatch injects global session prompts for Claude Code
+  ---
+  duration_ms: 54.27875
+  type: 'test'
+  ...
+# Subtest: dispatch maps PermissionRequest and PreCompact blocks to native JSON
+ok 20 - dispatch maps PermissionRequest and PreCompact blocks to native JSON
+  ---
+  duration_ms: 117.06425
+  type: 'test'
+  ...
+# Subtest: event deadline covers discovery and stops expired collection evaluation
+ok 21 - event deadline covers discovery and stops expired collection evaluation
+  ---
+  duration_ms: 4.293833
+  type: 'test'
+  ...
+# Subtest: run-script inject-output surfaces stdout as a prompt on session-start
+ok 22 - run-script inject-output surfaces stdout as a prompt on session-start
+  ---
+  duration_ms: 168.726416
+  type: 'test'
+  ...
+# Subtest: run-script without inject-output keeps stdout out of prompts
+ok 23 - run-script without inject-output keeps stdout out of prompts
+  ---
+  duration_ms: 167.036458
+  type: 'test'
+  ...
+# Subtest: inject-output is validated as boolean and rejected on inject-prompt
+ok 24 - inject-output is validated as boolean and rejected on inject-prompt
+  ---
+  duration_ms: 0.316834
+  type: 'test'
+  ...
+# Subtest: inner scope injects built-in, user, and project agent-rules.md in order
+ok 25 - inner scope injects built-in, user, and project agent-rules.md in order
+  ---
+  duration_ms: 290.490916
+  type: 'test'
+  ...
+# Subtest: inner CSL Agent Kit contract injects on supported session starts
+ok 26 - inner CSL Agent Kit contract injects on supported session starts
+  ---
+  duration_ms: 213.130208
+  type: 'test'
+  ...
+# Subtest: inner hooks default enabled and persist user disable/enable state
+ok 27 - inner hooks default enabled and persist user disable/enable state
+  ---
+  duration_ms: 90.528709
+  type: 'test'
+  ...
+# Subtest: runtime passes only the current hook settings and adapter input without changing the event payload
+ok 28 - runtime passes only the current hook settings and adapter input without changing the event payload
+  ---
+  duration_ms: 128.381083
+  type: 'test'
+  ...
+# Subtest: title hook publishes a manual refresh failure result
+ok 29 - title hook publishes a manual refresh failure result
+  ---
+  duration_ms: 26.573667
+  type: 'test'
+  ...
+# Subtest: title hook ignores internal compaction continuation prompts
+ok 30 - title hook ignores internal compaction continuation prompts
+  ---
+  duration_ms: 0.149333
+  type: 'test'
+  ...
+# Subtest: title hook requires context-backed Chinese titles while allowing technical terms
+ok 31 - title hook requires context-backed Chinese titles while allowing technical terms
+  ---
+  duration_ms: 3.066042
+  type: 'test'
+  ...
+# Subtest: CLI keeps inner hook source immutable
+ok 32 - CLI keeps inner hook source immutable
+  ---
+  duration_ms: 0.105042
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 31
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5424.5985

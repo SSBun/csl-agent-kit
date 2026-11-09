@@ -1,0 +1,41 @@
+$ git diff --check
+exit=0
+
+$ node --check tests/cli-install-output.test.js
+exit=0
+
+$ node --check tests/task-files.test.mjs
+exit=0
+
+$ node skills/meta/task-context/scripts/context.js --workspace . validate
+exit=0
+{
+  "schema": "csl-context.validation/v1",
+  "valid": true,
+  "errors": [],
+  "warnings": []
+}
+
+$ node skills/meta/skill-quality/scripts/check.js skills/meta/task --no-color
+exit=0
+WARNING task — /Users/caishilin/Desktop/personal/skills/skills/meta/task
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 4817.
+Summary: 0 passed, 1 warning, 0 failed.
+
+$ node skills/meta/skill-quality/scripts/check.js skills/meta/task-review --no-color
+exit=0
+WARNING task-review — /Users/caishilin/Desktop/personal/skills/skills/meta/task-review
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1922.
+Summary: 0 passed, 1 warning, 0 failed.
+
+$ node skills/meta/skill-quality/scripts/check.js skills/meta/agent-hooks --no-color
+exit=0
+WARNING agent-hooks — /Users/caishilin/Desktop/personal/skills/skills/meta/agent-hooks
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1311.
+Summary: 0 passed, 1 warning, 0 failed.
+
+$ node skills/meta/csl-tasks/shared/scripts/csl-tasks.js --workspace . check optimize-task-review-self-check-and-independent-review
+exit=0
+{"valid":true}
+
+最终复核：8 个对象和 diff 哈希匹配独立审查快照；未运行测试或模型效果评测。

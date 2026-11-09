@@ -1,0 +1,82 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-capability-preflight",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "0f5a652b8b427e8b180d8a223ccd86306fbc8dcf63e7c2459886216e72e9fb81",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "27f23d7706bb6e2faa2e2c8c7ca5bd4e9197f0e7ee46f7d9dd199699a539a43f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a3759136013f924dc9180b89f53a65bdcbf85f32"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a3759136013f924dc9180b89f53a65bdcbf85f32",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "4d2cda3b5552db7460d4ff1cacaec21bc42f5d2917ab144040afee69948e4809",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "9916903f856975883ddb97f4984094e53b27614b"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "9916903f856975883ddb97f4984094e53b27614b",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "de1c170da5bac6735747b3bc256b8f230268323c0dcb233cb58a14726c5344f1",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8f9701592b081245824a2d42c32731310db383ef"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8f9701592b081245824a2d42c32731310db383ef",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-capability-preflight/evidence/docs.log",
+      "sha256": "7381056be7b83146c03b255be170d21f71ff927cef5e2d9ce8cc73185243b79a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

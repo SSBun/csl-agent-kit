@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 735.7949999999998 1579.9490000000003" width="735.7949999999998" height="1579.9490000000003" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:#ffffff">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="#0969da" stroke="#0969da" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="#0969da" stroke="#0969da" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="A" data-to="B" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,76.9 421.0274999999999,124.9" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="B" data-to="C" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,161.8 421.0274999999999,209.8" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="C" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,246.70000000000002 421.0274999999999,294.70000000000005" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="D" data-to="E" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,331.6 421.0274999999999,379.6" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="E" data-to="F" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,416.5 421.0274999999999,464.5" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="F" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,501.4 421.0274999999999,549.4" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="G" data-to="H" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,586.3 421.0274999999999,634.3" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="H" data-to="I" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,671.1999999999999 421.0274999999999,719.1999999999999" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="I" data-to="S" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,756.0999999999999 421.0274999999999,804.0999999999999" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S" data-to="SC" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="是" points="380.5193333333333,1006.6408333333333 380.5193333333333,1083.149 290.68499999999995,1083.149 290.68499999999995,1163.4489999999998" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S" data-to="V" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="否" points="461.53566666666654,1006.6408333333333 461.53566666666654,1083.149 551.3699999999999,1083.149 551.3699999999999,1236.349 510.7641666666666,1236.349 510.7641666666666,1248.349" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SC" data-to="V" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="290.68499999999995,1200.349 290.68499999999995,1236.349 331.29083333333324,1236.349 331.29083333333324,1248.349" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="V" data-to="K" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,1285.249 421.0274999999999,1333.249" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="K" data-to="L" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,1370.1490000000001 421.0274999999999,1418.1490000000001" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="L" data-to="M" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="421.0274999999999,1455.0490000000002 421.0274999999999,1503.0490000000002" fill="none" stroke="#8c959f" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="S" data-to="SC" data-label="是">
+  <rect x="275.68499999999995" y="1090.149" width="29.53" height="30.3" rx="2" ry="2" fill="#ffffff" stroke="#d0d7de" stroke-width="1" />
+  <text x="290.44999999999993" y="1105.299" text-anchor="middle" font-size="11" font-weight="400" fill="#59636e" dy="3.8499999999999996">是</text>
+</g>
+<g class="edge-label" data-from="S" data-to="V" data-label="否">
+  <rect x="536.3699999999999" y="1090.149" width="29.53" height="30.3" rx="2" ry="2" fill="#ffffff" stroke="#d0d7de" stroke-width="1" />
+  <text x="551.1349999999999" y="1105.299" text-anchor="middle" font-size="11" font-weight="400" fill="#59636e" dy="3.8499999999999996">否</text>
+</g>
+<g class="node" data-id="A" data-label="【Pi】用户在 TUI 提交任务请求" data-shape="rectangle">
+  <rect x="300.0174999999999" y="40" width="242.01999999999998" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【Pi】用户在 TUI 提交任务请求</text>
+</g>
+<g class="node" data-id="B" data-label="【Pi 适配】before_agent_start 重建 Agent Hooks、规则与 SOP context" data-shape="rectangle">
+  <rect x="185.90349999999995" y="124.9" width="470.24799999999993" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="143.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【Pi 适配】before_agent_start 重建 Agent Hooks、规则与 SOP context</text>
+</g>
+<g class="node" data-id="C" data-label="【共享】判断是否触发 Task，并选择 task、task-plan 或 task-queue" data-shape="rectangle">
+  <rect x="188.8675" y="209.8" width="464.3199999999998" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="228.25" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】判断是否触发 Task，并选择 task、task-plan 或 task-queue</text>
+</g>
+<g class="node" data-id="D" data-label="【共享】通过 canonical task core 创建、恢复或重开任务记录" data-shape="rectangle">
+  <rect x="206.65149999999994" y="294.70000000000005" width="428.75199999999995" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="313.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】通过 canonical task core 创建、恢复或重开任务记录</text>
+</g>
+<g class="node" data-id="E" data-label="【Pi 专属】调用 task_focus；写入 session custom entry；更新任务 widget" data-shape="rectangle">
+  <rect x="172.5655" y="379.6" width="496.92399999999986" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="398.05" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【Pi 专属】调用 task_focus；写入 session custom entry；更新任务 widget</text>
+</g>
+<g class="node" data-id="F" data-label="【共享】进入 Task Target 对齐门：L1、L2、L3 或 L4" data-shape="rectangle">
+  <rect x="232.21599999999995" y="464.5" width="377.623" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="482.95" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】进入 Task Target 对齐门：L1、L2、L3 或 L4</text>
+</g>
+<g class="node" data-id="G" data-label="【普通对话】用户确认、修订或回答澄清；不是 Pi modal 的必需能力" data-shape="rectangle">
+  <rect x="181.087" y="549.4" width="479.8809999999999" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="567.85" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【普通对话】用户确认、修订或回答澄清；不是 Pi modal 的必需能力</text>
+</g>
+<g class="node" data-id="H" data-label="【共享】加载相关 Context、Lessons 与 Authority；完善 Scope、Target 和 Plan" data-shape="rectangle">
+  <rect x="154.04049999999995" y="634.3" width="533.9739999999999" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="652.75" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】加载相关 Context、Lessons 与 Authority；完善 Scope、Target 和 Plan</text>
+</g>
+<g class="node" data-id="I" data-label="【宿主适配】使用 read、bash、edit、write 等工具执行；Codex 可使用等价工具" data-shape="rectangle">
+  <rect x="146.25999999999993" y="719.1999999999999" width="549.535" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="737.65" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【宿主适配】使用 read、bash、edit、write 等工具执行；Codex 可使用等价工具</text>
+</g>
+<g class="node" data-id="S" data-label="是否到达独立安全边界 S1？" data-shape="diamond">
+  <polygon points="421.0274999999999,804.0999999999999 542.5519999999999,925.6244999999999 421.0274999999999,1047.149 299.50299999999993,925.6244999999999" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="925.6244999999999" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">是否到达独立安全边界 S1？</text>
+</g>
+<g class="node" data-id="SC" data-label="【共享确认】main session 展示 Safety Confirmation，批准后才执行副作用" data-shape="rectangle">
+  <rect x="40" y="1163.4489999999998" width="501.3699999999999" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="290.68499999999995" y="1181.899" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享确认】main session 展示 Safety Confirmation，批准后才执行副作用</text>
+</g>
+<g class="node" data-id="V" data-label="【共享】记录 Result，执行 Verification；独立 Review 仅在用户明确要求时运行" data-shape="rectangle">
+  <rect x="151.81749999999994" y="1248.349" width="538.42" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="1266.799" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】记录 Result，执行 Verification；独立 Review 仅在用户明确要求时运行</text>
+</g>
+<g class="node" data-id="K" data-label="【共享】complete 失败关闭，再执行 check 和 validate" data-shape="rectangle">
+  <rect x="231.84549999999996" y="1333.249" width="378.3639999999999" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="1351.699" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】complete 失败关闭，再执行 check 和 validate</text>
+</g>
+<g class="node" data-id="L" data-label="【Pi 专属呈现】widget 读取 Markdown 状态并刷新；session 保留 focus entry" data-shape="rectangle">
+  <rect x="162.19149999999996" y="1418.1490000000001" width="517.6719999999999" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="1436.5990000000002" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【Pi 专属呈现】widget 读取 Markdown 状态并刷新；session 保留 focus entry</text>
+</g>
+<g class="node" data-id="M" data-label="【共享】向用户交付结果" data-shape="rectangle">
+  <rect x="318.5424999999999" y="1503.0490000000002" width="204.96999999999997" height="36.900000000000006" rx="0" ry="0" fill="#f6f8fa" stroke="#afb8c1" stroke-width="0.75" />
+  <text x="421.0274999999999" y="1521.4990000000003" text-anchor="middle" font-size="13" font-weight="500" fill="#1f2328" dy="4.55">【共享】向用户交付结果</text>
+</g>
+</svg>

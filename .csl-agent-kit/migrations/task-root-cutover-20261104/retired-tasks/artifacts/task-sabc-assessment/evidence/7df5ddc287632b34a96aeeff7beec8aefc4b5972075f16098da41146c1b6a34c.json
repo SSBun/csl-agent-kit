@@ -1,0 +1,99 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-sabc-assessment",
+  "files": [
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "ff9d8dd1908db3d74fe79516a4d2f27ae1616a91a146ac7f98d1cf11fad8f586",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fef85a9281efe0ea6674b6842015a32db53d756d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fef85a9281efe0ea6674b6842015a32db53d756d",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "c55ad8924dfd938b0fa86b932d3364af15574d2b003a1bda31d639118fd1656b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8ee40d6368ff52e887155ccb7815115334812945"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8ee40d6368ff52e887155ccb7815115334812945",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "ec14980063364dc2fa4a5a09d86b866e863e6225edf666ebca307e1558103748",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4b26d58aba8b9217d279bb3c1c73df1b757feb93"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4b26d58aba8b9217d279bb3c1c73df1b757feb93",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "a11dec88e5389858e9c6d454ba14cbb848f2a84bd5ecefd876b09e7902eca63f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d77016f45f2050ccad4246a453455ba3616d2841"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d77016f45f2050ccad4246a453455ba3616d2841",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/evals/self_assessment_cases.json",
+      "sha256": "70aab5d444871611b19a76a0f7eb39da5bc3b15c678846ea36de0645a47a9c0e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/context.md",
+      "sha256": "4342ff6b26b3f64b977205e94729ace7acf9ccec5441fbf312ea915e916098ad",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0051a5e87d70ee19076e25bc179cdb8c69a85e8f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0051a5e87d70ee19076e25bc179cdb8c69a85e8f",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

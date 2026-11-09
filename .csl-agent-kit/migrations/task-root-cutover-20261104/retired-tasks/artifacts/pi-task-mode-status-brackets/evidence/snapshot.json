@@ -1,0 +1,17 @@
+{
+  "identity": "sha256:c588a7d8ede4bb951da201942eb9dc1ab01a9f6be31138e4643b04183240eda6",
+  "files": [
+    {
+      "path": "pi/extensions/csl-settings.ts",
+      "sha256": "1c9b6551a67a30e9dc2d1d4268784ecccefad805ed34dcf67a3f497464a0ee0a"
+    },
+    {
+      "path": "tests/pi-settings.test.mjs",
+      "sha256": "1189f798e6a1438673e80fd9328f2d7d2aa9834824737256a9c07de5581e88dc"
+    },
+    {
+      "path": "README.md",
+      "sha256": "0d0151c3839fcb6588c65cf38278e3846ff43bfcebe6b86f62e3b611669162c5"
+    }
+  ]
+}

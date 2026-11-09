@@ -1,0 +1,19 @@
+{
+  "目标文件": "/Users/caishilin/AGENTS.md",
+  "原文SHA256": "2aeed7dd2af037d44c6a6f3e2f4f62a9e53130b6fb74806af5bb419fe3e72736",
+  "当前SHA256": "42754df2b02ac9ff9db940921569f07ebb2816f3fb069ac1008d7831fe7d601f",
+  "原行数": 89,
+  "现行数": 30,
+  "字节减少比例": 0.694,
+  "保留检查": "语言段落、规划/子Agent完整段落、两条bug/CI偏好、RTK引用逐字一致；3–5失败模式要求仍在",
+  "去重检查": "六组重复描述及旧todo/lessons流程已移除",
+  "结构检查": "保留原文三级编号标题、列表、分隔线样式；编号连续、无尾随空格、结尾换行",
+  "边界检查": "目标是普通文件；仓库AGENTS与Contract SHA256不变；不修改其他宿主软链接",
+  "Hook检查": {
+    "effective": "active",
+    "validation": "valid",
+    "support": "supported",
+    "输出": "注入脚本输出与Contract原文逐字节一致"
+  },
+  "局限": "未运行单元测试或项目测试；非Skill规则不适用skill-quality；未启动新宿主会话或验证其他宿主；精简依赖Contract启用。"
+}

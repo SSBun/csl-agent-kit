@@ -1,0 +1,40 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "fast-command-options-menu",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "233236c5c80dc12d6e37bcee65c45381c6590d99b103264592a6587dbdf46414",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "9cc6e23317845fa9df40025ddbe4beec31eae937"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "9cc6e23317845fa9df40025ddbe4beec31eae937",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "pi/extensions/openai-codex-fast.ts",
+      "sha256": "e1f9e6ad57f0819a5244699862748621f9bc061dccc3685d381d72f982b79515",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "cee9c17cdb6fd70f6f605b058b8e50937065a123"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "cee9c17cdb6fd70f6f605b058b8e50937065a123",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,903 @@
+{
+  "schema": "csl-context.lifecycle-cases/v1",
+  "purpose": "Bounded semantic evaluation inputs for Context lifecycle behavior. Static schema or action-label checks do not demonstrate that an Agent performed these behaviors.",
+  "cases": [
+    {
+      "id": "new-project-cross-component-coverage",
+      "task_input": "After Target alignment, establish the Context needed to add export cancellation in this unfamiliar repository.",
+      "initial_context": {
+        "core_state": "valid-core-only",
+        "selected_ids": []
+      },
+      "source_facts": [
+        {
+          "source": "README.md#exports",
+          "evidence": "The API accepts exports and the worker produces downloadable results."
+        },
+        {
+          "source": "api/export.ts#enqueue",
+          "evidence": "HTTP 202 is returned after queue admission; it does not mean the export completed."
+        },
+        {
+          "source": "worker/export.ts#finish",
+          "evidence": "The worker owns terminal job state and publishes the completed artifact."
+        },
+        {
+          "source": "schema/export.json and scripts/generate-client.js",
+          "evidence": "The schema generates the client; editing the generated client alone is overwritten."
+        },
+        {
+          "source": "tests/export-flow.spec.ts",
+          "evidence": "The integration scenario observes terminal job state and artifact availability."
+        }
+      ],
+      "candidate_packs": [],
+      "expected": {
+        "selected_ids": [],
+        "affected_ids": [],
+        "coverage": [
+          "Project purpose and export vocabulary",
+          "API, worker, schema and generated-client responsibilities",
+          "Admission-to-terminal-state flow",
+          "Canonical schema and generated artifacts",
+          "Terminal success signal and verification entry"
+        ],
+        "operations": [
+          "Add source-backed API/worker workflow and schema-generation Packs when each is an independent decision unit."
+        ],
+        "observable_behavior": [
+          "Build a temporary coverage table after alignment.",
+          "Inspect the named entry points and their relevant dependencies.",
+          "Attach source locations to decision-changing conclusions.",
+          "Disclose any remaining cancellation semantics gap before choosing behavior."
+        ],
+        "forbidden_claims": [
+          "Four non-empty Core sections prove the task model is complete.",
+          "HTTP 202 proves export completion.",
+          "The generated client is the canonical schema.",
+          "A seed Pack is required for every directory."
+        ]
+      }
+    },
+    {
+      "id": "sparse-project-evidence",
+      "task_input": "Orient to this new project before planning its retry behavior; no implementation files are present yet.",
+      "initial_context": {
+        "core_state": "missing",
+        "selected_ids": []
+      },
+      "source_facts": [
+        {
+          "source": "package.json",
+          "evidence": "The package is named relay-demo; it contains no runnable scripts or declared architecture."
+        },
+        {
+          "source": "README.md",
+          "evidence": "The only content is a title; retry policy, runtime entry point and component ownership are unspecified."
+        }
+      ],
+      "candidate_packs": [],
+      "expected": {
+        "selected_ids": [],
+        "affected_ids": [],
+        "coverage": [
+          "Separate observed identity from unknown purpose, runtime, ownership and retry policy."
+        ],
+        "operations": [
+          "Do not create filler Core facts or Packs from generic expectations."
+        ],
+        "observable_behavior": [
+          "Report insufficient evidence for a valid confirmed Core proposal.",
+          "Keep Context absent until a source-backed exact proposal can be confirmed.",
+          "Ask only for user-owned facts needed to proceed; do not infer architecture from the package name."
+        ],
+        "forbidden_claims": [
+          "The system uses a message queue.",
+          "Retries are absent because no retry implementation was found.",
+          "The project is fully modeled."
+        ]
+      }
+    },
+    {
+      "id": "domain-alias-requery",
+      "task_input": "Change closeout recovery behavior; the initial fingerprint contains only the business term closeout.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": []
+      },
+      "source_facts": [
+        {
+          "source": "docs/vocabulary.md#closeout",
+          "evidence": "Closeout is the operations term for the settlement worker pipeline."
+        },
+        {
+          "source": "workers/settlement.ts#recover",
+          "evidence": "Recovery reconciles ledger state before replaying a settlement."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-settlement",
+          "scope": "Settlement recovery and ledger ownership",
+          "paths": [
+            "workers/settlement.ts"
+          ],
+          "keywords": [
+            "settlement",
+            "ledger"
+          ],
+          "authority": [
+            "docs/vocabulary.md",
+            "workers/settlement.ts#recover"
+          ],
+          "recheck": "Recovery or settlement terminology changes.",
+          "claims": [
+            "Reconciliation precedes replay."
+          ]
+        },
+        {
+          "id": "CTX-reports",
+          "scope": "Read-only reporting",
+          "paths": [
+            "reports/"
+          ],
+          "keywords": [
+            "report"
+          ],
+          "authority": [
+            "reports/README.md"
+          ],
+          "recheck": "Reporting boundaries change.",
+          "claims": [
+            "Reports consume settled results."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-settlement"
+        ],
+        "affected_ids": [],
+        "coverage": [
+          "Map the business alias to the implementation boundary.",
+          "Cover recovery ordering and ledger ownership."
+        ],
+        "operations": [
+          "Consider adding the confirmed alias to the existing Pack metadata."
+        ],
+        "observable_behavior": [
+          "Use task-direct vocabulary evidence after the empty query.",
+          "Refine the fingerprint and query the index again.",
+          "Retrieve the settlement Pack without silently loading every Pack."
+        ],
+        "forbidden_claims": [
+          "No Context exists for closeout.",
+          "An empty keyword match proves a missing component."
+        ]
+      }
+    },
+    {
+      "id": "expanded-task-needs-four-packs",
+      "task_input": "Extend payment cancellation through a newly discovered notification delivery dependency; the initial query loaded three Packs.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-api",
+          "CTX-payments",
+          "CTX-ledger"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "payments/cancel.ts",
+          "evidence": "Cancellation writes the ledger and emits an outbox event."
+        },
+        {
+          "source": "notifications/consumer.ts",
+          "evidence": "The notification consumer marks delivery independently of the payment transaction."
+        },
+        {
+          "source": "docs/cancellation.md",
+          "evidence": "The accepted workflow observes both terminal cancellation and notification delivery."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-api",
+          "scope": "Cancellation entry point",
+          "paths": [
+            "api/cancel.ts"
+          ],
+          "keywords": [
+            "cancel",
+            "request"
+          ],
+          "authority": [
+            "api/cancel.ts"
+          ],
+          "recheck": "Request acceptance changes.",
+          "claims": [
+            "The API accepts cancellation requests."
+          ]
+        },
+        {
+          "id": "CTX-payments",
+          "scope": "Payment lifecycle",
+          "paths": [
+            "payments/"
+          ],
+          "keywords": [
+            "payment"
+          ],
+          "authority": [
+            "payments/cancel.ts"
+          ],
+          "recheck": "Payment transitions change.",
+          "claims": [
+            "Cancellation produces an outbox event."
+          ]
+        },
+        {
+          "id": "CTX-ledger",
+          "scope": "Ledger transaction boundary",
+          "paths": [
+            "ledger/"
+          ],
+          "keywords": [
+            "ledger"
+          ],
+          "authority": [
+            "ledger/transaction.ts"
+          ],
+          "recheck": "Ledger ownership changes.",
+          "claims": [
+            "Ledger completion is separate from delivery."
+          ]
+        },
+        {
+          "id": "CTX-notifications",
+          "scope": "Notification delivery state",
+          "paths": [
+            "notifications/"
+          ],
+          "keywords": [
+            "notification",
+            "outbox"
+          ],
+          "authority": [
+            "notifications/consumer.ts"
+          ],
+          "recheck": "Delivery guarantees change.",
+          "claims": [
+            "Delivery has a separate terminal signal."
+          ]
+        },
+        {
+          "id": "CTX-search",
+          "scope": "Search indexing",
+          "paths": [
+            "search/"
+          ],
+          "keywords": [
+            "search"
+          ],
+          "authority": [
+            "search/index.ts"
+          ],
+          "recheck": "Search ownership changes.",
+          "claims": [
+            "Search indexes public catalog data."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-api",
+          "CTX-payments",
+          "CTX-ledger",
+          "CTX-notifications"
+        ],
+        "affected_ids": [],
+        "coverage": [
+          "All four participating boundaries",
+          "Transaction-to-outbox-to-delivery relationship",
+          "Both terminal success signals"
+        ],
+        "operations": [
+          "No Context write is required merely because the query expanded."
+        ],
+        "observable_behavior": [
+          "Update the fingerprint when the notification dependency is discovered.",
+          "Fetch the fourth necessary Pack.",
+          "Stop once relevant decisions are covered, without fetching the unrelated search Pack."
+        ],
+        "forbidden_claims": [
+          "Three Packs is a maximum.",
+          "Ledger success proves notification delivery."
+        ]
+      }
+    },
+    {
+      "id": "unselected-authority-and-new-facts",
+      "task_input": "Maintain Context after this task changes the event schema and introduces an audit consumer; an unrelated reporting task is also editing the workspace.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-api"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "schema/events.json",
+          "evidence": "This task adds a required event ID consumed by API and SDK."
+        },
+        {
+          "source": "audit/consumer.ts",
+          "evidence": "This task adds the first audit consumer; event ID is its deduplication key."
+        },
+        {
+          "source": "reports/render.ts",
+          "evidence": "This file is changed by a different task and is outside the owning task scope."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-api",
+          "scope": "Event admission",
+          "paths": [
+            "api/events.ts"
+          ],
+          "keywords": [
+            "event"
+          ],
+          "authority": [
+            "schema/events.json",
+            "api/events.ts"
+          ],
+          "recheck": "Event schema changes.",
+          "claims": [
+            "Admission follows the shared schema."
+          ]
+        },
+        {
+          "id": "CTX-sdk",
+          "scope": "Generated event SDK",
+          "paths": [
+            "sdk/generated/"
+          ],
+          "keywords": [
+            "sdk"
+          ],
+          "authority": [
+            "schema/events.json",
+            "scripts/generate-sdk.js"
+          ],
+          "recheck": "The shared event schema changes.",
+          "claims": [
+            "SDK types are generated from the event schema."
+          ]
+        },
+        {
+          "id": "CTX-reports",
+          "scope": "Report rendering",
+          "paths": [
+            "reports/"
+          ],
+          "keywords": [
+            "report"
+          ],
+          "authority": [
+            "reports/render.ts"
+          ],
+          "recheck": "Report format changes.",
+          "claims": [
+            "Reports own display formatting."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-api",
+          "CTX-sdk"
+        ],
+        "affected_ids": [
+          "CTX-api",
+          "CTX-sdk"
+        ],
+        "coverage": [
+          "Affected selected and unselected Packs",
+          "New audit state and deduplication boundary",
+          "Owning-task versus unrelated changes"
+        ],
+        "operations": [
+          "Update API and SDK conclusions affected by the schema.",
+          "Add an audit Pack only if the confirmed audit model forms an independent decision unit.",
+          "Leave reporting Context untouched."
+        ],
+        "observable_behavior": [
+          "Scan the entire metadata index, including Authority and Recheck.",
+          "Read the unselected SDK Pack because its Authority changed.",
+          "Apply admission to the newly confirmed audit facts rather than requiring an existing selected Pack."
+        ],
+        "forbidden_claims": [
+          "Only previously selected Packs need maintenance.",
+          "Every dirty file belongs to this task.",
+          "A new fact cannot be stored without an existing Pack."
+        ]
+      }
+    },
+    {
+      "id": "source-move-and-partial-fact-removal",
+      "task_input": "Update the import Context after moving the parser and retiring its legacy-format support.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-import"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "git diff for the owning task",
+          "evidence": "src/importer.js moved to src/import/parser.js and legacy input support was removed."
+        },
+        {
+          "source": "src/import/parser.js#parse",
+          "evidence": "Canonical v2 parsing and the rejection boundary remain active."
+        },
+        {
+          "source": "docs/import-format.md#v2",
+          "evidence": "The v2 format remains the canonical supported contract."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-import",
+          "scope": "Import parsing and compatibility",
+          "paths": [
+            "src/importer.js"
+          ],
+          "keywords": [
+            "import",
+            "legacy",
+            "v2"
+          ],
+          "authority": [
+            "src/importer.js",
+            "docs/import-format.md#v2"
+          ],
+          "recheck": "Parser paths or supported formats change.",
+          "claims": [
+            "The importer accepts legacy and v2 inputs.",
+            "Malformed v2 input is rejected before persistence."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-import"
+        ],
+        "affected_ids": [
+          "CTX-import"
+        ],
+        "coverage": [
+          "Replacement Authority",
+          "Remaining valid parsing and rejection boundaries"
+        ],
+        "operations": [
+          "Update Paths and Authority to the confirmed replacement.",
+          "Remove only the obsolete legacy-acceptance claim.",
+          "Keep the stable Pack ID and valid v2 rejection claim."
+        ],
+        "observable_behavior": [
+          "Verify the replacement source supports the retained conclusions.",
+          "Preserve pre-write content and validate the surgical update."
+        ],
+        "forbidden_claims": [
+          "A removed source path proves the whole component was deleted.",
+          "One stale claim makes the entire Pack disposable."
+        ]
+      }
+    },
+    {
+      "id": "unavailable-and-conflicting-authority",
+      "task_input": "Choose retry behavior using the existing jobs Pack; the partner guarantee document is unavailable and implementation differs from the normative retry contract.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-jobs"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "contracts/retry.md",
+          "evidence": "The normative retry requirement is five attempts."
+        },
+        {
+          "source": "jobs/retry.ts",
+          "evidence": "The implementation currently attempts three times."
+        },
+        {
+          "source": "partner/guarantees.md",
+          "evidence": "The cited partner guarantee document cannot be accessed."
+        },
+        {
+          "source": "jobs/state.ts",
+          "evidence": "Terminal job state remains authoritative and available."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-jobs",
+          "scope": "Retry and completion boundaries",
+          "paths": [
+            "jobs/"
+          ],
+          "keywords": [
+            "retry",
+            "job"
+          ],
+          "authority": [
+            "contracts/retry.md",
+            "jobs/retry.ts",
+            "partner/guarantees.md",
+            "jobs/state.ts"
+          ],
+          "recheck": "Retry rules or partner guarantees change.",
+          "claims": [
+            "Retries always use three attempts.",
+            "Partner delivery is exactly once.",
+            "Terminal job state proves local completion."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-jobs"
+        ],
+        "affected_ids": [
+          "CTX-jobs"
+        ],
+        "coverage": [
+          "Separate normative requirement from observed implementation.",
+          "Isolate unavailable partner evidence.",
+          "Retain supported local completion evidence."
+        ],
+        "operations": [
+          "Suspend reliance on unsupported or conflicting claims.",
+          "Defer disputed rewrites until the authority scope or conflict is resolved.",
+          "Do not delete the entire Pack because one source is unavailable."
+        ],
+        "observable_behavior": [
+          "Report the exact conflicting conclusions and source scopes.",
+          "Continue using the independently supported local completion fact.",
+          "Do not choose a settled retry policy or partner guarantee from the stale Pack."
+        ],
+        "forbidden_claims": [
+          "Implementation always overrides a normative contract.",
+          "Unavailable evidence proves the partner guarantee is false.",
+          "A valid Context format proves facts are current."
+        ]
+      }
+    },
+    {
+      "id": "local-core-repair-and-orphan-content",
+      "task_input": "Resume this workspace whose Core has one misspelled heading, with valid Packs and an old top-level notes section.",
+      "initial_context": {
+        "core_state": "locally-repairable-format-error",
+        "selected_ids": []
+      },
+      "source_facts": [
+        {
+          "source": "tasks/context.md",
+          "evidence": "The Global Vocabulary heading is misspelled; CTX-build is valid; ## Legacy Notes is not a Core or CTX section."
+        },
+        {
+          "source": "package.json#scripts",
+          "evidence": "The build script and output directory confirm the relevant Core mapping."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-build",
+          "scope": "Build output ownership",
+          "paths": [
+            "scripts/build.js"
+          ],
+          "keywords": [
+            "build"
+          ],
+          "authority": [
+            "scripts/build.js"
+          ],
+          "recheck": "Build outputs change.",
+          "claims": [
+            "Build artifacts are derived and must not be edited as source."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [],
+        "affected_ids": [],
+        "coverage": [
+          "Repairable Core evidence",
+          "Unindexed content diagnostics"
+        ],
+        "operations": [
+          "Repair only the Core format after checking Authority.",
+          "Preserve the valid Pack and unrelated notes text unchanged."
+        ],
+        "observable_behavior": [
+          "Keep a pre-write copy and check for concurrent changes.",
+          "Load the repaired Core.",
+          "Expose a warning with the location and reason for unindexed top-level content.",
+          "Do not index old notes as confirmed Pack facts automatically."
+        ],
+        "forbidden_claims": [
+          "A Core format error authorizes a Core-only replacement of the whole file.",
+          "No warning means old notes were retrieved.",
+          "Old notes are authoritative merely because they were saved."
+        ]
+      }
+    },
+    {
+      "id": "stable-id-delete-with-live-consumer",
+      "task_input": "Remove Context for the retired billing adapter during its owning task; an active integration document still links its Pack ID.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-billing-adapter"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "billing/README.md",
+          "evidence": "The old adapter is retired; no valid operational facts remain in its Pack."
+        },
+        {
+          "source": "docs/integration.md#billing",
+          "evidence": "The active integration guide links CTX-billing-adapter."
+        },
+        {
+          "source": "owning task scope",
+          "evidence": "Changing the integration guide is excluded from this task."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-billing-adapter",
+          "scope": "Retired billing adapter",
+          "paths": [
+            "billing/legacy/"
+          ],
+          "keywords": [
+            "billing"
+          ],
+          "authority": [
+            "billing/README.md"
+          ],
+          "recheck": "Adapter retirement or references change.",
+          "claims": [
+            "The adapter accepts legacy billing requests."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-billing-adapter"
+        ],
+        "affected_ids": [
+          "CTX-billing-adapter"
+        ],
+        "coverage": [
+          "Current fact validity",
+          "Stable ID consumer integrity"
+        ],
+        "operations": [
+          "Defer deletion of the referenced Pack ID.",
+          "Report the consumer dependency and the scope needed to resolve it."
+        ],
+        "observable_behavior": [
+          "Search current non-historical consumers before deleting the ID.",
+          "Do not edit an excluded carrier merely to permit deletion.",
+          "Do not rely on the retired operational claim while deletion is deferred."
+        ],
+        "forbidden_claims": [
+          "A retired component makes all live references irrelevant.",
+          "Keeping a Pack pending reference repair means its retired behavior is trustworthy."
+        ]
+      }
+    },
+    {
+      "id": "pending-core-with-authorized-pack-update",
+      "task_input": "Maintain confirmed Context facts after changing API-to-worker ownership; the Core semantic diff has not yet received confirmation.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-export"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "worker/export.ts",
+          "evidence": "The worker now owns all terminal export transitions."
+        },
+        {
+          "source": "api/export.ts",
+          "evidence": "The API only owns admission."
+        },
+        {
+          "source": "tasks/context.md",
+          "evidence": "Core still describes shared terminal-state ownership; CTX-export contains the same stale relationship."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-export",
+          "scope": "Export lifecycle ownership",
+          "paths": [
+            "api/export.ts",
+            "worker/export.ts"
+          ],
+          "keywords": [
+            "export"
+          ],
+          "authority": [
+            "api/export.ts",
+            "worker/export.ts"
+          ],
+          "recheck": "State ownership changes.",
+          "claims": [
+            "The API and worker share terminal export transitions."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-export"
+        ],
+        "affected_ids": [
+          "CTX-export"
+        ],
+        "coverage": [
+          "Core and Pack effects",
+          "Distinct write authorization boundaries"
+        ],
+        "operations": [
+          "Apply the source-backed ordinary Pack update within task scope.",
+          "Present the exact Core semantic diff for confirmation and leave it pending until accepted."
+        ],
+        "observable_behavior": [
+          "Identify the Core claim as stale before relying on it.",
+          "Validate the ordinary Pack change.",
+          "Report separately what was written and what remains unconfirmed."
+        ],
+        "forbidden_claims": [
+          "Updating a Pack automatically authorizes a semantic Core change.",
+          "A pending Core confirmation means every authorized Pack update must be abandoned.",
+          "The unconfirmed Core diff was completed."
+        ]
+      }
+    },
+    {
+      "id": "read-only-investigation-discovers-fact",
+      "task_input": "Explain settlement idempotency without changing any files, including Context.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-settlement"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "settlement/handler.ts#apply",
+          "evidence": "A unique event ID prevents repeated ledger application."
+        },
+        {
+          "source": "ledger/schema.sql#event_id",
+          "evidence": "The unique constraint confirms the idempotency boundary."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-settlement",
+          "scope": "Settlement state ownership",
+          "paths": [
+            "settlement/"
+          ],
+          "keywords": [
+            "settlement"
+          ],
+          "authority": [
+            "settlement/handler.ts"
+          ],
+          "recheck": "Settlement ownership changes.",
+          "claims": [
+            "The settlement handler owns ledger application."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-settlement"
+        ],
+        "affected_ids": [
+          "CTX-settlement"
+        ],
+        "coverage": [
+          "Confirmed reusable idempotency fact",
+          "Explicit read-only scope"
+        ],
+        "operations": [
+          "Report the confirmed fact and potential Context update without writing it."
+        ],
+        "observable_behavior": [
+          "Use source-backed evidence in the answer.",
+          "Honor the no-file-change instruction even though ordinary maintenance permits writes in other tasks."
+        ],
+        "forbidden_claims": [
+          "Routine Context maintenance overrides the task read-only boundary.",
+          "Discovering a durable fact requires immediate persistence in every task."
+        ]
+      }
+    },
+    {
+      "id": "no-durable-change",
+      "task_input": "Finish a copy correction in an existing screen; no component behavior, authority, relationship or stable terminology changed.",
+      "initial_context": {
+        "core_state": "valid",
+        "selected_ids": [
+          "CTX-checkout"
+        ]
+      },
+      "source_facts": [
+        {
+          "source": "owning task diff",
+          "evidence": "Only a misspelled helper-text word changed; runtime and contracts are unchanged."
+        },
+        {
+          "source": "checkout/view.ts",
+          "evidence": "The same component and validation boundary remain active."
+        }
+      ],
+      "candidate_packs": [
+        {
+          "id": "CTX-checkout",
+          "scope": "Checkout validation and view ownership",
+          "paths": [
+            "checkout/"
+          ],
+          "keywords": [
+            "checkout"
+          ],
+          "authority": [
+            "checkout/view.ts"
+          ],
+          "recheck": "Checkout ownership or validation changes.",
+          "claims": [
+            "Checkout validates required fields before submission."
+          ]
+        }
+      ],
+      "expected": {
+        "selected_ids": [
+          "CTX-checkout"
+        ],
+        "affected_ids": [],
+        "coverage": [
+          "No durable fact change after the final impact check"
+        ],
+        "operations": [
+          "No-op: do not change Context."
+        ],
+        "observable_behavior": [
+          "Check the owning-task impact before ending.",
+          "Leave Context bytes unchanged and keep progress in the task record."
+        ],
+        "forbidden_claims": [
+          "Every completed task must append a Context entry.",
+          "Task completion status is a durable project invariant."
+        ]
+      }
+    }
+  ]
+}

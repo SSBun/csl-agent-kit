@@ -1,0 +1,158 @@
+--- before/skills/meta/task/SKILL.md
++++ after/skills/meta/task/SKILL.md
+@@ -97,7 +97,7 @@
+ 
+ 1. Compare the original request, effective revisions, accepted constraints, current Target, actual behavior, and task-owned diff. A mismatch in authorized commitments returns to the alignment protocol, not a silently revised review criterion.
+ 2. For each Target, collect requirement, observed result, evidence, and limitations. Identify the checked version, check performed, and what the observation actually proves. Run only checks permitted by current authorization and host rules; never report an unrun test as passed. Fix known Target failures or required-check failures before dispatch; if unable, Block with an observable unblock condition. Disclose remaining uncertainty without marking an unproven Target complete.
+-3. Record supported Result evidence, classify the actual result and record its assessment. When a pass is required, prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
++3. Record supported Result evidence and perform the mandatory [Self Assessment](#self-assessment), then classify the actual result and record its Review Assessment. When a pass is required, prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
+ 4. Stop editing the review scope while the Reviewer runs. Bind the pass to actual content: an exact revision for clean Git artifacts; for dirty workspaces also identify relevant staged, unstaged, untracked, deleted, and renamed content, not merely HEAD or filenames. Use content identities for non-Git artifacts. Check the same scope again before accepting feedback and before completion.
+ 5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check, assessment and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
+ 
+@@ -159,6 +159,40 @@
+ Keep all paragraphs under this single heading, without subheadings, checkboxes, or fixed decision/verification/next-step fields. Do not repeat Target, Plan, Decisions, Result evidence, or Verification. Include only actual task-owned changes, not inspected or merely related components, proposals, or pre-existing unrelated edits. When there are no code or component changes, use one short factual sentence saying so; lifecycle record updates alone are not component changes.
+ 
+ Write or refresh the summary before self-check and review assessment, compare it with the actual task-owned changes, then run `sync` and `check`. A later summary change follows normal evidence invalidation; never append it after final verification without refreshing the affected gates. On resume or reopen, update the same section rather than adding another. Leave untouched historical records unchanged. This is an Agent-authored record requirement, not a new CLI-generated field or automatic diff inventory.
++
++### Self Assessment
++
++Automatically evaluate every task's actual result without waiting for a user reminder. This is the owner's evidence-based reflection, not independent review or a new approval gate. Write exactly one `## Self Assessment` with five rows and columns `Dimension`, `Score`, `Basis and evidence`, and `Limitations`. Localize row labels and prose to the user's language. Reference existing Result evidence or durable observations instead of copying logs; do not cite future checks as completed evidence.
++
++All five scores are integers from **1 to 5**, higher is better. Do not use N/A, percentages, high/medium/low labels, a weighted total, or an average in place of a score. Each row needs specific grounds, evidence and limitations, even when no material gap is known. Scores describe the checked scope, never absolute safety.
++
++| Dimension | What to evaluate |
++| --- | --- |
++| Change minimality | Necessary scope and root-cause resolution, without unrelated refactoring, speculative abstractions or dependencies; fewer changed lines alone do not earn a higher score. When no deliverable change is needed and none was made, 5 is justified by that fact; omitted necessary changes cannot earn this exemption. |
++| Stability | Crash, exception, data-integrity, compatibility and behavioral regression risks. For documents, workflows or no-file answers, evaluate contradictions, misleading conclusions and downstream execution risk; no runtime changes does not automatically mean 5. |
++| Target alignment | Every effective requirement, Target and preserved boundary, compared with the actual result. |
++| Verification sufficiency | What checks actually establish, their coverage and freshness, and checks not run or unavailable. No test execution is not automatically a low score when other proportionate evidence suffices. |
++| Completion confidence | Overall strength of evidence that the task is complete, using the separate anchors below; never average the other four scores. |
++
++For the first four dimensions: **1** means clearly unsatisfied; **2** means major deficiencies; **3** means basically supported with substantive limitations; **4** means well supported with only minor limitations; **5** means fully supported within the stated scope with no known material gap. Apply these anchors to each dimension's meaning, not uniformly to make a tidy scorecard.
++
++Completion confidence uses the highest integer whose entire evidence condition is met:
++
++| Score | Evidence condition |
++| --- | --- |
++| 1 | Evidence shows a core outcome was not achieved. Do not claim completion. |
++| 2 | A core outcome may exist, but critical evidence is missing or a major risk is unresolved. Completion is unestablished. |
++| 3 | Acceptance conditions are supported, with substantive but non-blocking verification limitations that must be disclosed. |
++| 4 | All acceptance conditions have sufficient evidence; only limited, non-critical uncertainty remains. |
++| 5 | All acceptance conditions and relevant critical risks have appropriate verification, with no known material gap in the stated scope. This is not a statistical probability or a guarantee of no defects. |
++
++Never raise a score to permit completion. Any failed Target or Target-blocking evidence gap still prevents completion under the existing gates, regardless of scores. If reflection reveals a known defect, return to remediation or Block rather than handing known unfinished work to review. Scores alone do not select R0/R1/R2 or waive an existing review obligation; do not include owner scores as persuasive evidence in a Reviewer packet.
++
++Write or refresh this section after owner self-check and supported Result observations, **before** Review Assessment and any independent pass, then `sync` and `check`. It is ordinary task content covered by the existing fingerprint, not an excluded bookkeeping section. Freeze it during review. After final verification, compare the current result with the scorecard: if unchanged, complete without rewriting it; if a score, basis or limitation needs revision, return to In Progress, refresh the section and affected Result evidence, `sync`/`check`, then renew assessment, any required fresh review and final verification before completion. Do not append self-assessment to a Completed record. On reopen, replace the same section based on the new result; leave untouched historical records unchanged.
++
++This applies to R0/no-file results, normal `complete`, low-risk `finalize`, Queue children and the parent's own integrated result. The parent never averages child scores or claims child changes as parent-owned. A Pending planning-only handoff does not score the unimplemented outcome; execution of that same record later uses this contract.
++
++After successful completion, automatically include all five scores and concise evidence/limitations in the user-facing handoff, with the full scorecard available in the canonical record. For delegated or Queue child work, return this handoff to the owner, not as a separate user interruption; the owner preserves each child's record and presents the parent's integration scorecard at final delivery. This is a mandatory Agent workflow requirement, not a CLI-enforced presence or score validator: `complete` and `finalize` do not mechanically reject a missing scorecard. Do not claim static checks prove real Agent adherence or scoring quality.
+ 
+ ### Result
+ 
+@@ -239,10 +273,10 @@
+ 
+ ## Completion
+ 
+-1. Before self-check, follow `task-context`'s Completion Gate for this task's actual changes and newly confirmed durable facts, including affected knowledge beyond the selected Packs; respect the task's write scope. Finish pending Execution Log updates and write or refresh Task Summary against the actual task-owned changes, then `sync` and `check`. Self-check current requirements and supported per-Target Result evidence, run proportionate authorized preliminary checks, then record the actual result's R0/R1/R2 assessment. Prepare the mandatory review handoff for R2 or explicit ordinary review.
++1. Before self-check, follow `task-context`'s Completion Gate for this task's actual changes and newly confirmed durable facts, including affected knowledge beyond the selected Packs; respect the task's write scope. Finish pending Execution Log updates and write or refresh Task Summary against the actual task-owned changes, then `sync` and `check`. Self-check current requirements and supported per-Target Result evidence, run proportionate authorized preliminary checks, write the mandatory Self Assessment and `sync`/`check`, then record the actual result's R0/R1/R2 assessment. Prepare the mandatory review handoff for R2 or explicit ordinary review.
+ 2. For R2, execute `required` → In Review → `task-review`, apply the existing per-finding stall guard and record `passed`. Explicit ordinary review also follows this route at any level; exemptions never cancel an existing Required obligation.
+ 3. For R0/R1 without explicit or existing review obligations, record `skipped` with the current assessment's exemption grounds and remain In Progress. If the user explicitly requested adversarial review of that no-file result or an R1 result, enter Required → In Review and run it without a mandatory `task-review`, then record `approved`. For R2, explicit adversarial review runs only after `passed`; `approved` evidence names both outcomes.
+-4. After the final review decision, compare current content/evidence with the assessment snapshot and, if reviewed, the reviewed snapshot. Drift returns to self-check, assessment and any required fresh review. Rerun proportionate final verification and record it as passed because every assessment or review-gate write clears Verification. For `skipped`, do not invent an independent-review snapshot.
++4. After the final review decision, compare current content/evidence with the assessment snapshot and, if reviewed, the reviewed snapshot. Drift returns to self-check, assessment and any required fresh review. Rerun proportionate final verification and record it as passed because every assessment or review-gate write clears Verification. For `skipped`, do not invent an independent-review snapshot. Recheck Self Assessment against these final observations; any needed revision follows its normal evidence-invalidation and fresh-review rules before completion.
+ 5. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
+ 6. Run `complete <id>`. This and the low-risk `finalize` path are the only routes to Completed; both fail closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
+ 7. Run `check <id>` and `validate` before delivery.
+@@ -260,10 +294,10 @@
+   --final-verification <current-final-check-observation>
+ ```
+ 
+-First finish Context, Execution Log and Task Summary maintenance, `sync`/`check`, freeze the deliverable scope, and perform the authorized self-check and final content comparison. Supply every Target exactly once, all required grading grounds, and an actual final-check observation. Reuse Result references where sufficient rather than repeating their prose. The command does not run those checks or choose the risk level; it rechecks managed evidence before committing the complete state. Missing evidence, drift, unfinished Queue children, an active Block/ledger, or an existing review obligation rejects the operation. New contents and recovery copies are prepared before replacing destinations, and the terminal task is committed last. Failed commits restore originals without rewriting their contents. If the filesystem also refuses restoration, preserve recovery copies and report exact unrecovered paths; never claim rollback succeeded. This is not a cross-file crash transaction.
++First finish Context, Execution Log and Task Summary maintenance and perform the authorized self-check. Write Self Assessment from the actual observations supplied through `--result` (do not claim they are already persisted), then `sync`/`check`, freeze the deliverable scope, and perform the final content comparison including the scorecard. If that comparison changes its basis, refresh the scorecard and checks before `finalize`. Supply every Target exactly once, all required grading grounds, and an actual final-check observation. Reuse Result references where sufficient rather than repeating their prose. The command does not run those checks or choose the risk level; it rechecks managed evidence before committing the complete state. Missing evidence, drift, unfinished Queue children, an active Block/ledger, or an existing review obligation rejects the operation. New contents and recovery copies are prepared before replacing destinations, and the terminal task is committed last. Failed commits restore originals without rewriting their contents. If the filesystem also refuses restoration, preserve recovery copies and report exact unrecovered paths; never claim rollback succeeded. This is not a cross-file crash transaction.
+ 
+ If review was explicitly requested, record Required and use the normal review path; the core cannot infer a conversational obligation. R2 always uses that path. The separate lifecycle commands remain available. After successful `finalize`, run `check` and `validate`; do not repeat assessment/review writes that would invalidate the recorded final verification.
+ 
+ ## Maintainer Validation
+ 
+-Keep `evals/review_gate_cases.json`, the routing fixtures and `evals/review_stall_cases.json` aligned with the shared grading protocol, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.
++Keep `evals/self_assessment_cases.json` aligned with the Self Assessment contract; these are manual or authorized Agent-replay cases, not evidence of executed behavior. Keep `evals/review_gate_cases.json`, the routing fixtures and `evals/review_stall_cases.json` aligned with the shared grading protocol, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.
+--- before/skills/meta/task-queue/SKILL.md
++++ after/skills/meta/task-queue/SKILL.md
+@@ -39,7 +39,7 @@
+ 
+ 1. Confirm the parent is In Progress.
+ 2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
+-3. Resume and execute that child under the full `task` lifecycle, including R0/R1/R2 classification, the mandatory `task-review` loop for R2 or explicit ordinary review, Result, final verification, completion, and index check. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
++3. Resume and execute that child under the full `task` lifecycle, including R0/R1/R2 classification, the mandatory `task-review` loop for R2 or explicit ordinary review, Result, mandatory Self Assessment, final verification, completion, and index check. Each child records its own five integer scores under `task`'s Self Assessment contract; delegated handoff returns to the owner without another user checkpoint. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
+ 4. Run `next` again only after the current child completes.
+ 5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
+ 
+@@ -50,10 +50,10 @@
+ Completed children do not prove the integrated outcome. After `next` returns no child:
+ 
+ 1. Verify the parent's own integration Targets against the assembled deliverable. Finish pending parent Execution Log updates and apply `task`'s Task Summary contract to parent-owned integration changes before assessment, then `sync` and `check`; do not copy child summaries into the parent or claim child-owned changes as parent-owned. If the parent only coordinated children, state that it made no code or component changes. Each child's summary is maintained by its own `task` completion flow.
+-2. Record parent Result evidence and preliminary integration checks, then read [Task Review Grading](../csl-tasks/shared/protocols/task-review-grading.md) in full and record the parent's own assessment using `assess-review`. No parent-owned deliverable changes is R0; simple, low-risk, sufficiently verified parent-owned changes may be R1; complex, high-risk or materially uncertain changes are R2. R0/R1 use `skipped` only without explicit or existing review obligations. R2 or explicit ordinary review uses `required` → In Review → `task-review` → `passed`. An explicitly requested adversarial review of a no-file parent or R1 parent uses `required` → In Review → `approved` without mandatory `task-review`; R2 first records `passed`, then upgrades to `approved` with both outcomes. Never downgrade due to Reviewer failure.
++2. Record parent Result evidence and preliminary integration checks, apply `task`'s mandatory Self Assessment contract to the parent's integrated outcome (not an average of child scores), then `sync`/`check` and read [Task Review Grading](../csl-tasks/shared/protocols/task-review-grading.md) in full and record the parent's own assessment using `assess-review`. No parent-owned deliverable changes is R0; simple, low-risk, sufficiently verified parent-owned changes may be R1; complex, high-risk or materially uncertain changes are R2. R0/R1 use `skipped` only without explicit or existing review obligations. R2 or explicit ordinary review uses `required` → In Review → `task-review` → `passed`. An explicitly requested adversarial review of a no-file parent or R1 parent uses `required` → In Review → `approved` without mandatory `task-review`; R2 first records `passed`, then upgrades to `approved` with both outcomes. Never downgrade due to Reviewer failure.
+ 3. After the final review-gate write, compare the assessment snapshot and confirm any reviewed scope still matches the assembled deliverable, rerun proportionate final integration checks, and record `verify <parent-id> passed --evidence <observation>` only when they pass. Every review-gate write clears prior Verification; assessment writes do too. Preliminary checks cannot replace this final record. Scope drift returns to self-check, assessment and any required fresh review; failed verification Blocks completion.
+-4. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
+-5. Run `check <parent-id>` and `validate`.
++4. Recheck the parent's Self Assessment against final integration observations. If its score, basis or limitations changed, follow `task`'s invalidation and refresh rules before completing. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
++5. Run `check <parent-id>` and `validate`. Include the parent's five scores with concise evidence and limitations in the final user-facing handoff; child scorecards remain in their owning records.
+ 
+ Apply `task`'s Review Reports persistence contract to every parent or child `task-review` pass: save and index the report under that owning task's ID before the terminal gate, never under a sibling or a shared parent directory. Keep the persistent report index separate from the temporary finding ledger.
+ 
+--- before/skills/meta/task-plan/SKILL.md
++++ after/skills/meta/task-plan/SKILL.md
+@@ -40,7 +40,7 @@
+ - `Execution Log`: follow [Task Execution Log](../task/SKILL.md#execution-log) for timely, concise discovery and decision entries, explicit supersession, privacy and evidence-invalidation boundaries. Log planning events, not unperformed implementation. It replaces the former recovery bullets without becoming a second plan or interview transcript. On resume, reconcile it with current Decisions/Plan, existing evidence and actual artifacts; historical entries never grant implementation authorization.
+ - `Block`: when a missing decision, evidence or capability necessary for current planning prevents an implementation-ready plan, with `Reason` and `Unblock when`; set the task Blocked after adding it. Missing future execution prerequisites alone belong in the Plan handoff.
+ 
+-Leave an implementation-ready record Pending. Do not record Result evidence, review, verification, or completion for work that has not been implemented; planning-only task-record writes do not trigger the deliverable-change review loop. The canonical plan record is the default handoff: do not create a `tasks/artifacts/` file merely to mirror its Scope, Decisions, or Plan. When the user explicitly authorizes execution, hand the same record to `task`, which resumes it under the single-task completion gate and applies implementation alignment. Exploration does not supply prior Target acceptance: normally the implementation Target receives its first checkpoint then. If the user separately accepted the complete implementation Target and that acceptance remains recoverable and applicable, `task` may inherit it without a duplicate checkpoint. Target acceptance alone never permits execution.
++Leave an implementation-ready record Pending. Do not score an unimplemented outcome or manufacture a completion Self Assessment for this planning-only handoff; later execution of the same record uses `task`'s mandatory five-score Self Assessment contract. Do not record Result evidence, review, verification, or completion for work that has not been implemented; planning-only task-record writes do not trigger the deliverable-change review loop. The canonical plan record is the default handoff: do not create a `tasks/artifacts/` file merely to mirror its Scope, Decisions, or Plan. When the user explicitly authorizes execution, hand the same record to `task`, which resumes it under the single-task completion gate and applies implementation alignment. Exploration does not supply prior Target acceptance: normally the implementation Target receives its first checkpoint then. If the user separately accepted the complete implementation Target and that acceptance remains recoverable and applicable, `task` may inherit it without a duplicate checkpoint. Target acceptance alone never permits execution.
+ 
+ If the requested work contains several independently acceptable outcomes and the user wants them managed automatically, stop planning the execution graph and route to `task-queue`.
+ 
+--- before/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
++++ after/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
+@@ -147,7 +147,8 @@
+ - replace evidence made stale by later changes;
+ - inspect the result from a skeptical reviewer’s perspective;
+ - check key assumptions, likely failure modes, and avoidable complexity;
+-- disclose any material verification that could not be performed.
++- disclose any material verification that could not be performed;
++- automatically perform and record the owning Task's five-dimension, 1–5 Self Assessment before review assessment, recheck it against final verification, and include the scores with evidence and limitations in the completion handoff. Follow `task` for scoring, no-file/Queue/planning boundaries and invalidation; self-scores never replace verification or independent review.
+ 
+ ## Contract Boundary
+ 
+--- before/tasks/context.md
++++ after/tasks/context.md
+@@ -155,6 +155,7 @@
+ 
+ ### Purpose and Boundaries
+ - `task` 从最早的实质准备阶段开始管理一个可独立验收 outcome，`task-plan` 只研究并形成 decisions-only handoff，同时对齐计划任务最终要实现的 Target；该 Target 的接受不授权执行。`task-queue` 用有序父子 records 串行推进多个 outcome，并在父级执行独立 integration gate。
++- `Self Assessment` 是 Task owner 在自检后、Review Assessment 前维护的普通指纹章节，五项均为 1～5 整数；最终交付展示评分与证据局限。Task、Queue child 与 parent 集成复用同一规则，Pending Plan 不评价未实现结果；现有 CLI 不强制检查评分章节。修改评价会走原有 sync／assessment／Review／Verification 失效路径，不能在 Completed 后补写。权威为 `skills/meta/task/SKILL.md#self-assessment`、`skills/meta/task-queue/SKILL.md` 和 `skills/meta/task-plan/SKILL.md`。
+ - `Task Summary` 是 Agent 在完成自检与 assessment 前维护的单一改动摘要章节，不是 CLI 自动生成字段；按实际修改的组件分段，记录组件根目录与具体变化，不替代 Result／Verification。Queue parent 只记录 parent-owned 改动；正文变化仍走 `sync` 与证据失效流程。权威为 `skills/meta/task/SKILL.md` 和 `skills/meta/task-queue/SKILL.md`。
+ - 常驻Contract只保留稳定触发、顺序、授权与停止边界；模式存储/确认分级细节归共享Target协议，assessment细节归Task/Grading，ledger格式/计数/恢复归Task与Review Workflow。独立分析本身可验收时走Task，面向后续实现的调查才走Task Plan；详细规则仍须通过选定Skill加载，去重不豁免任何门槛。
+ 
+--- /dev/null
++++ after/skills/meta/task/evals/self_assessment_cases.json
+@@ -0,0 +1,19 @@
++{
++  "schema": "task-self-assessment-cases/v1",
++  "description": "人工或获准的 Agent 回放验收样例；JSON 可解析不代表这些行为已执行验证。",
++  "cases": [
++    { "id": "normal-completion", "scenario": "普通任务收尾，未收到额外评分提醒", "expected": "在 Review Assessment 前记录唯一 Self Assessment，五项均为 1～5 整数，附依据、证据和局限，完成交付展示五项。" },
++    { "id": "missing-critical-evidence", "scenario": "核心验收条件缺乏关键证据，其他维度分数高", "expected": "完成置信度不得高于 2，不平均其他分数，不声明完成，按既有规则补证或阻塞。" },
++    { "id": "failed-target", "scenario": "已证实核心目标未达成", "expected": "完成置信度为 1，返回修复或阻塞，不用评分替代 Target 门槛。" },
++    { "id": "nonblocking-limit", "scenario": "所有验收条件有证据，但存在实质且非阻断的验证局限", "expected": "完成置信度为 3，明确局限及其不阻断验收的理由。" },
++    { "id": "minor-limit", "scenario": "全部验收证据充分，仅余轻微非关键不确定性", "expected": "完成置信度为 4，不因没有阻断项自动给 5。" },
++    { "id": "verified-scope", "scenario": "验收条件与相关关键风险均经适当验证，无已知实质缺口", "expected": "完成置信度可为 5，限定证据范围，不声称 100% 成功或绝对无缺陷。" },
++    { "id": "no-file", "scenario": "无需修改交付物的分析任务", "expected": "仍提供五项数字；最小性可因确无必要修改评 5，稳定性评价误导和后续执行风险，不使用 N/A。" },
++    { "id": "unrun-tests", "scenario": "未授权运行测试套件", "expected": "不运行测试，不声称测试通过，按获准检查实际覆盖范围评分；静态检查不证明真实 Agent 自动执行。" },
++    { "id": "finalize", "scenario": "低风险任务使用 finalize 一次性收尾", "expected": "提前按实际观察写自评，不把待写入的 --result 误称已持久化；sync/check 后冻结并核对最终内容，再 finalize。" },
++    { "id": "review-remediation", "scenario": "Review 修复或最终验证改变评分依据", "expected": "回到 In Progress，刷新自评与受影响证据，sync/check，重新 assessment、必要的 fresh Review 与最终验证；不在 Completed 后补写。" },
++    { "id": "queue", "scenario": "Queue 子任务结束且父级完成集成", "expected": "各自记录自评分数，子任务交接给 owner；父级评价自身集成结果，不平均子分数，最终交付展示父级评分。" },
++    { "id": "pending-plan", "scenario": "只形成后续实施计划并保持 Pending", "expected": "不对未实施结果给完成自评；之后执行同一记录时适用完整评分契约。" },
++    { "id": "reopen-history", "scenario": "重开旧任务，同时存在未触及的历史 Completed 记录", "expected": "重开任务按当前结果更新同一自评章节；不回填未触及历史记录，不新增 CLI 评分门禁。" }
++  ]
++}

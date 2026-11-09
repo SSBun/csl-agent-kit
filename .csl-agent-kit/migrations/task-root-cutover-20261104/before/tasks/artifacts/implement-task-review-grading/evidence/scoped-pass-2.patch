@@ -1,0 +1,1372 @@
+diff --git a/skills/dev/adversarial-review/SKILL.md b/skills/dev/adversarial-review/SKILL.md
+index af2295e..ba3f9d3 100644
+--- a/skills/dev/adversarial-review/SKILL.md
++++ b/skills/dev/adversarial-review/SKILL.md
+@@ -12,7 +12,7 @@ description: Run a fail-closed, uncapped Reviewer–Editor loop for code, PRDs,
+ - Prefer real isolated subagents for the Reviewer and Editor when the host can dispatch them; fall back to inline role-play with `ISOLATION: simulated` disclosed. Follow [Subagent Dispatch](references/subagent-dispatch.md).
+ - While `BLOCKED`, do not finalize, approve, commit, publish, or externally share the artifact.
+ - `APPROVED` is review evidence, not external-action authorization.
+-- When reviewing a file-changing task at completion, start only after its mandatory one-pass `task-review` is recorded as `Passed`; adversarial approval upgrades the same Review gate and its evidence names both reviews.
++- When reviewing an R2 task at completion, start only after its mandatory one-pass `task-review` is recorded as `Passed`; adversarial approval upgrades the same Review gate and its evidence names both reviews. R0/R1 tasks may enter Required → In Review → Approved directly on an explicit adversarial request, without an automatic ordinary pass. Use the owning Task's current assessment under [Task Review Grading](../../meta/csl-tasks/shared/protocols/task-review-grading.md); do not classify or downgrade it here.
+ - Set no total round or cycle limit. Continue by review state under [Review Loop Contract](references/review-loop.md).
+ - Keep the active finding ledger in Reviewer–Editor handoffs; do not write report files during intermediate rounds.
+ - Reviewed artifact changes invalidate `APPROVED`; return to `BLOCKED` and resume the same numbered review history.
+@@ -54,7 +54,7 @@ Both roles apply [Shared Principles and Review Lenses](references/review-lenses.
+ 
+ ### 3. Finalize the record
+ 
+-When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Require the owning canonical task ID before writing; if it is unavailable, return to task activation instead of creating an unowned report. Confirm the artifact and available diff before recording `APPROVED`, then add only the final decision and report link to the owning task. For a file-changing task, replace its `Passed` gate with `Approved` evidence that retains the completed `task-review` result and adds this report. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
++When the loop ends or pauses, write or update one report under [Final Review Report Contract](references/final-review-report.md). Require the owning canonical task ID before writing; if it is unavailable, return to task activation instead of creating an unowned report. Confirm the artifact and available diff before recording `APPROVED`, then add only the final decision and report link to the owning task. For an R2 task, replace its `Passed` gate with `Approved` evidence that retains the completed `task-review` result and adds this report. For R0/R1, record `Approved` from its explicit Required obligation. Relevant artifact or evidence changes return to the owning Task for refreshed self-check, assessment and any mandatory ordinary pass before final approval is recorded. In chat, return the normal task outcome, user-relevant verification, and report link; for a pause, return only the exact pending question or resume condition and the link.
+ 
+ ## Maintenance
+ 
+diff --git a/skills/meta/agent-hooks/references/csl-agent-kit-contract.md b/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
+index 4f3730a..9e0d241 100644
+--- a/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
++++ b/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
+@@ -20,7 +20,7 @@ Work in this order:
+ 3. **Prepare** — Consult only relevant Context, Lessons, and authoritative sources.
+ 4. **Execute** — Make the minimum correct and surgical change.
+ 5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.
+-6. **Review** — For deliverable file changes, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the mandatory task-review remediation loop before completion.
++6. **Review** — Classify the actual result under the Task workflow's R0/R1/R2 protocol. For R2 or explicit ordinary review, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the task-review remediation loop before completion.
+ 
+ Do not skip alignment or verification merely because the implementation appears obvious.
+ 
+@@ -104,19 +104,20 @@ Touch only what the aligned outcome requires:
+ 
+ ## Mandatory Modification Review
+ 
+-Every task that changes requested deliverable files must use the existing In Review state and complete a `task-review` pass before completion. Task, Context, and Lessons lifecycle records alone do not count as deliverable changes.
++Every task must classify its actual result before the completion review gate. R0 has no requested deliverable file changes; R1 permits simple, low-risk changes, including small logic changes, only with concrete grounds for clear results, bounded impact, low consequences and sufficient authorized verification. R2 covers complex, high-risk or materially uncertain changes and must use the existing In Review state and complete a `task-review` pass before completion. Diff size or confidence alone cannot justify exemption. Task, Context, and Lessons lifecycle records alone do not count as deliverable changes. The Task workflow owns the detailed grading protocol and assessment record.
+ 
+ - The main Agent first compares original requirements, effective revisions, and accepted constraints against the actual result, fixes known failures, and records per-Target observations and limitations. Do not outsource known unfinished fixes to review or claim unperformed checks.
+-- Record current Result evidence and preliminary checks, mark review required, then enter In Review and dispatch one read-only `task-review` pass using an actual fresh subagent. Give it factual requirements, artifacts, and accessible evidence rather than the author's implementation conversation or desired verdict. The Reviewer checks requirements and artifacts before detailed author evidence, and may inspect previously checked behavior for omissions.
+-- Mandatory independent review that is unavailable or fails Blocks the task with a concrete recovery condition; self-review cannot substitute for it or justify passed. Follow host failure rules and never silently switch execution modes. A prompt alone does not establish independence.
++- Record current Result evidence, preliminary checks and assessment. For R2 or explicit ordinary review, mark review required, then enter In Review and dispatch one read-only `task-review` pass using an actual fresh subagent. Give it factual requirements, artifacts, and accessible evidence rather than the author's implementation conversation or desired verdict. The Reviewer checks requirements and artifacts before detailed author evidence, and may inspect previously checked behavior for omissions.
++- Mandatory independent review that is unavailable or fails Blocks the task with a concrete recovery condition; self-review cannot substitute for it or justify passed. Failure cannot downgrade R2, and an existing Required obligation cannot become Skipped. Follow host failure rules and never silently switch execution modes. A prompt alone does not establish independence.
+ - Bind self-check, review, and final verification to the actual reviewed content. Stop changing the review scope during the pass; relevant content or evidence drift invalidates its conclusions and requires refreshed self-check and fresh review.
+-- Direct edits to an active task specification must use its sync lifecycle; sync invalidates terminal review and Verification evidence. Reopen a Completed task before changing its specification.
++- Bind the level, concrete exemption grounds, content identity and self-check evidence to one current assessment. Recheck actual external artifacts before terminal gates and completion; the core checks record consistency, not semantic risk or external filesystem freshness.
++- Direct edits to an active task specification must use its sync lifecycle; sync invalidates the assessment, terminal review and Verification evidence. Reopen a Completed task before changing its specification.
+ - Any confirmed finding returns the task to In Progress for remediation. A missing-evidence risk also returns it when the gap prevents Target verification. The main Agent verifies findings against actual evidence; a suspected false positive needs counterevidence checked by a fresh pass, not unilateral removal. Refresh affected self-check and stale evidence and repeat with a fresh pass without a fixed total round limit.
+ - Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger. Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed; a single unmarked historical free-form Review remains compatible. A first finding starts at zero; each consecutive re-review with the same root problem and required outcome but no substantive artifact or evidence progress increments it. At two, stop reviewing, Block the task with the stalled IDs and an observable unblock condition, and ask the user; never convert a stall to passed.
+ - Resolved findings leave the ledger, while evidence-backed progress or valid reclassification resets that finding to zero. Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it. Resume is rejected while any stalled item remains at two.
+ - When a pass has no confirmed finding or blocking evidence gap, the interaction owner records the review as passed. The Reviewer remains feedback-only and never grants approval or changes task state.
+-- A task with no requested deliverable file changes may skip this gate with that boundary recorded as evidence. If adversarial review of that no-file result was explicitly requested, it still enters In Review and records Approved without running the mandatory `task-review`.
+-- Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request. They do not replace the mandatory `task-review` pass.
++- R0/R1 may skip independent review only with a current evidenced assessment and no explicit or existing review obligation; final verification remains required. If adversarial review of that no-file result or an R1 result was explicitly requested, it still enters In Review and records Approved without running the mandatory `task-review`.
++- Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request. For R2 they do not replace the mandatory `task-review` pass; Approved evidence identifies both outcomes.
+ 
+ ## Verification Before Done
+ 
+diff --git a/skills/meta/csl-tasks/shared/lib/task-core.js b/skills/meta/csl-tasks/shared/lib/task-core.js
+index 4f77139..c916d77 100644
+--- a/skills/meta/csl-tasks/shared/lib/task-core.js
++++ b/skills/meta/csl-tasks/shared/lib/task-core.js
+@@ -2,6 +2,7 @@
+ 
+ const fs = require("node:fs");
+ const path = require("node:path");
++const { createHash } = require("node:crypto");
+ 
+ const STATE_DISPLAY = {
+   pending: "Pending",
+@@ -292,10 +293,92 @@ function resultsOf(text) {
+ }
+ 
+ function invalidateReviewGate(text, evidence) {
++  const assessment = section(text, "Review Assessment");
++  if (assessment) {
++    text = replaceSection(text, "Review Assessment", assessment.body.map((line) =>
++      line === "- State: Current" ? "- State: Stale" : line));
++  }
+   const review = text.match(REVIEW_PATTERN);
+-  if (!review || !["Passed", "Approved"].includes(review[1])) return text;
+-  const updated = text.replace(REVIEW_PATTERN, `- Review gate: Required — ${evidence}`);
+-  return replaceSection(updated, "Verification", undefined);
++  if (review?.[1] === "Skipped") {
++    const result = section(text, "Result");
++    text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
++  } else if (["Passed", "Approved"].includes(review?.[1])) {
++    text = text.replace(REVIEW_PATTERN, `- Review gate: Required — ${evidence}`);
++  }
++  return replaceSection(text, "Verification", undefined);
++}
++
++const REVIEW_ASSESSMENT_SCHEMA = "task-review-assessment/v1";
++const REVIEW_ASSESSMENT_FIELDS = {
++  reason: "Reason", snapshot: "Snapshot", evidence: "Evidence",
++  clarity: "Result clarity", impact: "Bounded impact", risk: "Low risk", verification: "Sufficient verification",
++};
++
++function reviewAssessmentOf(text) {
++  const sections = sectionsOf(text, "Review Assessment");
++  if (sections.length > 1) throw new Error("duplicate Review Assessment section");
++  if (!sections.length) return undefined;
++  const fields = new Map();
++  const allowed = new Set(["Schema", "Level", "State", "Task fingerprint", ...Object.values(REVIEW_ASSESSMENT_FIELDS)]);
++  for (const line of sections[0].body) {
++    const match = line.match(/^- ([A-Za-z ]+): (\S.*)$/);
++    if (!match || !allowed.has(match[1]) || fields.has(match[1])) throw new Error("invalid Review Assessment field");
++    fields.set(match[1], match[2].trim());
++  }
++  if (fields.get("Schema") !== REVIEW_ASSESSMENT_SCHEMA) throw new Error("unsupported Review Assessment schema");
++  const level = fields.get("Level");
++  if (!["R0", "R1", "R2"].includes(level)) throw new Error("invalid Review Assessment level");
++  if (!["Current", "Stale"].includes(fields.get("State"))) throw new Error("invalid Review Assessment state");
++  if (!/^[a-f0-9]{64}$/.test(fields.get("Task fingerprint") || "")) throw new Error("invalid Review Assessment fingerprint");
++  for (const key of level === "R1" ? Object.keys(REVIEW_ASSESSMENT_FIELDS) : ["reason", "snapshot", "evidence"]) {
++    if (!fields.get(REVIEW_ASSESSMENT_FIELDS[key])) throw new Error(`Review Assessment requires ${REVIEW_ASSESSMENT_FIELDS[key]}`);
++  }
++  return {
++    level,
++    state: fields.get("State"),
++    fingerprint: fields.get("Task fingerprint"),
++    ...Object.fromEntries(Object.entries(REVIEW_ASSESSMENT_FIELDS).map(([key, label]) => [key, fields.get(label)])),
++  };
++}
++
++function reviewTaskFingerprint(text) {
++  for (const name of ["Review Assessment", "Review", "Verification", "Block"]) text = replaceSection(text, name, undefined);
++  const result = section(text, "Result");
++  if (result) text = replaceSection(text, "Result", result.body.filter((line) => !REVIEW_PATTERN.test(line)));
++  text = text.replace(STATUS_PATTERN, "").replace(/\n{3,}/g, "\n\n").trim();
++  return createHash("sha256").update(text).digest("hex");
++}
++
++function requireCurrentReviewAssessment(task) {
++  const assessment = task.reviewAssessment;
++  if (!assessment) throw new Error("record a Review Assessment with assess-review before a terminal review gate or completion");
++  if (assessment.state !== "Current" || assessment.fingerprint !== reviewTaskFingerprint(task.text)) {
++    throw new Error("stale Review Assessment; refresh self-check, snapshot, and assess-review");
++  }
++  return assessment;
++}
++
++function recordReviewAssessment(workspace, id, level, options = {}) {
++  const task = readTask(workspace, id);
++  if (task.status.state !== "in_progress") throw new Error("assess-review requires In Progress");
++  const value = String(level || "").toUpperCase();
++  if (!["R0", "R1", "R2"].includes(value)) throw new Error(`invalid review level: ${level}`);
++  if (value !== "R2" && (task.reviewLedger || (task.reviewAssessment?.level === "R2" && ["Required", "Passed", "Approved"].includes(task.review?.[1])))) {
++    throw new Error("cannot downgrade an existing R2 review obligation or unresolved Review ledger");
++  }
++  const fields = [];
++  for (const [key, label] of Object.entries(REVIEW_ASSESSMENT_FIELDS)) {
++    const content = String(options[key] || "").trim();
++    if (/[\r\n]/.test(content)) throw new Error(`${label} must be one line`);
++    if (!content && (value === "R1" || ["reason", "snapshot", "evidence"].includes(key))) throw new Error(`Review Assessment requires ${label}`);
++    if (content) fields.push(`- ${label}: ${content}`);
++  }
++  let text = invalidateReviewGate(task.text, "Review assessment changed; rerun the applicable review");
++  text = replaceSection(text, "Review Assessment", [
++    `- Schema: ${REVIEW_ASSESSMENT_SCHEMA}`, `- Level: ${value}`, "- State: Current",
++    ...fields, `- Task fingerprint: ${reviewTaskFingerprint(text)}`,
++  ]);
++  return writeTaskAndIndex(workspace, task, text);
+ }
+ 
+ function reviewLedgerOf(text) {
+@@ -407,6 +490,7 @@ function parseTask(id, text, file) {
+     targets: targetsOf(text),
+     results: resultsOf(text),
+     review: text.match(REVIEW_PATTERN),
++    reviewAssessment: reviewAssessmentOf(text),
+     reviewLedger: reviewLedgerOf(text),
+     verification: text.match(VERIFICATION_PATTERN),
+   };
+@@ -604,7 +688,7 @@ function recordResult(workspace, id, targetId, evidence) {
+   return readTask(workspace, id);
+ }
+ 
+-function setReviewGate(workspace, id, decision, evidence) {
++function setReviewGate(workspace, id, decision, evidence, options = {}) {
+   const task = readTask(workspace, id);
+   if (task.status.state === "completed") throw new Error("reopen the task before changing the review gate");
+   const values = { skipped: "Skipped", required: "Required", passed: "Passed", approved: "Approved" };
+@@ -619,16 +703,33 @@ function setReviewGate(workspace, id, decision, evidence) {
+   if (key === "approved" && !["Required", "Passed"].includes(task.review?.[1])) {
+     throw new Error("Approved review gate requires a Required or Passed review");
+   }
+-  if (["passed", "approved"].includes(key) && task.reviewLedger) {
+-    throw new Error("remove the active Review ledger before recording a terminal review gate");
++  const resolveLedger = options.resolveLedger === true;
++  if (resolveLedger && (key !== "passed" || !task.reviewLedger)) {
++    throw new Error("resolve-ledger requires Passed and an active Review ledger");
++  }
++  if (options.snapshot !== undefined && !resolveLedger) throw new Error("review snapshot requires resolve-ledger");
++  if (resolveLedger && stalledReviewIds(task).length) throw new Error("cannot resolve a stalled Review ledger before its unblock condition");
++  if (["passed", "approved"].includes(key) && task.reviewLedger && !resolveLedger) {
++    throw new Error("remove the active Review ledger through passed --resolve-ledger after fresh review resolves every finding");
+   }
+   if (key === "skipped" && task.status.state === "in_review") throw new Error("In Review cannot skip its review gate");
++  if (key !== "required") {
++    const assessment = requireCurrentReviewAssessment(task);
++    if (resolveLedger && options.snapshot !== assessment.snapshot) throw new Error("resolve-ledger requires the current reviewed assessment snapshot");
++    if (key === "skipped" && (assessment.level === "R2" || task.reviewLedger || ["Required", "Passed", "Approved"].includes(task.review?.[1]))) {
++      throw new Error("cannot skip R2, an existing review obligation, or an unresolved Review ledger");
++    }
++    if (key === "approved" && assessment.level === "R2" && task.review?.[1] !== "Passed") {
++      throw new Error("R2 adversarial approval requires Passed task-review first");
++    }
++  }
+   const value = String(evidence || "").trim();
+   if (!value || /[\r\n]/.test(value)) throw new Error("review evidence must be one line");
+   const found = section(task.text, "Result");
+   const lines = found ? found.body.filter((line) => !/^\s*- Review gate:/.test(line)) : [];
+   lines.push(`- Review gate: ${values[key]} — ${value}`);
+-  let text = replaceSection(task.text, "Result", lines);
++  let text = resolveLedger ? replaceSection(task.text, "Review", undefined) : task.text;
++  text = replaceSection(text, "Result", lines);
+   text = replaceSection(text, "Verification", undefined);
+   atomicWrite(task.file, text);
+   return readTask(workspace, id);
+@@ -649,8 +750,11 @@ function linkChild(workspace, parentId, childId) {
+   const parent = readTask(workspace, parentId);
+   const child = readTask(workspace, childId);
+   if (parent.kind !== "queue") throw new Error("parent must be a Queue task");
+-  if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
+   if (child.parent && child.parent !== parentId) throw new Error(`${childId} already belongs to ${child.parent}`);
++  const existingChild = parent.children.find(({ id }) => id === childId);
++  if (existingChild?.title === child.title && child.parent === parentId) return { parent, child };
++  if (parent.status.state === "completed") throw new Error("reopen the Queue parent before changing its graph");
++  if (child.status.state === "completed") throw new Error(`reopen Completed child ${childId} before changing its relationship`);
+ 
+   const childTitle = normalizedTitle(child.title);
+   if (childTitle === normalizedTitle(parent.title)) throw new Error("Queue parent and children need distinct titles");
+@@ -675,7 +779,7 @@ function linkChild(workspace, parentId, childId) {
+   let parentText = replaceSection(parent.text, "Children", children.map((item, index) => `${index + 1}. [${item.title}](${item.id}.md)`));
+   parentText = invalidateReviewGate(parentText, "Queue graph changed after review; rerun the applicable review");
+   parentText = replaceSection(parentText, "Verification", undefined);
+-  const childText = setField(child.text, "Parent", parentId);
++  const childText = invalidateReviewGate(setField(child.text, "Parent", parentId), "Parent link changed; refresh assessment and review");
+   writeMany([[parent.file, parentText], [child.file, childText]]);
+   return { parent: readTask(workspace, parentId), child: readTask(workspace, childId) };
+ }
+@@ -707,6 +811,8 @@ function completeTask(workspace, id) {
+   if (!task.verification || task.verification[1] !== "Passed") throw new Error("completion requires passed verification evidence");
+   if (task.reviewLedger) throw new Error("an active Review ledger blocks completion");
+   if (section(task.text, "Block")) throw new Error("a blocked task cannot be completed");
++  const assessment = requireCurrentReviewAssessment(task);
++  if (assessment.level === "R2" && task.review[1] === "Skipped") throw new Error("R2 cannot complete with skipped review");
+   if (task.kind === "queue") {
+     if (task.children.length === 0) throw new Error("a Queue task needs at least one child");
+     const unfinished = task.children.map(({ id: childId }) => readTask(workspace, childId)).find((child) => child.status.state !== "completed");
+@@ -795,6 +901,7 @@ module.exports = {
+   nextChild,
+   readTask,
+   recordResult,
++  recordReviewAssessment,
+   recordVerification,
+   reopenTask,
+   resumeTask,
+diff --git a/skills/meta/csl-tasks/shared/scripts/csl-tasks.js b/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+index dda386c..3ffb0f9 100755
+--- a/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
++++ b/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+@@ -20,7 +20,10 @@ Commands:
+   link <parent-id> <child-id>
+   next <queue-id> [--json]
+   result <id> <Tn> --evidence <text>
++  assess-review <id> <R0|R1|R2> --reason <text> --snapshot <identity> --evidence <text>
++    R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>
+   review <id> <skipped|required|passed|approved> --evidence <text>
++    passed may use --resolve-ledger --snapshot <reviewed-identity> after all findings resolve
+   verify <id> <passed|failed> --evidence <text>
+   complete <id>`;
+ 
+@@ -47,6 +50,7 @@ function summary(task) {
+     status: task.status.display,
+     parent: task.parent || null,
+     children: task.children.map(({ id }) => id),
++    reviewAssessment: task.reviewAssessment || null,
+   };
+ }
+ 
+@@ -143,11 +147,22 @@ function run(argv, io = console) {
+         output = summary(core.recordResult(workspace, id, targetId, evidence));
+         break;
+       }
++      case "assess-review": {
++        const [id, level] = args.splice(0, 2);
++        const options = Object.fromEntries(["reason", "snapshot", "evidence", "clarity", "impact", "risk", "verification"]
++          .map((key) => [key, takeOption(args, `--${key}`)]));
++        if (!id || !level || args.length) throw new Error("assess-review needs a task id, R0|R1|R2, and assessment evidence options");
++        output = summary(core.recordReviewAssessment(workspace, id, level, options));
++        break;
++      }
+       case "review": {
+         const [id, decision] = args.splice(0, 2);
+         const evidence = takeOption(args, "--evidence");
++        const snapshot = takeOption(args, "--snapshot");
++        const resolveLedger = args.includes("--resolve-ledger");
++        if (resolveLedger) args.splice(args.indexOf("--resolve-ledger"), 1);
+         if (!id || !decision || args.length) throw new Error("review needs a task id, decision, and --evidence");
+-        output = summary(core.setReviewGate(workspace, id, decision, evidence));
++        output = summary(core.setReviewGate(workspace, id, decision, evidence, { resolveLedger, snapshot }));
+         break;
+       }
+       case "verify": {
+diff --git a/skills/meta/task-queue/SKILL.md b/skills/meta/task-queue/SKILL.md
+index a216c47..81f4e74 100644
+--- a/skills/meta/task-queue/SKILL.md
++++ b/skills/meta/task-queue/SKILL.md
+@@ -22,7 +22,7 @@ This skill owns Queue-parent activation, the integration Target meaning, permitt
+ 3. Apply the shared Task Target Alignment Protocol to the active parent. For this workflow, the conversational Target means the parent integration outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, focus, sync, and check. The gate follows activation and precedes task-direct source inspection, graph decomposition, or substantive preparation; only the protocol's focused target-forming clarification may occur within it.
+ 4. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons and directly relevant sources, then clarify only user-owned decisions that block a correct decomposition.
+ 5. Refine the parent's integration Targets and create a child only for an independently acceptable or independently blocked outcome. Each child has its own observable Targets and complete `task` lifecycle. Give the Queue parent an integration title and every child a distinct stage-specific title; parent, child, and sibling titles in one Queue must not normalize to the same text.
+-6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents, cycles, and same-Queue title collisions, and preserves order.
++6. Link children in execution order with `link <parent-id> <child-id>`. The core maintains reciprocal Parent/Children records, rejects multiple parents, cycles, and same-Queue title collisions, and preserves order. Reopen a Completed child before changing its relationship; an identical reciprocal link is a no-op and must not invalidate either record's evidence.
+ 7. Add the parent's current Scope and Plan. The Plan must name every child ID in execution order so it is the delegation source, then `sync` and `check` every touched record.
+ 
+ Do not duplicate a child's Target, Plan, Result, or status in the parent. The parent Plan links or names children and states dependencies only.
+@@ -31,19 +31,19 @@ Do not duplicate a child's Target, Plan, Result, or status in the parent. The pa
+ 
+ 1. Confirm the parent is In Progress.
+ 2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
+-3. Resume and execute that child under the full `task` lifecycle, including the mandatory `task-review` loop for deliverable file changes, Result, final verification, completion, and index check. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
++3. Resume and execute that child under the full `task` lifecycle, including R0/R1/R2 classification, the mandatory `task-review` loop for R2 or explicit ordinary review, Result, final verification, completion, and index check. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
+ 4. Run `next` again only after the current child completes.
+ 5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
+ 
+-On resume, inspect the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
++On resume, inspect the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's assessment, terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
+ 
+ ## Parent Final Gate
+ 
+ Completed children do not prove the integrated outcome. After `next` returns no child:
+ 
+ 1. Verify the parent's own integration Targets against the assembled deliverable.
+-2. Record parent Result evidence and preliminary integration checks. Apply exactly one branch: parent-owned deliverable file changes require the mandatory `task-review` loop and `passed`; no parent-owned deliverable changes use `skipped`; an explicitly requested adversarial review of a no-file parent instead uses `required` → In Review → `approved` without mandatory `task-review`. For a file-changing parent, run explicit adversarial review only after `passed` and upgrade the same gate to `approved`.
+-3. After the final review-gate write, confirm any reviewed scope still matches the assembled deliverable, rerun proportionate final integration checks, and record `verify <parent-id> passed --evidence <observation>` only when they pass. Every review-gate write clears prior Verification; preliminary checks cannot replace this final record. Scope drift returns to self-check and fresh review; failed verification Blocks completion.
++2. Record parent Result evidence and preliminary integration checks, then read [Task Review Grading](../csl-tasks/shared/protocols/task-review-grading.md) in full and record the parent's own assessment using `assess-review`. No parent-owned deliverable changes is R0; simple, low-risk, sufficiently verified parent-owned changes may be R1; complex, high-risk or materially uncertain changes are R2. R0/R1 use `skipped` only without explicit or existing review obligations. R2 or explicit ordinary review uses `required` → In Review → `task-review` → `passed`. An explicitly requested adversarial review of a no-file parent or R1 parent uses `required` → In Review → `approved` without mandatory `task-review`; R2 first records `passed`, then upgrades to `approved` with both outcomes. Never downgrade due to Reviewer failure.
++3. After the final review-gate write, compare the assessment snapshot and confirm any reviewed scope still matches the assembled deliverable, rerun proportionate final integration checks, and record `verify <parent-id> passed --evidence <observation>` only when they pass. Every review-gate write clears prior Verification; assessment writes do too. Preliminary checks cannot replace this final record. Scope drift returns to self-check, assessment and any required fresh review; failed verification Blocks completion.
+ 4. Run `complete <parent-id>`. The core rejects completion when a child is unfinished or the parent lacks its own evidence.
+ 5. Run `check <parent-id>` and `validate`.
+ 
+diff --git a/skills/meta/task-review/SKILL.md b/skills/meta/task-review/SKILL.md
+index 3e8e62c..4019c9a 100644
+--- a/skills/meta/task-review/SKILL.md
++++ b/skills/meta/task-review/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: task-review
+-description: Review a canonical task or supplied result once and return feedback only. Use for an explicit review request covering a PR/MR, diff, file, design, configuration, or no-file work, and for a mandatory deliverable-change review pass dispatched by an owning task. Exclude implementation, remediation, whole-subject audits, proofreading, and approval-gated review.
++description: Review a canonical task or supplied result once and return feedback only. Use for an explicit review request covering a PR/MR, diff, file, design, configuration, or no-file work, and for an R2 mandatory review pass dispatched by an owning task. Exclude implementation, remediation, whole-subject audits, proofreading, and approval-gated review.
+ ---
+ 
+ # Task Review
+@@ -12,12 +12,13 @@ Run one evidence-based review pass without changing the reviewed work. The ownin
+ - Enter only from an explicit user review request or an explicit mandatory review dispatch from the owning `task` workflow. Never infer a pass solely from risk or task state.
+ - Return feedback only: no edits, task-state changes, reports, remediation, re-review, or approval. The owning task handles every transition, fix, and later pass.
+ - Review any task state as its snapshot; explicit unfinished work is not a defect.
++- The owning Task classifies R0/R1/R2 before dispatch. R2 requires an independent pass; R0/R1 exemptions never suppress an explicit user review request. The Reviewer does not downgrade the task or rewrite its assessment.
+ - Route explicitly requested Reviewer–Editor approval to `adversarial-review`, and whole-subject audits elsewhere.
+ 
+ ## Workflow
+ 
+ 1. Target priority: named task; focused or owning task; supplied artifact or result; PR/MR, diff, or fixed point. Ask only if absent. See [Review Workflow](references/review_workflow.md) for Git details.
+-2. Read [Review Workflow](references/review_workflow.md) and use its fixed Reviewer prompt plus a factual task packet. Include original requests and effective revisions, applicable Target/Result/Verification, accepted constraints, actual artifacts/diff and snapshot, rules, allowed checks, and known limitations. Supply detailed author checks as accessible evidence references, not an implementation-conversation summary. For an owning-task re-review, also give the current `task-review-ledger/v1` `## Review` ledger and its next unused finding ID. Exclude the author's defense, preferred conclusion, and proposed answer; never hide material limitations.
++2. Read [Review Workflow](references/review_workflow.md) and use its fixed Reviewer prompt plus a factual task packet. Include original requests and effective revisions, applicable Target/Result/Verification and Review Assessment, accepted constraints, actual artifacts/diff and snapshot, rules, allowed checks, and known limitations. Supply detailed author checks as accessible evidence references, not an implementation-conversation summary. For an owning-task re-review, also give the current `task-review-ledger/v1` `## Review` ledger and its next unused finding ID. Exclude the author's defense, preferred conclusion, and proposed answer; never hide material limitations.
+ 3. A mandatory pass requires exactly one fresh, read-only subagent. Prefer the same single fresh Reviewer for standalone requests when available; a standalone request requiring independence cannot use inline review. Explicitly select fresh context or the host equivalent, never fork the author's conversation. Use host tool restrictions, not a prompt alone, for read-only isolation. It may inspect surrounding evidence and run authorized non-destructive checks, but must not edit, change task state, or delegate. Never launch a nested host CLI. Never run tests without the required authorization.
+ 4. If the mandatory Reviewer is unavailable or fails, stop and return the exact failure and run/workspace state; the owner Blocks, never substitutes self-review or records Passed. For a standalone explicit review whose fresh Reviewer is unavailable or fails, inline review is allowed only when the host permits it and the request has no independence requirement, labeled `Review mode: non-independent self-review`; otherwise return the failure to the interaction owner. An actual fresh child uses `Review mode: independent subagent`. Stricter host failure rules win; never silently switch modes after a failed launch. A standalone review does not require author self-check evidence; disclose its absence rather than refusing the review.
+ 5. In the same pass, first compare original requirements, accepted constraints, and actual artifacts, including relevant unchanged callers and failure paths; then inspect author evidence and the prior ledger. Already checked behavior is not exempt, but do not mechanically rerun every check. This ordering reduces anchoring; it is not guaranteed blind review. Check snapshot identity before and after inspection; drift or inaccessible material evidence is an Unverified Risk, never a completed current-snapshot review.
+diff --git a/skills/meta/task-review/evals/contract_cases.json b/skills/meta/task-review/evals/contract_cases.json
+index 2d0e733..314990d 100644
+--- a/skills/meta/task-review/evals/contract_cases.json
++++ b/skills/meta/task-review/evals/contract_cases.json
+@@ -11,13 +11,22 @@
+     },
+     {
+       "id": "mandatory-task-entry",
+-      "given": "the owning task explicitly dispatches its required deliverable-change review pass",
++      "given": "the owning task explicitly dispatches its required R2 review pass",
+       "expect": {
+         "review_starts": true,
+         "user_must_request_review_again": false,
+         "single_pass_only": true
+       }
+     },
++    {
++      "id": "explicit-r1-review",
++      "given": "the user explicitly requests ordinary review of an R1 result",
++      "expect": {
++        "review_starts": true,
++        "r1_exemption_cancels_request": false,
++        "reviewer_changes_assessment": false
++      }
++    },
+     {
+       "id": "target-resolution",
+       "given": "the user requests review with several possible target sources",
+@@ -45,6 +54,7 @@
+           "original request and effective revisions with recoverable sources",
+           "accepted constraints",
+           "review-scope snapshot identity",
++          "current Review Assessment level and grounds",
+           "allowed checks and prohibited actions",
+           "per-Target self-check evidence references"
+         ],
+@@ -89,6 +99,7 @@
+         "owner_records_passed": false,
+         "owner_blocks_with_recovery_condition": true,
+         "self_check_evidence_preserved": true,
++        "r2_downgraded": false,
+         "finding_no_progress_incremented": false
+       }
+     },
+diff --git a/skills/meta/task-review/references/review_workflow.md b/skills/meta/task-review/references/review_workflow.md
+index 38b85a1..df68b1c 100644
+--- a/skills/meta/task-review/references/review_workflow.md
++++ b/skills/meta/task-review/references/review_workflow.md
+@@ -31,7 +31,7 @@ The main Agent combines the fixed prompt below with one factual packet:
+ - original request and effective revisions, current Target, and accepted constraints with recoverable sources; never just the author's requirement summary
+ - actual artifacts, relevant diff, and a review-scope snapshot identity
+ - applicable rules/spec, allowed checks, prohibited actions, and known material limitations
+-- applicable Result/Verification and per-Target self-check evidence: requirement, observation, check and checked version, what it proves, and limitations
++- applicable Result/Verification, the current Review Assessment (level, grounds, snapshot identity), and per-Target self-check evidence: requirement, observation, check and checked version, what it proves, and limitations
+ - for an owning-task re-review, the current `task-review-ledger/v1` `## Review` ledger and next unused `TR-<n>` ID; for an initial owning-task pass, an empty ledger and next ID 1
+ 
+ Keep original requirements, constraints, scope, and important limitations visible at entry. Prefer exact, accessible references for detailed author check results so the Reviewer can inspect them after examining requirements and artifacts in the same pass. Missing or inaccessible evidence remains an explicit gap; do not fabricate it or strip constraints to shorten the packet. A standalone request without author evidence still receives a bounded review.
+@@ -42,7 +42,7 @@ Exclude the author's private reasoning, defense, confidence scores, desired verd
+ 
+ The owner freezes its review-scope edits while the Reviewer works. Identify a clean Git artifact with an exact revision; for a dirty workspace also capture the scoped staged/unstaged diff and content identities of relevant untracked files, deletions, and renames. HEAD, timestamps, or a filename list alone are insufficient. Use equivalent content/version identities for non-Git results. Do not include unrelated workspace changes or demand a clean whole repository.
+ 
+-Check the reviewed scope before and after the pass and again before completion. Drift invalidates current-snapshot conclusions; return the mismatch as a Target-blocking Unverified Risk to the owner for refreshed self-check and fresh review. Reuse existing evidence carriers; this procedure adds no snapshot service or Task schema.
++Check the reviewed scope before and after the pass and again before completion. Drift invalidates current-snapshot conclusions; return the mismatch as a Target-blocking Unverified Risk to the owner for refreshed self-check and fresh review. Reuse the owning task's assessment and existing evidence carriers; this procedure adds no snapshot service. The assessment's snapshot is an owner-attested external identity, not proof that the core monitored the files. An R2 obligation cannot be downgraded because the Reviewer fails.
+ 
+ The host must actually select fresh context and read-only tools; this file neither registers an Agent nor establishes isolation. Do not fork the author's session. Source facts and accepted constraints are shared, but the author's implementation conversation and preferred verdict are not. Read requirements/artifacts before detailed author evidence; this is an anti-anchoring procedure, not strict blind review or a guarantee against shared-model bias. A mandatory failure returns to the owner under the Skill's failure policy, not a different execution mode.
+ 
+diff --git a/skills/meta/task/SKILL.md b/skills/meta/task/SKILL.md
+index 287401e..935675a 100644
+--- a/skills/meta/task/SKILL.md
++++ b/skills/meta/task/SKILL.md
+@@ -18,7 +18,7 @@ This skill owns task activation, the single-outcome Target meaning, permitted li
+ - `tasks/tasks.md` is the newest-first index. It contains only title, current status, and a `tasks/<slug>.md` link.
+ - `tasks/tasks/<slug>.md` is the canonical record and is authoritative when the index disagrees.
+ - Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for creation, state, parent-child, evidence, verification, completion, and index checks.
+-- Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively clears Verification and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
++- Do not hand-edit status or index lines. After direct edits to Scope, Target, Plan, Decisions, Block, or the active Review ledger, run `sync <id>` and `check <id>`. For a non-Completed task, `sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`; reopen a Completed task before changing its specification.
+ - Modify only the owning task and its exact index entry. Preserve unrelated task state and untouched history.
+ 
+ ## Task Artifacts
+@@ -56,19 +56,29 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
+ 6. After the protocol aligns the current Target, query task-relevant Context Packs, read relevant lessons, and inspect task-direct sources.
+ 7. Add or refine only the substantive Scope, Target, and Plan content now supported, then `sync` and `check` before execution continues.
+ 
++## Review Classification
++
++Before choosing a completion review gate, read [Task Review Grading](../csl-tasks/shared/protocols/task-review-grading.md) in full. Apply it after owner self-check and current Result evidence, independently of Task Target levels:
++
++- **R0:** no requested deliverable files changed; lifecycle records alone do not count. Independent review may be skipped.
++- **R1:** simple, low-risk changes, including small logic changes, with concrete grounds for result clarity, bounded impact, low consequences and sufficient authorized verification. All four are required to skip independent review.
++- **R2:** complex, high-risk or materially uncertain changes require the existing fresh independent `task-review` loop. Diff size and confidence alone never justify R1.
++
++Use `assess-review <id> <R0|R1|R2> --reason <ground> --snapshot <content-identity> --evidence <self-check-reference>` while In Progress; R1 also requires `--clarity`, `--impact`, `--risk` and `--verification`. Explicit review overrides an exemption. A Required obligation cannot become Skipped; Reviewer failure cannot downgrade R2. Keep final verification at every level. Missing required evidence can Block completion, never be concealed by an exemption.
++
+ ## Owner Self-Check and Review Handoff
+ 
+-Before each mandatory review pass, the main Agent owns self-check and verification; the fresh Reviewer looks for omissions, not the author's known unfinished fixes.
++Before classification and each mandatory review pass, the main Agent owns self-check and verification; the fresh Reviewer looks for omissions, not the author's known unfinished fixes.
+ 
+ 1. Compare the original request, effective revisions, accepted constraints, current Target, actual behavior, and task-owned diff. A mismatch in authorized commitments returns to the alignment protocol, not a silently revised review criterion.
+ 2. For each Target, collect requirement, observed result, evidence, and limitations. Identify the checked version, check performed, and what the observation actually proves. Run only checks permitted by current authorization and host rules; never report an unrun test as passed. Fix known Target failures or required-check failures before dispatch; if unable, Block with an observable unblock condition. Disclose remaining uncertainty without marking an unproven Target complete.
+-3. Record supported Result evidence and prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
++3. Record supported Result evidence, classify the actual result and record its assessment. When a pass is required, prepare the factual packet and Reviewer prompt in [Review Workflow](../task-review/references/review_workflow.md). Include recoverable original requirements and accepted constraints, actual artifacts/diff, content identity, allowed checks, known limitations, and per-Target evidence references. Exclude author defense and desired verdicts. Reuse Result and existing evidence carriers; do not create a self-check report, second ledger, or new task state.
+ 4. Stop editing the review scope while the Reviewer runs. Bind the pass to actual content: an exact revision for clean Git artifacts; for dirty workspaces also identify relevant staged, unstaged, untracked, deleted, and renamed content, not merely HEAD or filenames. Use content identities for non-Git artifacts. Check the same scope again before accepting feedback and before completion.
+-5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
++5. Any relevant content, requirement, or evidence drift invalidates the pass: return to In Progress, refresh self-check, assessment and the packet, and dispatch a fresh pass under Required. Do not reuse an old no-findings response. If the reviewed snapshot cannot be established, report the blocking evidence gap instead of recording Passed.
+ 
+ A mandatory pass requires an actual fresh, read-only subagent; a prompt saying “be independent” or a Markdown template is not isolation. If it is unavailable or fails, preserve self-check evidence, report the exact failure and run/workspace state, and Block with an observable recovery condition. Do not substitute inline self-review or silently switch execution modes. Infrastructure failures do not increment finding no-progress streaks. Follow stricter host failure/retry rules.
+ 
+-The core validates recorded state and evidence text, not actual subagent isolation, check execution, or filesystem freshness; the host and main Agent must establish those facts.
++The core validates assessment structure, level/gate consistency, task-record fingerprint and evidence text, not semantic risk, actual subagent isolation, check execution, or external filesystem freshness; the host and main Agent must establish those facts.
+ 
+ ## Record Contract
+ 
+@@ -95,15 +105,19 @@ The core records one evidence line per Target. Evidence must name what was check
+ 
+ Record the review gate through `review <id> ... --evidence ...`:
+ 
+-- `skipped` only when the task changed no requested deliverable files. Canonical task, Context, and Lessons lifecycle writes alone do not count as deliverable changes.
+-- `required` before every review pass for a task that changed requested deliverable files. Complete Owner Self-Check and Review Handoff, record current Result evidence and preliminary checks, then set `required` and move to In Review before invoking `task-review`.
++- `skipped` only with a current R0 or R1 assessment and no explicit or existing review obligation. Record the concrete exemption evidence, not an independent-review claim.
++- `required` before every R2 or explicitly requested review pass. Complete Owner Self-Check and Review Handoff, record current Result evidence and assessment, then set `required` and move to In Review before invoking `task-review`.
+ - `passed` only after that `task-review` pass reports no Critical Finding, no Concern, and no Unverified Risk that prevents Target verification, and the main Agent confirms an independent pass covered the current snapshot. The interaction owner records this value; the read-only Reviewer never writes task state or grants approval.
+-- `approved` only after an explicitly requested `adversarial-review` approves. A task with deliverable changes first completes the mandatory `task-review`; `approved` evidence must identify both outcomes.
++- `approved` only after an explicitly requested `adversarial-review` approves. R2 first completes mandatory `task-review` and identifies both outcomes; R0/R1 may enter Required → In Review → Approved directly, without an automatic ordinary pass.
+ 
+-When `task-review` finds a problem, return to In Progress, remediate it, refresh affected self-check, Result and verification evidence, set the gate to `required`, re-enter In Review, and invoke a new one-pass `task-review`. Check findings against actual artifacts rather than accepting suggestions mechanically. For a suspected false positive, supply observable counterevidence or authoritative constraints for the next fresh pass to verify; never remove an unresolved finding unilaterally or relabel it without evidence to obtain `passed`. Apply the Review tracking and stall guard below on every pass. Repeat without a fixed total round limit until the gate can be recorded as `passed`, the task becomes Blocked, or the user stops. Any reviewed deliverable change, Result change, or Queue graph change invalidates `passed` or `approved` evidence.
++When `task-review` finds a problem, return to In Progress, remediate it, refresh affected self-check, Result, assessment and verification evidence, set the gate to `required`, re-enter In Review, and invoke a new one-pass `task-review`. Check findings against actual artifacts rather than accepting suggestions mechanically. For a suspected false positive, supply observable counterevidence or authoritative constraints for the next fresh pass to verify; never remove an unresolved finding unilaterally or relabel it without evidence to obtain `passed`. Apply the Review tracking and stall guard below on every pass. Repeat without a fixed total round limit until the gate can be recorded as `passed`, the task becomes Blocked, or the user stops. Any relevant deliverable, Result or Queue graph change invalidates the assessment and terminal gate; refresh self-check and grading while preserving an existing independent-review obligation.
+ 
+ Independent adversarial review, a two-Agent Reviewer-Editor loop, and independent approval remain opt-in and run only when the user explicitly requests them. They do not replace the mandatory `task-review` pass.
+ 
++### Review Assessment
++
++The CLI owns exactly one `## Review Assessment` section with schema `task-review-assessment/v1`: Level, Current/Stale state, Reason, Snapshot, Evidence, R1's four grounds when applicable, and Task fingerprint. It retains the current classification, not a review transcript. Never hand-edit it or merge it into the finding ledger. All new terminal gates and completion require a current assessment; unchanged historical records remain readable without migration. The owner rechecks actual external content/evidence identity before recording a terminal gate and before completion.
++
+ ### Review
+ 
+ Use exactly one temporary `## Review` section with the exact `task-review-ledger/v1` marker while a mandatory review loop has unresolved items or is stalled. Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate Markdown list markers or whitespace fail closed; one unmarked historical free-form Review section remains compatible. Keep only the current ledger, not a pass transcript:
+@@ -120,7 +134,7 @@ Use exactly one temporary `## Review` section with the exact `task-review-ledger
+ - Give every prior ID to the next fresh Reviewer. The Reviewer must classify it as `resolved`, `substantive progress`, or `no progress` with current evidence. Keep the same ID when wording, location, or severity changes but the root problem and required outcome remain materially the same.
+ - Increment only a `no progress` item. Reset it to `0` for evidence-backed artifact progress, a valid evidence-backed reclassification, or newly actionable evidence; remove it when resolved. Text churn, restatement, unchanged checks, or unsupported relabeling is not progress.
+ - When any item reaches `no-progress=2`, stop dispatching review passes. Add `## Block` with the stalled IDs and evidence as `Reason`, name the user decision or material artifact/evidence change as `Unblock when`, then set the task Blocked. Never convert a stall to `passed`.
+-- Resume only after the unblock condition occurs. Reset affected streaks to `0` only when new evidence demonstrates substantive progress; the core rejects resume while any ledger item remains at `no-progress=2`. Remove `## Review` before recording `passed` once no blocking item remains.
++- Resume only after the unblock condition occurs. Reset affected streaks to `0` only when new evidence demonstrates substantive progress; the core rejects resume while any ledger item remains at `no-progress=2`. Once a fresh pass resolves every blocking item, use `review <id> passed --resolve-ledger --snapshot <exact-reviewed-assessment-identity> --evidence <pass-and-resolution-reference>` to remove the ledger and record Passed atomically. This core-owned lifecycle write requires In Review, Required, a current task fingerprint and matching snapshot, and no stalled item; it clears Verification but preserves the unchanged assessment. The owner must verify the actual external content and every prior ID's resolution. Do not manually delete the resolved ledger then `sync`, which conservatively invalidates the assessment and would require another pass.
+ 
+ ### Verification
+ 
+@@ -132,10 +146,10 @@ Add only while Blocked, with `Reason` and observable `Unblock when`. Add the sec
+ 
+ ## Completion
+ 
+-1. Self-check the result against current requirements, confirm every current Target has supported Result evidence, and run proportionate preliminary checks. Prepare the mandatory review handoff only for requested deliverable file changes.
+-2. For requested deliverable file changes, execute the mandatory `required` → In Review → `task-review` loop, apply its per-finding stall guard, and record `passed`; if adversarial review was explicitly requested, run it separately and replace the gate with `approved` evidence that also names the completed task-review pass.
+-3. For a task with no requested deliverable file changes, record `skipped` with that exact boundary as evidence and remain In Progress. If the user explicitly requested adversarial review of that no-file result, instead set `required`, enter In Review, run `adversarial-review` without a mandatory `task-review`, and record `approved`.
+-4. After the final review decision, rerun proportionate verification and record it as passed because every review-gate write invalidates prior Verification evidence. For reviewed results, first confirm the reviewed scope still matches the current content; relevant drift returns to self-check and fresh review, not completion. For `skipped`, verify the current result without inventing a reviewed snapshot.
++1. Self-check current requirements and supported per-Target Result evidence, run proportionate authorized preliminary checks, then record the actual result's R0/R1/R2 assessment. Prepare the mandatory review handoff for R2 or explicit ordinary review.
++2. For R2, execute `required` → In Review → `task-review`, apply the existing per-finding stall guard and record `passed`. Explicit ordinary review also follows this route at any level; exemptions never cancel an existing Required obligation.
++3. For R0/R1 without explicit or existing review obligations, record `skipped` with the current assessment's exemption grounds and remain In Progress. If the user explicitly requested adversarial review of that no-file result or an R1 result, enter Required → In Review and run it without a mandatory `task-review`, then record `approved`. For R2, explicit adversarial review runs only after `passed`; `approved` evidence names both outcomes.
++4. After the final review decision, compare current content/evidence with the assessment snapshot and, if reviewed, the reviewed snapshot. Drift returns to self-check, assessment and any required fresh review. Rerun proportionate final verification and record it as passed because every assessment or review-gate write clears Verification. For `skipped`, do not invent an independent-review snapshot.
+ 5. Confirm this session actually bound to the owning record through the host focus mechanism when it provides one; if binding failed or was unavailable, disclose that before completing.
+ 6. Run `complete <id>`. This is the only route to Completed and fails closed on missing Targets, Results, review, verification, Block, stale review evidence, or unfinished Queue children.
+ 7. Run `check <id>` and `validate` before delivery.
+@@ -144,4 +158,4 @@ Do not retrofit untouched historical record bodies. All records share the new pa
+ 
+ ## Maintainer Validation
+ 
+-Keep the routing fixtures and `evals/review_stall_cases.json` aligned, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.
++Keep `evals/review_gate_cases.json`, the routing fixtures and `evals/review_stall_cases.json` aligned with the shared grading protocol, run authorized focused core/task tests, then run the built-in `$skill-quality` gate against this package. Quality failures block completion. Review warnings, but never delete or distort required workflow guidance merely to satisfy the initial-load budget.
+diff --git a/skills/meta/task/evals/review_gate_cases.json b/skills/meta/task/evals/review_gate_cases.json
+index c56a843..8352acb 100644
+--- a/skills/meta/task/evals/review_gate_cases.json
++++ b/skills/meta/task/evals/review_gate_cases.json
+@@ -4,71 +4,139 @@
+       "id": "no-file-result",
+       "task": "Complete a research result without changing requested deliverable files.",
+       "deliverable_files_changed": false,
+-      "user_requested_adversarial_review": false,
++      "expected_level": "R0",
+       "expected_entry": "Skipped",
+       "expected_task_review": false,
+       "expected_terminal": "Skipped"
+     },
+     {
+       "id": "simple-file-change",
+-      "task": "Rename one verified local file.",
++      "task": "Rename one low-risk local file after checking every reference and the resulting paths.",
+       "deliverable_files_changed": true,
+-      "user_requested_adversarial_review": false,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": true, "verification": true },
++      "expected_level": "R1",
++      "expected_entry": "Skipped",
++      "expected_task_review": false,
++      "expected_terminal": "Skipped"
++    },
++    {
++      "id": "small-logic-change",
++      "task": "Change a presentation-only conditional; all callers, both output branches and preserved behavior are verified.",
++      "deliverable_files_changed": true,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": true, "verification": true },
++      "expected_level": "R1",
++      "expected_entry": "Skipped",
++      "expected_task_review": false,
++      "expected_terminal": "Skipped"
++    },
++    {
++      "id": "many-mechanical-files",
++      "task": "Apply the same settled low-risk label substitution across many files and verify the complete replacement scope.",
++      "deliverable_files_changed": true,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": true, "verification": true },
++      "expected_level": "R1",
++      "expected_entry": "Skipped",
++      "expected_task_review": false,
++      "expected_terminal": "Skipped"
++    },
++    {
++      "id": "complex-file-change",
++      "task": "Migrate persistent directives across three hosts with interacting routing changes.",
++      "deliverable_files_changed": true,
++      "simple": false,
++      "expected_level": "R2",
+       "expected_entry": "Required",
+       "expected_task_review": true,
+       "expected_terminal": "Passed"
+     },
+     {
+-      "id": "complex-file-change",
+-      "task": "Migrate persistent directives across three hosts.",
++      "id": "critical-file-change",
++      "task": "Change one production authorization condition; a one-line diff is not low risk.",
+       "deliverable_files_changed": true,
+-      "user_requested_adversarial_review": false,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": false, "verification": true },
++      "expected_level": "R2",
+       "expected_entry": "Required",
+       "expected_task_review": true,
+       "expected_terminal": "Passed"
+     },
+     {
+-      "id": "critical-file-change",
+-      "task": "Change production authentication and permission behavior.",
++      "id": "uncertain-consumers",
++      "task": "Make a small logic change whose indirect consumers have not been bounded.",
+       "deliverable_files_changed": true,
+-      "user_requested_adversarial_review": false,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": false, "risk": true, "verification": true },
++      "expected_level": "R2",
++      "expected_entry": "Required",
++      "expected_task_review": true,
++      "expected_terminal": "Passed"
++    },
++    {
++      "id": "syntax-only-evidence",
++      "task": "Only syntax has been checked; preserved behavior is not established by that observation.",
++      "deliverable_files_changed": true,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": true, "verification": false },
++      "expected_level": "R2",
++      "completion_requires_missing_evidence": true,
+       "expected_entry": "Required",
+       "expected_task_review": true,
+       "expected_terminal": "Passed"
+     },
+     {
+       "id": "workflow-mandated-review",
+-      "task": "Finish a file-changing task under the mandatory task-review policy.",
++      "task": "Finish a simple low-risk change with an independent review explicitly required for this outcome.",
+       "deliverable_files_changed": true,
+-      "user_requested_adversarial_review": false,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": true, "verification": true },
++      "user_requested_ordinary_review": true,
++      "expected_level": "R1",
+       "expected_entry": "Required",
+       "expected_task_review": true,
+       "expected_terminal": "Passed"
+     },
+     {
+       "id": "ordinary-one-pass-review",
+-      "task": "Review this pull request once without modifying it.",
++      "task": "Review this pull request once without modifying it; do not recursively review the feedback.",
+       "deliverable_files_changed": false,
+-      "user_requested_adversarial_review": false,
++      "expected_level": "R0",
+       "expected_entry": "Skipped",
+       "expected_task_review": false,
+       "expected_terminal": "Skipped"
+     },
+     {
+       "id": "explicit-adversarial-file-change",
+-      "task": "Change files, then run adversarial-review before completion.",
++      "task": "Make a complex change, then run explicitly requested adversarial-review after the ordinary R2 pass.",
+       "deliverable_files_changed": true,
++      "simple": false,
+       "user_requested_adversarial_review": true,
++      "expected_level": "R2",
+       "expected_entry": "Required",
+       "expected_task_review": true,
+       "expected_terminal": "Approved"
+     },
++    {
++      "id": "explicit-adversarial-low-risk",
++      "task": "Run explicitly requested adversarial-review on a fully verified low-risk change, without an automatic ordinary pass.",
++      "deliverable_files_changed": true,
++      "simple": true,
++      "r1_grounds": { "clarity": true, "impact": true, "risk": true, "verification": true },
++      "user_requested_adversarial_review": true,
++      "expected_level": "R1",
++      "expected_entry": "Required",
++      "expected_task_review": false,
++      "expected_terminal": "Approved"
++    },
+     {
+       "id": "explicit-adversarial-no-file-queue",
+       "task": "Run adversarial-review on a Queue parent's no-file integration result.",
+       "kind": "queue",
+       "deliverable_files_changed": false,
+       "user_requested_adversarial_review": true,
++      "expected_level": "R0",
+       "expected_entry": "Required",
+       "expected_task_review": false,
+       "expected_terminal": "Approved"
+@@ -78,6 +146,7 @@
+       "task": "Run adversarial-review on this no-file research result.",
+       "deliverable_files_changed": false,
+       "user_requested_adversarial_review": true,
++      "expected_level": "R0",
+       "expected_entry": "Required",
+       "expected_task_review": false,
+       "expected_terminal": "Approved"
+diff --git a/tasks/context.md b/tasks/context.md
+index a26776b..f117896 100644
+--- a/tasks/context.md
++++ b/tasks/context.md
+@@ -128,10 +128,10 @@
+ - `tests/pi-task-overlay.test.mjs` 覆盖 focus 写入、恢复、切换、清除、完成后保持、失效回退、原位刷新、timer 清理、进度、文件 URL、无 hyperlink 终端、RPC 和 headless 行为。
+ 
+ ## CTX-task-workflows — Canonical task workflows
+-- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、main-session L0–L4 Task Target gate、mandatory task-review remediation loop 与 per-finding stall protection、delegated child alignment inheritance、S0／S1 Safety Overlay、Queue title invariants、状态证据及完成门禁。
++- Scope: 跨宿主 canonical task 的单任务执行、只读计划、队列执行、main-session L0–L4 Task Target gate、R0／R1／R2 Review 分级与证据失效、mandatory task-review remediation loop 与 per-finding stall protection、delegated child alignment inheritance、S0／S1 Safety Overlay、Queue title invariants、状态证据及完成门禁。
+ - Paths: `skills/meta/task/`, `skills/meta/task-review/`, `skills/meta/task-plan/`, `skills/meta/task-queue/`, `skills/meta/csl-tasks/shared/`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`, `tests/csl-tasks-core.test.mjs`, `tests/task-files.test.mjs`
+ - Keywords: task, task-review, review gate, Review ledger, no-progress streak, stall, Blocked, Passed, In Review, task-plan, task-queue, canonical task, Task Target, Authorization Ledger, interaction owner, delegated child, L2 checkpoint, L4 change approval, Safety Overlay, Queue title, Kind Queue, legacy Auto
+-- Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-review/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`
++- Authority: `skills/meta/csl-tasks/shared/protocols/task-target-alignment.md`, `skills/meta/csl-tasks/shared/protocols/task-review-grading.md`, `skills/meta/task/SKILL.md`, `skills/meta/task-review/SKILL.md`, `skills/meta/task-plan/SKILL.md`, `skills/meta/task-queue/SKILL.md`, `skills/meta/csl-tasks/shared/lib/task-core.js`, `skills/meta/agent-hooks/references/csl-agent-kit-contract.md`
+ - Recheck: 当公开 skill identity、task activation timing、Task Target 对齐或确认路径、task record schema、状态转换、父子图或完成门禁变化时复核。
+ 
+ ### Purpose and Boundaries
+@@ -145,16 +145,17 @@
+ 
+ ### Workflows
+ - 文件变更请求（包括琐碎确定性编辑）或具体非平凡 outcome 先激活并聚焦 owning record，再进入对齐门。主 user-facing session 是 interaction owner：非平凡等价 Target 先通过完整承诺等价检查，再按 L2 条目依据覆盖决定展示后继续或只核对未定项。首次明确请求、完整修订与澄清收敛的条款均有有效用户依据时使用 `show_continue`；用户要求、material Plan graph 和无法恢复对齐依据的 checkpoint 保留。源码事实或未接受摘要不能充当授权，复用必须检查来源、适用范围与组合效果。实质差异进入 L4，用户歧义进入 L3，纯琐碎等价编辑可走 L1。同一 canonical plan record 在用户后来明确授权执行时，若已接受 Target 语义未变且确认依据仍可恢复，则从 `task-plan` 进入 `task` 不再显示 checkpoint；仅接受规划阶段 Target 不等于授权执行。由当前主 Plan 明确分发的 child session／task 继承 alignment，不显示用户 gate；缺少覆盖、material child-distribution graph change、用户决策或 S1 边界返回主 session。同一 child node 内的实现调整不重新确认。对齐后才加载 task-relevant Context、Lessons 与任务直接来源。
+-- 产生请求交付物文件改动的 Task 由主 Agent 先按原始要求、有效修订与已接受约束自检，记录逐 Target 的观察、证据及局限，再将 Review gate 设为 `Required`、进入现有 `In Review` 并派发一次 fresh、只读的独立 `task-review` 查漏；任何确认问题或阻止 Target 验证的证据缺口都会返回 In Progress 修复并以新 pass 复审，直至 interaction owner 记录 `Passed`。无交付物文件改动且未显式要求 adversarial review 时才使用 `Skipped`；显式 adversarial review 仍是独立可选门：文件改动 Task 的 `Approved` 证据同时包含 ordinary pass，无文件改动 Task 则可直接从 `Required`／In Review 进入 `Approved`。Active task 的直接规范编辑必须调用 `sync`，该入口会保守失效终态 review 与 Verification，防止修改 Target 后沿用旧证据。
++- 主 Agent 按原始要求、有效修订与已接受约束自检并记录逐 Target 证据后，按独立于 Task Target 的 R0／R1／R2 协议分类实际结果：R0 无交付物变更；R1 是结果明确、影响可界定、低风险且验证充分的简单变更，包括符合条件的小范围逻辑修改；R2 是复杂、高风险或存在重要不确定性的变更。R0／R1 在没有显式或既有审查义务时可 `Skipped`，R2 或显式普通审查进入 Required／In Review／fresh 只读 `task-review` 修复循环。R2 的显式 adversarial approval 需保留 ordinary pass；R0／R1 可因显式 adversarial 请求直接进入 Required／In Review／Approved。所有等级保留最终验证。
++- `assess-review` 在 In Progress 写入唯一 `task-review-assessment/v1` Review Assessment，保留等级、Current／Stale、具体依据、外部内容身份、自检证据和任务指纹；R1 另需四项成立依据。core 校验结构、等级／gate 一致性及任务记录指纹，不执行语义评级、检查命令或外部文件监控。`sync`、Result 更新、reopen 和相关 Queue 关系变化会使 assessment 失效、清除 Verification、移除 Skipped 或将 Passed／Approved 恢复 Required；外部内容漂移须由宿主和主 Agent 现场核对后重新自检、判级与必要复审。历史记录仍可读，活动任务在新的终态 gate／完成前须有当前 assessment。最终 fresh pass 确认所有 finding 解决后，由 `review passed --resolve-ledger --snapshot` 原子清理 ledger 并写入 Passed；该路径要求当前任务指纹与相同 snapshot、无 stalled finding，保留未变的 assessment 而清除 Verification，不能通过手删 ledger 后 sync 来代替。
+ - `task-review` 的既有 `references/review_workflow.md` 承载固定 Reviewer Prompt 与当次事实包契约，不另建 Agent 注册文件。Reviewer 先对照需求与产物，再核对作者检查证据，分别报告独立执行的检查与继承证据；原始要求不能被作者摘要替代，被审查材料不能反向授予工具或审批权限。该顺序减少上下文锚定，但不保证盲审或消除同模型偏差。
+-- Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能自动降级自审后 Passed；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检和 fresh pass；当前 core 不证明实际隔离、检查运行或文件内容未变，这些证据由宿主与主 Agent 建立。
++- Mandatory independent review 不可用或失败时由主 Agent 保留证据并 Block，不能因失败将 R2 降级，也不能把既有 Required 义务改为 Skipped；普通单次请求无需作者自检材料，且只有无独立性要求、fresh Reviewer 不可用或失败、宿主允许时才可真实标注 inline fallback。Review 绑定实际内容身份，审查期间主 Agent 停止修改对应范围，内容或相关证据变化须刷新自检、assessment 和 fresh pass；当前 core 不证明实际隔离、检查运行或外部文件内容未变，这些证据由宿主与主 Agent 建立。
+ - Mandatory review 用带 `task-review-ledger/v1` marker 的唯一 task-local `## Review` current ledger 持久化单调 `TR-n` IDs 与逐 finding no-progress streak；Core 只把 fenced／indented／list-container code 与 HTML block/comment 之外的 column-zero H2 当作 record section；重复 Review sections、未知 ledger schema 与使用 alternate list markers／whitespace 的 ledger-like malformed 内容 fail closed，单个无 marker 的历史自由格式 Review 保持可读。Finding 初见为 0，同一根因／required outcome 的 fresh re-review 连续无实质 artifact／evidence 进展时递增，到 2 即保留 ledger、写入精确 Block／Unblock 条件并进入 Blocked，请求用户决策且不得自动 `Passed`；对应 streak 在新证据下重置前，Core 拒绝 resume。有效进展、证据化重分类或解决会重置／移除对应 finding，不设总 pass 上限。
+ 
+ ### Decision and Verification Boundaries
+ - User-facing Task Target 只描述结果、可观察完成条件和必要边界；只有 interaction owner 显示 L2／L3／L4 与 S1，delegated child 只执行 `continue_delegated`／`return_to_main`。Level、delegation packet、alignment／confirmation 不写入 canonical task core，详细规则只由共享协议定义。
+-- 新请求默认创建独立 task；明确执行 implementation-ready plan 时 resume 该 plan 的 exact record，`task-plan` → `task` 阶段变化本身不产生新 ownership。其他情况下，只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。Completed child 只能在 parent 已激活后 reopen；该动作会原子失效 parent 的终态 review／Verification，并将 In Review parent 退回 In Progress，防止 parent 以旧 integration evidence 完成。
++- 新请求默认创建独立 task；明确执行 implementation-ready plan 时 resume 该 plan 的 exact record，`task-plan` → `task` 阶段变化本身不产生新 ownership。其他情况下，只有直接修正、补全或重新验证同一 outcome，且保留旧 Target 或 Result 会失真时才复用或重开，组件、文件、主题或实现重叠本身不建立 ownership。Queue parent、children 与 siblings 的标准化标题必须互异，core 在 link 和 validation 边界 fail closed；无图关系的独立任务可同名。Completed child 只能在 parent 已激活后 reopen；该动作会原子失效 parent 的 assessment、终态 review／Verification，并将 In Review parent 退回 In Progress，防止 parent 以旧 integration evidence 完成。改变 Completed child 的关系前须显式 reopen；完全相同的 reciprocal link 为 no-op，不能清除任一已完成记录的证据。
+ - 公开 skill 名称只有 `task`、`task-plan` 与 `task-queue`，不保留旧名称 alias；共享 Task Target 协议没有 `SKILL.md` 且不参与路由，三个 skill package、协议与 task core 共同位于 `skills/meta/` 的分发树中。
+-- `tests/csl-tasks-core.test.mjs` 覆盖新 Queue 写入、旧 Auto 读取、父子图、`Skipped`／`Passed`／`Approved` Review gate、direct `sync` 审查失效、重复／未知／malformed Review ledger、历史 free-form Review、stalled ledger 的 Block／resume 生命周期与完成门禁；`tests/task-files.test.mjs` 覆盖 discoverability、默认规则、`evals/review_stall_cases.json` 和记录契约。
++- `tests/csl-tasks-core.test.mjs` 定义 Queue／旧 Auto、父子图、Review gate、Review Assessment schema 与指纹失效、R1 四项依据、R2 禁止降级、显式审查、历史兼容、finding ledger 与完成门禁的回归用例；`tests/task-files.test.mjs` 定义 discoverability、默认规则、`evals/review_gate_cases.json`／`evals/review_stall_cases.json` 和记录契约检查。测试源码不是当前执行通过的证明，实际运行证据由 owning task 保存。
+ 
+ ## CTX-agent-hooks — Agent Hooks runtime and built-in hooks
+ - Scope: Agent Hooks V1 rule storage, host-neutral execution, inner hook policy, three-level Agent Rules injection, CSL Agent Kit Contract injection, data migration, and host lifecycle adapters.
+@@ -293,7 +294,7 @@
+ 
+ - Skill packages use English for `SKILL.md`, runtime references, prompts, templates, and eval-facing prose; generated reports and user responses still follow the user's language. A task that modifies one skill does not bulk-translate unrelated existing packages unless the user explicitly requests a repository-wide migration — authoritative source: user confirmation on 2026-08-07; review when that language convention changes.
+ - 新任务从下一项开始采用 `Target` 作为唯一 checkbox（稳定 `Tn` ID），`Plan` 使用普通有序列表，`Result` 按 Target ID 记录当前证据，不再创建独立 `Checklist`；`Scope`、`Block` 与 review details 仅在生命周期需要时出现，当前任务和未触及历史不迁移。
+-- 自动注入的 CSL Agent Kit Contract 保留稳定的通用原则、task-family 路由与工作流触发指引；任务字段、状态迁移、循环和输出契约等易变细节属于对应 skill。所有请求交付物文件改动（包括 trivial edits）进入 task 记录，所有结果按风险验证；产生请求交付物文件改动的 Task 默认执行 mandatory `task-review` 并以 `Passed` 完成，只有无交付物文件改动且未显式要求 adversarial review 时才记录 `Skipped`。`$adversarial-review`、双 Agent Reviewer–Editor 循环与独立 Reviewer 批准仍仅在用户明确要求时触发，不会由风险、复杂度或验证缺口自动升级。
++- 自动注入的 CSL Agent Kit Contract 保留稳定原则、task-family 路由与分级审查触发边界；详细字段、循环和输出契约属于 Skill 与共享协议。所有请求交付物文件改动（包括 trivial edits）进入 task 记录，所有结果按风险验证；R0／R1 在具备当前 assessment 且无显式或既有审查义务时可免独立审查，R2 执行 mandatory `task-review` 并以 `Passed` 完成。R1 包括满足全部条件的小范围逻辑修改，不按行数或主观信心免审。`$adversarial-review`、双 Agent Reviewer–Editor 循环与独立 Reviewer 批准仍仅在用户明确要求时触发；R2 不能用它们替代 mandatory pass。
+ - `adversarial-review` 必须把 `Finding`、`Required Outcome` 和 `Suggested Remedy` 作为三个独立概念：Finding 只陈述有证据的问题或风险，Required Outcome 只定义必须达到的结果，Suggested Remedy 是可被 Editor 接受、缩小或基于证据拒绝的建议；解决 Finding 不等于必须采用 Reviewer 的建议实现。
+ - `adversarial-review` 的 `BLOCKER` 必须同时说明被违反的要求或原则、可观察证据、不处理的实际风险与 `Required Outcome`；缺少任一项时不得作为阻塞性 Finding，应降级为 `QUESTION`、`NOTE` 或省略。`Suggested Remedy` 不能代替这四项成立条件。
+ - `adversarial-review` 的 Editor 对每个 Finding 必须依次审计 `Current Adequacy`、`Minimal Resolution`、`Blast Radius` 与 `Proportionality`，再选择接受、缩小、拒绝、确认无需修改或需要用户决定。当前方案已满足 `Required Outcome` 时默认保留，除非正确性、安全、数据完整性或明确需求提供了必须变更的证据。
+diff --git a/tests/csl-tasks-core.test.mjs b/tests/csl-tasks-core.test.mjs
+index a668d21..7bbf064 100644
+--- a/tests/csl-tasks-core.test.mjs
++++ b/tests/csl-tasks-core.test.mjs
+@@ -20,6 +20,21 @@ function body(root, id) {
+   return readFileSync(path.join(root, "tasks", "tasks", `${id}.md`), "utf8");
+ }
+ 
++function assess(root, id, level = "R2", overrides = {}) {
++  return core.recordReviewAssessment(root, id, level, {
++    reason: level === "R0" ? "No deliverable files changed" : "Fixture grading grounds",
++    snapshot: "fixture-content-v1",
++    evidence: "Current fixture Result observations",
++    ...(level === "R1" ? {
++      clarity: "Expected behavior is specified",
++      impact: "All direct consumers are bounded",
++      risk: "Presentation-only failure is recoverable",
++      verification: "Direct output comparison covers Target and preserved behavior",
++    } : {}),
++    ...overrides,
++  });
++}
++
+ test("the shared CLI creates and validates a host-neutral workspace", (t) => {
+   const root = workspace(t);
+   execFileSync(process.execPath, [cli, "--workspace", root, "create", "demo", "--title", "Demo", "--kind", "task", "--target", "T1: Finish"], { stdio: "pipe" });
+@@ -94,6 +109,7 @@ test("no-file completion fails closed until targets, skipped review, and verific
+   assert.throws(() => core.completeTask(root, "demo"), /unchecked Target/);
+   core.recordResult(root, "demo", "T1", "Checked the no-file result");
+   assert.throws(() => core.completeTask(root, "demo"), /review gate/);
++  assess(root, "demo", "R0");
+   core.setReviewGate(root, "demo", "skipped", "no deliverable files changed");
+   assert.throws(() => core.completeTask(root, "demo"), /passed verification/);
+   core.recordVerification(root, "demo", true, "result evidence checked");
+@@ -109,12 +125,14 @@ test("historical free-form Review sections stay compatible while marked ledgers
+   core.createTask(root, { id: "legacy-review", title: "Legacy review", kind: "task", targets: ["T1: Finish"] });
+   core.resumeTask(root, "legacy-review");
+   core.recordResult(root, "legacy-review", "T1", "Initial result");
++  assess(root, "legacy-review", "R0");
+   core.setReviewGate(root, "legacy-review", "skipped", "no deliverable files changed");
+   core.recordVerification(root, "legacy-review", true, "initial result checked");
+   core.completeTask(root, "legacy-review");
+   writeFileSync(core.taskPath(root, "legacy-review"), `${body(root, "legacy-review").trimEnd()}\n\n## Review\n\n- Historical free-form review summary.\n\n~~~markdown\n## Review\n- Pass: example only\n~~~\n\n \t## Review\n \t- Pass: mixed-indent code sample\n\n- ~~~markdown\n  ## Review ##\n  - Schema: task-review-ledger/v2\n  ~~~\n\n- example\n  ~~~markdown\n  ## Review ##\n  ~~~\n\n<!--\n## Review\n- Pass: comment sample\n-->\n\n<div>\n## Review\n</div>\n\n~~~markdown\n> ~~~\n- ~~~\n## Review ##\n~~~\n`);
+ 
+   core.reopenTask(root, "legacy-review");
++  assess(root, "legacy-review");
+   core.setReviewGate(root, "legacy-review", "required", "mandatory task-review pending");
+   core.setState(root, "legacy-review", "in_review");
+   core.setReviewGate(root, "legacy-review", "passed", "task-review found no blocking issue");
+@@ -217,6 +235,7 @@ test("no-file tasks honor explicitly requested adversarial review without task-r
+   core.createTask(root, { id: "demo", title: "Demo", kind: "task", targets: ["T1: Finish"] });
+   core.resumeTask(root, "demo");
+   core.recordResult(root, "demo", "T1", "Checked the no-file result");
++  assess(root, "demo", "R0");
+   core.setReviewGate(root, "demo", "required", "explicit adversarial review pending");
+   core.setState(root, "demo", "in_review");
+   core.setReviewGate(root, "demo", "approved", "requested adversarial review approved the no-file result");
+@@ -226,6 +245,7 @@ test("no-file tasks honor explicitly requested adversarial review without task-r
+   assert.doesNotMatch(body(root, "demo"), /## Verification/);
+ 
+   core.setState(root, "demo", "in_progress");
++  assess(root, "demo", "R0");
+   core.setState(root, "demo", "in_review");
+   core.setReviewGate(root, "demo", "approved", "requested adversarial re-review approved the no-file result");
+   core.recordVerification(root, "demo", true, "revised result evidence checked");
+@@ -244,6 +264,7 @@ test("file-changing tasks complete from In Review after task-review passes", (t)
+   core.recordResult(root, "demo", "T1", "Changed the deliverable");
+ 
+   assert.throws(() => core.setReviewGate(root, "demo", "passed", "findings none"), /requires In Review/);
++  assess(root, "demo");
+   core.setReviewGate(root, "demo", "required", "mandatory task-review pending");
+   core.setState(root, "demo", "in_review");
+   assert.throws(() => core.completeTask(root, "demo"), /review gate/);
+@@ -276,6 +297,7 @@ test("queue tasks keep reciprocal ordered children and resume at the first unfin
+   for (const id of ["child-a", "child-b"]) {
+     core.resumeTask(root, id);
+     core.recordResult(root, id, "T1", `Finished ${id}`);
++    assess(root, id);
+     core.setReviewGate(root, id, "required", "mandatory task-review pending");
+     core.setState(root, id, "in_review");
+     core.setReviewGate(root, id, "passed", "task-review found no blocking issue");
+@@ -287,6 +309,7 @@ test("queue tasks keep reciprocal ordered children and resume at the first unfin
+   core.resumeTask(root, "parent");
+   assert.throws(() => core.completeTask(root, "parent"), /unchecked Target/);
+   core.recordResult(root, "parent", "T1", "Integrated both children");
++  assess(root, "parent", "R0");
+   core.setReviewGate(root, "parent", "skipped", "no parent-owned deliverable files changed");
+   core.recordVerification(root, "parent", true, "integration check passed");
+   core.completeTask(root, "parent");
+@@ -301,12 +324,14 @@ test("a no-file Queue parent can honor explicit adversarial review without task-
+ 
+   core.resumeTask(root, "child");
+   core.recordResult(root, "child", "T1", "Completed no-file child result");
++  assess(root, "child", "R0");
+   core.setReviewGate(root, "child", "skipped", "no deliverable files changed");
+   core.recordVerification(root, "child", true, "child result checked");
+   core.completeTask(root, "child");
+ 
+   core.resumeTask(root, "parent");
+   core.recordResult(root, "parent", "T1", "Integrated no-file child result");
++  assess(root, "parent", "R0");
+   core.setReviewGate(root, "parent", "required", "explicit adversarial review pending");
+   core.setState(root, "parent", "in_review");
+   core.setReviewGate(root, "parent", "approved", "requested adversarial review approved the no-file integration result");
+@@ -324,12 +349,14 @@ test("reopening a Queue child invalidates its active parent and rejects a comple
+ 
+   core.resumeTask(root, "child");
+   core.recordResult(root, "child", "T1", "Initial child result");
++  assess(root, "child", "R0");
+   core.setReviewGate(root, "child", "skipped", "no deliverable files changed");
+   core.recordVerification(root, "child", true, "child result checked");
+   core.completeTask(root, "child");
+ 
+   core.resumeTask(root, "parent");
+   core.recordResult(root, "parent", "T1", "Initial integration result");
++  assess(root, "parent");
+   core.setReviewGate(root, "parent", "required", "mandatory task-review pending");
+   core.setState(root, "parent", "in_review");
+   core.setReviewGate(root, "parent", "passed", "task-review found no blocking issue");
+@@ -341,12 +368,15 @@ test("reopening a Queue child invalidates its active parent and rejects a comple
+   assert.equal(parent.review[1], "Required");
+   assert.match(parent.review[2], /Child child reopened/);
+   assert.equal(parent.verification, null);
++  assert.equal(parent.reviewAssessment.state, "Stale");
+ 
++  assess(root, "child", "R0");
+   core.setReviewGate(root, "child", "skipped", "no deliverable files changed");
+   core.recordVerification(root, "child", true, "revised child result checked");
+   core.completeTask(root, "child");
+   core.recordVerification(root, "parent", true, "stale integration check must not bypass review");
+   assert.throws(() => core.completeTask(root, "parent"), /review gate/);
++  assess(root, "parent");
+   core.setState(root, "parent", "in_review");
+   core.setReviewGate(root, "parent", "passed", "fresh integration task-review found no blocking issue");
+   core.recordVerification(root, "parent", true, "fresh integration checked");
+@@ -389,6 +419,7 @@ test("blocked and review states require their lifecycle sections", (t) => {
+   assert.throws(() => core.setState(root, "demo", "blocked"), /Block section/);
+   core.resumeTask(root, "demo");
+   assert.throws(() => core.setState(root, "demo", "in_review"), /required review gate/);
++  assess(root, "demo");
+   core.setReviewGate(root, "demo", "required", "mandatory task-review pending");
+   core.setState(root, "demo", "in_review");
+   assert.throws(() => core.setReviewGate(root, "demo", "skipped", "no review"), /cannot skip/);
+@@ -404,6 +435,7 @@ test("a stalled mandatory review blocks completion and preserves its ledger acro
+   core.createTask(root, { id: "demo", title: "Demo", kind: "task", targets: ["T1: Finish"] });
+   core.resumeTask(root, "demo");
+   core.recordResult(root, "demo", "T1", "Changed the deliverable");
++  assess(root, "demo");
+   core.setReviewGate(root, "demo", "required", "mandatory task-review pending");
+   core.setState(root, "demo", "in_review");
+   writeFileSync(core.taskPath(root, "demo"), `${body(root, "demo").trimEnd()}\n\n## Review\n\n- Schema: task-review-ledger/v1\n- Pass: 3\n- Next finding: 2\n- \`TR-1\` | no-progress=2 | source.js:10 | Correct the stale write\n\n## Block\n\n- Reason: TR-1 made no substantive progress in two consecutive re-reviews.\n- Unblock when: The user chooses a different remedy or new artifact evidence addresses TR-1.\n`);
+@@ -436,6 +468,7 @@ test("sync invalidates terminal review and verification after direct task specif
+   core.createTask(root, { id: "demo", title: "Demo", kind: "task", targets: ["T1: Original result"] });
+   core.resumeTask(root, "demo");
+   core.recordResult(root, "demo", "T1", "Original result checked");
++  assess(root, "demo");
+   core.setReviewGate(root, "demo", "required", "mandatory task-review pending");
+   core.setState(root, "demo", "in_review");
+   core.setReviewGate(root, "demo", "passed", "original Target reviewed");
+@@ -453,6 +486,7 @@ test("result and Queue graph changes invalidate completed review evidence", (t)
+   core.createTask(root, { id: "task", title: "Task", kind: "task", targets: ["T1: Finish"] });
+   core.resumeTask(root, "task");
+   core.recordResult(root, "task", "T1", "Initial result");
++  assess(root, "task");
+   core.setReviewGate(root, "task", "required", "mandatory task-review pending");
+   core.setState(root, "task", "in_review");
+   core.setReviewGate(root, "task", "passed", "task-review found no blocking issue");
+@@ -466,6 +500,7 @@ test("result and Queue graph changes invalidate completed review evidence", (t)
+   core.createTask(root, { id: "child", title: "Child", kind: "task", targets: ["T1: Finish"] });
+   core.resumeTask(root, "parent");
+   core.recordResult(root, "parent", "T1", "Initial integration");
++  assess(root, "parent");
+   core.setReviewGate(root, "parent", "required", "mandatory task-review pending");
+   core.setState(root, "parent", "in_review");
+   core.setReviewGate(root, "parent", "passed", "task-review found no blocking issue");
+@@ -483,6 +518,7 @@ test("a completed Queue parent must be reopened before its graph changes", (t) =
+   for (const id of ["child-a", "parent"]) {
+     core.resumeTask(root, id);
+     core.recordResult(root, id, "T1", `Finished ${id}`);
++    assess(root, id, "R0");
+     core.setReviewGate(root, id, "skipped", "no deliverable files changed");
+     core.recordVerification(root, id, true, `${id} check passed`);
+     core.completeTask(root, id);
+@@ -490,3 +526,267 @@ test("a completed Queue parent must be reopened before its graph changes", (t) =
+   core.createTask(root, { id: "child-b", title: "Child B", kind: "task", targets: ["T1: Finish"] });
+   assert.throws(() => core.linkChild(root, "parent", "child-b"), /reopen/);
+ });
++
++test("R1 includes verified small logic changes and preserves final verification", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "logic", title: "Presentation condition", targets: ["T1: Show the empty-state label"] });
++  core.resumeTask(root, "logic");
++  core.recordResult(root, "logic", "T1", "Both presentation branches compared with the expected output");
++  assert.throws(() => core.setReviewGate(root, "logic", "skipped", "small diff"), /Review Assessment/);
++  assess(root, "logic", "R1");
++  core.recordVerification(root, "logic", true, "preliminary comparison");
++  core.setReviewGate(root, "logic", "skipped", "All R1 grounds established");
++  assert.equal(core.readTask(root, "logic").verification, null);
++  assert.throws(() => core.completeTask(root, "logic"), /passed verification/);
++  core.recordVerification(root, "logic", true, "Final output and snapshot comparison unchanged");
++  core.completeTask(root, "logic");
++  assert.equal(core.readTask(root, "logic").reviewAssessment.level, "R1");
++  assert.equal(core.readTask(root, "logic").status.state, "completed");
++});
++
++test("R1 requires all concrete grounds and a snapshot without partial writes", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "grounds", title: "Grounds", targets: ["T1: Finish"] });
++  core.resumeTask(root, "grounds");
++  const original = body(root, "grounds");
++  for (const field of ["reason", "snapshot", "evidence", "clarity", "impact", "risk", "verification"]) {
++    assert.throws(() => assess(root, "grounds", "R1", { [field]: "" }), /Review Assessment requires/);
++    assert.equal(body(root, "grounds"), original);
++  }
++  assert.throws(() => assess(root, "grounds", "R3"), /invalid review level/);
++  assert.throws(() => assess(root, "grounds", "R1", { reason: "first\nsecond" }), /one line/);
++});
++
++test("R2 and existing review obligations cannot be skipped or downgraded after failure", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "risk", title: "Permission change", targets: ["T1: Preserve access control"] });
++  core.resumeTask(root, "risk");
++  core.recordResult(root, "risk", "T1", "Authorization behavior examined");
++  assess(root, "risk", "R2", { reason: "One-line authorization change has high consequences" });
++  assert.throws(() => core.setReviewGate(root, "risk", "skipped", "one line"), /cannot skip R2/);
++  core.setReviewGate(root, "risk", "required", "Independent review required");
++  core.setState(root, "risk", "in_review");
++  writeFileSync(core.taskPath(root, "risk"), `${body(root, "risk")}\n## Block\n\n- Reason: Reviewer unavailable.\n- Unblock when: A fresh read-only Reviewer can run.\n`);
++  core.setState(root, "risk", "blocked");
++  core.resumeTask(root, "risk");
++  assert.throws(() => assess(root, "risk", "R1"), /cannot downgrade/);
++  assess(root, "risk", "R2");
++  assert.throws(() => core.setReviewGate(root, "risk", "skipped", "Reviewer unavailable"), /cannot skip/);
++  core.setState(root, "risk", "in_review");
++  assert.throws(() => core.setReviewGate(root, "risk", "approved", "Adversarial review only"), /requires Passed task-review first/);
++  core.setReviewGate(root, "risk", "passed", "Independent review found no issue");
++  core.setReviewGate(root, "risk", "approved", "Explicit adversarial review also completed");
++});
++
++test("R1 exemptions do not cancel explicit ordinary or adversarial review", (t) => {
++  const root = workspace(t);
++  for (const mode of ["ordinary", "adversarial"]) {
++    core.createTask(root, { id: mode, title: mode, targets: ["T1: Finish"] });
++    core.resumeTask(root, mode);
++    core.recordResult(root, mode, "T1", "Output verified");
++    assess(root, mode, "R1");
++    core.setReviewGate(root, mode, "required", `User requested ${mode} review`);
++    assess(root, mode, "R1");
++    assert.throws(() => core.setReviewGate(root, mode, "skipped", "Low risk"), /existing review obligation/);
++    core.setState(root, mode, "in_review");
++    core.setReviewGate(root, mode, mode === "ordinary" ? "passed" : "approved", "Requested review completed");
++    core.recordVerification(root, mode, true, "Final result unchanged");
++    core.completeTask(root, mode);
++  }
++});
++
++test("sync, Result and snapshot changes invalidate low-risk exemptions", (t) => {
++  const root = workspace(t);
++  for (const change of ["sync", "result", "snapshot"]) {
++    core.createTask(root, { id: change, title: change, targets: ["T1: Finish"] });
++    core.resumeTask(root, change);
++    core.recordResult(root, change, "T1", "Initial result");
++    assess(root, change, "R1");
++    core.setReviewGate(root, change, "skipped", "R1 grounds checked");
++    core.recordVerification(root, change, true, "Initial result verified");
++    if (change === "sync") core.syncIndex(root, change);
++    if (change === "result") core.recordResult(root, change, "T1", "Revised result");
++    if (change === "snapshot") assess(root, change, "R1", { snapshot: "fixture-content-v2" });
++    const task = core.readTask(root, change);
++    assert.equal(task.review, null);
++    assert.equal(task.verification, null);
++    if (change !== "snapshot") {
++      assert.equal(task.reviewAssessment.state, "Stale");
++      assert.throws(() => core.setReviewGate(root, change, "skipped", "Reuse exemption"), /stale Review Assessment/);
++      assess(root, change, "R1");
++    }
++    core.setReviewGate(root, change, "skipped", "Refreshed exemption");
++    core.recordVerification(root, change, true, "Current content verified");
++    core.completeTask(root, change);
++  }
++});
++
++test("direct specification drift is caught even if sync was omitted", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "drift", title: "Drift", targets: ["T1: Original behavior"] });
++  core.resumeTask(root, "drift");
++  core.recordResult(root, "drift", "T1", "Original behavior verified");
++  assess(root, "drift", "R1");
++  core.setReviewGate(root, "drift", "skipped", "R1 grounds checked");
++  core.recordVerification(root, "drift", true, "Original content checked");
++  writeFileSync(core.taskPath(root, "drift"), body(root, "drift").replace("T1: Original behavior", "T1: Changed behavior"));
++  assert.throws(() => core.completeTask(root, "drift"), /stale Review Assessment/);
++});
++
++test("assessment schema rejects duplicates, unknown versions and malformed fields", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "schema", title: "Schema", targets: ["T1: Finish"] });
++  core.resumeTask(root, "schema");
++  assess(root, "schema", "R1");
++  const original = body(root, "schema");
++  for (const changed of [
++    original.replace("task-review-assessment/v1", "task-review-assessment/v2"),
++    original.replace("- Level: R1", "- Level: R1\n- Level: R0"),
++    original.replace("- Level: R1", "* Level: R1"),
++    original.replace("- Level: R1", "- Level: R9"),
++    original.replace(/^- Bounded impact: .+\n/m, ""),
++    `${original}\n## Review Assessment\n\n- Level: R0\n`,
++  ]) {
++    writeFileSync(core.taskPath(root, "schema"), changed);
++    assert.throws(() => core.readTask(root, "schema"), /Review Assessment/);
++  }
++  writeFileSync(core.taskPath(root, "schema"), original);
++  assert.doesNotThrow(() => core.readTask(root, "schema"));
++});
++
++test("historical records remain readable but new completion needs an assessment", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "history", title: "History", targets: ["T1: Finish"] });
++  core.resumeTask(root, "history");
++  core.recordResult(root, "history", "T1", "No-file result");
++  assess(root, "history", "R0");
++  core.setReviewGate(root, "history", "skipped", "No deliverables changed");
++  core.recordVerification(root, "history", true, "Verified");
++  core.completeTask(root, "history");
++  writeFileSync(core.taskPath(root, "history"), body(root, "history").replace(/\n## Review Assessment\n[\s\S]*?(?=\n## |$)/, ""));
++  assert.equal(core.readTask(root, "history").reviewAssessment, undefined);
++  assert.deepEqual(core.validateWorkspace(root), []);
++  core.reopenTask(root, "history");
++  assert.throws(() => core.setReviewGate(root, "history", "skipped", "Old exemption"), /Review Assessment/);
++  assess(root, "history", "R0");
++  core.setReviewGate(root, "history", "skipped", "Current no-file result");
++});
++
++test("link rejects a Completed child's new relationship without partial writes", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "parent", title: "Parent", kind: "queue", targets: ["T1: Integrate"] });
++  core.createTask(root, { id: "child", title: "Child", targets: ["T1: Finish"] });
++  core.resumeTask(root, "child");
++  core.recordResult(root, "child", "T1", "No-file result");
++  assess(root, "child", "R0");
++  core.setReviewGate(root, "child", "skipped", "No deliverable changes");
++  core.recordVerification(root, "child", true, "Final result verified");
++  core.completeTask(root, "child");
++  const before = [body(root, "parent"), body(root, "child"), readFileSync(core.indexPath(root), "utf8")];
++  assert.throws(() => core.linkChild(root, "parent", "child"), /reopen Completed child child/);
++  assert.deepEqual([body(root, "parent"), body(root, "child"), readFileSync(core.indexPath(root), "utf8")], before);
++  core.reopenTask(root, "child");
++  core.linkChild(root, "parent", "child");
++  assert.equal(core.nextChild(root, "parent").id, "child");
++  assert.equal(core.readTask(root, "child").reviewAssessment.state, "Stale");
++});
++
++test("identical reciprocal links preserve Completed evidence and parent review", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "parent", title: "Parent", kind: "queue", targets: ["T1: Integrate"] });
++  core.createTask(root, { id: "child", title: "Child", targets: ["T1: Finish"] });
++  core.linkChild(root, "parent", "child");
++  core.resumeTask(root, "child");
++  core.recordResult(root, "child", "T1", "Child result");
++  assess(root, "child", "R1");
++  core.setReviewGate(root, "child", "skipped", "Bounded low-risk change");
++  core.recordVerification(root, "child", true, "Final child result verified");
++  core.completeTask(root, "child");
++  core.resumeTask(root, "parent");
++  core.recordResult(root, "parent", "T1", "Integrated result");
++  assess(root, "parent", "R2");
++  core.setReviewGate(root, "parent", "required", "Independent integration review");
++  core.setState(root, "parent", "in_review");
++  core.setReviewGate(root, "parent", "passed", "Independent review complete");
++  core.recordVerification(root, "parent", true, "Final integration checked");
++  for (const state of ["in_review", "completed"]) {
++    if (state === "completed") core.completeTask(root, "parent");
++    const before = [body(root, "parent"), body(root, "child"), readFileSync(core.indexPath(root), "utf8")];
++    core.linkChild(root, "parent", "child");
++    assert.deepEqual([body(root, "parent"), body(root, "child"), readFileSync(core.indexPath(root), "utf8")], before);
++    assert.equal(core.nextChild(root, "parent"), undefined);
++    assert.equal(core.readTask(root, "child").reviewAssessment.state, "Current");
++  }
++});
++
++function prepareLedgerReview(root) {
++  core.createTask(root, { id: "ledger", title: "Ledger", targets: ["T1: Correct behavior"] });
++  core.resumeTask(root, "ledger");
++  core.recordResult(root, "ledger", "T1", "Fixed behavior checked");
++  writeFileSync(core.taskPath(root, "ledger"), `${body(root, "ledger")}\n## Review\n\n- Schema: task-review-ledger/v1\n- Pass: 2\n- Next finding: 2\n- \`TR-1\` | no-progress=0 | source.js:1 | Correct the behavior\n`);
++  assess(root, "ledger", "R2");
++  core.setReviewGate(root, "ledger", "required", "Fresh re-review pending");
++  core.setState(root, "ledger", "in_review");
++}
++
++test("all findings resolved can atomically clear the ledger and pass without regrading", (t) => {
++  const root = workspace(t);
++  prepareLedgerReview(root);
++  const assessment = core.readTask(root, "ledger").reviewAssessment;
++  core.recordVerification(root, "ledger", true, "Preliminary check");
++  core.setReviewGate(root, "ledger", "passed", "Fresh pass fixture: TR-1 resolved; snapshot unchanged", {
++    resolveLedger: true, snapshot: assessment.snapshot,
++  });
++  const task = core.readTask(root, "ledger");
++  assert.equal(task.reviewLedger, undefined);
++  assert.deepEqual(task.reviewAssessment, assessment);
++  assert.equal(task.review[1], "Passed");
++  assert.equal(task.verification, null);
++  assert.equal(task.status.state, "in_review");
++  core.recordVerification(root, "ledger", true, "Final unchanged result verified");
++  core.completeTask(root, "ledger");
++});
++
++test("ledger resolution rejects missing, stale or mismatched identity without clearing findings", (t) => {
++  const root = workspace(t);
++  prepareLedgerReview(root);
++  const original = body(root, "ledger");
++  for (const options of [{ resolveLedger: true }, { resolveLedger: true, snapshot: "other-content" }]) {
++    assert.throws(() => core.setReviewGate(root, "ledger", "passed", "Fresh pass", options), /current reviewed assessment snapshot/);
++    assert.equal(body(root, "ledger"), original);
++  }
++  assert.throws(() => core.setReviewGate(root, "ledger", "approved", "Wrong gate", { resolveLedger: true, snapshot: "fixture-content-v1" }), /resolve-ledger requires Passed/);
++  assert.throws(() => core.setReviewGate(root, "ledger", "passed", "No resolution flag"), /remove the active Review ledger/);
++  writeFileSync(core.taskPath(root, "ledger"), original.replace("T1: Correct behavior", "T1: Different behavior"));
++  const drifted = body(root, "ledger");
++  assert.throws(() => core.setReviewGate(root, "ledger", "passed", "Stale pass", { resolveLedger: true, snapshot: "fixture-content-v1" }), /stale Review Assessment/);
++  assert.equal(body(root, "ledger"), drifted);
++  writeFileSync(core.taskPath(root, "ledger"), original.replace("no-progress=0", "no-progress=2"));
++  assert.throws(() => core.setReviewGate(root, "ledger", "passed", "Stalled pass", { resolveLedger: true, snapshot: "fixture-content-v1" }), /cannot resolve a stalled Review ledger/);
++  assert.equal(core.readTask(root, "ledger").reviewLedger.entries[0].noProgress, 2);
++});
++
++test("CLI ledger clearance is restricted to Passed and preserves the current assessment", (t) => {
++  const root = workspace(t);
++  prepareLedgerReview(root);
++  const output = execFileSync(process.execPath, [cli, "--workspace", root, "review", "ledger", "passed",
++    "--resolve-ledger", "--snapshot", "fixture-content-v1", "--evidence", "Fresh pass: TR-1 resolved"], { encoding: "utf8" });
++  assert.equal(JSON.parse(output).reviewAssessment.state, "Current");
++  assert.equal(core.readTask(root, "ledger").reviewLedger, undefined);
++  assert.equal(core.readTask(root, "ledger").review[1], "Passed");
++});
++
++test("the CLI records and exposes grading grounds without running checks", (t) => {
++  const root = workspace(t);
++  core.createTask(root, { id: "cli-grade", title: "CLI grade", targets: ["T1: Finish"] });
++  core.resumeTask(root, "cli-grade");
++  const output = execFileSync(process.execPath, [cli, "--workspace", root, "assess-review", "cli-grade", "R1",
++    "--reason", "Small presentation condition", "--snapshot", "sha256:fixture", "--evidence", "Output compared",
++    "--clarity", "Settled behavior", "--impact", "Known callers", "--risk", "Recoverable display only",
++    "--verification", "Output and preserved behavior compared"], { encoding: "utf8" });
++  assert.equal(JSON.parse(output).reviewAssessment.level, "R1");
++  const shown = JSON.parse(execFileSync(process.execPath, [cli, "--workspace", root, "show", "cli-grade", "--json"], { encoding: "utf8" }));
++  assert.equal(shown.reviewAssessment.snapshot, "sha256:fixture");
++  assert.equal(shown.reviewAssessment.state, "Current");
++  assert.throws(() => execFileSync(process.execPath, [cli, "--workspace", root, "assess-review", "cli-grade", "R1", "--reason", "small"], { stdio: "pipe" }));
++});
+diff --git a/tests/task-files.test.mjs b/tests/task-files.test.mjs
+index 38f935e..c36589c 100644
+--- a/tests/task-files.test.mjs
++++ b/tests/task-files.test.mjs
+@@ -332,8 +332,9 @@ test("task workflow skills own canonical records and routes", () => {
+   assert.match(planSkill, /planning-only task-record writes do not trigger the deliverable-change review loop/);
+   assert.match(planSkill, /inherits that acceptance and does not present another checkpoint/);
+   assert.match(queueSkill, /integration Target meaning/);
+-  assert.match(queueSkill, /mandatory `task-review` loop for deliverable file changes/);
+-  assert.match(queueSkill, /no parent-owned deliverable changes use `skipped`/);
++  assert.match(queueSkill, /mandatory `task-review` loop for R2 or explicit ordinary review/);
++  assert.match(queueSkill, /No parent-owned deliverable changes is R0/);
++  assert.match(queueSkill, /R0\/R1 use `skipped` only without explicit or existing review obligations/);
+   assert.match(queueSkill, /explicitly requested adversarial review of a no-file parent/);
+   assert.match(queueSkill, /without mandatory `task-review`/);
+   const parentFinalGate = queueSkill.split("## Parent Final Gate")[1];
+@@ -345,14 +346,15 @@ test("task workflow skills own canonical records and routes", () => {
+   const completeParent = parentFinalGate.indexOf("`complete <parent-id>`");
+   assert.ok(finalVerify !== -1 && finalVerify < completeParent, "parent verification must follow the final review gate and precede completion");
+   assert.match(queueSkill, /Reopening a completed child requires an active parent/);
+-  assert.match(queueSkill, /invalidates the active parent's terminal review and Verification evidence/);
++  assert.match(queueSkill, /invalidates the active parent's assessment, terminal review and Verification evidence/);
+   assert.match(queueSkill, /stall guard independently to each child and to any parent-owned deliverable review/);
+   assert.match(queueSkill, /A stalled child or parent becomes Blocked/);
+   assert.match(queueSkill, /parent, child, and sibling titles in one Queue must not normalize to the same text/);
+   assert.match(queueSkill, /do not display another child checkpoint/);
+   assert.match(queueSkill, /material child-distribution graph change/);
+   assert.match(contract, /Before substantive work, apply every relevant Lesson/);
+-  assert.match(contract, /Every task that changes requested deliverable files must use the existing In Review state/);
++  assert.match(contract, /Every task must classify its actual result before the completion review gate/);
++  assert.match(contract, /R2 covers complex, high-risk or materially uncertain changes and must use the existing In Review state/);
+   assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
+   assert.equal(contract.includes("applicable task requirement"), false);
+ 
+@@ -425,7 +427,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
+   assert.match(contract, /Bind self-check, review, and final verification to the actual reviewed content/);
+   assert.match(contract, /a suspected false positive needs counterevidence checked by a fresh pass/);
+   assert.match(contract, /Direct edits to an active task specification must use its sync lifecycle/);
+-  assert.match(contract, /sync invalidates terminal review and Verification evidence/);
++  assert.match(contract, /sync invalidates the assessment, terminal review and Verification evidence/);
+   assert.match(contract, /Any confirmed finding returns the task to In Progress for remediation/);
+   assert.match(contract, /Carry stable finding IDs and per-finding no-progress streaks in exactly one versioned task-local Review ledger/);
+   assert.match(contract, /Duplicate Review sections, unknown ledger schemas, and ledger-like malformed content using alternate list markers or whitespace fail closed/);
+@@ -433,7 +435,7 @@ test("injected CSL Agent Kit contract defines behavior without runtime mechanics
+   assert.match(contract, /Text churn, restatement, unchanged checks, and unsupported relabeling do not reset it/);
+   assert.match(contract, /Resume is rejected while any stalled item remains at two/);
+   assert.match(contract, /The Reviewer remains feedback-only and never grants approval or changes task state/);
+-  assert.match(contract, /adversarial review of that no-file result was explicitly requested/);
++  assert.match(contract, /adversarial review of that no-file result or an R1 result was explicitly requested/);
+   assert.match(contract, /records Approved without running the mandatory `task-review`/);
+   assert.match(contract, /Independent adversarial review, a two-Agent Reviewer–Editor loop, and independent approval remain separate and require an explicit user request/);
+   assert.match(contract, /Keep this contract behavioral and stable\. Skills retain operational detail\./);
+@@ -667,7 +669,8 @@ test("current workspace Context has a valid Core and formal Packs", () => {
+   assert.ok(packs.every(({ format }) => format === "v1"));
+   const context = readFileSync(path.join(root, "tasks", "context.md"), "utf8");
+   assert.match(context, /所有请求交付物文件改动（包括 trivial edits）进入 task 记录/);
+-  assert.match(context, /产生请求交付物文件改动的 Task 默认执行 mandatory `task-review` 并以 `Passed` 完成/);
++  assert.match(context, /R2 执行 mandatory `task-review` 并以 `Passed` 完成/);
++  assert.match(context, /R1 包括满足全部条件的小范围逻辑修改/);
+   assert.doesNotMatch(context, /非简单交付物改动进入 task 记录/);
+   assert.doesNotMatch(context, /未明确要求时记录 `Skipped` 并在常规验证通过后直接完成/);
+ });
+@@ -679,14 +682,14 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit",
+   for (const section of ["Storage and Core", "Activation and Ownership", "Start or Resume", "Record Contract", "Completion", "Maintainer Validation"]) {
+     assert.ok(skill.includes(`## ${section}`), `missing task section: ${section}`);
+   }
+-  for (const section of ["Scope", "Target", "Plan", "Result", "Review", "Verification", "Block"]) {
++  for (const section of ["Scope", "Target", "Plan", "Result", "Review Assessment", "Review", "Verification", "Block"]) {
+     assert.ok(skill.includes(`### ${section}`), `missing record section: ${section}`);
+   }
+   assert.equal(skill.includes("### Checklist"), false);
+   assert.match(skill, /tasks\/tasks\.md/);
+   assert.match(skill, /tasks\/tasks\/<slug>\.md/);
+   assert.match(skill, /Do not hand-edit status or index lines/);
+-  assert.match(skill, /`sync` conservatively clears Verification and invalidates `Passed` or `Approved`/);
++  assert.match(skill, /`sync` conservatively marks its assessment Stale, clears Verification, removes `Skipped`, and invalidates `Passed` or `Approved`/);
+   assert.match(skill, /reopen a Completed task before changing its specification/);
+   assert.match(skill, /Load Project Core, then read only the newest index entries/);
+   assert.match(skill, /After the protocol aligns the current Target, query task-relevant Context Packs/);
+@@ -704,11 +707,11 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit",
+   assert.match(skill, /untracked, deleted, and renamed content, not merely HEAD or filenames/);
+   assert.match(skill, /Do not substitute inline self-review or silently switch execution modes/);
+   assert.match(skill, /Infrastructure failures do not increment finding no-progress streaks/);
+-  assert.match(skill, /Prepare the mandatory review handoff only for requested deliverable file changes/);
+-  assert.match(skill, /core validates recorded state and evidence text, not actual subagent isolation/);
++  assert.match(skill, /Prepare the mandatory review handoff for R2 or explicit ordinary review/);
++  assert.match(skill, /core validates assessment structure, level\/gate consistency, task-record fingerprint and evidence text, not semantic risk/);
+   assert.match(skill, /Do not prescribe algorithms, files, functions, types, or call paths/);
+-  assert.match(skill, /`skipped` only when the task changed no requested deliverable files/);
+-  assert.match(skill, /`required` before every review pass for a task that changed requested deliverable files/);
++  assert.match(skill, /`skipped` only with a current R0 or R1 assessment and no explicit or existing review obligation/);
++  assert.match(skill, /`required` before every R2 or explicitly requested review pass/);
+   assert.match(skill, /`passed` only after that `task-review` pass reports no Critical Finding/);
+   assert.match(skill, /return to In Progress, remediate it/);
+   assert.match(skill, /Use exactly one temporary `## Review` section with the exact `task-review-ledger\/v1` marker/);
+@@ -718,6 +721,9 @@ test("CSL task contract keeps acceptance, evidence, and review gates explicit",
+   assert.match(skill, /no-progress=2/);
+   assert.match(skill, /core rejects resume while any ledger item remains at `no-progress=2`/);
+   assert.match(skill, /stop dispatching review passes/);
++  assert.match(skill, /passed --resolve-ledger --snapshot/);
++  assert.match(skill, /remove the ledger and record Passed atomically/);
++  assert.match(skill, /Do not manually delete the resolved ledger then `sync`/);
+   assert.match(skill, /Never convert a stall to `passed`/);
+   assert.match(skill, /Repeat without a fixed total round limit/);
+   assert.match(skill, /adversarial review of that no-file result/);
+@@ -760,14 +766,17 @@ test("workspace task ownership defaults independent and ambiguous outcomes to ne
+   assert.equal(byId["ambiguous-relationship"].expected, "New");
+ });
+ 
+-test("workspace review-gate cases require task-review for deliverable file changes", () => {
++test("workspace review-gate cases distinguish R0, R1, R2 and explicit review", () => {
+   const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "review_gate_cases.json"), "utf8"));
+   const terminalOutcomes = new Set();
+ 
+   for (const item of fixture.cases) {
+-    const entry = item.deliverable_files_changed || item.user_requested_adversarial_review ? "Required" : "Skipped";
+-    const taskReview = item.deliverable_files_changed;
++    const exempt = item.simple && ["clarity", "impact", "risk", "verification"].every((key) => item.r1_grounds?.[key] === true);
++    const level = !item.deliverable_files_changed ? "R0" : exempt ? "R1" : "R2";
++    const taskReview = level === "R2" || Boolean(item.user_requested_ordinary_review);
++    const entry = taskReview || item.user_requested_adversarial_review ? "Required" : "Skipped";
+     const terminal = item.user_requested_adversarial_review ? "Approved" : taskReview ? "Passed" : "Skipped";
++    assert.equal(level, item.expected_level, `${item.id}: level`);
+     assert.equal(entry, item.expected_entry, `${item.id}: entry`);
+     assert.equal(taskReview, item.expected_task_review, `${item.id}: task-review`);
+     assert.equal(terminal, item.expected_terminal, `${item.id}: terminal`);
+@@ -776,7 +785,12 @@ test("workspace review-gate cases require task-review for deliverable file chang
+ 
+   assert.deepEqual([...terminalOutcomes].sort(), ["Approved", "Passed", "Skipped"]);
+   const byId = Object.fromEntries(fixture.cases.map((item) => [item.id, item]));
+-  assert.equal(byId["simple-file-change"].expected_terminal, "Passed");
++  assert.equal(byId["simple-file-change"].expected_terminal, "Skipped");
++  assert.equal(byId["small-logic-change"].expected_level, "R1");
++  assert.equal(byId["many-mechanical-files"].expected_level, "R1");
++  assert.equal(byId["uncertain-consumers"].expected_level, "R2");
++  assert.equal(byId["syntax-only-evidence"].completion_requires_missing_evidence, true);
++  assert.equal(byId["explicit-adversarial-low-risk"].expected_task_review, false);
+   assert.equal(byId["critical-file-change"].expected_task_review, true);
+   assert.equal(byId["workflow-mandated-review"].expected_entry, "Required");
+   assert.equal(byId["ordinary-one-pass-review"].expected_terminal, "Skipped");
+@@ -787,6 +801,25 @@ test("workspace review-gate cases require task-review for deliverable file chang
+   assert.equal(byId["explicit-adversarial-no-file-queue"].expected_terminal, "Approved");
+ });
+ 
++test("review grading has one shared authority and keeps evidence and safety boundaries", () => {
++  const protocol = readFileSync(path.join(cslTasksSharedDir, "protocols", "task-review-grading.md"), "utf8");
++  assert.match(protocol, /R1 may include small logic changes/);
++  assert.match(protocol, /All four conditions must have concrete, task-specific grounds/);
++  assert.match(protocol, /A missing required check or unproven Target blocks completion/);
++  assert.match(protocol, /never replace it with Skipped/);
++  assert.match(protocol, /does not select a semantic level, inspect the supplied external snapshot/);
++  assert.match(protocol, /Historical records without an assessment remain readable/);
++  assert.match(protocol, /no parent-owned changes is R0, not a waiver of integration verification/);
++  assert.match(protocol, /Changing a Completed child's relationship requires explicitly reopening/);
++  assert.match(protocol, /fully identical reciprocal `link` is a no-op/);
++  assert.match(protocol, /core atomically removes the marked ledger and records Passed/);
++  for (const name of ["task", "task-queue"]) {
++    const skill = readFileSync(path.join(cslTasksDir, name, "SKILL.md"), "utf8");
++    assert.match(skill, /task-review-grading\.md/);
++    assert.match(skill, /assess-review/);
++  }
++});
++
+ test("workspace task-review stall cases block after two per-finding no-progress re-reviews", () => {
+   const fixture = JSON.parse(readFileSync(path.join(cslTasksDir, "task", "evals", "review_stall_cases.json"), "utf8"));
+   const actions = new Set();

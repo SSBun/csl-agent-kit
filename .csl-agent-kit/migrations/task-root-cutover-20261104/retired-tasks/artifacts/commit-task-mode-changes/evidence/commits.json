@@ -1,0 +1,260 @@
+[
+  {
+    "commit": "2ebce54dd70d79c0d40790228b1d0fac0b458c6a",
+    "message": "feat(tasks): persist per-pass review reports",
+    "paths": [
+      "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "skills/meta/task-queue/SKILL.md",
+      "skills/meta/task-review/SKILL.md",
+      "skills/meta/task-review/evals/contract_cases.json",
+      "skills/meta/task-review/references/review_workflow.md",
+      "skills/meta/task/SKILL.md",
+      "tests/csl-tasks-core.test.mjs",
+      "tests/task-files.test.mjs"
+    ]
+  },
+  {
+    "commit": "147d188850c474370b531e982383a53b80d1f0f0",
+    "message": "feat(tasks): link artifacts from canonical task metadata",
+    "paths": [
+      "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "skills/meta/task-plan/SKILL.md",
+      "skills/meta/task-queue/SKILL.md",
+      "skills/meta/task/SKILL.md",
+      "tests/csl-tasks-core.test.mjs",
+      "tests/task-files.test.mjs"
+    ]
+  },
+  {
+    "commit": "2ac113d1ab133bd0cba122a52c65062508ae4953",
+    "message": "feat(tasks): summarize component changes before completion",
+    "paths": [
+      "skills/meta/task-queue/SKILL.md",
+      "skills/meta/task/SKILL.md"
+    ]
+  },
+  {
+    "commit": "f961bb992143a25b62730728204d84b0b891e661",
+    "message": "feat(tasks): add persistent topics and task bindings",
+    "paths": [
+      ".claude-plugin/plugin.json",
+      "README.md",
+      "package.json",
+      "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "skills/meta/csl-tasks/shared/lib/topic-cli.js",
+      "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "skills/meta/task-context/SKILL.md",
+      "skills/meta/task-plan/SKILL.md",
+      "skills/meta/task-queue/SKILL.md",
+      "skills/meta/task-review/references/review_workflow.md",
+      "skills/meta/task/SKILL.md",
+      "skills/meta/topic/SKILL.md",
+      "skills/meta/topic/evals/trigger_cases.json",
+      "skills/meta/topic/references/topic-contract.md",
+      "tests/topics.test.mjs"
+    ]
+  },
+  {
+    "commit": "5ff815c771ada0bde653a291fe87ab7c74d4e8d8",
+    "message": "feat(topics): add indexed shared resources",
+    "paths": [
+      "README.md",
+      "skills/meta/csl-tasks/shared/lib/topic-cli.js",
+      "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "skills/meta/task/SKILL.md",
+      "skills/meta/topic/SKILL.md",
+      "skills/meta/topic/references/topic-contract.md",
+      "tests/topics.test.mjs"
+    ]
+  },
+  {
+    "commit": "42951a9bfd69c1c9960055d4c7aed5c4c97a6b9c",
+    "message": "feat(hooks): bridge Codex lifecycle events to iTermate",
+    "paths": [
+      ".codex-plugin/plugin.json",
+      "hooks/codex-lifecycle.json",
+      "skills/meta/agent-hooks/SKILL.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-after-tool.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-before-tool.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-interrupt.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-prompt-submit.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-session-end.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-session-start.md",
+      "skills/meta/agent-hooks/hooks/itermate-codex-stop.md",
+      "skills/meta/agent-hooks/references/codex-protocol.json",
+      "skills/meta/agent-hooks/scripts/itermate-codex-status.js",
+      "skills/meta/agent-hooks/scripts/lib/native-hook.js",
+      "skills/meta/agent-hooks/scripts/lib/rule.js",
+      "skills/meta/agent-hooks/scripts/lib/runtime.js",
+      "tests/agent-hooks.test.js",
+      "tests/itermate-codex-hooks.test.js"
+    ]
+  },
+  {
+    "commit": "df90e9215fd3e787f7088261f1b2bce23a6c4fa3",
+    "message": "feat(pi): add persistent reviewer settings panel",
+    "paths": [
+      "README.md",
+      "pi/extensions/csl-settings.ts",
+      "pi/lib/csl-settings.ts",
+      "tests/pi-settings.test.mjs",
+      "tests/run-pi-tests.js"
+    ]
+  },
+  {
+    "commit": "cfd2149c4964fe4216d5c6c0c994d3a9d4c8ac96",
+    "message": "feat(tasks): add persistent SOLO confirmation mode",
+    "paths": [
+      ".claude-plugin/plugin.json",
+      "README.md",
+      "package.json",
+      "pi/extensions/csl-context-hooks.ts",
+      "pi/extensions/csl-settings.ts",
+      "pi/extensions/csl-skill-commands.ts",
+      "pi/lib/csl-settings.ts",
+      "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js",
+      "skills/meta/agent-sops/SKILL.md",
+      "skills/meta/csl-tasks/shared/lib/task-mode.js",
+      "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "skills/meta/csl-tasks/shared/scripts/task-mode.js",
+      "skills/meta/task-mode/SKILL.md",
+      "skills/meta/task-mode/evals/confirmation_cases.json",
+      "skills/meta/task-mode/evals/trigger_cases.json",
+      "tests/pi-context-hooks.test.mjs",
+      "tests/pi-settings.test.mjs",
+      "tests/pi-skill-commands.test.mjs",
+      "tests/task-mode.test.js"
+    ]
+  },
+  {
+    "commit": "586d867875f0d27ebfa963c0b7c75f27562048d5",
+    "message": "fix(pi): invalidate task mode cache on reload",
+    "paths": [
+      "README.md",
+      "pi/lib/csl-settings.ts",
+      "tests/pi-settings.test.mjs"
+    ]
+  },
+  {
+    "commit": "52d9e4c2c55da2138e12587707d7dc80e1a71a34",
+    "message": "feat(pi): show task mode in the footer status bar",
+    "paths": [
+      "README.md",
+      "pi/extensions/csl-settings.ts",
+      "tests/pi-settings.test.mjs"
+    ]
+  },
+  {
+    "commit": "de849124b647df45d19c0bf575abb9eea37d0a37",
+    "message": "docs(diagrams): add multi-platform Topic workflow visuals",
+    "paths": [
+      "tasks/artifacts/diagram-topic-multiplatform-workflow/reports/workflow.mmd",
+      "tasks/artifacts/diagram-topic-multiplatform-workflow/reports/workflow.png",
+      "tasks/artifacts/diagram-topic-multiplatform-workflow/reports/workflow.svg"
+    ]
+  },
+  {
+    "commit": "e51c2555eed043974c857a868c65c591055f7109",
+    "message": "docs(diagrams): mark task lifecycle preview as beta",
+    "paths": [
+      "tasks/artifacts/explain-task-system-flow/reports/task-system-lifecycle.svg"
+    ]
+  },
+  {
+    "commit": "fcf2c06b5b2733a1d3965ed66f6498eca107d081",
+    "message": "chore(tasks): archive task evidence and refresh workspace context",
+    "paths": [
+      "tasks/artifacts/configure-reviewer-model-tui/evidence/post-review-01.json",
+      "tasks/artifacts/configure-reviewer-model-tui/evidence/snapshot-01.json",
+      "tasks/artifacts/configure-reviewer-model-tui/evidence/tracked-01.diff",
+      "tasks/artifacts/configure-reviewer-model-tui/reviews/round-01.md",
+      "tasks/artifacts/deliberate-task-summary/discussions/2026-10-10-task-summary.md",
+      "tasks/artifacts/integrate-persistent-topics/evidence/checks-01.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/checks-02.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/checks-03.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/cli-cross-workspace.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/cli-lifecycle.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/cli-revision.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/pre-existing-maintenance-failure.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/scope-01.json",
+      "tasks/artifacts/integrate-persistent-topics/evidence/scope-02.json",
+      "tasks/artifacts/integrate-persistent-topics/evidence/scope-03.json",
+      "tasks/artifacts/integrate-persistent-topics/evidence/task-owned-01.patch",
+      "tasks/artifacts/integrate-persistent-topics/evidence/task-owned-02.patch",
+      "tasks/artifacts/integrate-persistent-topics/evidence/task-owned-03.patch",
+      "tasks/artifacts/integrate-persistent-topics/evidence/tr4-after-fix.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/tr4-before-fix.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/unit-tests-02.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/unit-tests-03.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/unit-tests-04.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/unit-tests-05.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/unit-tests-06.log",
+      "tasks/artifacts/integrate-persistent-topics/evidence/unit-tests-final.log",
+      "tasks/artifacts/integrate-persistent-topics/reviews/round-01.md",
+      "tasks/artifacts/integrate-persistent-topics/reviews/round-02.md",
+      "tasks/artifacts/integrate-persistent-topics/reviews/round-03.md",
+      "tasks/artifacts/persist-task-review-reports/evidence/round-01-snapshot.json",
+      "tasks/artifacts/persist-task-review-reports/evidence/round-01.patch",
+      "tasks/artifacts/persist-task-review-reports/reviews/round-01.md",
+      "tasks/artifacts/pi-task-mode-status-brackets/evidence/snapshot.json",
+      "tasks/artifacts/pi-task-mode-status/evidence/snapshot.json",
+      "tasks/artifacts/task-artifacts-directory-link/evidence/scope-02.patch",
+      "tasks/artifacts/task-artifacts-directory-link/evidence/snapshot-02.json",
+      "tasks/artifacts/task-artifacts-directory-link/evidence/snapshot.json",
+      "tasks/artifacts/task-artifacts-directory-link/reviews/round-01.md",
+      "tasks/artifacts/task-confirm-autonomous-mode/evidence/self-check-02.md",
+      "tasks/artifacts/task-confirm-autonomous-mode/evidence/self-check.md",
+      "tasks/artifacts/task-confirm-autonomous-mode/evidence/snapshot-02.json",
+      "tasks/artifacts/task-confirm-autonomous-mode/evidence/snapshot.json",
+      "tasks/artifacts/task-confirm-autonomous-mode/reviews/round-01.md",
+      "tasks/artifacts/task-confirm-autonomous-mode/reviews/round-02.md",
+      "tasks/artifacts/task-solo-mode/evidence/reload-self-check.md",
+      "tasks/artifacts/task-solo-mode/evidence/self-check.md",
+      "tasks/artifacts/task-solo-mode/evidence/snapshot-01.json",
+      "tasks/artifacts/task-solo-mode/evidence/snapshot-02.json",
+      "tasks/artifacts/task-solo-mode/reviews/round-01.md",
+      "tasks/artifacts/task-solo-mode/reviews/round-02.md",
+      "tasks/artifacts/task-solo-mode/reviews/round-03.md",
+      "tasks/artifacts/topic-shared-resources/evidence/checks-01.log",
+      "tasks/artifacts/topic-shared-resources/evidence/checks-02.log",
+      "tasks/artifacts/topic-shared-resources/evidence/cli-resource-example.md",
+      "tasks/artifacts/topic-shared-resources/evidence/resource-regression.log",
+      "tasks/artifacts/topic-shared-resources/evidence/scope-01.json",
+      "tasks/artifacts/topic-shared-resources/evidence/scope-02.json",
+      "tasks/artifacts/topic-shared-resources/evidence/task-owned-01.patch",
+      "tasks/artifacts/topic-shared-resources/evidence/task-owned-02.patch",
+      "tasks/artifacts/topic-shared-resources/evidence/tr1-after-fix.log",
+      "tasks/artifacts/topic-shared-resources/evidence/tr1-before-fix.log",
+      "tasks/artifacts/topic-shared-resources/evidence/unit-tests-01.log",
+      "tasks/artifacts/topic-shared-resources/evidence/unit-tests-02.log",
+      "tasks/artifacts/topic-shared-resources/evidence/unit-tests-03.log",
+      "tasks/artifacts/topic-shared-resources/evidence/unit-tests-final.log",
+      "tasks/artifacts/topic-shared-resources/reviews/round-01.md",
+      "tasks/artifacts/topic-shared-resources/reviews/round-02.md",
+      "tasks/context.md",
+      "tasks/tasks.md",
+      "tasks/tasks/configure-reviewer-model-tui.md",
+      "tasks/tasks/deliberate-task-summary.md",
+      "tasks/tasks/diagram-topic-multiplatform-workflow.md",
+      "tasks/tasks/fix-codex-unrecognized-config.md",
+      "tasks/tasks/fix-shadowrocket-fake-ip-fetch.md",
+      "tasks/tasks/implement-task-summary.md",
+      "tasks/tasks/integrate-persistent-topics.md",
+      "tasks/tasks/persist-task-review-reports.md",
+      "tasks/tasks/pi-task-mode-status-brackets.md",
+      "tasks/tasks/pi-task-mode-status.md",
+      "tasks/tasks/redesign-shared-requirement-pipeline.md",
+      "tasks/tasks/settings-english-auto-apply.md",
+      "tasks/tasks/task-artifacts-directory-link.md",
+      "tasks/tasks/task-confirm-autonomous-mode.md",
+      "tasks/tasks/task-solo-mode.md",
+      "tasks/tasks/topic-shared-resources.md"
+    ]
+  }
+]

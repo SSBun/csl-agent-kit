@@ -1,0 +1,986 @@
+[
+  {
+    "id": "@ssbun/csl-agent-kit@5.2.0",
+    "name": "@ssbun/csl-agent-kit",
+    "version": "5.2.0",
+    "size": 1453596,
+    "unpackedSize": 2311333,
+    "shasum": "6b58461fb10aefbca4904c18f25c38e10730fda0",
+    "integrity": "sha512-ZWlHYBQpjGgd4GSuFAiFwq6iTlBxPBaWswTFPePjzj1jx+yra321pt2QmDMHIwSzI/MpxKijCjwqVfkqMD/7DQ==",
+    "filename": "ssbun-csl-agent-kit-5.2.0.tgz",
+    "files": [
+      {
+        "path": ".agents/plugins/marketplace.json",
+        "size": 1124,
+        "mode": 420
+      },
+      {
+        "path": ".claude-plugin/marketplace.json",
+        "size": 884,
+        "mode": 420
+      },
+      {
+        "path": ".claude-plugin/plugin.json",
+        "size": 1759,
+        "mode": 420
+      },
+      {
+        "path": ".codex-plugin/plugin.json",
+        "size": 1259,
+        "mode": 420
+      },
+      {
+        "path": ".cursor-plugin/marketplace.json",
+        "size": 884,
+        "mode": 420
+      },
+      {
+        "path": ".cursor-plugin/plugin.json",
+        "size": 700,
+        "mode": 420
+      },
+      {
+        "path": "CHANGELOG.md",
+        "size": 12175,
+        "mode": 420
+      },
+      {
+        "path": "LICENSE",
+        "size": 1060,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 34538,
+        "mode": 420
+      },
+      {
+        "path": "bin/csl-agent-kit.js",
+        "size": 21863,
+        "mode": 493
+      },
+      {
+        "path": "commands/doc-sync.md",
+        "size": 2712,
+        "mode": 420
+      },
+      {
+        "path": "commands/sop-activate.md",
+        "size": 3557,
+        "mode": 420
+      },
+      {
+        "path": "hooks/codex-lifecycle.json",
+        "size": 453,
+        "mode": 420
+      },
+      {
+        "path": "hooks/hooks.json",
+        "size": 6950,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 2824,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/csl-ansi.ts",
+        "size": 4752,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/csl-context-hooks.ts",
+        "size": 16036,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/csl-model-presets.ts",
+        "size": 5954,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/csl-settings.ts",
+        "size": 8362,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/csl-skill-commands.ts",
+        "size": 4882,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/csl-task-overlay.ts",
+        "size": 24096,
+        "mode": 420
+      },
+      {
+        "path": "pi/extensions/openai-codex-fast.ts",
+        "size": 8681,
+        "mode": 420
+      },
+      {
+        "path": "pi/lib/csl-settings.ts",
+        "size": 4777,
+        "mode": 420
+      },
+      {
+        "path": "prompts/yx-approve-all.md",
+        "size": 1021,
+        "mode": 420
+      },
+      {
+        "path": "scripts/install.sh",
+        "size": 221,
+        "mode": 493
+      },
+      {
+        "path": "skills/dev/adversarial-review/evals/report_contract_cases.json",
+        "size": 5415,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/evals/semantic_config.json",
+        "size": 2499,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/evals/trigger_cases.json",
+        "size": 2412,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/examples/agents/adversarial-editor.md",
+        "size": 2991,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/examples/agents/adversarial-reviewer.md",
+        "size": 2702,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/references/decision-consensus.md",
+        "size": 2197,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/references/final-review-report.md",
+        "size": 3202,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/references/review-lenses.md",
+        "size": 2427,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/references/review-loop.md",
+        "size": 6669,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/references/subagent-dispatch.md",
+        "size": 13971,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/adversarial-review/SKILL.md",
+        "size": 5397,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/align/references/align-method.md",
+        "size": 2096,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/align/SKILL.md",
+        "size": 1798,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/beautiful-mermaid/SKILL.md",
+        "size": 2251,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/brainstorming/SKILL.md",
+        "size": 2782,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/bug-fix/SKILL.md",
+        "size": 3695,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/evals/semantic_config.json",
+        "size": 1933,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/evals/trigger_cases.json",
+        "size": 2790,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/evals/workflow_cases.json",
+        "size": 5545,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/examples/agents/adversarial-challenger.md",
+        "size": 2272,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/examples/agents/adversarial-synthesizer.md",
+        "size": 2136,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/references/resource-handoff.md",
+        "size": 941,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/deliberate/SKILL.md",
+        "size": 6707,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/eli5/SKILL.md",
+        "size": 346,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/git-conflict/SKILL.md",
+        "size": 1788,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/project-index/scripts/project-index.js",
+        "size": 20956,
+        "mode": 493
+      },
+      {
+        "path": "skills/dev/project-index/SKILL.md",
+        "size": 3199,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/repo-map/references/repo-map-android-example.md",
+        "size": 2884,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/repo-map/references/repo-map-apple-example.md",
+        "size": 3158,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/repo-map/references/repo-map-backend-example.md",
+        "size": 2967,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/repo-map/references/repo-map-web-example.md",
+        "size": 3237,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/repo-map/references/repo-map-workflow.md",
+        "size": 3555,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/repo-map/SKILL.md",
+        "size": 2871,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/tldr/evals/semantic_config.json",
+        "size": 3124,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/tldr/evals/trigger_cases.json",
+        "size": 2045,
+        "mode": 420
+      },
+      {
+        "path": "skills/dev/tldr/SKILL.md",
+        "size": 3263,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/create-app-icon/assets/icon-style-catalog.png",
+        "size": 1071072,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/create-app-icon/references/chrome-extension-icons.md",
+        "size": 3916,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/create-app-icon/references/icon-styles.md",
+        "size": 3347,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/create-app-icon/scripts/remove-green-background.mjs",
+        "size": 7722,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/create-app-icon/SKILL.md",
+        "size": 4204,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/figma-describe/references/tree-output-format.md",
+        "size": 1468,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/figma-describe/SKILL.md",
+        "size": 1944,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/venom-cli/SKILL.md",
+        "size": 3821,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/yunxiao/evals/semantic_config.json",
+        "size": 2595,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/yunxiao/evals/trigger_cases.json",
+        "size": 1910,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/yunxiao/references/approval-workflow.md",
+        "size": 1924,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/yunxiao/references/daemon-workflow.md",
+        "size": 2997,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/yunxiao/references/manifest-schema.md",
+        "size": 5879,
+        "mode": 420
+      },
+      {
+        "path": "skills/domain/yunxiao/scripts/yunxiao.mjs",
+        "size": 88658,
+        "mode": 493
+      },
+      {
+        "path": "skills/domain/yunxiao/SKILL.md",
+        "size": 3996,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/agents/openai.yaml",
+        "size": 251,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/evals/semantic_config.json",
+        "size": 1096,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/evals/trigger_cases.json",
+        "size": 663,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/agent-rules.md",
+        "size": 225,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/csl-agent-kit-contract.md",
+        "size": 245,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-after-tool.md",
+        "size": 262,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-before-tool.md",
+        "size": 263,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-interrupt.md",
+        "size": 261,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-prompt-submit.md",
+        "size": 265,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-session-end.md",
+        "size": 263,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-session-start.md",
+        "size": 265,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/itermate-codex-stop.md",
+        "size": 256,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/hooks/refresh-tab-title.md",
+        "size": 226,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/references/codex-protocol.json",
+        "size": 4309,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+        "size": 16145,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/references/session-start-protocols.json",
+        "size": 1032,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/agent-hooks.js",
+        "size": 791,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/itermate-codex-status.js",
+        "size": 2210,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/lib/cli.js",
+        "size": 10611,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/lib/native-hook.js",
+        "size": 4888,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/lib/rule.js",
+        "size": 14862,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/lib/runtime.js",
+        "size": 10473,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/lib/store.js",
+        "size": 14317,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/read-agent-rules.js",
+        "size": 934,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/read-csl-agent-kit-contract.js",
+        "size": 968,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/refresh-tab-title.js",
+        "size": 27151,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/agent-hooks/scripts/validate-rules.js",
+        "size": 2011,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-hooks/SKILL.md",
+        "size": 6282,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-rules/agent-rules.md",
+        "size": 212,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-rules/SKILL.md",
+        "size": 2479,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/code-style/swift-style.md",
+        "size": 4219,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-build-run-debug/project-discovery-and-run-loop.md",
+        "size": 5583,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-build-run-debug/swiftpm-gui-app-bundle.md",
+        "size": 4759,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-build-run-debug/test-triage.md",
+        "size": 3569,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-packaging-notarization/distribution-and-notarization.md",
+        "size": 5528,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-signing-entitlements/diagnosis-and-entitlements.md",
+        "size": 5168,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-swiftui-appkit/appkit-interop.md",
+        "size": 5489,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-swiftui-appkit/scene-architecture.md",
+        "size": 6861,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-swiftui-appkit/windowing-and-visuals.md",
+        "size": 5411,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/macos-unified-logging/logger-design-and-verification.md",
+        "size": 4538,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/process-sop-example.md",
+        "size": 2652,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/references/rule-sop-example.md",
+        "size": 3025,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/scripts/sop-candidates.js",
+        "size": 5420,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/agent-sops/scripts/sop-summaries.sh",
+        "size": 2634,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/agent-sops/SKILL.md",
+        "size": 8625,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/code-style.md",
+        "size": 3921,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/macos-build-run-debug.md",
+        "size": 9093,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/macos-packaging-notarization.md",
+        "size": 8893,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/macos-signing-entitlements.md",
+        "size": 8560,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/macos-swiftui-appkit.md",
+        "size": 9703,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/macos-unified-logging.md",
+        "size": 8065,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/monospace-circuit-diagrams.md",
+        "size": 15990,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/agent-sops/sops/swift-api-design.md",
+        "size": 10967,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/archive/evals/semantic_config.json",
+        "size": 1571,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/archive/evals/trigger_cases.json",
+        "size": 1199,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/archive/scripts/archive-session.mjs",
+        "size": 6018,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/archive/SKILL.md",
+        "size": 3065,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+        "size": 56593,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/lib/task-evidence.js",
+        "size": 8991,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/lib/task-mode.js",
+        "size": 5173,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/lib/task-reports.js",
+        "size": 8721,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/lib/topic-cli.js",
+        "size": 7991,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/lib/topic-core.js",
+        "size": 43849,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+        "size": 10580,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+        "size": 38562,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+        "size": 10714,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/csl-tasks/shared/scripts/task-mode.js",
+        "size": 2210,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/skill-quality/evals/semantic_config.json",
+        "size": 804,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/skill-quality/evals/trigger_cases.json",
+        "size": 753,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/skill-quality/scripts/check.js",
+        "size": 18056,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/skill-quality/SKILL.md",
+        "size": 2801,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-context/agents/openai.yaml",
+        "size": 320,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-context/evals/context_value_cases.json",
+        "size": 11015,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-context/evals/lifecycle_cases.json",
+        "size": 29606,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-context/evals/query_cases.json",
+        "size": 5066,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-context/evals/trigger_cases.json",
+        "size": 2082,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-context/scripts/context.js",
+        "size": 14529,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/task-context/SKILL.md",
+        "size": 23203,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-grill/SKILL.md",
+        "size": 1504,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-lessons/agents/openai.yaml",
+        "size": 212,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-lessons/evals/query_cases.json",
+        "size": 1881,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-lessons/evals/trigger_cases.json",
+        "size": 1263,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-lessons/scripts/lessons.js",
+        "size": 10639,
+        "mode": 493
+      },
+      {
+        "path": "skills/meta/task-lessons/SKILL.md",
+        "size": 9836,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-maintenance/agents/openai.yaml",
+        "size": 347,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-maintenance/evals/semantic_config.json",
+        "size": 1456,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-maintenance/evals/structure_operation_cases.json",
+        "size": 3565,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-maintenance/evals/trigger_cases.json",
+        "size": 1650,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-maintenance/SKILL.md",
+        "size": 20868,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-mode/evals/confirmation_cases.json",
+        "size": 3306,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-mode/evals/trigger_cases.json",
+        "size": 727,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-mode/SKILL.md",
+        "size": 5279,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-plan/agents/openai.yaml",
+        "size": 203,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-plan/evals/semantic_config.json",
+        "size": 584,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-plan/evals/trigger_cases.json",
+        "size": 977,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-plan/SKILL.md",
+        "size": 7820,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-queue/agents/openai.yaml",
+        "size": 231,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-queue/evals/semantic_config.json",
+        "size": 598,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-queue/evals/trigger_cases.json",
+        "size": 836,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-queue/SKILL.md",
+        "size": 9940,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/evals/contract_cases.json",
+        "size": 11429,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/evals/semantic_config.json",
+        "size": 2415,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/evals/trigger_cases.json",
+        "size": 1957,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/references/code_review_checklist.md",
+        "size": 2269,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/references/coding_standards.md",
+        "size": 2339,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/references/common_antipatterns.md",
+        "size": 2491,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/references/review_workflow.md",
+        "size": 12007,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task-review/SKILL.md",
+        "size": 8337,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/agents/openai.yaml",
+        "size": 199,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/evals/review_gate_cases.json",
+        "size": 6045,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/evals/review_stall_cases.json",
+        "size": 4110,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/evals/semantic_config.json",
+        "size": 906,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/evals/task_ownership_cases.json",
+        "size": 2650,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/evals/trigger_cases.json",
+        "size": 1437,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/task/SKILL.md",
+        "size": 40549,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/topic/evals/trigger_cases.json",
+        "size": 1005,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/topic/references/topic-contract.md",
+        "size": 17084,
+        "mode": 420
+      },
+      {
+        "path": "skills/meta/topic/SKILL.md",
+        "size": 8823,
+        "mode": 420
+      }
+    ],
+    "entryCount": 194,
+    "bundled": []
+  }
+]

@@ -1,0 +1,258 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-contract-dedup",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "aa95f48c7d4e6163dbc20888c6ef9766cafac845a63baf00db53550431787858",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "860d249d9ac61ccbf3426725bf2fac295ca90cf7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "5a0664e647927aaa841c4bd502fce3d2ede2cc371974e8bfba8e9dd69e952116",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8490121210a18e013407dc055f90bc7d39512c16"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8490121210a18e013407dc055f90bc7d39512c16",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-review-grading.md",
+      "sha256": "ef47e6bf94d67e6e558de47309f43e38ea1f5999a615625e0dbcf80d7fe9b1be",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "925758d873148b2c12ca225535011d3e0573d502"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "925758d873148b2c12ca225535011d3e0573d502",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "4dacd8ff81eda70850a4e515c42f9f11dec9084df17a424716d86a65e2caf34f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "9f7e337fd0ac0e0fa26a9f56a2bfb83321317edb"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "9f7e337fd0ac0e0fa26a9f56a2bfb83321317edb",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-plan/SKILL.md",
+      "sha256": "27f23d7706bb6e2faa2e2c8c7ca5bd4e9197f0e7ee46f7d9dd199699a539a43f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a3759136013f924dc9180b89f53a65bdcbf85f32"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a3759136013f924dc9180b89f53a65bdcbf85f32",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-queue/SKILL.md",
+      "sha256": "4d2cda3b5552db7460d4ff1cacaec21bc42f5d2917ab144040afee69948e4809",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "9916903f856975883ddb97f4984094e53b27614b"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "9916903f856975883ddb97f4984094e53b27614b",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/SKILL.md",
+      "sha256": "d25a1766679bb2a191aea6dae9202b66adcfeb7ad47395d9b9a7fc53e40f2ac0",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a1aecbe1bdb732173fa585b524becee3b2c1eb51"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a1aecbe1bdb732173fa585b524becee3b2c1eb51",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "cb94e923d79ceb3b59391fc19125fafb0cf60d81cb3c1ab25d8a1fdc572930ab",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a0271fde28a021f6bddca8b525a61f0e2fc7a67a"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a0271fde28a021f6bddca8b525a61f0e2fc7a67a",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "de1c170da5bac6735747b3bc256b8f230268323c0dcb233cb58a14726c5344f1",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8f9701592b081245824a2d42c32731310db383ef"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8f9701592b081245824a2d42c32731310db383ef",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-contract-dedup/evidence/authority-map.md",
+      "sha256": "c81c7161c29de358290ea0e566a0437fcd13637aade52520ff41be5a7c1ccd96",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-contract-dedup/evidence/contract-before.md",
+      "sha256": "de97555bf658f6b707dd65527a2bd57ba8b8bc357daf2fbf695243fef18cf5f1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-contract-dedup/evidence/hook-head-isolated.log",
+      "sha256": "707e4459c7756249f0214a8805cbf8bb6a181642b3c0f1ae39f3f886ae7ff130",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-contract-dedup/evidence/hook-isolated.log",
+      "sha256": "8600969ec44dbc83dd3f39679512d6422987af42d778868af0ec616cde2409ed",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-contract-dedup/evidence/hooks-full-attempt.log",
+      "sha256": "9fb5d9b774e8d5fa92ef9a971d177156d80400fddc09c8f4aa71e5a5c8f0c79b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/task-contract-dedup/evidence/integration.log",
+      "sha256": "879873709fe5fe50a7693989672504748b75d8f4308fb04f09a4a6af7d68a3b1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/agent-hooks.test.js",
+      "sha256": "68357134a49a5c421f05803f9152e29144230f943dc83266c6bcb2daa40b1fb8",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "e70f367f8cef9d024deb48eb5214fe829fd112fe"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "e70f367f8cef9d024deb48eb5214fe829fd112fe",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-files.test.mjs",
+      "sha256": "30f24b8bc844756cfdc0c95f2aec0b96d9d8fd7a0d7e83f16864580d4ee18972",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0d81df86f9f6643d624c18bcc113ba43e2a0dd3f",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-mode.test.js",
+      "sha256": "8170aa934d7bd6807612c8b589b5d6f1f8fffd1ad179e2a1d815e1121f2ca584",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "70af3e99fb08d24fac693f8c9fae146b131d9942"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "70af3e99fb08d24fac693f8c9fae146b131d9942",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

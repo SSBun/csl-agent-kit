@@ -1,0 +1,49 @@
+# 用户级与项目级分层记忆系统
+
+- Schema: topic/v1
+- Id: layered-memory-system
+- State: Active
+- Revision: c2f27f9b2d418a039bac118c14e86aba2ac966a6934ac0e0cdf617c6fe32fa4f
+
+## Scope
+
+维护 CSL Agent Kit 用户级与项目级分层 Memory 系统的共享设计。首版自动接入 Pi；存储、统一 CLI、派生索引、独立后台维护、审批审计、恢复和旧 Context/Lessons 一次性迁移均在设计范围内。Topic 本身不授权实施、服务激活、真实数据迁移、删除、发布或修改用户级记忆。
+
+## Spec Context
+
+### 规范基线
+
+详细设计作为 Resources 中的 normative 文件固定摘要；其中第1—12章及第14章需求映射表达目标契约，第13章只提供注明来源的历史证据与待验收边界，不构成运行完成证明。后续实现或审查任务应显式关联并采用当前规格；仅列为 history 的任务保持原记录和原有授权。
+
+### 共同要求
+
+- MEM-01—MEM-08：user/project 两级存储，完全替代旧 Context/Lessons；各自既有数据根内保存 Memory；格式版本、四类元数据、revision/hash 条件写入；用户级明确授权、项目级有据自动维护；维护当前有效知识。
+- MEM-09—MEM-12：稳定回复后异步投递可见增量；按需独立后台服务；Memory 独立模型配置优先，否则使用 Pi 保存的默认模型；两级索引和自主按需读取，不等待维护队列、不静默截断。
+- MEM-13—MEM-16：保留理由、差异与恢复能力，不因近期未用删除知识；本地 Web 和 CLI 提供审计、提案审批与恢复；故障不默认阻断主任务；条目权威、索引确定性派生。
+
+全部16项要求及对应验收条件见详细设计第14章。Topic Active 只表示持续维护，不表示实现或验收完成。
+
+## Decisions
+
+- 不设置 Core/Normal；fact/preference/experience/reference 仅是元数据，不改变权限或硬性排除相关检索。
+- 用户级变更及项目知识提升须展示确定内容和理由并取得明确授权；项目级维护需来源、审计及恢复能力。授权协议不是操作系统沙箱。
+- Memory 模型覆盖优先，否则使用 Pi 用户级保存的默认 provider/model；不跟随前台临时切换，不静默换模型。
+- 原有知识的准确导入、旧消费者退出、旧文件处置和服务激活是分离的行动边界；批准导入不等于批准删除或激活。
+- 当前整理只建立设计与导航，不变更产品行为；故障验证、消费者切换、UI验收等后续事项由实施任务承担，不因本文落盘而视为完成。
+
+## Dependencies
+
+
+
+## Resources
+
+| Resource | Kind | Purpose | SHA-256 |
+| --- | --- | --- | --- |
+| [分层 Memory 系统详细设计](<layered-memory-system/resources/detailed-design.md>) | normative | 16项需求、架构协议、授权边界、迁移与验收规范；历史证据单独标注 | 5cbbd5f899123e049fb3a3d574da8bc5373361143c3efe9501e579a867e9d28f |
+
+## Tasks
+
+| Task | Relation | Reference | Purpose | Repository |
+| --- | --- | --- | --- | --- |
+| [编写 Memory 系统详细设计](<../tasks/write-memory-system-design.md>) | member | self:write-memory-system-design | 整理共享详细设计、16项需求映射及导航 | local |
+| [设计用户级与项目级分层记忆系统](<../tasks/plan-layered-memory-system.md>) | history | self:plan-layered-memory-system | 原16项需求、已确认决策及实施证据来源；仅历史引用，不改变任务绑定或进度 | local |
