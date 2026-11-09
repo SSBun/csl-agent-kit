@@ -1,0 +1,21 @@
+{
+  "kind": "隔离浏览器UI观察；合成只读API输入，不代表真实模型运行",
+  "observations": {
+    "active": {
+      "latest": true,
+      "decision": true,
+      "candidate": true,
+      "committed": true,
+      "beforeAvailable": true,
+      "technicalCollapsed": true,
+      "metadataCollapsed": true
+    },
+    "historyPreserved": true,
+    "partialFailure": true,
+    "batchIsolation": true,
+    "expiredAudit": true,
+    "missingAudit": true,
+    "liveInput": true,
+    "truncation": true
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "strengthen-inline-review-commit-guard",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/strengthen-inline-review-commit-guard/evidence/baseline.json",
+      "sha256": "29514d7166392858041b9aa894a790cebfbce7b0307d41f1183c9251106284aa",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/strengthen-inline-review-commit-guard/evidence/results.json",
+      "sha256": "9220e018ba1002207a4ac05e96591c62515fc3ae06da6ebc83dba3c5ae9137c7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/strengthen-inline-review-commit-guard/evidence/task-owned.diff",
+      "sha256": "fb18bdd46f75d0f44bffe58da39b74becf55d8187bba7390c851e43f989d0d84",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/strengthen-inline-review-commit-guard/evidence/tests.log",
+      "sha256": "1361ddf007d449395861464d13b3d724c29b03a42677c93e9bd83eb3e3ea4520",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/references/comment-format.md",
+      "sha256": "788efefe83efa282a8be8feb426ef412a6005e601f14380bc68aa824c13ed206",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/scripts/preview-clean.js",
+      "sha256": "c1ba8913d9240ea5490fd58919241b5438bf321ebcf40db90fe7c1f7f6028472",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/SKILL.md",
+      "sha256": "7cbf024dce1404ed4dcb784a0fa3f4ce8899445296f3d81d117ac839ad7a040d",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/references/commit-guard.md",
+      "sha256": "973b2aaa23eae14df849a86beb8b602d6c0e7846375774014b6b08ff412c45a1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/scripts/check-commit.js",
+      "sha256": "bed8dad8cdc41047693e704d013509f1aa7a561176fde543d783c4b7eb22c55e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/hooks/code-inline-review-commit.md",
+      "sha256": "17611a88c06b56aadbb31e9c4f3e64378caf014e600dad07730e65ad4de34e89",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/check-code-review-commit.js",
+      "sha256": "901271113fe3a7e7e693769efa4207b54294cb5a04a4f5d999ae941a6aebb3eb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/commit-guard.test.js",
+      "sha256": "9b61d41b947e119ea011bc0afbb61dd3d9d0fb4ef9ebd980ca19afead2c33ddf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

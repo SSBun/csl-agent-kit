@@ -1,0 +1,231 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "migrate-workspace-task-storage",
+  "files": [
+    {
+      "path": ".csl-agent-kit/migrations/task-root-cutover-20261104/manifest.json",
+      "sha256": "c07d5214b09c180aadd14257d0acd11ffda9d88c553d8fe9cc6847a641ba6d33",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/migrations/task-root-cutover-20261104/state.json",
+      "sha256": "2cdf348f16aa12eb6e1cba73c4d68faff91cc48391650cd34d48b2f1c7a2fe68",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/task-storage.json",
+      "sha256": "ba962b0ae119fa896eccb7324a7c35a43df1362f2ea41524671388dadb818532",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "pi/extensions/csl-context-hooks.ts",
+      "sha256": "f3d3b5f0ee1be0a20148d06c71b1b6ece08c9980a8888d262052a465551c2827",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c990d79f28009fdb24b591144d662a2dde140d43"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c990d79f28009fdb24b591144d662a2dde140d43",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "pi/extensions/csl-task-overlay.ts",
+      "sha256": "dd7aef960ffc60760edd2e8fdc91597285e841cc2eaf33a7533018243e890f6d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "b736b246eb1a9a180cbb7b9702e91a18d9d6c892"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "b736b246eb1a9a180cbb7b9702e91a18d9d6c892",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/SKILL.md",
+      "sha256": "930c8e55139b646ff8a20f3d13f0c97b860d9c860e44a3eafe6a856229649519",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/storage.md",
+      "sha256": "03abfd6bc943ffad0925474a6b14b890d2a226661e40d315406f0f014cadada2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/task-storage-migration.md",
+      "sha256": "70c5e0d9fb4d974643293988aebc8f88956679d391a3e8f51dfd2c610f345b9a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/archive/SKILL.md",
+      "sha256": "c123f1a7a33a018ef268519f19513b592b4185cfe4fa56fae51ad10244da24aa",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4d301ec1d9e381ffa100a818a70155d436a9b634"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4d301ec1d9e381ffa100a818a70155d436a9b634",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/archive/scripts/archive-session.mjs",
+      "sha256": "a99bde2dce0075bd220e53478f25091423a0356325a904ebf4424c437156b191",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2707a4ca563757190b7f28500135f55c7ef9cf74"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2707a4ca563757190b7f28500135f55c7ef9cf74",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "3f5e4b1a2aec97fe607f93bce29d7e521ced0b6aea45095466777263ee5a62de",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a3b1eb2cb04b88690b3a6d889609ac07f14cd4bb"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a3b1eb2cb04b88690b3a6d889609ac07f14cd4bb",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-evidence.js",
+      "sha256": "7980b2c3cfbdd1f83255be952e52f78d6d0ca6c393686da8aa1c86a0a680c1c9",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a049b0688eaf235c28ddc3c924405b9935cbbf7e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a049b0688eaf235c28ddc3c924405b9935cbbf7e",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-storage.js",
+      "sha256": "45f3af6a2fa49c51be8e1ac0dc152f124dd035fe31fb90a6fa3a594016fe6603",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/topic-core.js",
+      "sha256": "696b33ad35e69a9b554a869a84fa0172987500be82ed981d94f65a186d1e190e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fe3275d57517469f97f387ce8f0aadcc4e85a80e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fe3275d57517469f97f387ce8f0aadcc4e85a80e",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/migrate-task-storage.js",
+      "sha256": "c13e063d7c9d4601257b8ceae19a30c8b35f4e11ce6d6445b23ecf1d6ee0de41",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/csl-tasks-core.test.mjs",
+      "sha256": "e5deb7e9d845bbe776eb8bdd17e39856e0d441cb4273b65dfcb29b6ee4c6536e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "70479ae2b7d71d8e82d61b5bb66757dad4e84f8a"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "70479ae2b7d71d8e82d61b5bb66757dad4e84f8a",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/pi-task-overlay.test.mjs",
+      "sha256": "deb638cdbb44cdba707ea93b5c11c71c85db0cdec7fccc8df280bbfa06d7227b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "3ab6be04a18608f41efa5fb6729344f53f59a575"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "3ab6be04a18608f41efa5fb6729344f53f59a575",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/task-storage-migration.test.mjs",
+      "sha256": "a5249a0b8436f897b6418cc2dff5c9261c8f0d19df4524d6840644ed0855a4d7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

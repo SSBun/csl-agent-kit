@@ -1,0 +1,180 @@
+{
+  "at": "2026-11-05T09:05:05.238Z",
+  "running": true,
+  "pid": 11109,
+  "started": "2026-11-05T09:04:53.923Z",
+  "active": [
+    "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "/Users/caishilin/Desktop/personal/Filio"
+  ],
+  "counts": {
+    "running": 2,
+    "queued": 25
+  },
+  "schedulerError": null,
+  "maintenanceErrors": [],
+  "records": [
+    {
+      "id": "7f2f99ad2ef29a92a0466c4a2aad6899377851519b1ca85ebbac82cd54608b7c",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "running",
+      "attempts": 2
+    },
+    {
+      "id": "64455388847762cec4c8f379793e174f6865499708601d3b94e76f8c82f795ce",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "e0c065a00f9e11d1e6c2a73c74a7ba4edea83e90329d0f5ab0608d0783775e1e",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "9181d9b7a94040ad11281ae22f6e379e677621459e4019370e19d416edba9127",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "430e910773e21b86976d8fe0c8799c7339c086a1b56670afa856ee4ac4c53c5e",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "e50bfcfeef1fc3bffe87c1fd41f7190be7320556c555ff52039af855b71900a1",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "e873b34c4f2f9e6e11052183949d1f5026cdde8b38015002b45c6e9c3d408dc7",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "55ca35d577ced1db1347a3deb2955504b5435db57b78df82785b84a22d41ceb0",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "1ad930270e4812247a4b7d9b5be35c7992baa2e05e0e821c10a0abab4ca7e231",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "ea8f1076167ed3c7b99292b80440303463e32999ad6cf078654f7a14813a5c50",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "b96872ee19f912551364f700f2751a926da654f5375989fa58141f73c87357f8",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "3826b251970b633faa2cf687d8177c3a7029e63cd14844e07a53b28da7bd041d",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "dae614a5246842d6a0dd2f0d3e1a24eaa1d32eaae455b392d0cd66a607561e6a",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "9f07830812b61dd2671c195c93b98170b5e8a39a19e171a2ed175be6ff2bb11c",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "fd3e50cf3612e056178402fba8430c4adb3b90517520a8eaae130bb574cf9763",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "4b24b0b07be98994d6f2143bf7483716f2cb842e1d2c8dbf91553271cc1701a1",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "33d5f48a39e66861a1662ea9edbb5eab13f5ade4848c7ed9f9a380d4d8189959",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "c8afc620f4f594a7e6a2a462ad56eb95c693e78ddc636b6cfe6827187afc62c6",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "12eb5d466926475a63dbcedb7bb55b1c84711329ea1f169b227a9d59468478dc",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "f7815ef49a160f5ff0094d26aeebe141d492693283a43828c33e63f7f49b2f5f",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "14fea7cc9c6624c83bf20ead9141bcae532af2fc208f598c2ef847cc5a8640f0",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "b71cafa6dbcc791e83ace3b8c1689b0a1f2c583adc9d21f29b2bf9bc4713d50c",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "dc41bbe102fe3abce48b44a7d840a590a002e5a4c5d147f81b512c081a0ff3b4",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "2b09f89b85053354d8277f01ce5413da86ce052ee1e8bf8cca6cf79cff3cd418",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "8f43f3977ad13cfbf166abaca5372829be5381c7ea5a8753c17b123905f272dc",
+      "workspace": "/Users/caishilin/Desktop/personal/Filio",
+      "status": "running",
+      "attempts": 2
+    },
+    {
+      "id": "a7d12965f6cae73701a3f996a5e39b6aca100ff8902581082bf290e75a2a4109",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "49a96aaba1089841ba8c75f82cbc24794901f4432f7763005ff5776fd4a9844b",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "queued",
+      "attempts": 0
+    }
+  ]
+}

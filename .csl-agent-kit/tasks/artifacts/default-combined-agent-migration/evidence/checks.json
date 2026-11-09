@@ -1,0 +1,15 @@
+{
+  "caseCount": 9,
+  "caseStructure": "valid",
+  "referenceLinks": "valid",
+  "whitespace": "passed",
+  "testsRun": false,
+  "migrationExecuted": false,
+  "files": {
+    "skills/meta/agent-migration/SKILL.md": "341c4e8300b3f4e8d65a8f14653d1b6ee3cc3901cf82fa45acfcb6a6aa5263f7",
+    "skills/meta/agent-migration/references/memory-migration.md": "6f62bbd04d6f4b0e30455a9179fa2dbc05ab46cbf2eb1eaf48b7e6ebad84bf93",
+    "skills/meta/agent-migration/evals/trigger_cases.json": "145c68e094f30236dfb46732a16573f63f29ffedbd7238d47ad15906f6f76d8f",
+    "skills/meta/agent-migration/evals/migration_cases.json": "85520405d123b479c5f1a0e675f2958385c6f98f90dd1dcaa64f2a4b4826899c"
+  },
+  "quality": "pass"
+}

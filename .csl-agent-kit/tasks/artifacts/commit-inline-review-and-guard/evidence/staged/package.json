@@ -1,0 +1,108 @@
+{
+  "name": "@ssbun/csl-agent-kit",
+  "version": "5.2.0",
+  "description": "Personal agent toolkit for skills, plugins, commands, hooks, and Pi extensions across Claude Code, Codex, Cursor, and Pi.",
+  "author": {
+    "name": "CSL"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/SSBun/csl-agent-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SSBun/csl-agent-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SSBun/csl-agent-kit/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "bin/",
+    "commands/",
+    "hooks/",
+    "pi/",
+    "prompts/",
+    "scripts/install.sh",
+    "skills/",
+    ".agents/plugins/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    ".cursor-plugin/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "csl-agent-kit": "bin/csl-agent-kit.js",
+    "yunxiao": "skills/domain/yunxiao/scripts/yunxiao.mjs"
+  },
+  "scripts": {
+    "test": "npm run test:cli && npm run test:agent-hooks && npm run test:tasks && npm run test:archive",
+    "test:all": "npm test && npm run test:pi",
+    "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
+    "test:agent-hooks": "node --test tests/agent-hooks.test.js tests/commit-guard.test.js",
+    "test:commit-guard": "node --test tests/commit-guard.test.js",
+    "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs tests/task-evidence.test.mjs tests/topics.test.mjs tests/task-mode.test.js",
+    "test:archive": "node --test tests/archive-session.test.mjs",
+    "test:pi": "node tests/run-pi-tests.js",
+    "check": "node --check bin/csl-agent-kit.js && npm run test:all && node bin/csl-agent-kit.js install --yes --dry-run --json",
+    "check:cli": "node --check bin/csl-agent-kit.js && npm run test:cli && node bin/csl-agent-kit.js install --yes --dry-run --json"
+  },
+  "keywords": [
+    "pi-package",
+    "skills",
+    "agent-skills",
+    "agent-toolkit",
+    "plugins",
+    "commands",
+    "hooks",
+    "ios",
+    "macos",
+    "swift",
+    "app-icon",
+    "release",
+    "project-analysis",
+    "task-review",
+    "figma",
+    "sop"
+  ],
+  "pi": {
+    "extensions": [
+      "./pi/extensions"
+    ],
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ]
+  },
+  "dependencies": {
+    "classic-level": "^3.0.0",
+    "mqtt": "^5.15.2",
+    "prompts": "^2.4.2",
+    "sharp": "^0.32.6",
+    "yaml": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-ai": {
+      "optional": true
+    },
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@earendil-works/pi-tui": "^0.80.10"
+  }
+}

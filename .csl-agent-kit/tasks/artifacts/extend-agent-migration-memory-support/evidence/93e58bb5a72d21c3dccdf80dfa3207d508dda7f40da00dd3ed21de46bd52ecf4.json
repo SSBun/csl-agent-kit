@@ -1,0 +1,38 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "extend-agent-migration-memory-support",
+  "files": [
+    {
+      "path": "skills/meta/agent-migration/SKILL.md",
+      "sha256": "365caafa83bfef1868aa42f0ce1b67c0dafc074c4f23bd90588eeb4321915e84",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/evals/trigger_cases.json",
+      "sha256": "81051ff6ed912b453d40e232b37112e5b1490d55c4858615d468a8209886fb8b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/memory-migration.md",
+      "sha256": "a00a99ec840030d5b07bbb441a117460630645b4c3efdd1f38ab2f56deac4e74",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/storage.md",
+      "sha256": "8eb064b3df7e86a569e7d34da7d55fe1dd2b430807ed4adfa8aacf235b625af2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

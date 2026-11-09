@@ -1,0 +1,600 @@
+TAP version 13
+# Subtest: implements V1 three-valued collection and glob semantics
+ok 1 - implements V1 three-valued collection and glob semantics
+  ---
+  duration_ms: 0.918083
+  type: 'test'
+  ...
+# Subtest: rejects unknown fields and non-segment double-star globs
+ok 2 - rejects unknown fields and non-segment double-star globs
+  ---
+  duration_ms: 4.879167
+  type: 'test'
+  ...
+# Subtest: validates optional single-line descriptions
+ok 3 - validates optional single-line descriptions
+  ---
+  duration_ms: 3.95425
+  type: 'test'
+  ...
+# Subtest: validates one or more trigger Markdown files with shared V1 parsing
+ok 4 - validates one or more trigger Markdown files with shared V1 parsing
+  ---
+  duration_ms: 2.312459
+  type: 'test'
+  ...
+# Subtest: CLI create, update, show, and list preserve descriptions
+ok 5 - CLI create, update, show, and list preserve descriptions
+  ---
+  duration_ms: 6.975708
+  type: 'test'
+  ...
+# Subtest: migrates legacy global and project Hook data to new paths and protocols
+ok 6 - migrates legacy global and project Hook data to new paths and protocols
+  ---
+  duration_ms: 14.375375
+  type: 'test'
+  ...
+# Subtest: CLI creates local project rules and delete preserves scripts
+ok 7 - CLI creates local project rules and delete preserves scripts
+  ---
+  duration_ms: 2.389083
+  type: 'test'
+  ...
+# Subtest: normalizes unknown changed files instead of guessing from tool input
+ok 8 - normalizes unknown changed files instead of guessing from tool input
+  ---
+  duration_ms: 0.156542
+  type: 'test'
+  ...
+# Subtest: creates host-neutral standard events for external adapters
+ok 9 - creates host-neutral standard events for external adapters
+  ---
+  duration_ms: 0.258166
+  type: 'test'
+  ...
+# Subtest: normalizes all ten Codex events into complete golden payloads
+ok 10 - normalizes all ten Codex events into complete golden payloads
+  ---
+  duration_ms: 0.535
+  type: 'test'
+  ...
+# Subtest: supports verified session-start prompt injection on Claude Code and Pi
+ok 11 - supports verified session-start prompt injection on Claude Code and Pi
+  ---
+  duration_ms: 0.153709
+  type: 'test'
+  ...
+# Subtest: project list does not parse untrusted rule content and invalid rules remain recoverable
+ok 12 - project list does not parse untrusted rule content and invalid rules remain recoverable
+  ---
+  duration_ms: 3.25875
+  type: 'test'
+  ...
+# Subtest: marks same-scope shared/local IDs invalid without choosing a winner
+ok 13 - marks same-scope shared/local IDs invalid without choosing a winner
+  ---
+  duration_ms: 3.069167
+  type: 'test'
+  ...
+# Subtest: rejects executable files without shebang and local create refuses gitignore symlinks
+ok 14 - rejects executable files without shebang and local create refuses gitignore symlinks
+  ---
+  duration_ms: 2.223167
+  type: 'test'
+  ...
+# Subtest: bounds regex execution and event runtime while preserving block short-circuit order
+ok 15 - bounds regex execution and event runtime while preserving block short-circuit order
+  ---
+  duration_ms: 675.572917
+  type: 'test'
+  ...
+# Subtest: maps script success, failure, timeout, signal, post-event exit two, and symlink escape
+not ok 16 - maps script success, failure, timeout, signal, post-event exit two, and symlink escape
+  ---
+  duration_ms: 688.85475
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:334:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:363:14)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: runs the Swift changed-file and commit-command RFC examples end to end
+not ok 17 - runs the Swift changed-file and commit-command RFC examples end to end
+  ---
+  duration_ms: 598.201625
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:389:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        'global:swift:block-unsupported',
+    +   'inner:agent-memory:script-not-executable'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'global:swift:block-unsupported'
+  actual:
+    0: 'global:swift:block-unsupported'
+    1: 'inner:agent-memory:script-not-executable'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:405:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: dispatch injects prompt context once and suppresses duplicate diagnostics per session
+ok 18 - dispatch injects prompt context once and suppresses duplicate diagnostics per session
+  ---
+  duration_ms: 249.473542
+  type: 'test'
+  ...
+# Subtest: dispatch injects global session prompts for Claude Code
+not ok 19 - dispatch injects global session prompts for Claude Code
+  ---
+  duration_ms: 88.370958
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:444:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'Agent Hooks: inner:agent-memory:script-not-executable\n'
+    - ''
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ''
+  actual: |-
+    Agent Hooks: inner:agent-memory:script-not-executable
+    
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:461:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: dispatch maps PermissionRequest and PreCompact blocks to native JSON
+ok 20 - dispatch maps PermissionRequest and PreCompact blocks to native JSON
+  ---
+  duration_ms: 414.179
+  type: 'test'
+  ...
+# Subtest: event deadline covers discovery and stops expired collection evaluation
+ok 21 - event deadline covers discovery and stops expired collection evaluation
+  ---
+  duration_ms: 5.590625
+  type: 'test'
+  ...
+# Subtest: run-script inject-output surfaces stdout as a prompt on session-start
+not ok 22 - run-script inject-output surfaces stdout as a prompt on session-start
+  ---
+  duration_ms: 614.63475
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:519:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   'inner:agent-memory:script-not-executable'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'inner:agent-memory:script-not-executable'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:532:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: run-script without inject-output keeps stdout out of prompts
+not ok 23 - run-script without inject-output keeps stdout out of prompts
+  ---
+  duration_ms: 545.834
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:543:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   'inner:agent-memory:script-not-executable'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'inner:agent-memory:script-not-executable'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:556:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: inject-output is validated as boolean and rejected on inject-prompt
+ok 24 - inject-output is validated as boolean and rejected on inject-prompt
+  ---
+  duration_ms: 0.647209
+  type: 'test'
+  ...
+# Subtest: inner scope injects built-in, user, and project agent-rules.md in order
+ok 25 - inner scope injects built-in, user, and project agent-rules.md in order
+  ---
+  duration_ms: 414.594917
+  type: 'test'
+  ...
+# Subtest: inner CSL Agent Kit contract injects on supported session starts
+not ok 26 - inner CSL Agent Kit contract injects on supported session starts
+  ---
+  duration_ms: 94.27425
+  type: 'test'
+  location: '/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:629:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /After Task Target alignment, establish sufficient task-relevant Context/. Input:
+    
+    'CSL AGENT KIT CONTRACT ACTIVE\n' +
+      '\n' +
+      '# CSL Agent Kit Task Workflow Contract\n' +
+      '\n' +
+      'Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.\n' +
+      '\n' +
+      '- Use Task Target to let the user recheck implementation goals before substantive work; exploration-only work proceeds without a generic Target confirmation under the shared protocol.\n' +
+      '- Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.\n' +
+      '- Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.\n' +
+      "- Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.\n" +
+      '\n' +
+      'This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.\n' +
+      '\n' +
+      '## Operating Sequence\n' +
+      '\n' +
+      'Work in this order:\n' +
+      '\n' +
+      '1. **Orient** — Recover the workspace model before acting.\n' +
+      '2. **Align** — Establish and align the intended outcome before substantive work.\n' +
+      "3. **Prepare** — Read only relevant Markdown memory and authoritative sources; apply the selected Skill's capability preflight.\n" +
+      '4. **Execute** — Make the minimum correct and surgical change.\n' +
+      '5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.\n' +
+      "6. **Review** — Classify the actual result under the Task workflow's R0/R1/R2 protocol. For R2 or explicit ordinary review, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the task-review remediation loop before completion.\n" +
+      '\n' +
+      'Do not skip alignment or verification merely because the implementation appears obvious.\n' +
+      '\n' +
+      '## Engineering Judgment\n' +
+      '\n' +
+      'Start from first principles:\n' +
+      '\n' +
+      '- Define the intended outcome, governing facts, material constraints, and causal path before choosing a solution.\n' +
+      '- Make material assumptions and interpretations explicit.\n' +
+      '- Check available evidence before asking the user for implementation facts.\n' +
+      '- In `confirm`, ask a focused question when a material user-owned decision cannot be resolved from evidence. In SOLO, resolve in-scope operational choices with evidence and bounded defaults; do not invent user facts or authorization, and report a genuine blocker when no valid path remains.\n' +
+      '- Break work into the smallest independently testable results.\n' +
+      '- Reuse existing patterns only when their rationale fits the current problem.\n' +
+      '- Explain the reasoning behind material decisions without adding unrequested process narration.\n' +
+      '- Challenge unnecessary complexity and raise a simpler alternative when it materially improves the result.\n' +
+      '\n' +
+      'Understand the real flow before editing. A small change in the wrong place is not a minimal solution.\n' +
+      '\n' +
+      '## Task-Family Routing\n' +
+      '\n' +
+      "Choose exactly one workflow from the user's authorized outcome:\n" +
+      '\n' +
+      '- Use `task-plan` when the current outcome is an implementation-ready plan or decisions-only handoff for later execution, including investigation or requirement resolution that serves that plan.\n' +
+      '- Use `task-queue` when the user wants multiple independently acceptable outcomes managed and executed as an ordered parent-child workflow.\n' +
+      '- Use `task` for one execution outcome, including standalone analysis whose findings are the requested deliverable, and for all other file-changing work.\n' +
+      '- Skip Task workflows only for simple factual answers, open-ended conversation without a concrete outcome, and other explicit skip boundaries owned by the selected Skill.\n' +
+      '\n' +
+      'An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.\n' +
+      '\n' +
+      '## Persistent Topics\n' +
+      '\n' +
+      'When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.\n' +
+      '\n' +
+      "Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep project Memory for durable project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.\n" +
+      '\n' +
+      '## Task Confirmation Preference\n' +
+      '\n' +
+      'Use the runtime-resolved confirmation mode, defaulting to `confirm`. The shared Task Target protocol owns resolution and detailed exceptions. A configuration error falls back to confirmation with a diagnostic; never reuse stale autonomy or change settings to avoid a gate.\n' +
+      '\n' +
+      "In `solo` (SOLO), display the complete Task Target and immediately work toward the user's final result without second-confirmation grading. Resolve in-scope operational choices from evidence and bounded defaults. Skip framework/SOP confirmation-only pauses, including publication/deployment, posts/replies and batch confirmation, even if labeled Safety Confirmation: announce action/object/consequence and continue. An SOP's generic instruction to ask is not an explicit user pause.\n" +
+      '\n' +
+      "SOLO does not grant unlimited authority or user acceptance. Retain the user's actual pause/check-first instructions, scope, host/tool approvals, higher-priority safety constraints and substantive safeguards. If a required fact or permission cannot be established, complete unaffected work and report the concrete blocker rather than inventing it or asking a generic confirmation. Keep task records, required review and final verification. Querying/changing mode alone never resumes an old batch.\n" +
+      '\n' +
+      '## Task Target\n' +
+      '\n' +
+      'When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.\n' +
+      '\n' +
+      'Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.\n' +
+      '\n' +
+      'In `confirm`, equivalent exploration-only work may inspect, research, analyze and plan without a Target confirmation; retain its owning record, scope checks, blocking user decisions and explicit check-first instructions. A request to investigate and fix remains implementation work. Before moving from exploration into implementation, require execution authorization and apply the normal Target gate; exploration never creates accepted-target evidence. The shared protocol owns eligibility and transition details.\n' +
+      '\n' +
+      "For a new or materially revised non-trivial Target outside that exemption, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. SOLO follows its separate execution path above. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the current aligned Plan inherits its bounded scope; missing coverage, material changes, user decisions, or safety boundaries return to the main session.\n" +
+      '\n' +
+      'After alignment, continue independently within the accepted outcome and boundaries.\n' +
+      '\n' +
+      '## Unified Data Ownership\n' +
+      '\n' +
+      "CSL Agent Kit-owned persistent data belongs under the workspace `.csl-agent-kit/` or the user data root (`CSL_AGENT_KIT_HOME`, default `~/.csl-agent-kit/`). Package source, bundled resources and host-required discovery entries stay in their native locations. Follow the authoritative storage specification and the owning Skill's transition gate: a new target path is not proof that installed readers and writers support it. Preserve the existing runtime workflow until verified cutover; never dual-write or silently migrate legacy projects. Explicit old-project migration belongs to `agent-migration`, not routine task activation or memory housekeeping.\n" +
+      '\n' +
+      '## Task and Memory\n' +
+      '\n' +
+      'Keep responsibilities distinct:\n' +
+      '\n' +
+      '- **Task** owns the current outcome, scope, plan, status, evidence, and completion state.\n' +
+      '- **Memory** owns durable user/project knowledge, including applicable experience. Use `agent-memory` for its read/write contract; it defines no preset topics.\n' +
+      '- **Rules, SOPs and Topics** retain their authoritative instructions, procedures and shared requirements. Memory cannot silently replace them.\n' +
+      '\n' +
+      "At session start, resume or compaction, use the small user/project indexes for orientation. After Task Target alignment, use ordinary file tools to search and read relevant Markdown bodies, applying sources, conditions and reusable experience. Follow explicit pagination; do not assume the first page is complete or load all bodies by default. Source authority and the user's current instructions override recalled content.\n" +
+      '\n' +
+      'The background service manages an isolated reusable Memory Agent session per workspace. After stable foregr'... 8411 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    CSL AGENT KIT CONTRACT ACTIVE
+    
+    # CSL Agent Kit Task Workflow Contract
+    
+    Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.
+    
+    - Use Task Target to let the user recheck implementation goals before substantive work; exploration-only work proceeds without a generic Target confirmation under the shared protocol.
+    - Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.
+    - Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.
+    - Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.
+    
+    This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.
+    
+    ## Operating Sequence
+    
+    Work in this order:
+    
+    1. **Orient** — Recover the workspace model before acting.
+    2. **Align** — Establish and align the intended outcome before substantive work.
+    3. **Prepare** — Read only relevant Markdown memory and authoritative sources; apply the selected Skill's capability preflight.
+    4. **Execute** — Make the minimum correct and surgical change.
+    5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.
+    6. **Review** — Classify the actual result under the Task workflow's R0/R1/R2 protocol. For R2 or explicit ordinary review, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the task-review remediation loop before completion.
+    
+    Do not skip alignment or verification merely because the implementation appears obvious.
+    
+    ## Engineering Judgment
+    
+    Start from first principles:
+    
+    - Define the intended outcome, governing facts, material constraints, and causal path before choosing a solution.
+    - Make material assumptions and interpretations explicit.
+    - Check available evidence before asking the user for implementation facts.
+    - In `confirm`, ask a focused question when a material user-owned decision cannot be resolved from evidence. In SOLO, resolve in-scope operational choices with evidence and bounded defaults; do not invent user facts or authorization, and report a genuine blocker when no valid path remains.
+    - Break work into the smallest independently testable results.
+    - Reuse existing patterns only when their rationale fits the current problem.
+    - Explain the reasoning behind material decisions without adding unrequested process narration.
+    - Challenge unnecessary complexity and raise a simpler alternative when it materially improves the result.
+    
+    Understand the real flow before editing. A small change in the wrong place is not a minimal solution.
+    
+    ## Task-Family Routing
+    
+    Choose exactly one workflow from the user's authorized outcome:
+    
+    - Use `task-plan` when the current outcome is an implementation-ready plan or decisions-only handoff for later execution, including investigation or requirement resolution that serves that plan.
+    - Use `task-queue` when the user wants multiple independently acceptable outcomes managed and executed as an ordered parent-child workflow.
+    - Use `task` for one execution outcome, including standalone analysis whose findings are the requested deliverable, and for all other file-changing work.
+    - Skip Task workflows only for simple factual answers, open-ended conversation without a concrete outcome, and other explicit skip boundaries owned by the selected Skill.
+    
+    An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
+    
+    ## Persistent Topics
+    
+    When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
+    
+    Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep project Memory for durable project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
+    
+    ## Task Confirmation Preference
+    
+    Use the runtime-resolved confirmation mode, defaulting to `confirm`. The shared Task Target protocol owns resolution and detailed exceptions. A configuration error falls back to confirmation with a diagnostic; never reuse stale autonomy or change settings to avoid a gate.
+    
+    In `solo` (SOLO), display the complete Task Target and immediately work toward the user's final result without second-confirmation grading. Resolve in-scope operational choices from evidence and bounded defaults. Skip framework/SOP confirmation-only pauses, including publication/deployment, posts/replies and batch confirmation, even if labeled Safety Confirmation: announce action/object/consequence and continue. An SOP's generic instruction to ask is not an explicit user pause.
+    
+    SOLO does not grant unlimited authority or user acceptance. Retain the user's actual pause/check-first instructions, scope, host/tool approvals, higher-priority safety constraints and substantive safeguards. If a required fact or permission cannot be established, complete unaffected work and report the concrete blocker rather than inventing it or asking a generic confirmation. Keep task records, required review and final verification. Querying/changing mode alone never resumes an old batch.
+    
+    ## Task Target
+    
+    When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.
+    
+    Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
+    
+    In `confirm`, equivalent exploration-only work may inspect, research, analyze and plan without a Target confirmation; retain its owning record, scope checks, blocking user decisions and explicit check-first instructions. A request to investigate and fix remains implementation work. Before moving from exploration into implementation, require execution authorization and apply the normal Target gate; exploration never creates accepted-target evidence. The shared protocol owns eligibility and transition details.
+    
+    For a new or materially revised non-trivial Target outside that exemption, display the complete intended outcome, completion conditions and necessary boundaries, then end the turn and wait for the user to check that understanding. SOLO follows its separate execution path above. A clear request or complete authorization coverage is not user acceptance of the Agent's Target. Do not repeat confirmation when the previously displayed Target has recoverable user acceptance and remains unchanged and applicable; retain mandatory workflow holds and explicit user-requested checks. Repository facts and unaccepted Agent summaries are not authorization or acceptance. Delegated work covered by the current aligned Plan inherits its bounded scope; missing coverage, material changes, user decisions, or safety boundaries return to the main session.
+    
+    After alignment, continue independently within the accepted outcome and boundaries.
+    
+    ## Unified Data Ownership
+    
+    CSL Agent Kit-owned persistent data belongs under the workspace `.csl-agent-kit/` or the user data root (`CSL_AGENT_KIT_HOME`, default `~/.csl-agent-kit/`). Package source, bundled resources and host-required discovery entries stay in their native locations. Follow the authoritative storage specification and the owning Skill's transition gate: a new target path is not proof that installed readers and writers support it. Preserve the existing runtime workflow until verified cutover; never dual-write or silently migrate legacy projects. Explicit old-project migration belongs to `agent-migration`, not routine task activation or memory housekeeping.
+    
+    ## Task and Memory
+    
+    Keep responsibilities distinct:
+    
+    - **Task** owns the current outcome, scope, plan, status, evidence, and completion state.
+    - **Memory** owns durable user/project knowledge, including applicable experience. Use `agent-memory` for its read/write contract; it defines no preset topics.
+    - **Rules, SOPs and Topics** retain their authoritative instructions, procedures and shared requirements. Memory cannot silently replace them.
+    
+    At session start, resume or compaction, use the small user/project indexes for orientation. After Task Target alignment, use ordinary file tools to search and read relevant Markdown bodies, applying sources, conditions and reusable experience. Follow explicit pagination; do not assume the first page is complete or load all bodies by default. Source authority and the user's current instructions override recalled content.
+    
+    The background service manages an isolated reusable Memory Agent session per workspace. After stable foreground replies it consumes durable visible conversation increments, maintains both scopes without per-entry user approval, and records actual effects. Foreground Task Agents do not perform routine extraction or memory housekeeping; preserve meaningful facts and corrections in the normal task evidence instead. Apply user corrections immediately regardless of when background maintenance finishes.
+    
+    First use after an upgrade automatically converts legacy knowledge with backups, version checks and idempotent recovery. Legacy sources remain recovery material, not parallel read/write workflows. Do not recreate them. When migration, storage or the model is unavailable, disclose the exact limitation and continue independent foreground work; never invent remembered facts or claim unpersisted events were processed. Ordinary Agent exit must not terminate the independent Memory service.
+    
+    Memory files retain current useful knowledge, not task progress, credentials, hidden reasoning or speculative claims. No recent use is not a reason to delete. Concurrent changes require version/hash checks; history and restoration remain available even though semantic maintenance is autonomous.
+    
+    ## Simplicity First
+    
+    Implement the minimum solution that fully satisfies the aligned outcome:
+    
+    - Fix root causes rather than reported symptoms.
+    - Reuse an existing project solution before creating another one.
+    - Prefer the standard library, native platform behavior, and already-installed dependencies over custom infrastructure.
+    - Do not add speculative features, abstractions, configuration, compatibility layers, or scaffolding.
+    - Do not create flexibility for requirements that do not exist.
+    - Prefer deletion over addition and boring code over clever code.
+    - Use the fewest files and smallest coherent diff that solve the real problem.
+    - If a solution feels indirect or hacky, reconsider the change location before adding more code.
+    
+    Never simplify away trust-boundary validation, data-loss prevention, security controls, accessibility basics, or an explicit user requirement.
+    
+    ## Surgical Changes
+    
+    Touch only what the aligned outcome requires:
+    
+    - Do not refactor, reformat, rename, or improve adjacent unaffected code.
+    - Match the existing local style.
+    - Do not remove pre-existing dead code unless requested.
+    - Remove imports, variables, functions, files, or configuration made obsolete by your own change.
+    - Mention unrelated problems instead of fixing them silently.
+    - Ensure every changed line traces to the aligned outcome or its verification.
+    
+    ## Mandatory Modification Review
+    
+    Classify the actual result under the shared Task Review Grading protocol before choosing a completion gate. R0 has no requested deliverable file changes; lifecycle records alone do not count. R1 permits simple, low-risk changes, including small logic changes, with concrete grounds for clear results, bounded impact, low consequences and sufficient authorized verification. R2 covers complex, high-risk or materially uncertain changes and requires `task-review`. Diff size or confidence alone cannot justify exemption. `task` and `task-review` own the detailed assessment, handoff, evidence, ledger and recovery procedures.
+    
+    - The main Agent compares original requirements, effective revisions and accepted constraints with the actual result, fixes known failures, and records current per-Target observations, checks and limitations before review. Do not outsource known unfinished fixes or claim unperformed checks.
+    - For R2 or explicit ordinary review, mark Required, enter In Review and dispatch one read-only `task-review` pass using an actual fresh subagent. Supply factual requirements, artifacts and accessible evidence, not the author's implementation conversation or desired verdict. The Reviewer checks requirements and artifacts before detailed author evidence; previously checked behavior is not exempt.
+    - Unavailable or failed mandatory review Blocks the task with a concrete recovery condition. Self-review cannot substitute or justify Passed; failure cannot downgrade R2, and an existing Required obligation cannot become Skipped. Follow host failure rules without silently switching modes. A prompt alone does not establish independence.
+    - Bind assessment, self-check, review and final verification to actual content and evidence. Freeze the review scope during a pass. Relevant drift invalidates affected conclusions: refresh self-check, assessment and any required fresh review. Recheck actual external artifacts before terminal gates and completion; core checks do not establish semantic risk, complete scope or continuous filesystem freshness.
+    - Direct task specification edits require sync, which invalidates assessment, terminal review and Verification evidence. Reopen a Completed task before changing its specification.
+    - Any confirmed finding returns the task to In Progress for remediation. A missing-evidence risk also returns it when the gap prevents Target verification. The main Agent verifies findings against actual evidence; a suspected false positive needs counterevidence checked by a fresh pass, not unilateral removal. Refresh affected self-check and stale evidence and repeat with a fresh pass without a fixed total round limit.
+    - Preserve stable finding IDs and the task-local Review ledger under `task` and `task-review` rules. Their stall guard stops further passes, Blocks with the stalled IDs and an observable unblock condition, and returns the needed decision/input to the user. Never disguise no progress, bypass the unblock condition or convert a stall to Passed. Those Skills own ledger schemas, counters, resolution and resume rules.
+    - Only the interaction owner records Passed, after a current independent pass has no confirmed finding or Target-blocking evidence gap. The Reviewer is feedback-only: it never grants approval or changes task state.
+    - R0/R1 may skip independent review only with a current evidenced assessment and no explicit or existing review obligation; final verification remains required. Explicit adversarial review uses In Review and Approved; R0/R1 do not gain an automatic ordinary pass, while R2 must complete mandatory `task-review` first and identify both outcomes.
+    - Independent adversarial review, a two-Agent Reviewer–Editor loop and independent approval remain separate and require an explicit user request.
+    
+    ## Verification Before Done
+    
+    Verify the result in proportion to risk using deterministic checks, behavioral comparison, tests, logs, schemas, syntax checks, or other reproducible evidence allowed by higher-priority instructions.
+    
+    Support important claims with observed evidence. Do not report completion merely because the implementation appears correct.
+    
+    Before delivery:
+    
+    - confirm that every observable completion condition is satisfied;
+    - replace evidence made stale by later changes;
+    - inspect the result from a skeptical reviewer’s perspective;
+    - check key assumptions, likely failure modes, and avoidable complexity;
+    - disclose any material verification that could not be performed;
+    - automatically perform and record the owning Task's three-dimension S/A/B/C Self Assessment (Simplicity, Stability, Completeness) before review assessment, recheck it against final verification, and keep the grades with evidence and limitations in the canonical task record. Do not display self-assessment grades in user-facing replies unless explicitly requested; still report material verification results, risks, limitations and unfinished work. Follow `task` for scoring, no-file/Queue/planning boundaries and invalidation; self-assessment grades never replace verification or independent review.
+    
+    ## Contract Boundary
+    
+    This contract does not define the selected Skill's detailed procedure, grant permission beyond the user's request, require plan mode or subagents outside explicit workflow requirements, or replace an independent safety confirmation.
+    
+    Keep this contract behavioral and stable. Skills retain operational detail.
+    
+    
+    ## CSL Task Confirmation Mode (runtime configuration)
+    Effective mode: confirm; source: default.
+    This is a confirmation preference, not goal acceptance or expanded authorization. Apply the shared Task Target protocol's Confirmation Modes section. Never change this preference yourself to avoid a hold.
+    Use the normal Task Target and independent Safety confirmation gates. An earlier SOLO mode does not apply to this turn.
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/Users/caishilin/Desktop/personal/skills/tests/agent-hooks.test.js:657:14)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: inner hooks default enabled and persist user disable/enable state
+ok 27 - inner hooks default enabled and persist user disable/enable state
+  ---
+  duration_ms: 114.749
+  type: 'test'
+  ...
+# Subtest: runtime passes only the current hook settings and adapter input without changing the event payload
+ok 28 - runtime passes only the current hook settings and adapter input without changing the event payload
+  ---
+  duration_ms: 611.063
+  type: 'test'
+  ...
+# Subtest: title hook publishes a manual refresh failure result
+ok 29 - title hook publishes a manual refresh failure result
+  ---
+  duration_ms: 31.626042
+  type: 'test'
+  ...
+# Subtest: title hook ignores internal compaction continuation prompts
+ok 30 - title hook ignores internal compaction continuation prompts
+  ---
+  duration_ms: 0.518833
+  type: 'test'
+  ...
+# Subtest: title hook requires context-backed Chinese titles while allowing technical terms
+ok 31 - title hook requires context-backed Chinese titles while allowing technical terms
+  ---
+  duration_ms: 3.616167
+  type: 'test'
+  ...
+# Subtest: CLI keeps inner hook source immutable
+ok 32 - CLI keeps inner hook source immutable
+  ---
+  duration_ms: 0.132916
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 26
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5285.674875

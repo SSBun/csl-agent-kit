@@ -1,0 +1,70 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-workspace-memory-cards",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-workspace-memory-cards/evidence/all-workspaces.png",
+      "sha256": "1cec4ee7a3606a4f5ce2324d1df5ae40ed36b48b0c350b73aba01d655f6f1d27",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-workspace-memory-cards/evidence/mobile.png",
+      "sha256": "dcef029b3292fa567df29bc6fd55ce66b0b7c6893c206c876eb8f4f59bc56977",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-workspace-memory-cards/evidence/project.png",
+      "sha256": "352720044f862a7b04a05957b5ead18f49f6c4ccb20967da904f06a160c63311",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/library.js",
+      "sha256": "00c679d2d060e953288395bc1f7798681767120a9cb55878710442ae8513a613",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "e60ea0e87001cbdad5cd3b985e32bc23902a72ddf2b6a3730d9bc7dcb97e6e67",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "e361aaefcb7cfdf184e941314529457a905f2c44be2efd57b24271f7a71e4b1b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "4d3580aa04f54e8ada00fca3f71b29f2bb63a717b53f1886b0602f4409631f02",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "1e188fa2c5b55792a6400632ea8e96fc36d7a4bd5be3b5f1d25d6183e5db2228",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "test-commit-guard",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/test-commit-guard/evidence/agent-hooks.log",
+      "sha256": "8b6cb2be944d594d1c6c48e9a38f72a32b5414b26e9f4f69e1655ca47fc5ec8b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/test-commit-guard/evidence/commit-guard.log",
+      "sha256": "4361bb8403672169f322d095264638efda98429110576b8221e24534bcd490ec",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/test-commit-guard/evidence/existing-hooks-baseline.log",
+      "sha256": "b75cf9b20eaed8508c21c5e5cf63dbc7f2c1b2b232bc8f6b0f1e5a101715ec02",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/test-commit-guard/evidence/results.json",
+      "sha256": "0a4df3f7e1f62bd75163a380192f13fa6f3b24bc6f832bf6314c0bc6a0aa9b97",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/test-commit-guard/evidence/task-owned.diff",
+      "sha256": "4c799816f1c13b4a66e0a4eefd5b2d58c0b400e73b9f3eaf4584fb772d43c7b8",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "package.json",
+      "sha256": "d2be940b597cddf8fcbf5afa061563cd299b938408da5026180102772859255e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "92b3d9d9a31b9c353739e5034fe9586d0bfec6e0"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "92b3d9d9a31b9c353739e5034fe9586d0bfec6e0",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/scripts/check-commit.js",
+      "sha256": "aed6667b3e172dda4c0e5865067d280825ee7432c3472014f40e0c750701a3f1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/hooks/code-inline-review-commit.md",
+      "sha256": "17611a88c06b56aadbb31e9c4f3e64378caf014e600dad07730e65ad4de34e89",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/check-code-review-commit.js",
+      "sha256": "901271113fe3a7e7e693769efa4207b54294cb5a04a4f5d999ae941a6aebb3eb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/lib/runtime.js",
+      "sha256": "9b49a80b04f164ce455b335bc117447007f34a467e6d7943ff0add7ee6020f72",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "266d91fe4bebbcdf290fc6b287d3e6b8f97cbb3c"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "266d91fe4bebbcdf290fc6b287d3e6b8f97cbb3c",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/agent-hooks.test.js",
+      "sha256": "997b7650e06f0c68ba80e98e347c05039c4fcdfea5250c638f8b6b34329e318b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "540d065915e9dc7ef892ba645bf22869454e4eac"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "540d065915e9dc7ef892ba645bf22869454e4eac",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/commit-guard.test.js",
+      "sha256": "8a68748bd6bbabff37f3a36c86475abc9882ed65b0136bc5016c3e1559526969",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

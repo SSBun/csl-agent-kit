@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "fix-memory-footer-colors-layout",
+  "files": [
+    {
+      "path": "pi/extensions/openai-codex-fast.ts",
+      "sha256": "647d6600d4999107c35c47f53cd29834aa5e1ce715de35d3b686d3031411a4c9",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "48131b26f3020397a7a9f42302ca745ac99b2ebd"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "48131b26f3020397a7a9f42302ca745ac99b2ebd",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

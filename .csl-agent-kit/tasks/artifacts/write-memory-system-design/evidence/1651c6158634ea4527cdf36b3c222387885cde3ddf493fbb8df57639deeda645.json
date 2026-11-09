@@ -1,0 +1,78 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "write-memory-system-design",
+  "files": [
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "352df35f341c677268ea9302ba8f59566b807b8fee289260cc96575bf04ae3ae",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "3169a94a6a8963798c6a145999a1a628abaeedbfe8c91e725db49d5dd952bedb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/tasks/plan-layered-memory-system.md",
+      "sha256": "6d71503c390b183801655e1cc913bad7f9cdcd9d2fa2177ac1948d9d992350b2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/topics.md",
+      "sha256": "305f63d9fa21f874ee3d5c7a388b8e5d2e91a7079c62f711e7a5c73506a0d543",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/topics/layered-memory-system.md",
+      "sha256": "b0bf945b45b0d1629d212045a8dabb6df7c3327941135f8e8050d7c5c34306e3",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/topics/layered-memory-system/resources/detailed-design.md",
+      "sha256": "5cbbd5f899123e049fb3a3d574da8bc5373361143c3efe9501e579a867e9d28f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/topics/layered-memory-system/revisions/70d73e9e6009f5e0359cc55410711bf7d9a49774f61865a3d9713e3a695f6f05.md",
+      "sha256": "70d73e9e6009f5e0359cc55410711bf7d9a49774f61865a3d9713e3a695f6f05",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/topics/layered-memory-system/revisions/90c934035ecfa4cff07e85ca968e6844632907abd9b4e49b4240da578902fbaf.md",
+      "sha256": "90c934035ecfa4cff07e85ca968e6844632907abd9b4e49b4240da578902fbaf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/topics/layered-memory-system/revisions/c2f27f9b2d418a039bac118c14e86aba2ac966a6934ac0e0cdf617c6fe32fa4f.md",
+      "sha256": "c2f27f9b2d418a039bac118c14e86aba2ac966a6934ac0e0cdf617c6fe32fa4f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

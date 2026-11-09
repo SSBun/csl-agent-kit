@@ -1,0 +1,59 @@
+{
+  "at": "2026-11-05T10:00:58.533Z",
+  "running": true,
+  "pid": 32482,
+  "active": [],
+  "counts": {
+    "exhausted": 1
+  },
+  "schedulerError": null,
+  "hasPanel": true,
+  "hasLiveDialog": true,
+  "traces": [
+    {
+      "workspace": "/Users/caishilin/Desktop/personal/Filio",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Desktop/personal/last-vocabulary",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Desktop/personal/skills",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Desktop/personal/word-atlas",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Desktop/work/apps/zhvipios/zhvip",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "available": false,
+      "kinds": []
+    },
+    {
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "available": false,
+      "kinds": []
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "syntaxChecks": "passed",
+  "hookValidation": "valid",
+  "quality": {
+    "code-inline-review": "pass",
+    "commit-guard": "pass",
+    "agent-hooks": "warning: initial-load estimate 2090 > 1000 tokens"
+  },
+  "diffWhitespace": "passed",
+  "missingEngine": {
+    "exitCode": 1,
+    "reason": "MODULE_NOT_FOUND",
+    "runtimePolicy": "on-error: block"
+  },
+  "unitOrProjectTestsRun": false,
+  "files": [
+    "skills/dev/code-inline-review/SKILL.md",
+    "skills/dev/code-inline-review/references/commit-guard.md",
+    "skills/dev/code-inline-review/evals/trigger_cases.json",
+    "skills/meta/agent-hooks/SKILL.md",
+    "skills/meta/agent-hooks/hooks/code-inline-review-commit.md",
+    "skills/meta/agent-hooks/scripts/check-code-review-commit.js",
+    "README.md",
+    "docs/rfcs/agent-hooks.md",
+    ".claude-plugin/plugin.json",
+    "skills/dev/commit-guard/SKILL.md",
+    "skills/dev/commit-guard/references/commit-guard.md",
+    "skills/dev/commit-guard/scripts/check-commit.js",
+    "skills/dev/commit-guard/evals/trigger_cases.json"
+  ]
+}

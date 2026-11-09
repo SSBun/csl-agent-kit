@@ -1,0 +1,294 @@
+"use strict";
+
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const { spawnSync } = require("node:child_process");
+
+const { evaluateCondition } = require("./rule.js");
+const {
+  canonicalWorkspace,
+  compareUtf8,
+  discover,
+  isWithin,
+  scopeRoot,
+  scriptsRoot,
+} = require("./store.js");
+
+const CODEX_CAPABILITIES = {
+  "session-start": { inject: true, script: true, block: false },
+  "prompt-submit": { inject: true, script: true, block: true },
+  "before-tool": { inject: true, script: true, block: true },
+  "permission-request": { inject: false, script: true, block: true },
+  "after-tool": { inject: true, script: true, block: false },
+  "before-compact": { inject: false, script: true, block: true },
+  "after-compact": { inject: false, script: true, block: false },
+  "subagent-start": { inject: true, script: true, block: false },
+  "subagent-stop": { inject: false, script: true, block: true },
+  stop: { inject: false, script: true, block: true },
+  interrupt: { inject: false, script: true, block: false },
+  "session-end": { inject: false, script: true, block: false },
+};
+// Preserve the existing shared protocol surface. These additional terminal
+// lifecycle events are registered only by the Codex plugin manifest.
+const CLAUDE_CODE_CAPABILITIES = { ...CODEX_CAPABILITIES };
+delete CLAUDE_CODE_CAPABILITIES.interrupt;
+delete CLAUDE_CODE_CAPABILITIES["session-end"];
+
+// Pi has no native hook protocol; triggers run inside the csl-context-hooks
+// extension via pi.on(event, handler). Inject only works where the handler can
+// rewrite model-facing content (systemPrompt / tool_result). tool_call can
+// block execution; other shared events remain nonblocking on this adapter.
+// Permission/subagent events have no Pi equivalent.
+const PI_CAPABILITIES = {
+  "session-start": { inject: true, script: true, block: false },
+  "prompt-submit": { inject: true, script: true, block: false },
+  "before-tool": { inject: false, script: true, block: true },
+  "after-tool": { inject: true, script: true, block: false },
+  "before-compact": { inject: false, script: true, block: false },
+  "after-compact": { inject: false, script: true, block: false },
+  stop: { inject: false, script: true, block: false },
+};
+
+const HOST_CAPABILITIES = {
+  codex: CODEX_CAPABILITIES,
+  "claude-code": CLAUDE_CODE_CAPABILITIES,
+  pi: PI_CAPABILITIES,
+};
+const DEFAULT_TIMEOUT = 10;
+const MAX_OUTPUT = 64 * 1024;
+const EVENT_BUDGET = 60 * 1000;
+
+function createEvent({
+  event,
+  host,
+  workspace,
+  sessionId = null,
+  prompt = null,
+  tool = null,
+  permission = null,
+  compact = null,
+  subagent = null,
+  stop = null,
+  changedFiles = null,
+  nativeEvent = null,
+  nativePayload = {},
+}) {
+  return {
+    schema: "agent-hooks.event/v1",
+    event,
+    host: { name: host, version: null },
+    workspace: { root: workspace, trusted: null },
+    session: { id: sessionId },
+    prompt,
+    tool,
+    permission,
+    compact,
+    subagent,
+    stop,
+    changed_files: changedFiles,
+    native: { event: nativeEvent, payload: nativePayload },
+  };
+}
+
+function ruleStatus(entry, host = "codex") {
+  const rule = entry.rule;
+  const capability = rule ? HOST_CAPABILITIES[host]?.[rule.event] : null;
+  const supported = capability && (rule.action === "inject-prompt" ? capability.inject : capability.script);
+  const trust = entry.scope === "global" || entry.scope === "inner" ? "not-applicable" : "unavailable";
+  const validation = entry.valid === null ? "unavailable" : entry.valid ? "valid" : "invalid";
+  const sourceConfigured = rule ? (rule.enabled ? "enabled" : "disabled") : "unavailable";
+  const defaultState = entry.scope === "inner" ? sourceConfigured : "not-applicable";
+  const override = entry.scope !== "inner"
+    ? "not-applicable"
+    : entry.innerConfigValid === false
+      ? "invalid"
+      : entry.innerDisabled
+        ? "disabled"
+        : "none";
+  const configured = override === "invalid" ? "unavailable" : override === "disabled" ? "disabled" : sourceConfigured;
+  const support = supported ? "supported" : "unsupported";
+  const active = configured === "enabled" && validation === "valid" && trust !== "unavailable" && support === "supported";
+  const reasons = entry.errors.map((error) => error.code);
+  if (override === "invalid") reasons.push("inner-config-invalid");
+  if (override === "disabled") reasons.push("inner-disabled-by-user");
+  if (trust === "unavailable") reasons.push("workspace-trust-unavailable");
+  if (support === "unsupported") reasons.push("capability-unsupported");
+  return {
+    id: entry.id,
+    description: rule?.description ?? null,
+    scope: entry.scope,
+    lifecycle: entry.local ? "local" : "shared",
+    event: rule?.event ?? null,
+    action: rule?.action ?? null,
+    script: rule?.script ?? null,
+    path: entry.path,
+    default: defaultState,
+    override,
+    configured,
+    validation,
+    trust,
+    support,
+    effective: active ? "active" : "inactive",
+    reasons: [...new Set(reasons)],
+  };
+}
+
+function runEvent(payload, options = {}) {
+  const host = options.host || payload.host.name;
+  const capability = HOST_CAPABILITIES[host]?.[payload.event];
+  if (!capability) return { prompts: [], diagnostics: ["capability-unsupported"], blocked: false };
+  const workspace = options.workspace || payload.workspace.root;
+  const prompts = [];
+  const diagnostics = [];
+  const failure = (reason) => ({ prompts: [], diagnostics, blocked: Boolean(capability.block), reason });
+  const deadline = Date.now() + (options.eventBudgetMs || EVENT_BUDGET);
+  let entries;
+  let discoveringScope = "global";
+  try {
+    const globalEntries = discover("global", workspace, true, deadline);
+    discoveringScope = "inner";
+    const innerEntries = discover("inner", workspace, true, deadline);
+    entries = [...globalEntries, ...innerEntries];
+  } catch (error) {
+    if (error.code === "AGENT_HOOKS_BUDGET") {
+      diagnostics.push(`${discoveringScope}:${error.reason}`);
+      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：发现规则时超出预算，请修复后重试。");
+      return { prompts, diagnostics, blocked: false };
+    }
+    throw error;
+  }
+  // A host adapter may dispatch one dedicated hook at a narrower native
+  // lifecycle boundary without firing unrelated rules for the shared event.
+  const selectedHooks = options.onlyHooks === undefined ? null : new Set(options.onlyHooks);
+  for (const entry of entries.sort((left, right) => compareUtf8(left.id, right.id))) {
+    if (selectedHooks && !selectedHooks.has(entry.id)) continue;
+    const mustCheck = entry.rule?.enabled && entry.rule?.event === payload.event && entry.rule?.["on-error"] === "block";
+    if (entry.scope === "inner" && entry.innerConfigValid === false) {
+      if (mustCheck) return failure(`${entry.id}: hook 配置无效，无法完成检查。`);
+      if (!diagnostics.includes("inner:config-invalid")) diagnostics.push("inner:config-invalid");
+      continue;
+    }
+    if (entry.scope === "inner" && entry.innerDisabled) continue;
+    if (!entry.valid) {
+      diagnostics.push(...entry.errors.map((error) => `${entry.id}:${error.code}`));
+      if (mustCheck) return failure(`${entry.id}: 检查器不可用，请修复 hook 后重试。`);
+      continue;
+    }
+    if (!entry.rule.enabled || entry.rule.event !== payload.event) continue;
+    if (Date.now() >= deadline) {
+      diagnostics.push(`${entry.id}:event-budget-exhausted`);
+      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
+      break;
+    }
+    const condition = evaluateCondition(entry.rule.when, payload, deadline);
+    if (condition.value === "unknown") {
+      diagnostics.push(`${entry.id}:condition-unknown`);
+      if (mustCheck) return failure(`${entry.id}: 无法判定检查条件，请修复后重试。`);
+    }
+    if (condition.value !== "true") continue;
+    if (Date.now() >= deadline) {
+      diagnostics.push(`${entry.id}:event-budget-exhausted`);
+      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
+      break;
+    }
+    if (entry.rule.action === "inject-prompt") {
+      if (!capability.inject) {
+        diagnostics.push(`${entry.id}:capability-unsupported`);
+        continue;
+      }
+      prompts.push({ id: entry.id, content: entry.rule.body.trim() });
+      continue;
+    }
+    if (!capability.script) {
+      diagnostics.push(`${entry.id}:capability-unsupported`);
+      continue;
+    }
+    let result;
+    try {
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) {
+        diagnostics.push(`${entry.id}:event-budget-exhausted`);
+        if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
+        break;
+      }
+      result = executeScript(entry, payload, workspace, remaining, options.hookInputs?.[entry.id]);
+    } catch {
+      diagnostics.push(`${entry.id}:runtime-error`);
+      if (mustCheck) return failure(`${entry.id}: 检查执行失败，请修复后重试。`);
+      continue;
+    }
+    if (result.status !== 0 && mustCheck && result.status !== 2) {
+      return failure(`${entry.id}: 检查未完成。${result.stderr || "请修复检查器后重试。"}`);
+    }
+    if (result.status === 2) {
+      if (capability.block) return { prompts: [], diagnostics, blocked: true, reason: result.stderr || `${entry.id} blocked the event` };
+      diagnostics.push(`${entry.id}:block-unsupported`);
+    } else if (result.status !== 0) diagnostics.push(`${entry.id}:runtime-error`);
+    else if (entry.rule["inject-output"] && capability.inject && result.stdout) {
+      prompts.push({ id: entry.id, content: result.stdout });
+    }
+  }
+  return { prompts, diagnostics, blocked: false };
+}
+
+function executeScript(entry, payload, workspace, remaining, hookInput = {}) {
+  const scripts = fs.realpathSync(scriptsRoot(entry.scope, workspace));
+  const executable = fs.realpathSync(path.join(scripts, entry.rule.script));
+  if (!isWithin(scripts, executable)) return { status: 1, stderr: "script-escape" };
+  const payloadFile = path.join(os.tmpdir(), `agent-hooks-${process.pid}-${crypto.randomBytes(12).toString("hex")}.json`);
+  let payloadDescriptor;
+  let payloadPath = payloadFile;
+  let result;
+  try {
+    fs.writeFileSync(payloadPath, `${JSON.stringify(payload)}\n`, { mode: 0o600, flag: "wx" });
+    payloadDescriptor = fs.openSync(payloadPath, "r");
+    fs.unlinkSync(payloadPath);
+    payloadPath = null;
+    result = spawnSync(executable, [], {
+      cwd: canonicalWorkspace(workspace),
+      env: {
+        ...process.env,
+        AGENT_HOOKS_ROOT: scopeRoot(entry.scope, workspace),
+        AGENT_HOOKS_SCOPE: entry.scope,
+        AGENT_HOOKS_HOOK_ID: entry.id,
+        AGENT_HOOKS_WORKSPACE: canonicalWorkspace(workspace),
+        AGENT_HOOKS_HOST: payload.host.name,
+        AGENT_HOOKS_EVENT: payload.event,
+        AGENT_HOOKS_HOOK_CONFIG: JSON.stringify(entry.hookConfig || {}),
+        AGENT_HOOKS_HOOK_INPUT: JSON.stringify(hookInput || {}),
+      },
+      stdio: [payloadDescriptor, "pipe", "pipe"],
+      encoding: "utf8",
+      shell: false,
+      timeout: Math.max(1, Math.min((entry.rule.timeout || DEFAULT_TIMEOUT) * 1000, remaining)),
+      maxBuffer: MAX_OUTPUT,
+    });
+  } finally {
+    if (payloadDescriptor !== undefined) {
+      try { fs.closeSync(payloadDescriptor); } catch {}
+    }
+    if (payloadPath !== null) {
+      try { fs.unlinkSync(payloadPath); } catch {}
+    }
+  }
+  if (result.error || result.signal) return { status: 1, stderr: bounded(result.error?.message || `terminated by ${result.signal}`) };
+  return { status: result.status ?? 1, stdout: bounded(result.stdout), stderr: bounded(result.stderr) };
+}
+
+function bounded(value = "") {
+  return String(value).slice(0, MAX_OUTPUT).trim();
+}
+
+module.exports = {
+  CODEX_CAPABILITIES,
+  CLAUDE_CODE_CAPABILITIES,
+  PI_CAPABILITIES,
+  HOST_CAPABILITIES,
+  bounded,
+  createEvent,
+  executeScript,
+  ruleStatus,
+  runEvent,
+};

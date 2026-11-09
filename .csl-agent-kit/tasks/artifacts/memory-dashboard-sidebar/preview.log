@@ -1,0 +1,20 @@
+/Users/caishilin/Desktop/personal/skills/bin/memory/store.js:30
+  throw error;
+  ^
+
+Error: Project memory is full; merge into an existing chip, verify it, and retire redundant chips before adding one
+    at fail (/Users/caishilin/Desktop/personal/skills/bin/memory/store.js:27:17)
+    at commit (/Users/caishilin/Desktop/personal/skills/bin/memory/store.js:388:42)
+    at /Users/caishilin/Desktop/personal/skills/bin/memory/store.js:512:31
+    at withLock (/Users/caishilin/Desktop/personal/skills/bin/memory/store.js:341:12)
+    at Object.mutate (/Users/caishilin/Desktop/personal/skills/bin/memory/store.js:512:10)
+    at Object.<anonymous> (/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/memory-dashboard-sidebar/preview.cjs:18:29)
+    at Module._compile (node:internal/modules/cjs/loader:1705:14)
+    at Object..js (node:internal/modules/cjs/loader:1838:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12) {
+  code: 'MEMORY_CAPACITY',
+  details: { limit: 20, actual: 20 }
+}
+
+Node.js v22.22.2

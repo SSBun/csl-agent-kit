@@ -1,0 +1,31 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "pi-status-colors-memory-queue",
+  "files": [
+    {
+      "path": "pi/extensions/csl-settings.ts",
+      "sha256": "d05e6018ff6ff590ca70d633fa969d57edb887e4a62d4d71202c47e680510f42",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c47a2856aee3eaa72c62b0690992afba76a2ff09"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c47a2856aee3eaa72c62b0690992afba76a2ff09",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "f8e704352f24c127f7a3499e37b1f2cbe18e61d9624e131e5aa6c79c589bf0bb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

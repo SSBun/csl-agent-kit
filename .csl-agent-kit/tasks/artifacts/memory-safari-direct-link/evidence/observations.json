@@ -1,0 +1,32 @@
+{
+  "at": "2026-11-06T08:38:14.753Z",
+  "handlers": {
+    "http": "com.apple.Safari",
+    "https": "com.apple.Safari"
+  },
+  "nativeOpenObservation": {
+    "before": {
+      "windows": 1,
+      "tabs": 6
+    },
+    "after": {
+      "windows": 1,
+      "tabs": 7
+    },
+    "method": "系统open打开真实Dashboard，Safari AppleScript只读取窗口和标签数"
+  },
+  "absentFiles": [
+    "bin/memory/browser-window.js",
+    "bin/memory/web/open-window.html",
+    "bin/memory/web/open-window.js"
+  ],
+  "absenceVerification": "父级文件存在性核对；已删除文件原为未跟踪文件，核心snapshot不能直接捕获其缺失状态",
+  "checks": [
+    "JS语法",
+    "TS转译语法诊断",
+    "范围diff空白检查",
+    "入口残留引用搜索无匹配"
+  ],
+  "testsRun": false,
+  "piReloaded": false
+}

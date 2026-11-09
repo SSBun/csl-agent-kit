@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-04T08:08:10.788Z",
+  "main": {
+    "error": "",
+    "rows": 20,
+    "filterPresent": false,
+    "page": "1—20 / 493",
+    "queuePresent": true
+  },
+  "detail": {
+    "open": true,
+    "error": "",
+    "summaryPresent": true,
+    "actions": "核对恢复到变更前"
+  }
+}

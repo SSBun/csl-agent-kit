@@ -1,0 +1,110 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-workspace-concurrency",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-workspace-concurrency/observation.json",
+      "sha256": "518673067e70e2e10669642b415e0d81543648dcc98aa0ba6af6bb1c529ab823",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-workspace-concurrency/observe.cjs",
+      "sha256": "35ee283f52487401f99975a8bfc7b1ff32a1f33d7062051112d7dda36c8af9cb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "f254c0322068cc7c2ac44e7ce92372c7218489ce36249daff5bded30731d11da",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/cli.js",
+      "sha256": "c85a19d4d6710dff2abd860c276f1b47a3de9cb50c76efe1241847ccd7ea348c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "ac8cdbc5be040072947fc187451f80c24a0eb79252218b8482c55dd9e7570647",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/maintenance.js",
+      "sha256": "0035490a21db5a27129ea756666347a8f1157f1ffafa5aeac9eaece956dd60c7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/queue.js",
+      "sha256": "922d947a8cea43d0378cc0a3ddc6ecded6f88f281df85356a9abfe81c8f9d0b2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/service.js",
+      "sha256": "594ca8496f79b29de758379a36b028f948e8781c125a1b25e98d2dcf521e27c7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "ba6a45da7affb637706884b39ae1e0908b61b0f814689dcfcae8dbfe69ee1eb7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "c6ad9d55ef98f44a6dc608270e29401ff9c4b9c3a5970ae385da42229bf60252",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "8bd7e5db8a0fea6c9be6a05364743b3752b25880a8af71f668ac4162427144a9",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "454f54edd9c6e6c46649643eba539b7ea88ec91fc51941dd561e942fee3852a1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "6c78d8c1135fb60a4f6f6eb6f49d570c157ddf6fd6a66d2bdfa10ce2a19482ac",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-current-memory-library",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-current-memory-library/evidence/desktop.png",
+      "sha256": "c5ee58a7eb75e5a98128d69dbefe5c234a4626a66dd98e93efe731082638a359",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-current-memory-library/evidence/mobile.png",
+      "sha256": "8919a474527a30c6cc5b6df80ca72515498f9a387cb94127de8b9d4a1570b51e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "76fbb9503e6c4cfe276c15cfcd660e23a0d84a7c32d7e525b30be82661020bbe",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/library.js",
+      "sha256": "458102f810aa51241fe1e680952d0760003327fb55599837e6268a91912bf7c3",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "8e9ba149e4bc776082fe809d8ba5463a9969fa87c88c034c4c27566b00128c65",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "fd42bee2e1f3a49282946db1f552794b9e8d46971fbb3ca7b521d7dfc027961a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "a15c18174b08f050eb54fd4b5e4daabcd694cc19db3468669df76c1a7ca17eed",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "2117df55299ce3a04bf8c7da986e9148fe547d7c3ad3d358875276b6045b823d",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

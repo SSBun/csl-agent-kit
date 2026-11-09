@@ -1,0 +1,12 @@
+mouse {
+  errors: [ 'Uncaught TypeError: t.constructor.toString is not a function' ],
+  tailVisible: false,
+  fallback: false,
+  togglers: 2
+}
+keyboard {
+  errors: [ 'Uncaught TypeError: t.constructor.toString is not a function' ],
+  tailVisible: false,
+  fallback: false,
+  togglers: 2
+}

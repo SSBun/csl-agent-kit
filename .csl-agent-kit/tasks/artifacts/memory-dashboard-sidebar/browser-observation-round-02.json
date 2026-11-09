@@ -1,0 +1,115 @@
+{
+  "overview": {
+    "page": "overview",
+    "visible": [
+      "overview"
+    ],
+    "title": "全局概览 · Memory Console",
+    "error": "",
+    "overflow": false
+  },
+  "storage": {
+    "page": "storage",
+    "visible": [
+      "storage"
+    ],
+    "title": "记忆存储 · Memory Console",
+    "error": "",
+    "overflow": false,
+    "cards": 20
+  },
+  "memoryDetail": {
+    "body": true,
+    "visible": true
+  },
+  "pagination": "21—22 / 22",
+  "commitDetail": {
+    "summary": true,
+    "restore": true
+  },
+  "userScope": "1—2 / 2",
+  "processing": {
+    "page": "processing",
+    "visible": [
+      "processing"
+    ],
+    "title": "记忆处理 · Memory Console",
+    "error": "",
+    "overflow": false,
+    "requests": [
+      "/api/status",
+      "/api/jobs?newestFirst=true&offset=0&limit=20"
+    ],
+    "filter": ""
+  },
+  "live": {
+    "open": true,
+    "input": true,
+    "error": ""
+  },
+  "back": {
+    "page": "storage",
+    "visible": [
+      "storage"
+    ],
+    "title": "记忆存储 · Memory Console",
+    "error": "",
+    "overflow": false,
+    "scope": "user"
+  },
+  "forward": {
+    "page": "processing",
+    "visible": [
+      "processing"
+    ],
+    "title": "记忆处理 · Memory Console",
+    "error": "",
+    "overflow": false
+  },
+  "reload": {
+    "page": "processing",
+    "visible": [
+      "processing"
+    ],
+    "title": "记忆处理 · Memory Console",
+    "error": "",
+    "overflow": false
+  },
+  "loadingStatus": {
+    "disabled": true,
+    "page": "",
+    "loading": "true"
+  },
+  "loadingJobs": {
+    "disabled": true,
+    "offsets": [
+      0
+    ]
+  },
+  "smallResult": {
+    "page": "1—1 / 1",
+    "offsets": [
+      0
+    ]
+  },
+  "jobsFailure": {
+    "message": "无法加载当前筛选的记录，请检查错误提示后重试。",
+    "loading": null,
+    "page": "",
+    "disabled": true
+  },
+  "mobile": {
+    "page": "overview",
+    "visible": [
+      "overview"
+    ],
+    "title": "全局概览 · Memory Console",
+    "error": "",
+    "overflow": false
+  },
+  "offline": {
+    "health": "暂时无法连接后台",
+    "count": "—",
+    "tone": "danger"
+  }
+}

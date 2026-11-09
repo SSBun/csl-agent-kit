@@ -1,0 +1,87 @@
+{
+  "algorithmUnchangedExceptMainExport": true,
+  "checks": [
+    {
+      "label": "工作区有说明、暂存内容干净",
+      "host": "pi",
+      "blocked": false,
+      "diagnostics": []
+    },
+    {
+      "label": "工作区有说明、暂存内容干净",
+      "host": "codex",
+      "blocked": false,
+      "diagnostics": []
+    },
+    {
+      "label": "工作区有说明、暂存内容干净",
+      "host": "claude-code",
+      "blocked": false,
+      "diagnostics": []
+    },
+    {
+      "label": "暂存完整标记",
+      "host": "pi",
+      "blocked": true,
+      "diagnostics": []
+    },
+    {
+      "label": "暂存完整标记",
+      "host": "codex",
+      "blocked": true,
+      "diagnostics": []
+    },
+    {
+      "label": "暂存完整标记",
+      "host": "claude-code",
+      "blocked": true,
+      "diagnostics": []
+    },
+    {
+      "label": "暂存残缺标记",
+      "host": "pi",
+      "blocked": true,
+      "diagnostics": []
+    },
+    {
+      "label": "暂存残缺标记",
+      "host": "codex",
+      "blocked": true,
+      "diagnostics": []
+    },
+    {
+      "label": "暂存残缺标记",
+      "host": "claude-code",
+      "blocked": true,
+      "diagnostics": []
+    },
+    {
+      "label": "沿用历史 ID 的禁用设置",
+      "host": "pi",
+      "blocked": false,
+      "diagnostics": []
+    },
+    {
+      "label": "沿用历史 ID 的禁用设置",
+      "host": "codex",
+      "blocked": false,
+      "diagnostics": []
+    },
+    {
+      "label": "沿用历史 ID 的禁用设置",
+      "host": "claude-code",
+      "blocked": false,
+      "diagnostics": []
+    }
+  ],
+  "hashes": {
+    "skills/meta/agent-hooks/scripts/check-code-review-commit.js": "901271113fe3a7e7e693769efa4207b54294cb5a04a4f5d999ae941a6aebb3eb",
+    "skills/dev/commit-guard/scripts/check-commit.js": "aed6667b3e172dda4c0e5865067d280825ee7432c3472014f40e0c750701a3f1"
+  },
+  "executable": {
+    "skills/meta/agent-hooks/scripts/check-code-review-commit.js": true,
+    "skills/dev/commit-guard/scripts/check-commit.js": true
+  },
+  "noCommitExecuted": true,
+  "workingTreeAndIndexUnchanged": true
+}

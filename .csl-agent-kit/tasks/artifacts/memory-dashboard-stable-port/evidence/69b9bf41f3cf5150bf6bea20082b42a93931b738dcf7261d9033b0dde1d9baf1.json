@@ -1,0 +1,38 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-dashboard-stable-port",
+  "files": [
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "bebe75e755be3161a727204f5099f463d65a6ef7a5ecdb46326127d2ef6a49d2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/endpoint.js",
+      "sha256": "6244474af5f284a1c356dca8e7742fe6d51f495e76ee8bc6ae70ae703beeb5b4",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/service.js",
+      "sha256": "594ca8496f79b29de758379a36b028f948e8781c125a1b25e98d2dcf521e27c7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "3c91c057b2245acfb5b099c8e0eadec43dc587bb301a38c32996a3e901e81757",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

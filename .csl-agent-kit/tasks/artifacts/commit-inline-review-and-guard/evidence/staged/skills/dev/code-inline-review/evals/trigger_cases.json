@@ -1,0 +1,17 @@
+{
+  "should_trigger": [
+    "Use code-inline-review for these changes.",
+    "用 code-inline-review 给本次改动添加源码内临时审查说明。",
+    "更新这些 code-inline-review 说明，让关联块指向新的主块。",
+    "清理本次改动中的 code-inline-review 临时注释，保留普通注释。"
+  ],
+  "should_not_trigger": [
+    "修复请求取消逻辑。",
+    "Review this diff for bugs.",
+    "Commit my staged changes.",
+    "给这个复杂算法添加长期维护注释。",
+    "默认不要添加 code-inline-review 注释。",
+    "用 commit-guard 解释为什么提交被阻断。",
+    "检查内置提交保护 hook 在 Pi 是否生效。"
+  ]
+}

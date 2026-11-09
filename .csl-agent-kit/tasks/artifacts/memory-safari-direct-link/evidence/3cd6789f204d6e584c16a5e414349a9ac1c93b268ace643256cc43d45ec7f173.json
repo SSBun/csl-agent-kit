@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-safari-direct-link",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-safari-direct-link/evidence/observations.json",
+      "sha256": "3c14a5d1e0cdb990c55921672c0cc73bb631f534b7139866f983c897c59225e6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "977a6081b882a1000fe6f6a0fa205d48b5735b7ad2e0a4f2185a21f6bc3164d8",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web-assets.js",
+      "sha256": "bc25e4acabd31c08dfbccf8b595d873d3a22a9afe5e5f05f9db2fdc912bfa95f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "6d7efacc2cafa08624f0c77c3c5424db8b5a886ed69d41b03950ba909ba727da",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "f62fc213c3948a0115e976945f6bb59ca85e753c893a82bcfddad4cfd7f2cacf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

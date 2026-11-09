@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "fix-memory-processing-blocked",
+  "files": [
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "214976b4f276ebfbcddbdb3c3223bfa823c7face16d62f974fd7404215ec5251",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

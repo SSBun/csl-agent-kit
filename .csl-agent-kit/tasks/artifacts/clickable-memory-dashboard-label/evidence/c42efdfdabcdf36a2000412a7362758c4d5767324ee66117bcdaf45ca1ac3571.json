@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "clickable-memory-dashboard-label",
+  "files": [
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "7040cec20b52d88378dde250cce88ad56fb5eec23c3d1096b542fb0909212144",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

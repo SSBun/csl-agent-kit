@@ -1,0 +1,285 @@
+--- a/.claude-plugin/plugin.json
++++ b/.claude-plugin/plugin.json
+@@ -67,6 +67,8 @@
+     "./skills/meta/agent-hooks",
+     "./skills/meta/agent-sops",
+     "./skills/dev/brainstorming",
++    "./skills/dev/code-inline-review",
++    "./skills/dev/commit-guard",
+     "./skills/domain/figma-describe",
+     "./skills/dev/align",
+     "./skills/dev/tldr"
+--- a/README.md
++++ b/README.md
+@@ -29,6 +29,8 @@
+ | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
+ | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |
+ | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
++| code-inline-review | `/csl:code-inline-review` | `/code-inline-review` | 明确调用时生成、维护或清理按逻辑组关联的源码审查说明。 |
++| commit-guard | `/csl:commit-guard` | `/commit-guard` | 维护提交内容保护与阻断诊断；内置 CSL hook 阻止审查说明进入 Agent 提交，暂不检查推送历史。 |
+ | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
+ | align | `/csl:align` | `/align` | Re-explain prior messages with evidence and confidence levels. |
+ | tldr | `/csl:tldr` | `/tldr` | 按请求中的明确标准生成简略概览或带来源的深入会话报告。 |
+--- a/package.json
++++ b/package.json
+@@ -42,7 +42,8 @@
+     "test": "npm run test:cli && npm run test:agent-hooks && npm run test:tasks && npm run test:archive",
+     "test:all": "npm test && npm run test:pi",
+     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
+-    "test:agent-hooks": "node --test tests/agent-hooks.test.js",
++    "test:agent-hooks": "node --test tests/agent-hooks.test.js tests/commit-guard.test.js",
++    "test:commit-guard": "node --test tests/commit-guard.test.js",
+     "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs tests/task-evidence.test.mjs tests/topics.test.mjs tests/task-mode.test.js",
+     "test:archive": "node --test tests/archive-session.test.mjs",
+     "test:pi": "node tests/run-pi-tests.js",
+--- a/skills/meta/agent-hooks/SKILL.md
++++ b/skills/meta/agent-hooks/SKILL.md
+@@ -16,8 +16,10 @@
+ - Use global hook rules for runtime execution; project hook rules remain metadata-only. Global rules and scripts live under `$CSL_AGENT_KIT_HOME/hooks/` (default `~/.csl-agent-kit/hooks/`); project rules and scripts live under `<workspace>/.agents/hooks/`.
+ - Inner scope (`inner:*`) ships hooks with the agent-hooks skill (e.g. `inner:agent-rules` and `inner:csl-agent-kit-contract`). Hook source is read-only: do not create, update, or delete it through the CLI. All inner hooks default enabled; `enable`/`disable` persists user choices in `$CSL_AGENT_KIT_HOME/hooks/config.json` (default `~/.csl-agent-kit/hooks/config.json`). Optional `hookSettings` are keyed by qualified inner ID; runtime passes only the matching object to that script as JSON in `AGENT_HOOKS_HOOK_CONFIG`. `inner:csl-agent-kit-contract` injects the stable behavioral contract from `references/csl-agent-kit-contract.md`; `inner:agent-rules` merges the built-in, user, and project `agent-rules.md` files in that order, and disabling that hook suppresses all three rule sources.
+ - Codex is the reference host; each event supports only the actions in its capability table. Claude Code retains the shared event surface. `interrupt` and `session-end` are Codex-only, nonblocking script events, registered through the Codex manifest's supplemental lifecycle file with a three-second native timeout. Pi/Claude Code adapters are unchanged.
+-- Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result); script runs as a best-effort side effect on all supported events. A `run-script` rule with `inject-output: true` additionally surfaces the script stdout as an injected prompt on inject-capable events. Block and permission/subagent events are not physically realizable on Pi and remain unsupported.
+-- Use Agent Hooks for persistent automation, direct commands for one-time work, and native Git hooks for Git enforcement.
++- Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result). `before-tool` uses Pi's `tool_call` gate and returns `{ block: true, reason }` before execution. Other script events remain best-effort; permission/subagent events remain unsupported. A `run-script` rule with `inject-output: true` additionally surfaces stdout on inject-capable events.
++- Use Agent Hooks for persistent automation and Agent tool-call guards, and direct commands for one-time work. Native Git hooks or CI are needed for enforcement outside Agent tool calls.
++- `before-tool` / `run-script` rules may set `on-error: block`: checker launch failures, timeouts, nonzero exits and unknown conditions then deny execution. Script exit 2 continues to mean an explicit block. The before-tool adapters also deny on dispatcher exceptions or exhausted discovery/event budgets. Other rules retain existing best-effort behavior.
++- `commit-guard` 拥有提交内容规则；`inner:code-inline-review-commit` 通过[薄入口](scripts/check-code-review-commit.js)调用其检查器。保留历史 ID 以兼容启用／禁用设置，运行不依赖 Skill 调用状态。检查逻辑与[保护边界](../../dev/commit-guard/references/commit-guard.md)由 `commit-guard` 维护；本 Skill 只负责 hook 发现、调度与状态管理。
+ 
+ ## Workflow
+ 
+--- a/docs/rfcs/agent-hooks.md
++++ b/docs/rfcs/agent-hooks.md
+@@ -132,6 +132,8 @@
+ 
+ 未知 capability 必须按 unsupported 处理。事件名相同不能作为能力相同的证据。
+ 
++当前 Pi 适配的 `before-tool` 已使用 `tool_call` 返回 `{ block: true, reason }`，支持执行前阻断；它没有 prompt 注入通道。其他 Pi 事件的阻断能力不因此扩大。
++
+ ## 7. 目录与文件生命周期
+ 
+ ### 7.1 全局规则
+@@ -229,6 +231,7 @@
+ | `when` | 否 | 缺失表示无条件匹配 |
+ | `script` | 条件必需 | `run-script` 必须提供 |
+ | `timeout` | 否 | 正整数秒；必须受运行时默认值和上限约束 |
++| `on-error` | 否 | 仅 `before-tool` / `run-script` 支持 `block`，检查失败时拒绝执行；缺省保留尽力执行语义 |
+ | Markdown 正文 | 条件必需 | `inject-prompt` 必须为非空正文 |
+ 
+ 未知字段使规则 invalid，避免拼写错误被静默忽略。
+@@ -679,7 +682,9 @@
+ - 不执行。
+ - 必须出现在 `list` 中。
+ - 必须在 `show` 中提供文件、位置和具体错误。
+-- 不阻止其他有效规则运行。
++- 通常不阻止其他有效规则运行；已解析且声明 `on-error: block` 的当前 before-tool 规则若因脚本不可用等原因 invalid，则阻断工具调用。
++
++`on-error: block` 也覆盖条件 unknown、脚本启动失败、超时、信号终止和非零退出。before-tool 的发现/事件预算耗尽及适配器未处理异常会阻断，不能把未完成检查当作通过。其他事件和未声明该策略的普通脚本维持原有失败语义。无法解析的规则不构成有效保护，必须通过 CLI 修复并核对实际宿主状态。
+ 
+ 重复 runtime diagnostic 应在会话内去重，避免每次事件刷屏。
+ 
+@@ -694,8 +699,9 @@
+ - Regex 和条件树必须有深度、节点数、pattern 长度和求值预算。
+ - Prompt 注入不能覆盖更高优先级指令，也不能递归触发。
+ - Agent Hooks 继承宿主 sandbox，不宣称提供额外隔离。
+-- `before-tool` 的 commit 检查只是 Agent 内提前反馈，最终约束应复用 Git `pre-commit` 或 CI。
+-- Runtime error 默认 fail-open，因此 Agent Hooks V1 不是安全强制边界。
++- `before-tool` 的 commit 检查保护 Agent 可见的工具调用；外部终端、GUI 和任意隐藏脚本不在覆盖范围，跨客户端强制约束仍需 Git `pre-commit` 或 CI。
++- `commit-guard` 拥有提交内容检查逻辑与保护规范；`inner:code-inline-review-commit` 保留原 ID 和受控薄入口，以兼容已有启用／禁用设置。该规则检查完整暂存文件中的保留审查标记；干净暂存内容允许工作区保留说明。检查失败或不支持的提交形式阻断，不自动清理或暂存。`code-inline-review` 只负责说明的编写、维护与清理；当前不检查推送历史。
++- Runtime error 默认尽力执行；`on-error: block` 的 before-tool 检查采用失败阻断。此机制不提供沙箱隔离，也不消除检查与提交之间的外部并发变更。
+ 
+ ## 22. 示例
+ 
+--- a/pi/extensions/csl-context-hooks.ts
++++ b/pi/extensions/csl-context-hooks.ts
+@@ -59,7 +59,7 @@
+ 	runEvent(
+ 		payload: object,
+ 		options: { host: string; workspace: string; hookInputs?: Record<string, object> },
+-	): { prompts: TriggerPrompt[]; diagnostics: string[]; blocked: boolean };
++	): { prompts: TriggerPrompt[]; diagnostics: string[]; blocked: boolean; reason?: string };
+ }
+ 
+ interface AgentHooksRuleEntry {
+@@ -367,14 +367,18 @@
+ 	});
+ 
+ 	pi.on("tool_call", async (event, ctx) => {
+-		// before-tool: Pi has no inject channel into the in-flight tool call,
+-		// so only run-script side effects fire here.
+ 		const input = (event as { input?: { command?: string } }).input ?? {};
+-		triggerScripts("before-tool", ctx.cwd, {
+-			toolName: event.toolName,
+-			toolCommand: input.command,
+-			nativeEvent: "tool_call",
+-		});
++		try {
++			const payload = buildPayload("before-tool", ctx.cwd, {
++				toolName: event.toolName,
++				toolCommand: input.command,
++				nativeEvent: "tool_call",
++			});
++			const result = agentHooks.runEvent(payload, { host: "pi", workspace: ctx.cwd });
++			if (result.blocked) return { block: true, reason: result.reason || "Blocked by Agent Hooks" };
++		} catch (error) {
++			return { block: true, reason: `Agent Hooks 检查失败：${error instanceof Error ? error.message : String(error)}` };
++		}
+ 
+ 		if (toolReminderShown || activeCandidates.length === 0 || !MUTATING_TOOLS.has(event.toolName)) {
+ 			return undefined;
+--- a/skills/meta/agent-hooks/scripts/lib/native-hook.js
++++ b/skills/meta/agent-hooks/scripts/lib/native-hook.js
+@@ -24,7 +24,8 @@
+ 
+ function normalizePayload(native, host, event, workspace) {
+   const toolName = native.tool_name ?? null;
+-  const command = typeof native.tool_input?.command === "string" ? native.tool_input.command : null;
++  const command = typeof native.tool_input?.command === "string" ? native.tool_input.command
++    : typeof native.tool_input?.cmd === "string" ? native.tool_input.cmd : null;
+   return createEvent({
+     event,
+     host,
+@@ -53,7 +54,7 @@
+ }
+ 
+ function toolCategory(name) {
+-  if (name === "Bash") return "shell";
++  if (["Bash", "bash", "exec_command", "shell_command"].includes(name)) return "shell";
+   if (["apply_patch", "Edit", "Write"].includes(name)) return "file";
+   if (typeof name === "string" && name.startsWith("mcp__")) return "mcp";
+   return name ? "tool" : null;
+@@ -95,8 +96,10 @@
+     } else if (["Stop", "SubagentStop"].includes(native.hook_event_name)) io.stdout.write("{}\n");
+     return 0;
+   } catch (error) {
+-    io.stderr.write(`Agent Hooks runtime error (fail-open): ${bounded(error.message)}\n`);
+-    return 0;
++    let beforeTool = false;
++    try { beforeTool = JSON.parse(input || "{}").hook_event_name === "PreToolUse"; } catch {}
++    io.stderr.write(`Agent Hooks runtime error (${beforeTool ? "blocked" : "fail-open"}): ${bounded(error.message)}\n`);
++    return beforeTool ? 2 : 0;
+   }
+ }
+ 
+--- a/skills/meta/agent-hooks/scripts/lib/rule.js
++++ b/skills/meta/agent-hooks/scripts/lib/rule.js
+@@ -19,7 +19,7 @@
+   "session-end",
+ ]);
+ const ACTIONS = new Set(["inject-prompt", "run-script"]);
+-const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout", "inject-output"]);
++const FIELDS = new Set(["schema", "event", "action", "description", "enabled", "when", "script", "timeout", "inject-output", "on-error"]);
+ const MAX_TIMEOUT = 60;
+ const MAX_DESCRIPTION = 160;
+ const MAX_CONDITION_DEPTH = 32;
+@@ -93,6 +93,9 @@
+   }
+   if (rule.timeout !== undefined && (!Number.isInteger(rule.timeout) || rule.timeout < 1 || rule.timeout > MAX_TIMEOUT)) {
+     errors.push(issue("timeout-invalid", `${file}: timeout must be an integer from 1 to ${MAX_TIMEOUT}`));
++  }
++  if (rule["on-error"] !== undefined && (rule["on-error"] !== "block" || rule.action !== "run-script" || rule.event !== "before-tool")) {
++    errors.push(issue("on-error-invalid", `${file}: on-error: block requires before-tool / run-script`));
+   }
+   if (rule.action === "inject-prompt") {
+     if (!body.trim()) errors.push(issue("prompt-empty", `${file}: inject-prompt requires a non-empty Markdown body`));
+@@ -303,7 +306,7 @@
+ function serialize(rule) {
+   const body = rule.body || "";
+   const frontmatter = {};
+-  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "inject-output", "when"]) {
++  for (const field of ["schema", "event", "action", "description", "enabled", "script", "timeout", "inject-output", "on-error", "when"]) {
+     if (rule[field] !== undefined) frontmatter[field] = rule[field];
+   }
+   const suffix = body ? `\n${body.replace(/^\n+/, "")}` : "";
+--- a/skills/meta/agent-hooks/scripts/lib/runtime.js
++++ b/skills/meta/agent-hooks/scripts/lib/runtime.js
+@@ -38,13 +38,13 @@
+ 
+ // Pi has no native hook protocol; triggers run inside the csl-context-hooks
+ // extension via pi.on(event, handler). Inject only works where the handler can
+-// rewrite model-facing content (systemPrompt / tool_result). Block is not
+-// physically possible (Pi handlers cannot stop tool or agent execution).
++// rewrite model-facing content (systemPrompt / tool_result). tool_call can
++// block execution; other shared events remain nonblocking on this adapter.
+ // Permission/subagent events have no Pi equivalent.
+ const PI_CAPABILITIES = {
+   "session-start": { inject: true, script: true, block: false },
+   "prompt-submit": { inject: true, script: true, block: false },
+-  "before-tool": { inject: false, script: true, block: false },
++  "before-tool": { inject: false, script: true, block: true },
+   "after-tool": { inject: true, script: true, block: false },
+   "before-compact": { inject: false, script: true, block: false },
+   "after-compact": { inject: false, script: true, block: false },
+@@ -142,6 +142,7 @@
+   const workspace = options.workspace || payload.workspace.root;
+   const prompts = [];
+   const diagnostics = [];
++  const failure = (reason) => ({ prompts: [], diagnostics, blocked: Boolean(capability.block), reason });
+   const deadline = Date.now() + (options.eventBudgetMs || EVENT_BUDGET);
+   let entries;
+   let discoveringScope = "global";
+@@ -152,30 +153,44 @@
+     entries = [...globalEntries, ...innerEntries];
+   } catch (error) {
+     if (error.code === "AGENT_HOOKS_BUDGET") {
+-      return { prompts, diagnostics: [`${discoveringScope}:${error.reason}`], blocked: false };
++      diagnostics.push(`${discoveringScope}:${error.reason}`);
++      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：发现规则时超出预算，请修复后重试。");
++      return { prompts, diagnostics, blocked: false };
+     }
+     throw error;
+   }
++  // A host adapter may dispatch one dedicated hook at a narrower native
++  // lifecycle boundary without firing unrelated rules for the shared event.
++  const selectedHooks = options.onlyHooks === undefined ? null : new Set(options.onlyHooks);
+   for (const entry of entries.sort((left, right) => compareUtf8(left.id, right.id))) {
++    if (selectedHooks && !selectedHooks.has(entry.id)) continue;
++    const mustCheck = entry.rule?.enabled && entry.rule?.event === payload.event && entry.rule?.["on-error"] === "block";
+     if (entry.scope === "inner" && entry.innerConfigValid === false) {
++      if (mustCheck) return failure(`${entry.id}: hook 配置无效，无法完成检查。`);
+       if (!diagnostics.includes("inner:config-invalid")) diagnostics.push("inner:config-invalid");
+       continue;
+     }
+     if (entry.scope === "inner" && entry.innerDisabled) continue;
+     if (!entry.valid) {
+       diagnostics.push(...entry.errors.map((error) => `${entry.id}:${error.code}`));
++      if (mustCheck) return failure(`${entry.id}: 检查器不可用，请修复 hook 后重试。`);
+       continue;
+     }
+     if (!entry.rule.enabled || entry.rule.event !== payload.event) continue;
+     if (Date.now() >= deadline) {
+       diagnostics.push(`${entry.id}:event-budget-exhausted`);
++      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
+       break;
+     }
+     const condition = evaluateCondition(entry.rule.when, payload, deadline);
+-    if (condition.value === "unknown") diagnostics.push(`${entry.id}:condition-unknown`);
++    if (condition.value === "unknown") {
++      diagnostics.push(`${entry.id}:condition-unknown`);
++      if (mustCheck) return failure(`${entry.id}: 无法判定检查条件，请修复后重试。`);
++    }
+     if (condition.value !== "true") continue;
+     if (Date.now() >= deadline) {
+       diagnostics.push(`${entry.id}:event-budget-exhausted`);
++      if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
+       break;
+     }
+     if (entry.rule.action === "inject-prompt") {
+@@ -195,12 +210,17 @@
+       const remaining = deadline - Date.now();
+       if (remaining <= 0) {
+         diagnostics.push(`${entry.id}:event-budget-exhausted`);
++        if (payload.event === "before-tool") return failure("Agent Hooks 检查未完成：事件预算耗尽，请修复后重试。");
+         break;
+       }
+       result = executeScript(entry, payload, workspace, remaining, options.hookInputs?.[entry.id]);
+     } catch {
+       diagnostics.push(`${entry.id}:runtime-error`);
+-      continue;
++      if (mustCheck) return failure(`${entry.id}: 检查执行失败，请修复后重试。`);
++      continue;
++    }
++    if (result.status !== 0 && mustCheck && result.status !== 2) {
++      return failure(`${entry.id}: 检查未完成。${result.stderr || "请修复检查器后重试。"}`);
+     }
+     if (result.status === 2) {
+       if (capability.block) return { prompts: [], diagnostics, blocked: true, reason: result.stderr || `${entry.id} blocked the event` };

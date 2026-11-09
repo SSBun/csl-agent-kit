@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "simplify-task-confirmation-copy",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "dc0d1d173a9515d2a8e5b5f536205d072527d911261766f1a9e2ea42aa130198",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "35958ef96db20da89d6e51937e4da1ca62d8bd6d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "35958ef96db20da89d6e51937e4da1ca62d8bd6d",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

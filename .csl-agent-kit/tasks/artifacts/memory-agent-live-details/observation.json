@@ -1,0 +1,24 @@
+{
+  "kinds": [
+    "公开回复",
+    "工具调用",
+    "工具结果",
+    "记忆写入"
+  ],
+  "hiddenCanaryAbsent": true,
+  "credentialsAbsent": true,
+  "inputPresent": true,
+  "otherWorkspaceAbsent": true,
+  "bounds": {
+    "events": 11,
+    "dropped": 243,
+    "eventBytes": 180477,
+    "largestTextBytes": 16341,
+    "truncationVisible": true
+  },
+  "retainedAfterFinish": "completed",
+  "retentionMs": 120000,
+  "oldTimerPreservesNewBatch": true,
+  "expired": true,
+  "cleared": true
+}

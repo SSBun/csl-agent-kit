@@ -1,0 +1,36 @@
+{
+  "dedicated": {
+    "tests": 83,
+    "passed": 83,
+    "failed": 0,
+    "lineCoverage": 97.24,
+    "branchCoverage": 91.21,
+    "functionCoverage": 91.67
+  },
+  "combined": {
+    "tests": 115,
+    "passed": 109,
+    "failed": 6
+  },
+  "existingAlone": {
+    "tests": 32,
+    "passed": 26,
+    "failed": 6
+  },
+  "sameExistingFailures": [
+    "maps script success, failure, timeout, signal, post-event exit two, and symlink escape",
+    "runs the Swift changed-file and commit-command RFC examples end to end",
+    "dispatch injects global session prompts for Claude Code",
+    "run-script inject-output surfaces stdout as a prompt on session-start",
+    "run-script without inject-output keeps stdout out of prompts",
+    "inner CSL Agent Kit contract injects on supported session starts"
+  ],
+  "productionCodeChanged": false,
+  "files": {
+    "tests/commit-guard.test.js": "8a68748bd6bbabff37f3a36c86475abc9882ed65b0136bc5016c3e1559526969",
+    "package.json": "d2be940b597cddf8fcbf5afa061563cd299b938408da5026180102772859255e",
+    "skills/dev/commit-guard/scripts/check-commit.js": "aed6667b3e172dda4c0e5865067d280825ee7432c3472014f40e0c750701a3f1",
+    "skills/meta/agent-hooks/scripts/check-code-review-commit.js": "901271113fe3a7e7e693769efa4207b54294cb5a04a4f5d999ae941a6aebb3eb",
+    "tests/agent-hooks.test.js": "997b7650e06f0c68ba80e98e347c05039c4fcdfea5250c638f8b6b34329e318b"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "maxActive": 6,
+  "sameWorkspaceOverlap": 0,
+  "calls": {
+    "permanent": 2,
+    "normal-b": 1,
+    "interrupted": 1,
+    "normal-d": 1,
+    "transient": 2,
+    "crashed": 1,
+    "following": 1
+  },
+  "permanent": "exhausted",
+  "attempts": 2,
+  "legacy": "exhausted",
+  "capped": "exhausted",
+  "interruptedAttempts": 2,
+  "crashedAttempts": 2,
+  "effectsOnRetry": 1,
+  "partialCommit": "committed",
+  "schedulerError": null,
+  "manualRetry": "INVALID_STATE",
+  "afterReconcile": "exhausted",
+  "sweepImmediate": 0,
+  "sweepLater": [
+    {
+      "ids": [
+        "b"
+      ],
+      "newID": true
+    }
+  ],
+  "successCheckpoint": null,
+  "root": "/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/memory-concurrency-lrUH8f"
+}

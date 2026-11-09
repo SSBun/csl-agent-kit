@@ -1,0 +1,254 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "implement-code-inline-review",
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "5d3113acefff6813edc25e58e7fa2df768a7150f49bf8a6232a1c9e269d0c36e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2f9b1996137eebc5603fd87e19410f344275b303"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2f9b1996137eebc5603fd87e19410f344275b303",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/boundaries-final.json",
+      "sha256": "f2c9f38ed3d78a7e20eee0687980ebb025eb27fd2141aa5658ba24f5e1062ab3",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/command-boundaries-01.json",
+      "sha256": "aa384dc14d4252474e3daf852daf5e97f1759aa36f81e26c7a24717739c0f761",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/observations-01.json",
+      "sha256": "bb8092f13d4f2882796f8cc1fe7d6c2b74f825a4563988eb0f29f074d1184032",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/pi-adapter-01.json",
+      "sha256": "05865edec4e80d469b414e72bc086fbd8f1a08008b9341d558b883ec20372645",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/repair-02.json",
+      "sha256": "3de3bb9373c78127ba1afc6bc1ad4fbe075a7433b1718d4f017816612fc29cfb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/repair-03.json",
+      "sha256": "1018d9f7e4e7a1ad7b467c8ee6db10b7e8ef302d437ec73bd4b515a290bac186",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/implement-code-inline-review/evidence/repair-04.json",
+      "sha256": "98bfadc7ab340ba91985c2bc882805b5444bcc50416305432470b32c9436d1d7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "README.md",
+      "sha256": "fd0e61751b5cfafcdb2581fc8d57e84234897090b26eaf4f0d7438b8610b29d3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "bf26e2bd52a10a00fe5f27d553667db8d7209b98"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "bf26e2bd52a10a00fe5f27d553667db8d7209b98",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "docs/rfcs/agent-hooks.md",
+      "sha256": "738869ce558f62a9712333bba717bb682f723e98e78543b612d8082b633a8700",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fed9296eef588cbec81dc06480b256edb2f9bce9"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fed9296eef588cbec81dc06480b256edb2f9bce9",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "pi/extensions/csl-context-hooks.ts",
+      "sha256": "5bf6f37320275a6f52ea92ceba43e649c901e3205c16c2fa1aa7e860153221f3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c990d79f28009fdb24b591144d662a2dde140d43"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c990d79f28009fdb24b591144d662a2dde140d43",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/SKILL.md",
+      "sha256": "27a3858ec2168f07eea788276898822ab7264ab85f318239aa994762d7692aff",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/evals/trigger_cases.json",
+      "sha256": "175a82f05a7780272b9f8cb5ef20abed54c1930f467a8eff65cabaae62aa328e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/references/comment-format.md",
+      "sha256": "0005795439a8ff6034d8f3069d899054b248c1ebc15ab10622d102105430baa6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/references/commit-guard.md",
+      "sha256": "e99a224b1657121f1d7dd54a133ceb4500ff2cdc76e0470be001fbadb3f90708",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/scripts/preview-clean.js",
+      "sha256": "25319f10d24a1dcba37db4fa6c4a6248c210628d715897b40866780b072a10c7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/SKILL.md",
+      "sha256": "e0b50b26fcc71d9f22c6e10cdd896cad04cd4364f7d83bd7e039721303a90a4d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c8fa359df7298632db565091d94f21e36aa6c9df"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c8fa359df7298632db565091d94f21e36aa6c9df",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/hooks/code-inline-review-commit.md",
+      "sha256": "4ef60c48097a98a54536abf37ed07618ae7c301c0dc891076b2040fd0a425406",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/check-code-review-commit.js",
+      "sha256": "b243ae6bfc97048e9432d96fa78d7493c0273f8957b3525e533fa082a710b51e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/lib/native-hook.js",
+      "sha256": "f0152b40bd6b8cb15de81d6a773237b70fe5fd2e62db07b927275bb06354a6f7",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "f734b37e76b6480af5a05e212a2e302460019d86"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "f734b37e76b6480af5a05e212a2e302460019d86",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/lib/rule.js",
+      "sha256": "58ce3d81f86457c2438aa9334ba1fadb48f5084b36691446da46b669daa6d310",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2b65c1434d378ffe66a4d07c036153f19a1d759f"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2b65c1434d378ffe66a4d07c036153f19a1d759f",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/lib/runtime.js",
+      "sha256": "9b49a80b04f164ce455b335bc117447007f34a467e6d7943ff0add7ee6020f72",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "266d91fe4bebbcdf290fc6b287d3e6b8f97cbb3c"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "266d91fe4bebbcdf290fc6b287d3e6b8f97cbb3c",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-memory-scope-filter",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-memory-scope-filter/evidence/desktop.png",
+      "sha256": "86012222c5a5201bac26fff20186f1860a7f4e1641fb216cd428dff069610fa4",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-memory-scope-filter/evidence/mobile.png",
+      "sha256": "d1af76eab656c5d6b6813a19c043b2ef252c97013aaa91333454fc1071873007",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "d6f4fa962e91bf400187318f30e80c182ca62b698620aa1456977bb7da916e95",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "5450c38181dfb222cf26156dd7ce2a57ad38bf2bb22f5a2d9ce24f24bfed3540",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "3e1cda7999ebd4f295df0fbea33710617048b3a343a822f5fc0304e19a93237f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

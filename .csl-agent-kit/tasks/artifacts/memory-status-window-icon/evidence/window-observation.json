@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-06T07:21:55.144Z",
+  "anonymousStatus": 401,
+  "externalURLStatus": 400,
+  "launchStatus": 200,
+  "result": {
+    "requested": true,
+    "browser": "Google Chrome"
+  },
+  "windowsBefore": "4:0",
+  "windowsAfter": "4:0",
+  "launcherStatus": 200
+}

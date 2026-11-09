@@ -1,0 +1,252 @@
+{
+  "guardSha256": "8a7d9eb384c28eaa17eb0a1aff15bfda47ab34b6ebf85104eac100ec16a3f7b5",
+  "current": [
+    {
+      "command": "FOO=bar git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "FOO=bar BAR=baz git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "if true; then git commit -m x; fi",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "while true; do git commit -m x; done",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "cat <<'EOF'\nexample\nEOF\ngit commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "cat <<'EOF'\nexample\nEOF\nFOO=bar git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "cat <<-'EOF'\n\texample\n\tEOF\ngit commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "cat <<'ONE' <<'TWO'\nfirst\nONE\nsecond\nTWO\ngit commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "git add . && git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "git commit -am x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "暂不支持提交参数 -am。请先单独暂存，再使用 git commit -m 或 -F；不要使用 -a、路径、交互暂存、--no-verify 或组合命令。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "git commit sample.ts",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "暂不支持提交参数 sample.ts。请先单独暂存，再使用 git commit -m 或 -F；不要使用 -a、路径、交互暂存、--no-verify 或组合命令。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "提交内容包含 code-review 审查块（含残缺标记）：\n\"/private/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/csl-inline-boundary-CRMgq5/sample.ts\":1\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "git status",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "git diff",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "rg \"git commit\" README.md",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "cat <<'EOF'\ngit commit -m documentation\nEOF",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "node <<'NODE'\nconsole.log('git commit');\nNODE",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "echo \"git commit\"",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "printf '%s\\n' 'git commit'",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "/usr/bin/env FOO=bar git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo \"$(git commit -m x)\"",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo `git commit -m x`",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "> /dev/null git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "2>/dev/null git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "time git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "time -p git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "/usr/bin/time git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "env FOO=x git commit -m x",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo \"nested $(echo $(git commit -m x))\"",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo \"`git commit -m x`\"",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "cat <(git commit -m x)",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "FOO=\"$(git commit -m x)\" echo done",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo \"${value:-$(git commit -m x)}\"",
+      "previousBlocked": true,
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo '$(git commit -m x)'",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "echo '`git commit -m x`'",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "echo \"\\$(git commit -m x)\"",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "echo \"$(printf '%s' 'git commit')\"",
+      "previousBlocked": false,
+      "blocked": false
+    },
+    {
+      "command": "cat <<'EOF'\n$(git commit -m documentation)\nEOF",
+      "previousBlocked": false,
+      "blocked": false
+    }
+  ],
+  "observations": [
+    {
+      "command": "while git commit -m x; do break; done",
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "until git commit -m x; do break; done",
+      "blocked": true,
+      "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "builtin eval \"git commit -m x\"",
+      "blocked": true,
+      "reason": "Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "gi\\\nt commit -m x",
+      "blocked": true,
+      "reason": "不支持续行或残缺转义\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "$'git' commit -m x",
+      "blocked": true,
+      "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+    },
+    {
+      "command": "echo '$(git commit -m x)'",
+      "blocked": false
+    }
+  ]
+}

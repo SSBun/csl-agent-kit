@@ -1,0 +1,42 @@
+本机第三方库 { markdown: 'function', json: 'function', renderer: 'object', csp: [] }
+默认正文与Markdown {
+  modal: true,
+  bodyVisible: true,
+  metadataFolded: true,
+  h1: '正文优先',
+  bold: true,
+  list: 2,
+  table: true,
+  code: true,
+  jsonFence: true
+}
+不安全内容与外部请求 {
+  executed: 0,
+  images: 0,
+  scripts: 0,
+  unsafeLinks: 0,
+  safeLinkRel: 'noopener noreferrer',
+  externalLoads: 0,
+  csp: []
+}
+元数据JSON视图 { open: true, tree: true, typedString: true }
+JSON键盘展开 { expanded: 'true', sourceVisible: true }
+JSON正文及折叠重置 { tree: true, metadataFolded: true, noImage: true }
+窄屏JSON { pageOverflow: false, dialogOverflow: false }
+历史文件正文优先 {
+  comparison: true,
+  headerFolded: true,
+  metadataFolded: true,
+  afterContent: true
+}
+特殊JSON安全回退 { warning: true, script: false, executed: 0 }
+深层特殊JSON正文完整回退 { fallback: true, exact: true }
+深层特殊JSON围栏保留原文 { exact: true, trees: 0 }
+长数组未截断 { range: true, keyboardNodes: true }
+库不可用回退 { warning: true, text: '{\n  "safe": "完整原始JSON"\n}' }
+最终CSP []
+资源路由 { route: '/vendor/markdown-it.js', status: 200 }
+资源路由 { route: '/vendor/json-formatter.js', status: 200 }
+资源路由 { route: '/detail-renderer.js', status: 200 }
+资源路由 { route: '/vendor/../../package.json', status: 401 }
+资源路由 { route: '/api/memories', status: 401 }

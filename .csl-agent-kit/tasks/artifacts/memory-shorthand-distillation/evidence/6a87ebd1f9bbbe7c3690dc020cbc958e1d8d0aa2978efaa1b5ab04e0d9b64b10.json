@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-shorthand-distillation",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-shorthand-distillation/evidence/changes.patch",
+      "sha256": "b63f6a9b56f56a86c76e522a847ad4419ec15ae2328a5ae529021867dafa41a7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "1e09aacef8ce37d33fab1f84bd1cb2d024843a7a2e75f5b4cc260622e35a315e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/cli.js",
+      "sha256": "6aff78b885167154e3ddd227210d038c231b3cbf10eb2c88b51beb1481e50d0d",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "e115db021cca276025d7e343c3042e191bb5fb50f5634f12606656f1fed5d727",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "b32c04fd7c07385030a6c7d9d594f19d18cbaeaf54b3b5a5269cfeda0b55dcdd",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

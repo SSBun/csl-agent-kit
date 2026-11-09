@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-04T08:07:06.962Z",
+  "running": true,
+  "pid": 30467,
+  "historyPolicy": "commits-only/v1",
+  "active": [],
+  "counts": {
+    "failed": 1,
+    "queued": 50
+  },
+  "auditsPreserved": 493,
+  "auditDrift": [],
+  "completedRetired": 158,
+  "leftovers": [],
+  "receiptErrors": [],
+  "missingPending": [],
+  "commitCount": 493,
+  "returned": 20,
+  "nonCommitted": 0,
+  "schedulerError": null,
+  "maintenanceErrors": []
+}

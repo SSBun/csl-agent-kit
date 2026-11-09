@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "compact-git-clean-status",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/compact-git-clean-status/git-status-footer.ts",
+      "sha256": "125905eccad90bbdc17ec01de4aa2f09be03e94df4f11783921e233bae963146",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

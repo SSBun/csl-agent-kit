@@ -1,0 +1,2 @@
+mouse { errors: [], tailVisible: true, fallback: true, togglers: 0 }
+keyboard { errors: [], tailVisible: true, fallback: true, togglers: 0 }

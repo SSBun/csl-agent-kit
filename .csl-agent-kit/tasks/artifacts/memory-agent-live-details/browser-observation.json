@@ -1,0 +1,23 @@
+{
+  "opened": {
+    "open": true,
+    "title": "Memory Agent · 实时处理",
+    "input": "[\n  {\n    \"role\": \"user\",\n    \"text\": \"这是隔离输入，展示实时工具处理。\"\n  }\n]",
+    "hasTools": true,
+    "hasPublic": true,
+    "hiddenAbsent": true,
+    "xssAbsent": true,
+    "polls": 3,
+    "error": ""
+  },
+  "closed": {
+    "open": false,
+    "polls": 3
+  },
+  "pollingStopped": true,
+  "unauthorized": 401,
+  "crossOrigin": 403,
+  "authorized": 200,
+  "noStore": "no-store",
+  "wireHiddenAbsent": true
+}

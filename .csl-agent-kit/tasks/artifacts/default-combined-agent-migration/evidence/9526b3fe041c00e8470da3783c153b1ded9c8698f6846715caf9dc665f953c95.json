@@ -1,0 +1,126 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "default-combined-agent-migration",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/default-combined-agent-migration/evidence/baseline.json",
+      "sha256": "a385d37cf847fad6d9387af322601b8128ef0149041e79c973bcc6fb2acb151b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/default-combined-agent-migration/evidence/checks.json",
+      "sha256": "731140659ea2f607c0cffe7009618f5491e9d3e92ce2182e9dc2999ad3e8486e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/default-combined-agent-migration/evidence/task-owned.diff",
+      "sha256": "ed708ae0e74dab626bcfddfa28864faf5d2cbf042ce8445b38f7a68f8a257a8e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/cli.js",
+      "sha256": "8aef23dba844b92eda124ca08e7b572ed8cc2c80ab6e5745f26c3805a9417a8c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/migration.js",
+      "sha256": "344e18965da55022204c5704825cd89dc6deb5c380e6bdf5a35fb4b344e47a93",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/recall-index.js",
+      "sha256": "edc02a1a182a3f0583218d8f28702319b786d97670169e9709f119a47ed8a113",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "5d8ad3c67fb577a0d8bc0c0a28951b2b4fd8c16b1c535a726aa6d89548e77bd7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "80ebec1db4c42be1e945aaa7536710b7113f8c7c08b4bf5814bd6ffeab162239",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "af5a1dcffdc0b2cc93c67260af87e372edd0e59f99343dc64ef7b588434cb4ec",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/SKILL.md",
+      "sha256": "341c4e8300b3f4e8d65a8f14653d1b6ee3cc3901cf82fa45acfcb6a6aa5263f7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/evals/migration_cases.json",
+      "sha256": "85520405d123b479c5f1a0e675f2958385c6f98f90dd1dcaa64f2a4b4826899c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/evals/trigger_cases.json",
+      "sha256": "145c68e094f30236dfb46732a16573f63f29ffedbd7238d47ad15906f6f76d8f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/memory-migration.md",
+      "sha256": "6f62bbd04d6f4b0e30455a9179fa2dbc05ab46cbf2eb1eaf48b7e6ebad84bf93",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/storage.md",
+      "sha256": "03abfd6bc943ffad0925474a6b14b890d2a226661e40d315406f0f014cadada2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/task-storage-migration.md",
+      "sha256": "70c5e0d9fb4d974643293988aebc8f88956679d391a3e8f51dfd2c610f345b9a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

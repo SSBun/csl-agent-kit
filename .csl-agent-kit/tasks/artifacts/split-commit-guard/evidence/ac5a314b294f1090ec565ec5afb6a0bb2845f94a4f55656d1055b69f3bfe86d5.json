@@ -1,0 +1,255 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "split-commit-guard",
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "sha256": "75f9a9050957cab554110aa1a96d70a3b4dee41d961adfb2defab1133a137908",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2f9b1996137eebc5603fd87e19410f344275b303"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2f9b1996137eebc5603fd87e19410f344275b303",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "sha256": "ffe5f1ed5026cd536bc9d03314a6bb374822fd94a97dffaacd84b7ffda2101cd",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d6735d9a111c723e9252e3f1c48ac50b89d402cd"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d6735d9a111c723e9252e3f1c48ac50b89d402cd",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/split-commit-guard/evidence/baseline.json",
+      "sha256": "b58093736de2a1bcbacdc77fe8c503d7913922d8c741e998cf11866bed915a5f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/split-commit-guard/evidence/observations.json",
+      "sha256": "19fa1eb36989d828a7f53c2e3f1f32db8e31d59ad489caa9d370b4e186fdaf30",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/split-commit-guard/evidence/static-checks.json",
+      "sha256": "7d2634f975bea380abfb1163758cd943fa782085ea188e8d86a833af6dfe1ae0",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/split-commit-guard/evidence/task-owned.diff",
+      "sha256": "372f71e85a54f4f92005da70fa10bd925d9643161300b9ecf170c0de4b33e6f5",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".cursor-plugin/plugin.json",
+      "sha256": "7eb4ee8d012d5763bc18ca8d2bd91aacd20dda208e014895bf7e91df2ae104a3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "bd1dc48a4cb6b8a23492e2aaa6f99354bcef5f04"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "bd1dc48a4cb6b8a23492e2aaa6f99354bcef5f04",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "README.md",
+      "sha256": "3b5040a14f354577d91dede3ebcc069e2bf11d45a630c6e30e82ea280148d812",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "bf26e2bd52a10a00fe5f27d553667db8d7209b98"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "bf26e2bd52a10a00fe5f27d553667db8d7209b98",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "docs/rfcs/agent-hooks.md",
+      "sha256": "c0db7240959fd27601b8e26564a4950dfd0a1a0c1fd577c06b210aa39ced0dd8",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "fed9296eef588cbec81dc06480b256edb2f9bce9"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "fed9296eef588cbec81dc06480b256edb2f9bce9",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "package.json",
+      "sha256": "b0c8261a411b676e00baa5665fbe71161ec9aa24116230c00cafbf9768129164",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "92b3d9d9a31b9c353739e5034fe9586d0bfec6e0"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "92b3d9d9a31b9c353739e5034fe9586d0bfec6e0",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/SKILL.md",
+      "sha256": "d6d8b1be44540301c3bf483dd560be85956fa003caf4c4fc54a6412eb3a7f4df",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/code-inline-review/evals/trigger_cases.json",
+      "sha256": "ca401b8febae22e60f7075378772f15e658f2bdac6694a1534afbc651e65f3e6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/SKILL.md",
+      "sha256": "f447ecd6af5e15df60c30b0abdc44d1188e5aa05a72fb378a5212e098c025e6a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/evals/trigger_cases.json",
+      "sha256": "2423fac88d16eb2807d75cab6fb2c08adce1cc31f98324459cad156a7adb0991",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/references/commit-guard.md",
+      "sha256": "65c470e98a5cfcd672d807f100a2901bbedc4da58510bb21bb86196f83f31a5a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/scripts/check-commit.js",
+      "sha256": "aed6667b3e172dda4c0e5865067d280825ee7432c3472014f40e0c750701a3f1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/SKILL.md",
+      "sha256": "af3f4d60d45fd762ded2ef48773db2d39ea9baba46fd68c2be1437b936234545",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c8fa359df7298632db565091d94f21e36aa6c9df"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c8fa359df7298632db565091d94f21e36aa6c9df",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/hooks/code-inline-review-commit.md",
+      "sha256": "17611a88c06b56aadbb31e9c4f3e64378caf014e600dad07730e65ad4de34e89",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/check-code-review-commit.js",
+      "sha256": "901271113fe3a7e7e693769efa4207b54294cb5a04a4f5d999ae941a6aebb3eb",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/lib/runtime.js",
+      "sha256": "9b49a80b04f164ce455b335bc117447007f34a467e6d7943ff0add7ee6020f72",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "266d91fe4bebbcdf290fc6b287d3e6b8f97cbb3c"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "266d91fe4bebbcdf290fc6b287d3e6b8f97cbb3c",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/lib/store.js",
+      "sha256": "d29cecb6ab2896eca40c02d42a24866a1233e251c00891ce9b29e8aaa03b2f63",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "aeaba0f93fe1cb87dbf5b468ac7b889fcef699ae"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "aeaba0f93fe1cb87dbf5b468ac7b889fcef699ae",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

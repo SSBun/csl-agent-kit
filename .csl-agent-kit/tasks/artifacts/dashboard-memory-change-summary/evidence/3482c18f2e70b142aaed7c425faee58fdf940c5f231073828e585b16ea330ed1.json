@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-memory-change-summary",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-memory-change-summary/evidence/desktop.png",
+      "sha256": "b6b6e8ff7064cb07fc6d6482b3b78f68c774dd61e64bc7b2f07ad1cb6b18852e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-memory-change-summary/evidence/mobile.png",
+      "sha256": "1808f7cbc3a79d5f9b0b67ddec38aa52f31f291400845d6a609ca30025893cce",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "6508c85849fa1bb95aa3de3440eb5dbb37b99a3483624f3d2305bc1a7035987c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "3b51e6b49930b93dd273ea36819fafe274b92d61deddcf3a4ff863cb8836d71e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "35b113542b2ec1882724774e6f23760d412dded85d37b7481403e20c75794d88",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

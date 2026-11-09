@@ -1,0 +1,78 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-status-window-icon",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-status-window-icon/evidence/endpoint-observation.json",
+      "sha256": "6afa688e82055a16b9c41b8cb647cf31b760b898e246f1e2988c5a93d6512cac",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-status-window-icon/evidence/native-window-observation.json",
+      "sha256": "f16e615228e04b1da0be08ca4acbe2845c5b030890421bcd9d92e19dd84e2167",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/browser-window.js",
+      "sha256": "249f0f52c67bece9246b7bd5c34284c51836eadf6a180253d1b0db6cc8ce08c2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "3a3ed84d019ca3780385c4a60e3ffbcdf17c42959c0004d126ee99c234e55929",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web-assets.js",
+      "sha256": "4228642284bfa4f759bfc771a80543be96319796b62449ae56ffc1162adca41c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/open-window.html",
+      "sha256": "ae89aef9bf6054cbffd499b323c3aa5da1071b2a5eef4063eaf8fee1188c529b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/open-window.js",
+      "sha256": "1a77568666fe844ca143aed80336ca1ad478f2b0ea67b55959d13608adb66e1b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "80ebec1db4c42be1e945aaa7536710b7113f8c7c08b4bf5814bd6ffeab162239",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "5c4b7aabf62129e6c8d9f19ff7243c63627fd467c48e647a5f9a6e98d2765069",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

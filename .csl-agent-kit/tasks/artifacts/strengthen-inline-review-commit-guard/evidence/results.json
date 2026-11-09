@@ -1,0 +1,24 @@
+{
+  "tests": 91,
+  "passed": 91,
+  "failed": 0,
+  "skipped": 0,
+  "guardCoverage": {
+    "line": 97.24,
+    "branch": 91.21,
+    "function": 91.67
+  },
+  "quality": {
+    "commit-guard": "pass",
+    "code-inline-review": "pass"
+  },
+  "syntax": "passed",
+  "files": {
+    "skills/dev/commit-guard/scripts/check-commit.js": "bed8dad8cdc41047693e704d013509f1aa7a561176fde543d783c4b7eb22c55e",
+    "skills/dev/commit-guard/SKILL.md": "7cbf024dce1404ed4dcb784a0fa3f4ce8899445296f3d81d117ac839ad7a040d",
+    "skills/dev/commit-guard/references/commit-guard.md": "973b2aaa23eae14df849a86beb8b602d6c0e7846375774014b6b08ff412c45a1",
+    "skills/dev/code-inline-review/scripts/preview-clean.js": "c1ba8913d9240ea5490fd58919241b5438bf321ebcf40db90fe7c1f7f6028472",
+    "skills/dev/code-inline-review/references/comment-format.md": "788efefe83efa282a8be8feb426ef412a6005e601f14380bc68aa824c13ed206",
+    "tests/commit-guard.test.js": "9b61d41b947e119ea011bc0afbb61dd3d9d0fb4ef9ebd980ca19afead2c33ddf"
+  }
+}

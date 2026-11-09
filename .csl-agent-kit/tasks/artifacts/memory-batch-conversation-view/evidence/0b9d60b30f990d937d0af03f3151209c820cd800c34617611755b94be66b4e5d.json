@@ -1,0 +1,30 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-batch-conversation-view",
+  "files": [
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "c19c657474a6e5cd293a230a1acccaedfedebe8d9c1b5a34179f69717b2976a4",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "aca553d08a25dd7d634c30a687a72df8e46b538861f51942bc7d2574d2bc3c57",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "4d0a399c2a9e7937f0120734c3e123915387d4afa13d63f81f7b5e05c56610bc",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

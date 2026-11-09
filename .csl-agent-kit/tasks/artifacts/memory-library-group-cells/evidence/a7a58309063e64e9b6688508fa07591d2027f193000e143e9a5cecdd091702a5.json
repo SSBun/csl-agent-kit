@@ -1,0 +1,118 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-library-group-cells",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/changes.patch",
+      "sha256": "11c453ba0531dde844a8fc5c54445724f11833ac8b9a0b91788f5b129c097813",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/collapsed-again.png",
+      "sha256": "760731d99c38769f2bab866866173b898ad9dcba6ddaf6a575c8b643492fe7a2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/collapsed.png",
+      "sha256": "f8b42cc6733076a909ac11f68bbac63d3a06f91b67378b68085126c9a8c4180c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/expanded.png",
+      "sha256": "55d9b8bb6486f681f82fd4b7bd54b3be0f0860069bfe59253444a4f9353520de",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/mobile.png",
+      "sha256": "813229ce09d1cdd091199d916c7404e9f40af6f8c06421b0c4267b0caf60b182",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/observation.json",
+      "sha256": "e5e95ddb39429179d60060a4e47577760cbea0dd2c1b8815d413b4bdbf322c55",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/observe.cjs",
+      "sha256": "934ef569d22dc5e81a39dccdfca63b7afaa41d92fc8e6cd17760bfc20d362550",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/memory-library-group-cells/preview.cjs",
+      "sha256": "51af7cae40fd942bf38624dd8554193b1cdcf29649bb336be7db707e9b6300f3",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "977a6081b882a1000fe6f6a0fa205d48b5735b7ad2e0a4f2185a21f6bc3164d8",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/library.js",
+      "sha256": "3d7b20228053849f2ad3ec0cf184e329c6b14c5c3187b7d22d9c08d2b9b12888",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "8e070da147e16e9224c7509020c285bc162c32bdde0b75f33056a326f630b37f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "a21688d89ff487a3ea85f8a65d8fd24916476c73562ee468f0b663fefdf8ce83",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "0b36cff265c0e7cf422b5723cfc92cc324d9133815d4735c6c6ddd715ab6ef1d",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "b522fa9a24f6a57f5b77f943c8170561f1e38d2f588fe8695ad73563a9467f2f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

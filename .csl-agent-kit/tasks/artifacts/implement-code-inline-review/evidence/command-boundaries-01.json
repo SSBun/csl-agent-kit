@@ -1,0 +1,33 @@
+[
+  {
+    "command": "rg \"git commit\" README.md",
+    "blocked": false
+  },
+  {
+    "command": "node <<'NODE'\nconsole.log('git commit');\nNODE",
+    "blocked": false
+  },
+  {
+    "command": "git add . && git commit -m combined",
+    "blocked": true,
+    "reason": "请将提交独立执行，不使用组合命令、重定向或 shell 展开\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+  },
+  {
+    "command": "git status",
+    "blocked": false
+  },
+  {
+    "command": "git diff",
+    "blocked": false
+  },
+  {
+    "command": "git commit -am unsafe",
+    "blocked": true,
+    "reason": "暂不支持提交参数 -am。请先单独暂存，再使用 git commit -m 或 -F；不要使用 -a、路径、交互暂存、--no-verify 或组合命令。\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+  },
+  {
+    "command": "git commit -m \"$(echo unsafe)\"",
+    "blocked": true,
+    "reason": "不支持变量展开或命令替换\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+  }
+]

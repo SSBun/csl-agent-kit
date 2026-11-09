@@ -1,0 +1,520 @@
+{
+  "observedAt": "2026-11-05T11:36:49.655Z",
+  "beforeCount": 41,
+  "afterCount": 19,
+  "budget": {
+    "count": 19,
+    "limit": 20,
+    "wordLimit": 1000,
+    "oversized": [],
+    "overCapacity": false
+  },
+  "maxWords": 975,
+  "coverage": [
+    {
+      "id": "agent-migration-directory-memory-routing",
+      "target": "agent-migration-directory-memory-routing",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "dashboard-default-memory-changes",
+      "target": "dashboard-default-memory-changes",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "legacy-context-042589327b4342aa11f6",
+      "target": "legacy-context-042589327b4342aa11f6",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-1617a7ae8f376d8041a9",
+      "target": "legacy-context-c1c22f866bd05d47dfff",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": false,
+      "languageQualification": true,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-22ba57285e51417e1ae9",
+      "target": "legacy-context-22ba57285e51417e1ae9",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-2e3175e9d15b6364c50a",
+      "target": "legacy-context-2e3175e9d15b6364c50a",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-3f04e0f0972b0b999ca0",
+      "target": "legacy-context-3f04e0f0972b0b999ca0",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "legacy-context-4a9856c5741870ed4527",
+      "target": "legacy-context-4a9856c5741870ed4527",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-5b681e886bf85282d88e",
+      "target": "legacy-context-5b681e886bf85282d88e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": false,
+      "languageQualification": true,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-66a03bd93c7948718f2d",
+      "target": "legacy-context-66a03bd93c7948718f2d",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-97c02696d8c555646b77",
+      "target": "legacy-context-97c02696d8c555646b77",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "legacy-context-9cdf026514a05e858751",
+      "target": "legacy-context-9cdf026514a05e858751",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "legacy-context-9e202660c5470b4d1098",
+      "target": "legacy-context-9e202660c5470b4d1098",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-a22114c4b3b073184f5e",
+      "target": "legacy-context-a22114c4b3b073184f5e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "legacy-context-bf4d7050557e0a133921",
+      "target": "agent-migration-directory-memory-routing",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-c1c22f866bd05d47dfff",
+      "target": "legacy-context-c1c22f866bd05d47dfff",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-c9e1b7a7d7d8266238aa",
+      "target": "legacy-context-c9e1b7a7d7d8266238aa",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": false,
+      "languageQualification": true,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-d3613f68e48dfcd44c44",
+      "target": "legacy-context-d3613f68e48dfcd44c44",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-d88f9609a385b39dc7e3",
+      "target": "legacy-context-2e3175e9d15b6364c50a",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-context-e342fb2566f3132de133",
+      "target": "legacy-context-e342fb2566f3132de133",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "legacy-lessons-01aa1afd3ed4938569c4",
+      "target": "legacy-context-5b681e886bf85282d88e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-2699bc1d510c4a39b732",
+      "target": "legacy-context-c9e1b7a7d7d8266238aa",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-51c13e20793a7d0143dc",
+      "target": "legacy-context-22ba57285e51417e1ae9",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-7ac549285b858276f3af",
+      "target": "legacy-context-4a9856c5741870ed4527",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-8113726141f45d9803cd",
+      "target": "legacy-context-d3613f68e48dfcd44c44",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-9151dbd1441ef552561c",
+      "target": "legacy-context-2e3175e9d15b6364c50a",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-b6cd5b4be4b8b0ece77b",
+      "target": "legacy-context-22ba57285e51417e1ae9",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": false,
+      "languageQualification": true,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-bacee4d7ea884d043950",
+      "target": "legacy-context-5b681e886bf85282d88e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-bc839c3424a94bad3409",
+      "target": "legacy-context-5b681e886bf85282d88e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-c4d4acd64f5ea359d5f3",
+      "target": "legacy-context-9e202660c5470b4d1098",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-c5a35c3c5696edfe3676",
+      "target": "legacy-context-042589327b4342aa11f6",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-e393cbbc7bc13cf73bc0",
+      "target": "legacy-context-5b681e886bf85282d88e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-ed7ba763a9bff7d3c6d7",
+      "target": "legacy-context-d3613f68e48dfcd44c44",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-ee92e47c51ca9b06138d",
+      "target": "legacy-context-5b681e886bf85282d88e",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "legacy-lessons-f70055900a7ae1733947",
+      "target": "legacy-context-9e202660c5470b4d1098",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "memory-index-pilot-evidence",
+      "target": "memory-index-pilot-evidence",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "pi-git-status-display",
+      "target": "legacy-context-66a03bd93c7948718f2d",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "pi-legacy-project-migration-detection",
+      "target": "agent-migration-directory-memory-routing",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "recall-first-index-design-reference",
+      "target": "legacy-context-042589327b4342aa11f6",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    },
+    {
+      "id": "review-comments-editor-portability",
+      "target": "review-comments-editor-portability",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": true
+    },
+    {
+      "id": "task-score-display-preference",
+      "target": "legacy-context-4a9856c5741870ed4527",
+      "active": true,
+      "sourcesPreserved": true,
+      "bodyPreserved": true,
+      "languageQualification": false,
+      "unchangedHash": null
+    }
+  ],
+  "project": {
+    "state": "published",
+    "pending": false,
+    "index": {
+      "schema": "csl-memory-index/v3",
+      "generation": "f5043544cb8848965c7297102000229cbba51d3baf080c7233741c748701c4ea",
+      "scope": "project",
+      "count": 19,
+      "missingReferences": 0,
+      "crossScopeReferences": 0,
+      "layout": "single",
+      "entries": "entries"
+    },
+    "derivedExists": false
+  },
+  "user": {
+    "generation": "c9a29854f41353e706e36cd2186f243fda0acf68bd1c1b8ef27ff6270dec258d",
+    "count": 3,
+    "pending": false
+  },
+  "entries": [
+    {
+      "id": "agent-migration-directory-memory-routing",
+      "title": "迁移协调、历史整理与旧项目检测",
+      "words": 626,
+      "hash": "1127f89809b627a16497e1403ae4183ba8af9b6386f462fac998b146ca38edfb"
+    },
+    {
+      "id": "dashboard-default-memory-changes",
+      "title": "Memory Dashboard 展示与访问端点",
+      "words": 443,
+      "hash": "943107d27aa3cc6bec96a7d16005d68ac5e416033c51d01b9844ef3ee33d75fd"
+    },
+    {
+      "id": "legacy-context-042589327b4342aa11f6",
+      "title": "Memory 召回、准入与紧凑索引",
+      "words": 781,
+      "hash": "9201ecd3736550e92bc5011c5654f8516f28753acc454a63ebf9ce1e963cae50"
+    },
+    {
+      "id": "legacy-context-22ba57285e51417e1ae9",
+      "title": "SOP 发现、存储与编写边界",
+      "words": 397,
+      "hash": "e6e73987c35739487055b29b51051a79f5f7402053c06b692a2fe1773938605e"
+    },
+    {
+      "id": "legacy-context-2e3175e9d15b6364c50a",
+      "title": "Agent Hooks 接入、注入与宿主信任",
+      "words": 975,
+      "hash": "6cc95c472d6d80864107f3c2b0970e88c6aac2af60956d8667f43ede4c317c97"
+    },
+    {
+      "id": "legacy-context-3f04e0f0972b0b999ca0",
+      "title": "Skill 质量门禁与变更验证边界",
+      "words": 305,
+      "hash": "29cc351dc8764da2039f78a8205a74df336a976fbca06b35c4936cddb1be2c68"
+    },
+    {
+      "id": "legacy-context-4a9856c5741870ed4527",
+      "title": "Task 工作流、证据与展示边界",
+      "words": 712,
+      "hash": "76cbdbe8f7cf1d44c03ce5660fe04bd44d8d327efe75fbb5467b0fbcf58c6908"
+    },
+    {
+      "id": "legacy-context-5b681e886bf85282d88e",
+      "title": "项目架构、数据边界与命名",
+      "words": 683,
+      "hash": "5beb8c2f4da3ca738318a0e9e79e6fa2348c49b7489ae01643f16139b09cbbd0"
+    },
+    {
+      "id": "legacy-context-66a03bd93c7948718f2d",
+      "title": "Pi 设置、审查模型与状态显示",
+      "words": 470,
+      "hash": "25643ded1901bcb0ab59ec847bf52d10bc6e43df194063d4f0503d8b07ca12b4"
+    },
+    {
+      "id": "legacy-context-97c02696d8c555646b77",
+      "title": "Memory 运行、恢复与 Pi 状态栏",
+      "words": 513,
+      "hash": "2771ee1fd3ae7dcbddb4d56bcf4af3b202504d17619a713aa1b7e2f62c35ca5f"
+    },
+    {
+      "id": "legacy-context-9cdf026514a05e858751",
+      "title": "项目评测布局与验证边界",
+      "words": 439,
+      "hash": "c35c679381c53db410e2da02398057c183d070c91bfabbe10acbcd43cbf0fe78"
+    },
+    {
+      "id": "legacy-context-9e202660c5470b4d1098",
+      "title": "Pi 标题生成与共享 UI 状态",
+      "words": 676,
+      "hash": "d8f8eaae2264513c3ef9ebf30e9ce23d676b005e6da133151d6569166ca67581"
+    },
+    {
+      "id": "legacy-context-a22114c4b3b073184f5e",
+      "title": "Pi 任务面板、活动存储根与会话关联",
+      "words": 327,
+      "hash": "6eef0993134330b4adba01aceb7ea8ba855c0768c1234f238abd872435914f18"
+    },
+    {
+      "id": "legacy-context-c1c22f866bd05d47dfff",
+      "title": "Skill 整合、分发与集成参考",
+      "words": 534,
+      "hash": "a3389f05b2db96285779ae9f828a14fa9b05ae9985549860d565a62a3e526e4d"
+    },
+    {
+      "id": "legacy-context-c9e1b7a7d7d8266238aa",
+      "title": "项目约定与多 Agent 审查职责",
+      "words": 540,
+      "hash": "c592b3391bad310dc594415b1bba919fa9d037dbde0e1c4fdd72304783772438"
+    },
+    {
+      "id": "legacy-context-d3613f68e48dfcd44c44",
+      "title": "CLI 安装选择、确认与输出",
+      "words": 372,
+      "hash": "bb108d467aca6899e360940d5321b4aa6bcbdbc859391506c24766d612c2677e"
+    },
+    {
+      "id": "legacy-context-e342fb2566f3132de133",
+      "title": "长期 Topic 与任务关联",
+      "words": 631,
+      "hash": "802e4f0c32929e48b416cb16b192ecc57c3c6b13e108c6a83c24c79712233c26"
+    },
+    {
+      "id": "memory-index-pilot-evidence",
+      "title": "Memory索引对照证据与检索质量优先级",
+      "words": 420,
+      "hash": "bca13e242d166b07f46f40775a6c901e4edab143ac73fff7885072e274b2a9cb"
+    },
+    {
+      "id": "review-comments-editor-portability",
+      "title": "审查注释的显式启用、逻辑覆盖与提交隔离",
+      "words": 535,
+      "hash": "d80c421e424d04c0638713f931952f98c927d81a7c7516135618521cd9347768"
+    }
+  ]
+}

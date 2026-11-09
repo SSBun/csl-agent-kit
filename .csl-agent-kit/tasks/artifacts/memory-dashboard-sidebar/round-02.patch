@@ -1,0 +1,45 @@
+--- before/dashboard.js
++++ after/dashboard.js
+@@ -29,7 +29,7 @@
+   $("error").textContent = message || "";
+   $("detail-error").textContent = message || "";
+   if (message) {
+-    for (const kind of ["memories", "commits"]) {
++    for (const kind of ["memories", "commits", "jobs"]) {
+       if ($(kind).dataset.loading === "true") {
+         $(kind).textContent = "无法加载当前筛选的记录，请检查错误提示后重试。";
+         delete $(kind).dataset.loading;
+@@ -397,6 +397,14 @@
+ 
+ async function refreshScope(requestGeneration) {
+   error("");
++  const loadingView = currentPage === "processing" ? "jobs" : currentPage === "storage" ? currentView : null;
++  if (loadingView) {
++    $(loadingView).dataset.loading = "true";
++    $(loadingView).textContent = loadingView === "jobs" ? "正在读取处理队列…" : "正在读取所选范围的记录…";
++    $(`${loadingView}-page`).textContent = "";
++    pages[loadingView].nextOffset = null;
++    document.querySelectorAll(`[data-page="${loadingView}"]`).forEach(node => { node.disabled = true; });
++  }
+   let status;
+   try { status = await api("/api/status", undefined, AbortSignal.timeout(5000)); }
+   catch (cause) { if (requestGeneration === generation) statusUnavailable(); throw cause; }
+@@ -404,7 +412,6 @@
+   renderStatus(status);
+   if (currentPage === "overview") return;
+   if (currentPage === "processing") {
+-    $("jobs").textContent = "正在读取处理队列…";
+     const jobs = await api(`/api/jobs?${query({ workspace: $("processing-workspace").value.trim(), newestFirst: true, offset: pages.jobs.offset, limit: 20 })}`);
+     if (requestGeneration === generation) renderRows("jobs", jobs);
+     return;
+@@ -412,10 +419,6 @@
+   const selected = scope();
+   updateScopePanel();
+   const view = currentView;
+-  $(view).dataset.loading = "true";
+-  $(view).textContent = view === "memories" ? "正在读取所选范围的当前记忆…" : "正在读取所选范围的记忆变更…";
+-  $(`${view}-page`).textContent = "";
+-  document.querySelectorAll(`[data-page="${view}"]`).forEach(node => { node.disabled = true; });
+   const records = await api(`/api/${view}?${query({ ...selected, offset: pages[view].offset, limit: 20 })}`);
+   if (requestGeneration !== generation) return;
+   updateWorkspaceOptions(records.items.filter(item => item.scope === "project").map(item => item.workspace));

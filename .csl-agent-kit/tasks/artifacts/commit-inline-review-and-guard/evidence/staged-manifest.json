@@ -1,0 +1,27 @@
+{
+  "parent": "dac188352e2e40ac9deada0b650164c5d8ba7315",
+  "files": {
+    ".claude-plugin/plugin.json": "5fff6fc73bb602265cd0194f96b7f13083f512aa3b5572367fec02e4f617625a",
+    "README.md": "a8e4d213c6703f50f32cd2d237fe57021ab432b7a8ddeacf6f8e46a23d04d4db",
+    "package.json": "6edb8e7cf0032e181c9767b2a30b81053d8c924947b9ddabc630743311ec478f",
+    "skills/meta/agent-hooks/SKILL.md": "30b1fffd26daf37c89c898a3117f5a5ba729f458034582a131e3f2f19f03d715",
+    "docs/rfcs/agent-hooks.md": "52d624ddcf544ba6805a3c83d6f3823740e1db4031b4454dab5debec116f15a7",
+    "pi/extensions/csl-context-hooks.ts": "bfac95a07d08f93e399af88e5c2995a88d272fa00d960626f680667302a5a87e",
+    "skills/meta/agent-hooks/scripts/lib/native-hook.js": "f0152b40bd6b8cb15de81d6a773237b70fe5fd2e62db07b927275bb06354a6f7",
+    "skills/meta/agent-hooks/scripts/lib/rule.js": "58ce3d81f86457c2438aa9334ba1fadb48f5084b36691446da46b669daa6d310",
+    "skills/meta/agent-hooks/scripts/lib/runtime.js": "9b49a80b04f164ce455b335bc117447007f34a467e6d7943ff0add7ee6020f72",
+    "skills/dev/code-inline-review/SKILL.md": "d6d8b1be44540301c3bf483dd560be85956fa003caf4c4fc54a6412eb3a7f4df",
+    "skills/dev/code-inline-review/evals/trigger_cases.json": "ca401b8febae22e60f7075378772f15e658f2bdac6694a1534afbc651e65f3e6",
+    "skills/dev/code-inline-review/references/comment-format.md": "788efefe83efa282a8be8feb426ef412a6005e601f14380bc68aa824c13ed206",
+    "skills/dev/code-inline-review/scripts/preview-clean.js": "c1ba8913d9240ea5490fd58919241b5438bf321ebcf40db90fe7c1f7f6028472",
+    "skills/dev/commit-guard/SKILL.md": "7cbf024dce1404ed4dcb784a0fa3f4ce8899445296f3d81d117ac839ad7a040d",
+    "skills/dev/commit-guard/evals/trigger_cases.json": "2423fac88d16eb2807d75cab6fb2c08adce1cc31f98324459cad156a7adb0991",
+    "skills/dev/commit-guard/references/commit-guard.md": "973b2aaa23eae14df849a86beb8b602d6c0e7846375774014b6b08ff412c45a1",
+    "skills/dev/commit-guard/scripts/check-commit.js": "bed8dad8cdc41047693e704d013509f1aa7a561176fde543d783c4b7eb22c55e",
+    "skills/meta/agent-hooks/hooks/code-inline-review-commit.md": "17611a88c06b56aadbb31e9c4f3e64378caf014e600dad07730e65ad4de34e89",
+    "skills/meta/agent-hooks/scripts/check-code-review-commit.js": "901271113fe3a7e7e693769efa4207b54294cb5a04a4f5d999ae941a6aebb3eb",
+    "tests/commit-guard.test.js": "9b61d41b947e119ea011bc0afbb61dd3d9d0fb4ef9ebd980ca19afead2c33ddf"
+  },
+  "indexMatchesSelection": true,
+  "workingTreeUnchanged": true
+}

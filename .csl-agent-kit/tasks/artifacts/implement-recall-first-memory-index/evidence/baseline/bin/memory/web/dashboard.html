@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Memory 审计</title><link rel="stylesheet" href="/dashboard.css"><script src="/dashboard.js" defer></script></head>
+<body>
+<header><div><p class="eyebrow">CSL AGENT KIT</p><h1>Memory 审计</h1><p>观测各工作区的独立 Memory Agent，追踪自动维护与恢复。</p></div><button id="refresh">刷新</button></header>
+<main>
+<section aria-labelledby="status-title"><h2 id="status-title">服务状态</h2><pre id="status" role="status" aria-live="polite">加载中…</pre><p id="error" role="alert"></p></section>
+<section aria-labelledby="filter-title"><h2 id="filter-title">范围</h2><form id="filters"><label>项目绝对路径<input id="workspace" placeholder="输入项目路径；队列可留空查看全部"></label><label>记忆作用域<select id="scope"><option value="project">Project</option><option value="user">User</option></select></label><label>会话 ID<input id="session" placeholder="队列筛选，可选"></label><label>任务 ID<input id="task" placeholder="队列筛选，可选"></label><button type="submit">应用范围</button></form><p>查询项目级记忆时，请明确填写项目路径。两级记忆均自动维护；升级前遗留的待审批提案仍需显式处理，不会被升级自动批准。</p></section>
+<section aria-labelledby="agents-title"><h2 id="agents-title">Workspace Memory Agents</h2><div id="agents" role="status" aria-live="polite"></div></section>
+<section><h2>维护队列</h2><div id="jobs"></div><nav aria-label="队列分页"><button data-page="jobs" data-step="prev">上一页</button><span id="jobs-page"></span><button data-page="jobs" data-step="next">下一页</button></nav></section>
+<section><h2>变更历史</h2><div id="history"></div><nav aria-label="历史分页"><button data-page="history" data-step="prev">上一页</button><span id="history-page"></span><button data-page="history" data-step="next">下一页</button></nav></section>
+<section><h2>历史及手工提案（可选）</h2><div id="proposals"></div><nav aria-label="提案分页"><button data-page="proposals" data-step="prev">上一页</button><span id="proposals-page"></span><button data-page="proposals" data-step="next">下一页</button></nav></section>
+<section id="detail-section" aria-labelledby="detail-title"><h2 id="detail-title">核对详情</h2><p id="detail-reason">选择一项查看具体内容与来源。</p><div class="comparison"><div><h3>当前内容 / 变更前</h3><pre id="before"></pre></div><div><h3>提议内容 / 变更后</h3><pre id="after"></pre></div></div><pre id="detail-meta"></pre><div id="actions"></div></section>
+</main><footer>仅限本机访问 · URL 中的授权片段不要分享 · 记忆不是规则或正式决定的替代品</footer>
+</body></html>

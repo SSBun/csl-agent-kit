@@ -1,0 +1,70 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "unblock-filio-memory-source-migration",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/unblock-filio-memory-source-migration/evidence/memory-before.json",
+      "sha256": "8b1929ce7bf7e1eb3c71ef8dbacfa763f4d53d209f4c0c5357cf3f36e0328173",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/cli.js",
+      "sha256": "1a9820a52dc39ed2df6d24fbc999ac9c638d921ef0c480f628621eee89eca1c1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/migration.js",
+      "sha256": "2a541430cd874eabdd38a1b575d279a1d40fc8a461f78004e179f2039704f852",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "062018f078e1149c0d51abf628187500be11dffc8d3676a82fe108d8cea28d1d",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-migration/references/memory-migration.md",
+      "sha256": "2c07cee694af4ac7e83f0d524804f5006b0b2a8e7eb216c632661c2b10a86401",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-storage.js",
+      "sha256": "45f3af6a2fa49c51be8e1ac0dc152f124dd035fe31fb90a6fa3a594016fe6603",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/migrate-task-storage.js",
+      "sha256": "c0066e4cb548330045ffde01813a823c75ed9c474586376d813f9eab5b8f4f44",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/memory-migration.test.js",
+      "sha256": "ff1d7d6755acb719cd3677d44cf1f0c6492e0079ba9f3a0bf9a9a5cbabbc6644",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

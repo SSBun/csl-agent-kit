@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "agent-memory-dashboard-command",
+  "files": [
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "155c7945420be9ae34fc6f6d1e88f2b6237b9c08a3f83ab7066d99dc08e75923",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

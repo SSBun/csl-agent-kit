@@ -1,0 +1,531 @@
+TAP version 13
+# Subtest: literal argv: git commit -m 'two words'
+ok 1 - literal argv: git commit -m 'two words'
+  ---
+  duration_ms: 3.959208
+  type: 'test'
+  ...
+# Subtest: literal argv: git -C "folder name" commit -m ""
+ok 2 - literal argv: git -C "folder name" commit -m ""
+  ---
+  duration_ms: 0.375708
+  type: 'test'
+  ...
+# Subtest: literal argv: git commit -m 'literal $HOME; git commit'
+ok 3 - literal argv: git commit -m 'literal $HOME; git commit'
+  ---
+  duration_ms: 0.11825
+  type: 'test'
+  ...
+# Subtest: literal argv: git\\ commit
+ok 4 - literal argv: git\\ commit
+  ---
+  duration_ms: 0.046333
+  type: 'test'
+  ...
+# Subtest: literal argv: git commit -m "quote\\"value"
+ok 5 - literal argv: git commit -m "quote\\"value"
+  ---
+  duration_ms: 0.945708
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit; echo done"
+ok 6 - reject shell syntax: "git commit; echo done"
+  ---
+  duration_ms: 0.332583
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit\\n"
+ok 7 - reject shell syntax: "git commit\\n"
+  ---
+  duration_ms: 0.058125
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit > out"
+ok 8 - reject shell syntax: "git commit > out"
+  ---
+  duration_ms: 0.047083
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit $FLAGS"
+ok 9 - reject shell syntax: "git commit $FLAGS"
+  ---
+  duration_ms: 0.058959
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit -m \\"$(id)\\""
+ok 10 - reject shell syntax: "git commit -m \\"$(id)\\""
+  ---
+  duration_ms: 0.284833
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit `id`"
+ok 11 - reject shell syntax: "git commit `id`"
+  ---
+  duration_ms: 0.443
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit *"
+ok 12 - reject shell syntax: "git commit *"
+  ---
+  duration_ms: 0.32925
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit -m 'unfinished"
+ok 13 - reject shell syntax: "git commit -m 'unfinished"
+  ---
+  duration_ms: 0.100042
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git commit\\\\"
+ok 14 - reject shell syntax: "git commit\\\\"
+  ---
+  duration_ms: 0.275375
+  type: 'test'
+  ...
+# Subtest: reject shell syntax: "git \\\\\\ncommit"
+ok 15 - reject shell syntax: "git \\\\\\ncommit"
+  ---
+  duration_ms: 0.0815
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit -a"
+ok 16 - deny unsupported invocation: "git commit -a"
+  ---
+  duration_ms: 0.86425
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit --all"
+ok 17 - deny unsupported invocation: "git commit --all"
+  ---
+  duration_ms: 0.498375
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit main.js"
+ok 18 - deny unsupported invocation: "git commit main.js"
+  ---
+  duration_ms: 0.45625
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit -- main.js"
+ok 19 - deny unsupported invocation: "git commit -- main.js"
+  ---
+  duration_ms: 0.257459
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit --interactive"
+ok 20 - deny unsupported invocation: "git commit --interactive"
+  ---
+  duration_ms: 0.233958
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit --patch"
+ok 21 - deny unsupported invocation: "git commit --patch"
+  ---
+  duration_ms: 0.19175
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit --no-verify"
+ok 22 - deny unsupported invocation: "git commit --no-verify"
+  ---
+  duration_ms: 0.201125
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit --unknown"
+ok 23 - deny unsupported invocation: "git commit --unknown"
+  ---
+  duration_ms: 0.216125
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit -m"
+ok 24 - deny unsupported invocation: "git commit -m"
+  ---
+  duration_ms: 0.171792
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git -C"
+ok 25 - deny unsupported invocation: "git -C"
+  ---
+  duration_ms: 0.051917
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git -c alias.c=commit c"
+ok 26 - deny unsupported invocation: "git -c alias.c=commit c"
+  ---
+  duration_ms: 0.051125
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git c"
+ok 27 - deny unsupported invocation: "git c"
+  ---
+  duration_ms: 0.051292
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git merge branch"
+ok 28 - deny unsupported invocation: "git merge branch"
+  ---
+  duration_ms: 0.057459
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git rebase main"
+ok 29 - deny unsupported invocation: "git rebase main"
+  ---
+  duration_ms: 0.035125
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git cherry-pick abc"
+ok 30 - deny unsupported invocation: "git cherry-pick abc"
+  ---
+  duration_ms: 0.031417
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git revert abc"
+ok 31 - deny unsupported invocation: "git revert abc"
+  ---
+  duration_ms: 0.031125
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git am patch"
+ok 32 - deny unsupported invocation: "git am patch"
+  ---
+  duration_ms: 0.02925
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git stash"
+ok 33 - deny unsupported invocation: "git stash"
+  ---
+  duration_ms: 0.028833
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git bisect run git commit -m x"
+ok 34 - deny unsupported invocation: "git bisect run git commit -m x"
+  ---
+  duration_ms: 0.031583
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git add . && git commit -m x"
+ok 35 - deny unsupported invocation: "git add . && git commit -m x"
+  ---
+  duration_ms: 0.797709
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "git commit -m x; echo done"
+ok 36 - deny unsupported invocation: "git commit -m x; echo done"
+  ---
+  duration_ms: 0.25825
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "FLAG=1 git commit -m x"
+ok 37 - deny unsupported invocation: "FLAG=1 git commit -m x"
+  ---
+  duration_ms: 0.4665
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "if true; then git commit -m x; fi"
+ok 38 - deny unsupported invocation: "if true; then git commit -m x; fi"
+  ---
+  duration_ms: 0.263791
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "while false; do git commit; done"
+ok 39 - deny unsupported invocation: "while false; do git commit; done"
+  ---
+  duration_ms: 0.153042
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "env git commit -m x"
+ok 40 - deny unsupported invocation: "env git commit -m x"
+  ---
+  duration_ms: 0.323958
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "command git commit -m x"
+ok 41 - deny unsupported invocation: "command git commit -m x"
+  ---
+  duration_ms: 0.213333
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "sudo git commit -m x"
+ok 42 - deny unsupported invocation: "sudo git commit -m x"
+  ---
+  duration_ms: 0.157875
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "sh -c 'git commit -m x'"
+ok 43 - deny unsupported invocation: "sh -c 'git commit -m x'"
+  ---
+  duration_ms: 0.1195
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "bash -lc 'git commit -m x'"
+ok 44 - deny unsupported invocation: "bash -lc 'git commit -m x'"
+  ---
+  duration_ms: 0.099333
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "eval 'git commit -m x'"
+ok 45 - deny unsupported invocation: "eval 'git commit -m x'"
+  ---
+  duration_ms: 0.1065
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "timeout 5 git commit -m x"
+ok 46 - deny unsupported invocation: "timeout 5 git commit -m x"
+  ---
+  duration_ms: 1.377417
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "xargs git commit -m x"
+ok 47 - deny unsupported invocation: "xargs git commit -m x"
+  ---
+  duration_ms: 0.342542
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "env sh -c 'git commit -m x'"
+ok 48 - deny unsupported invocation: "env sh -c 'git commit -m x'"
+  ---
+  duration_ms: 0.161875
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "echo \\"$(git commit -m x)\\""
+ok 49 - deny unsupported invocation: "echo \\"$(git commit -m x)\\""
+  ---
+  duration_ms: 0.188833
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "echo `git commit -m x`"
+ok 50 - deny unsupported invocation: "echo `git commit -m x`"
+  ---
+  duration_ms: 0.127375
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: ">out git commit -m x"
+ok 51 - deny unsupported invocation: ">out git commit -m x"
+  ---
+  duration_ms: 0.420542
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "cat <<'EOF'\\nexample\\nEOF\\ngit commit -m x"
+ok 52 - deny unsupported invocation: "cat <<'EOF'\\nexample\\nEOF\\ngit commit -m x"
+  ---
+  duration_ms: 0.569334
+  type: 'test'
+  ...
+# Subtest: deny unsupported invocation: "cat <<EOF\\n$(git commit -m x)\\nEOF\\n"
+ok 53 - deny unsupported invocation: "cat <<EOF\\n$(git commit -m x)\\nEOF\\n"
+  ---
+  duration_ms: 0.655375
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: ""
+ok 54 - allow non-commit or inert text: ""
+  ---
+  duration_ms: 0.280209
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "git status"
+ok 55 - allow non-commit or inert text: "git status"
+  ---
+  duration_ms: 0.195625
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "git diff --cached"
+ok 56 - allow non-commit or inert text: "git diff --cached"
+  ---
+  duration_ms: 3.760667
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "git --version"
+ok 57 - allow non-commit or inert text: "git --version"
+  ---
+  duration_ms: 0.231458
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "git --help"
+ok 58 - allow non-commit or inert text: "git --help"
+  ---
+  duration_ms: 1.287125
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "git push origin main"
+ok 59 - allow non-commit or inert text: "git push origin main"
+  ---
+  duration_ms: 0.743459
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "echo 'git commit -m x'"
+ok 60 - allow non-commit or inert text: "echo 'git commit -m x'"
+  ---
+  duration_ms: 0.140708
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "\# git commit\\necho ok"
+ok 61 - allow non-commit or inert text: "\# git commit\\necho ok"
+  ---
+  duration_ms: 0.148333
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "cat <<'EOF'\\ngit commit -m x\\nEOF\\n"
+ok 62 - allow non-commit or inert text: "cat <<'EOF'\\ngit commit -m x\\nEOF\\n"
+  ---
+  duration_ms: 0.127583
+  type: 'test'
+  ...
+# Subtest: allow non-commit or inert text: "printf '%s' 'git commit' > output"
+ok 63 - allow non-commit or inert text: "printf '%s' 'git commit' > output"
+  ---
+  duration_ms: 0.092042
+  type: 'test'
+  ...
+# Subtest: missing command is denied
+ok 64 - missing command is denied
+  ---
+  duration_ms: 2.534625
+  type: 'test'
+  ...
+# Subtest: accept supported explicit-index commit options without executing a commit
+ok 65 - accept supported explicit-index commit options without executing a commit
+  ---
+  duration_ms: 1175.218042
+  type: 'test'
+  ...
+# Subtest: clean index permits working-tree and untracked notes without changing partial staging
+ok 66 - clean index permits working-tree and untracked notes without changing partial staging
+  ---
+  duration_ms: 156.557917
+  type: 'test'
+  ...
+# Subtest: scan full staged files from subdirectories even if working files are clean
+ok 67 - scan full staged files from subdirectories even if working files are clean
+  ---
+  duration_ms: 289.818
+  type: 'test'
+  ...
+# Subtest: all reserved comment prefixes and damaged delimiters are blocked, including binary content
+ok 68 - all reserved comment prefixes and damaged delimiters are blocked, including binary content
+  ---
+  duration_ms: 136.071667
+  type: 'test'
+  ...
+# Subtest: ordinary comments and marker text in strings are not reserved comment lines
+ok 69 - ordinary comments and marker text in strings are not reserved comment lines
+  ---
+  duration_ms: 153.994125
+  type: 'test'
+  ...
+# Subtest: report truncates locations but blocks every staged occurrence
+ok 70 - report truncates locations but blocks every staged occurrence
+  ---
+  duration_ms: 199.259709
+  type: 'test'
+  ...
+# Subtest: unmerged index is denied instead of treating it as a clean scan
+ok 71 - unmerged index is denied instead of treating it as a clean scan
+  ---
+  duration_ms: 105.156208
+  type: 'test'
+  ...
+# Subtest: non-repository and missing Git executable fail closed
+ok 72 - non-repository and missing Git executable fail closed
+  ---
+  duration_ms: 52.397167
+  type: 'test'
+  ...
+# Subtest: Git scan spawn error blocks commit
+ok 73 - Git scan spawn error blocks commit
+  ---
+  duration_ms: 1.549167
+  type: 'test'
+  ...
+# Subtest: Git scan timeout blocks commit
+ok 74 - Git scan timeout blocks commit
+  ---
+  duration_ms: 0.505958
+  type: 'test'
+  ...
+# Subtest: Git scan output overflow blocks commit
+ok 75 - Git scan output overflow blocks commit
+  ---
+  duration_ms: 0.458
+  type: 'test'
+  ...
+# Subtest: Git scan signal blocks commit
+ok 76 - Git scan signal blocks commit
+  ---
+  duration_ms: 0.421541
+  type: 'test'
+  ...
+# Subtest: Git scan Git failure blocks commit
+ok 77 - Git scan Git failure blocks commit
+  ---
+  duration_ms: 0.427583
+  type: 'test'
+  ...
+# Subtest: Git scan invalid scan output blocks commit
+ok 78 - Git scan invalid scan output blocks commit
+  ---
+  duration_ms: 0.402708
+  type: 'test'
+  ...
+# Subtest: thin entry preserves exports and stdin CLI behavior, including cwd overrides
+ok 79 - thin entry preserves exports and stdin CLI behavior, including cwd overrides
+  ---
+  duration_ms: 591.136375
+  type: 'test'
+  ...
+# Subtest: pi: builtin hook allows clean index, blocks notes, preserves disable override
+ok 80 - pi: builtin hook allows clean index, blocks notes, preserves disable override
+  ---
+  duration_ms: 410.449834
+  type: 'test'
+  ...
+# Subtest: codex: builtin hook allows clean index, blocks notes, preserves disable override
+ok 81 - codex: builtin hook allows clean index, blocks notes, preserves disable override
+  ---
+  duration_ms: 914.358625
+  type: 'test'
+  ...
+# Subtest: claude-code: builtin hook allows clean index, blocks notes, preserves disable override
+ok 82 - claude-code: builtin hook allows clean index, blocks notes, preserves disable override
+  ---
+  duration_ms: 368.278167
+  type: 'test'
+  ...
+# Subtest: missing checker module is blocked by run-script on-error policy
+ok 83 - missing checker module is blocked by run-script on-error policy
+  ---
+  duration_ms: 691.487167
+  type: 'test'
+  ...
+1..83
+# tests 83
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5481.538834
+# start of coverage report
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# file                             | line % | branch % | funcs % | uncovered lines
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# skills                           |        |          |         | 
+#  dev                             |        |          |         | 
+#   commit-guard                   |        |          |         | 
+#    scripts                       |        |          |         | 
+#     check-commit.js              |  97.24 |    91.21 |   91.67 | 129-131 141-144
+#  meta                            |        |          |         | 
+#   agent-hooks                    |        |          |         | 
+#    scripts                       |        |          |         | 
+#     check-code-review-commit.js  | 100.00 |   100.00 |  100.00 | 
+#     lib                          |        |          |         | 
+#      rule.js                     |  47.84 |    43.33 |   43.33 | 34-39 53-54 56-57 86 88-89 92-93 95-96 98-99 101-104 118-119 121-122 124-125 135-137 139-141 143-145 153-160 162-164 167-169 171-172 174-175 177-178 180-183 185-187 196-237 241-245 247-259 261-272 278-284 286-304 306-314 320-322 324-326 332-334
+#      runtime.js                  |  69.39 |    55.38 |   75.00 | 95-136 155-161 170-172 175-178 181-184 187-189 192-195 197-203 205-207 212-215 218-221 227 230-231 273-274
+#      store.js                    |  59.41 |    69.66 |   68.57 | 43-45 81-92 118 120-122 125-152 155-166 168-181 228-229 247-248 258-259 261-262 266-275 277-305 307-313 315-323 325-333 348-353
+# tests                            |        |          |         | 
+#  commit-guard.test.js            |  99.64 |    96.43 |  100.00 | 37
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# all files                        |  72.26 |    74.12 |   74.17 | 
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# end of coverage report

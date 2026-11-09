@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "compact-memory-status",
+  "files": [
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "631ac5bf584b955da82efaee903bcfd34399f6270eb0ee4f2084bd59b8cd4768",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+--- before/skills/meta/agent-migration/SKILL.md
++++ after/skills/meta/agent-migration/SKILL.md
+@@ -1,26 +1,34 @@
+ ---
+ name: agent-migration
+-description: Coordinate explicitly requested CSL Agent Kit directory-layout migration, new Memory-system migration, or both. Use for legacy knowledge import, Memory format upgrades, migration inventories, conflicts, interrupted recovery, and verified cutover. Reuse existing Memory upgrade commands. Exclude routine startup, automatic Memory maintenance, generic cleanup, and moving unrelated skills or host configuration.
++description: 用户明确调用 agent-migration 时，默认执行当前工作区的 Memory 系统与 .csl-agent-kit 目录组合迁移，迁移前核对最新可用 Memory 结构及运行时支持。也用于显式只读盘点、单分支迁移、旧知识导入、格式升级、冲突与中断恢复；不用于普通启动、后台维护、通用清理或移动无关技能和宿主配置。
+ ---
+ 
+ # Agent Migration
+ 
+ 协调旧项目或用户数据的目录路径迁移与新版 Memory 系统迁移。通过 `task` 激活任务并遵守其对齐协议；不得将发现旧目录、旧版本或收到检测结果视为迁移授权。
+ 
+-## 识别与分流
++## 默认执行与范围
+ 
+-先区分用户授权的是只读检查、目录搬迁、Memory 升级还是两者；检查请求不授权写入。逐项报告需要迁移、已就绪、不适用、冲突或受阻，不能把两类迁移合成一个“已完成”标志。
++用户明确调用本 Skill（包括裸调用）且未限定模式、分支或作用域时，即授权对当前工作区执行 **Memory 系统迁移和 `.csl-agent-kit` 目录迁移**。通过 owning Task 管理这一个组合结果；按 Task 当前模式完成必要对齐后，先预检，再连续执行适用且就绪的分支，不能只交付盘点、计划或 dry-run，也不再询问“迁移哪一类”或重复索要同一范围的执行授权。
++
++显式限定优先：只读检查／预览不写入；只迁移目录或只升级 Memory 时不扩大到另一分支；指定其他项目或 user scope 时仅处理该范围。仅加载本 Skill、普通启动或检测到旧结构不构成明确调用，不启动迁移。用户要求先检查再停下时，按其要求暂停。
++
++## 预检与分流
++
++**任何迁移写入之前**，先完成[Memory 目标结构预检](references/memory-migration.md#核对最新目标结构)：读取当前可用的最新权威规范，核对 store/entry/index 版本、project/user 布局及已安装升级器和读写方能力，再盘点实际数据。不能依据本参考中的历史版本号或目录名猜测最新版。单独目录迁移也需检查与 Memory 的源路径和恢复材料依赖，但不因此执行未授权的 Memory 升级；无法核实依赖时阻止受影响项。
++
++逐项报告需要迁移、已就绪、不适用、冲突或受阻，不能把两类迁移合成一个“已完成”标志。
+ 
+ - **目录路径迁移**：读取[统一存储规范](references/storage.md)，执行下述目录流程；目标位置存在不代表所有读写方已切换。整棵 Task 树切换另读[Task 根迁移](references/task-storage-migration.md)，使用已核实的交接机制，不手改历史摘要。
+-- **Memory 系统迁移**：读取[Memory 迁移流程](references/memory-migration.md)，复用现有升级器导入其支持的旧知识、转换格式并建立新索引；不自行复制成第二个知识库。
+-- **同时需要**：先列依赖再执行。若目录搬迁会移动 Memory 升级器仍需读取的旧源，先在原位置完成 Memory 导入并验证，再处理目录分支；没有该依赖时也不盲目固定顺序。共享源、备份、审计及路径绑定分别核对，不把 Memory 内部恢复材料当作可任意搬动的普通文件。任一已批准分支受阻时，可完成不受影响部分，但不能宣称整体迁移完成。
++- **Memory 系统迁移**：按[Memory 迁移流程](references/memory-migration.md)复用现有升级器导入其支持的旧知识、转换格式并建立当前scope的索引；不自行复制成第二个知识库。
++- **组合执行**：先列依赖再执行。若目录搬迁会移动 Memory 升级器仍需读取的旧源，先在原位置完成 Memory 导入并验证，再处理目录分支；没有该依赖时也不盲目固定顺序。共享源、备份、审计及路径绑定分别核对，不把 Memory 内部恢复材料当作可任意搬动的普通文件。已是目标状态的分支只验证，不重复转换；任一分支受阻时，可完成不受影响部分，但不能宣称整体迁移完成。
+ 
+ ## 边界
+ 
+ - 项目目标根是 `<workspace>/.csl-agent-kit/`；用户目标根是 `$CSL_AGENT_KIT_HOME`，默认 `~/.csl-agent-kit/`。项目请求不自动授权用户级或其他项目的修改。
+ - 仅迁移证实由 Kit 管理的内容；不整体移动 `.agents/`，不移动技能源码、宿主发现入口、第三方内容或无所属权证据的文件。
+ - 本 Skill 是协调流程，不代表已提供通用目录迁移 CLI。Memory 分支使用核实过的既有命令，不新增迁移引擎，不绕过其锁、审计或恢复机制。
+-- 不因加载本 Skill 安装启动 Hook、自动搬迁或重复宿主已完成的 Memory 升级。目录与 Memory、project 与 user 分别确认范围；共享服务操作还须核对其他工作区影响。
++- 不因加载本 Skill 安装启动 Hook，或重复宿主已完成的 Memory 升级。明确调用按上述默认组合范围执行，保留 Task 必要门禁、用户暂停要求及实质冲突决策；project 范围不扩大到 user。共享服务操作还须核对其他工作区影响。
+ 
+ ## 目录路径迁移流程
+ 
+@@ -44,4 +52,4 @@
+ 
+ ## 维护验证
+ 
+-修改本包后运行 `skill-quality`；[触发示例](evals/trigger_cases.json)只表达路由边界，不证明真实迁移安全。保持存储规范、Task 消费方与宿主注册一致，不将静态检查报告成实际迁移验证。
++修改本包后运行 `skill-quality`；[触发示例](evals/trigger_cases.json)表达路由边界，[行为案例](evals/migration_cases.json)表达默认执行、结构预检及限定范围的预期，均不证明真实迁移安全或模型已按流程执行。保持存储规范、Task 消费方与宿主注册一致，不将静态检查报告成实际迁移验证。
+--- before/skills/meta/agent-migration/references/memory-migration.md
++++ after/skills/meta/agent-migration/references/memory-migration.md
+@@ -1,6 +1,16 @@
+ # Memory 系统迁移
+ 
+-本流程适用于用户明确要求旧知识导入、新 Memory 格式升级或中断恢复；普通宿主首次使用自动升级仍由既有机制负责，不需再调度本 Skill。读写契约以[agent-memory](../../agent-memory/SKILL.md)为准，目录边界以[统一存储规范](storage.md)为准。
++本流程适用于明确调用 agent-migration 的默认组合执行，以及用户限定的旧知识导入、新 Memory 格式升级或中断恢复；普通宿主首次使用自动升级仍由既有机制负责，不需再调度本 Skill。读写契约以[agent-memory](../../agent-memory/SKILL.md)为准，目录边界以[统一存储规范](storage.md)为准。
++
++## 核对最新目标结构
++
++每次迁移前先完成此只读检查，早于备份准备、格式升级、目录发布或索引重建等写入：
++
++1. **读取当前规范**：重新读取当前可用版本的 `agent-memory/SKILL.md`，以及该版本提供的 Memory 结构文档；本仓库为[docs/memory.md](../../../../docs/memory.md)。若安装包未附带文档，使用同版本的正式发布文档或可核实实现，不套用其他版本的说明。用户指定目标版本时以该版本为核对对象；目标资料不可获取或相互矛盾时，报告证据缺口，停止依赖该结构的迁移。不要把本地旧安装的帮助信息称为已核实的最新上游版本。
++2. **核实运行时能力**：定位实际使用的 CLI、安装包版本和源码，核对帮助及升级实现。本仓库的依据是 `bin/memory/store.js` 的目标 store/entry 定义、`bin/memory/recall-index.js` 的索引定义、`bin/memory/migration.js` 的支持来源和升级分支，以及 `bin/memory/cli.js` 的命令语义。对照当前规范与实际安装版本；文档较新而已安装读写方不支持时，报告所需升级条件，不自动下载安装或伪造格式标记。
++3. **核对结构而非只看版本号**：记录当前与目标的 store、entry、index schema，project/user 根及各自索引布局、权威正文、备份／审计／pending、当前写锁与旧 writer 隔离标记，以及宿主／后台服务协议。`.format.json`、`index.md` 和升级 dry-run 是实际状态证据，不单独证明全部兼容。历史备份目录名不能决定目标版本。
++4. **确定适用验收项**：当前实现中，project 使用 `entries/` 加单个 `index.md`，不要求 cards/topics/manifest；user 使用权威 `entries/`、薄总览及当前代 cards/topics/manifest。每次按前两步核实的目标结构选择验收项，不将一类scope的布局套到另一类，也不把旧版本表述永久固定为“最新”。
++5. **记录并复查**：在 owning Task 中简要记录规范来源／版本、实际安装版本、当前→目标结构差异、支持的升级路径及阻塞项，不复制记忆正文。写入前若规范、安装版本或源状态变化，重新预检；无有效升级路径、未知未来格式或读写方不兼容时停止相关分支，不降级、不覆盖。
+ 
+ ## 预检与范围
+ 
+@@ -14,22 +24,22 @@
+    <memory-cli> index-status --scope project --workspace <workspace>
+    ```
+    user 范围单独授权后才将 scope 改为 user；service 操作是共享的，不接受 scope/workspace 参数。
+-4. 当前实现支持从其固定候选旧 Context/Lessons 来源导入，以及将已有 store v2 转为 store v3、entry v2、index v3；这些版本是当前契约，不是对任意旧目录/格式的支持承诺。对未识别源、未知版本或权属不明内容停止对应项，不移动文件来欺骗探测、不手改格式标记。
+-5. `dry-run` 的 `current` 只表示已达版本；现有 v2/v3 库不会因此重新扫描导入所有残留旧资料，也不代表索引健康。核对残留旧源与已有导入审计；未覆盖内容保留并报告，不能删源或声称全量知识迁移完成。预览可能包含原文及待写内容，任务只记录必要计数、摘要身份、路径和处置，不复制完整预览或凭据。
++4. 从已核实的升级器读取支持的旧来源、输入版本、转换方式及目标版本；区分旧知识导入、既有条目schema转换和只重建派生索引。不要沿用旧版参考中的 store v3 或卡片布局作为固定目标。对未识别源、未知版本或权属不明内容停止对应项，不移动文件来欺骗探测、不手改格式标记。
++5. `dry-run` 的 `current` 只表示已达该升级器的目标版本；已有库不会因此重新扫描导入所有残留旧资料，也不代表索引健康。核对残留旧源与已有导入审计；未覆盖内容保留并报告，不能删源或声称全量知识迁移完成。预览可能包含原文及待写内容，任务只记录必要计数、摘要身份、路径和处置，不复制完整预览或凭据。
+ 
+ ## 授权执行
+ 
+-- 展示导入/转换范围、保留的旧源、备份、已存在内容、冲突及服务影响，按 Task 当前确认模式执行。只读检查在此止步，不能自动进入升级。
++- 展示导入/转换范围、保留的旧源、备份、已存在内容、冲突及服务影响，按 Task 当前确认模式执行。默认组合调用已经包含本分支执行授权，满足必要门禁及预检后继续升级，不在 dry-run 后另问是否执行 Memory 迁移；显式只读检查或用户要求暂停时在此止步。
+ - 升级前确认相关写入方安全，依赖正式锁与旧 writer 隔离，必要时协调活动维护。旧协议共享服务仍存活时，按实际授权及安全边界，在确认空闲后使用正式服务控制操作；不能仅因升级 project 就擅自停止其他工作区批次。无安全条件则暂停该项。
+ - 对已批准 scope 执行 `<memory-cli> upgrade --scope project --workspace <workspace>`。不直接覆盖 entries、索引、迁移登记或审计；不清除永久旧 writer 隔离锁，不开启双写。该步骤本身不需要 LLM，不额外触发语义增强、实验或模型重试。
+-- 复用升级器自己的备份和登记。当前实现保存在 Memory 根内的 `.migrations/format-v3/`、`.upgrade-v3.json`、`.history/` 等位置；协调任务引用这些材料，不另建一套平行提交日志，不为统一目录布局擅自重定位它们。
++- 复用升级器自己的备份和登记，位置以已核实实现及实际返回为准。现存 `.migrations/format-v3/`、`.upgrade-v3.json` 等名称可能只是历史转换恢复材料，不表示目标store仍为v3。协调任务引用这些材料及 `.history/` 审计，不另建平行提交日志，不为统一目录布局擅自重定位。
+ - 分开处理“格式升级”与“索引损坏”：版本已是 current 但存在 pending 或派生异常时，进入诊断/恢复，不反复 upgrade 假装修复。`reindex` 是写操作，可能隐含首次升级，只有检查来源及取得相应执行授权后才使用。
+ 
+ ## 恢复与验收
+ 
+ - 失败后先核对实际正文、审计、备份和登记。pending 可能意味着正文已经提交；来源漂移、备份冲突、未知锁所有者或恢复冲突须停止，不能盲目重放。仅在确认适用后使用正式 `recover`；不要删除锁强行继续。转换续做使用已核实的升级器幂等路径，不手工回退 revision。
+ - 比较升级前后知识与来源：已有 chip 保持身份、正文和墓碑；旧来源导入检查每个单元的覆盖及保留备份。完整文件 hash 会因 schema/revision 改变，不能要求转换前后整文件 hash 相等，也不能仅看文件数就宣称保真。
+-- 验证实际目标版本、迁移登记、审计效果、pending 清除，以及有效条目与当前 manifest/card 集合一致、文件 hash 和引用可验证。薄总览、主题和完整卡片应可用普通文件工具读取；没有主题的基础卡片也必须覆盖。`index-status` 的 published/header-only 不是完整内容或语义召回证明。
++- 对照预检确定的目标结构验收实际版本、迁移登记、审计、pending清除、正文hash与引用；只重建索引的分支还需核对条目revision/hash未被改写。project当前应由单个index完整列出有效条目，不能因没有cards/topics/manifest判为失败；user应核对当前代manifest/card集合覆盖全部有效条目，包括无主题的基础卡片，薄总览、主题与卡片可用普通文件工具读取。目标契约变化时按重新核实的scope布局验收；`index-status` 的 published/header-only 不是完整内容或语义召回证明。
+ - 格式迁移成功不以模型增强为前提；需要恢复后台维护时另查服务、队列及已有真实结果。若有失败批次，先检查部分效果，再按授权显式恢复；不自动重试模型调用，不用清除失败记录冒充恢复。
+ - 升级前已加载旧 Memory 模块的 Pi，须由用户完整退出并重启进程再恢复会话，仅 `/reload` 或后台重启不足。不要替用户关闭前台，不把新 Node 进程观察说成 Pi UI 完整端到端验证。
+ - 保留原始旧源、备份与审计；Memory 升级不自动删除旧 Context/Lessons。后续清理或搬迁需单独纳入已批准范围，先检查来源路径与不可变证据依赖；无法合法修复路径绑定时保留原位并报告限制。
+--- before/skills/meta/agent-migration/evals/trigger_cases.json
++++ after/skills/meta/agent-migration/evals/trigger_cases.json
+@@ -1,12 +1,16 @@
+ {
+   "recommended_threshold": 0.5,
+   "should_trigger": [
++    "$agent-migration",
++    "使用 agent-migration 迁移当前项目。",
++    "执行 agent-migration，先检查最新 Memory 结构，再完成 Memory 和目录迁移。",
+     "将旧项目的 CSL Agent Kit 数据统一迁移到 .csl-agent-kit。",
+     "预览 MyTwitter 的 tasks 和 .agents/sops 迁入统一数据根的清单，先不要移动。",
+     "恢复中断的 agent-migration，检查新旧目录冲突。",
+     "将已确认属于 Kit 的用户级旧数据迁入新的用户数据根。",
+     "把这个旧项目的 Context 和 Lessons 迁入新版 Memory，先检查现有升级能力。",
+-    "将已有 Memory v2 升级到新版卡片和主题索引格式。",
++    "只升级当前项目 Memory，不迁移 Task 或其他目录。",
++    "将已有 Memory v2 升级到当前支持的最新结构，先核对项目与用户索引布局。",
+     "检查旧工作区同时需要目录迁移和 Memory 升级的哪些步骤，先不要执行。",
+     "恢复中断的 Memory 迁移，先核对审计和已提交的部分效果。"
+   ],
+--- before/skills/meta/agent-migration/evals/migration_cases.json
++++ after/skills/meta/agent-migration/evals/migration_cases.json
+@@ -0,0 +1,95 @@
++{
++  "schema": "agent-migration-cases/v1",
++  "cases": [
++    {
++      "id": "bare-invocation",
++      "request": "$agent-migration",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["memory", "directory"],
++        "requirements": ["写入前核对最新可用Memory结构和实际运行时能力", "完成Task必要对齐后连续执行就绪分支", "不再询问迁移哪一类", "两类分别验收"]
++      }
++    },
++    {
++      "id": "preview-only",
++      "request": "使用 agent-migration 预览当前项目，先不要执行。",
++      "expected": {
++        "mode": "read-only",
++        "scope": "current-project",
++        "branches": ["memory", "directory"],
++        "requirements": ["只读核对结构和范围", "不执行真实upgrade、prepare、apply或reindex；upgrade --dry-run只读预览可用", "不因默认组合模式覆盖用户暂停要求"]
++      }
++    },
++    {
++      "id": "memory-only",
++      "request": "只升级当前项目 Memory，不搬 Task 或其他目录。",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["memory"],
++        "requirements": ["先核对目标schema及project索引布局", "不迁移目录或user数据"]
++      }
++    },
++    {
++      "id": "directory-only",
++      "request": "仅将旧 Task 目录迁到 .csl-agent-kit，不升级 Memory。",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["directory"],
++        "requirements": ["只读核对Memory最新结构、旧源定位和恢复材料依赖", "不执行Memory升级", "保持Task及历史证据身份"]
++      }
++    },
++    {
++      "id": "stale-runtime",
++      "request": "agent-migration：规范已经更新，但已安装升级器还不支持目标结构。",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["memory", "directory"],
++        "requirements": ["报告目标规范与安装版本差异", "阻止依赖不支持结构的迁移", "不伪造版本标记或自动安装更新", "只继续已证明不受影响的分支"]
++      }
++    },
++    {
++      "id": "split-index-layout",
++      "request": "迁移当前项目；它应使用单索引，用户记忆仍使用卡片与主题。",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["memory", "directory"],
++        "requirements": ["依据预检核实的目标结构验收", "不要求project存在cards/topics/manifest", "不写入user范围"]
++      }
++    },
++    {
++      "id": "already-current",
++      "request": "$agent-migration；当前项目的Memory和目录已完成迁移。",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["memory", "directory"],
++        "requirements": ["核对最新目标结构与实际健康状态", "两分支仅验证，不重复转换", "current不代替索引及引用完整性验证"]
++      }
++    },
++    {
++      "id": "directory-conflict",
++      "request": "执行 agent-migration；Memory可升级，但目录目标已有不同内容。",
++      "expected": {
++        "mode": "execute",
++        "scope": "current-project",
++        "branches": ["memory", "directory"],
++        "requirements": ["目录冲突需用户决策，不自动覆盖", "只继续无依赖影响的Memory分支", "报告部分结果，不能将整体任务标为完成"]
++      }
++    },
++    {
++      "id": "explicit-user-scope",
++      "request": "只迁移用户级 Memory，不处理任何项目目录。",
++      "expected": {
++        "mode": "execute",
++        "scope": "user",
++        "branches": ["memory"],
++        "requirements": ["核对user目标布局与实际升级器能力", "不将project单索引要求套到user", "共享服务操作核对其他工作区影响"]
++      }
++    }
++  ]
++}

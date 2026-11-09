@@ -1,0 +1,30 @@
+{
+  "mode": "真实扩展模块注册后的 tool_call 处理器观察；未启动模型或执行提交",
+  "observations": [
+    {
+      "dirty": false,
+      "result": null
+    },
+    {
+      "dirty": true,
+      "result": {
+        "block": true,
+        "reason": "提交内容包含 code-review 审查块（含残缺标记）：\n\"/private/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/csl-hook-adapter-dy210u/repo/sample.ts\":1\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。"
+      }
+    },
+    {
+      "scenario": "声明 on-error 的检查器异常退出",
+      "result": {
+        "block": true,
+        "reason": "global:failure: 检查未完成。请修复检查器后重试。"
+      }
+    },
+    {
+      "scenario": "普通脚本显式退出 2",
+      "result": {
+        "block": true,
+        "reason": "global:failure blocked the event"
+      }
+    }
+  ]
+}

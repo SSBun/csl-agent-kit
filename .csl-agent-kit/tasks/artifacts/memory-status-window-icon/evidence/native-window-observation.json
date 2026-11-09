@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-06T07:22:45.196Z",
+  "method": "macOS automation",
+  "before": "5:1",
+  "after": "6:2",
+  "result": {
+    "requested": true,
+    "browser": "Google Chrome"
+  }
+}

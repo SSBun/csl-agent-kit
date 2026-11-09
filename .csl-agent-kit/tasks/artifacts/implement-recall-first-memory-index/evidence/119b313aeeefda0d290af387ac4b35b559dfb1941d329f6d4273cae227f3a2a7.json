@@ -1,0 +1,134 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "implement-recall-first-memory-index",
+  "files": [
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "c3c6364598a33ee8c3329797971e7a7e91cb542909d4e71488bb77be1eb60311",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/cli.js",
+      "sha256": "dca5cccedb6553a617110ce56568d079177c79fdce674be9ce6fc4b9329e4abf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "f2544c5b379cbe3d11f3b10408a075081a1e99011a82d9cd20f5006224f9ffae",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/migration.js",
+      "sha256": "a2152468a226b44d4ac3c93a2af9512100e6fff920ede9d06012ff6cd4fa34f4",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/recall-index.js",
+      "sha256": "b2ef4f5c203b1c014f407a616a31ac16013b13f4a329248291263ad57cfd2482",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/service.js",
+      "sha256": "79cb47396cd5604be1f0b1ff345e438ddf54e56e86bf7fbbf18abd41152a059f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "b09ab31cbabf6db2f8b25eb58298da436c52c118a270b2b6de1775d0dd0fb7ef",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "daeea35962182ed6484ac029ac53cdc6504020505020603d37340dcd0abff864",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "c126b8374ec17833455ba66570f44799b93bc3711849220237770d1cb33c9c79",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "93cc1a0a1e73963ba687045b314bd68cc6c5ed4a004ba41d8c75fd74e7b8d68c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "pi/lib/memory-bridge.ts",
+      "sha256": "a695fbbdd8cc16b93b8635da415e5fc53e720f0b0c50aebd33b045a83759eab9",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/read-agent-memory.js",
+      "sha256": "c0c97c0bce5a7ae8d1dff57c15e4294b0d6f5d20b6eec7135eeb00dced057e5a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "efb69b531f2c99e44352431a07334fed08a6d866fa5d7917101f8e05c0ac89ef",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tasks/artifacts/implement-recall-first-memory-index/evidence/runtime-observations.md",
+      "sha256": "13d1f2b85b3091811fdbcf572578e7fc04ae9f96c2b9b52bacdd38cafe7ff26e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/memory-migration.test.js",
+      "sha256": "cf6c1be1a8db90fda9db0c552398c97dfd5a78181729dada9189a24faf1daa80",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "tests/memory-store.test.js",
+      "sha256": "93043447c240386059842d94d48ac120141df71707be07c7755dd3a48954782c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "initial": {
+    "groups": 5,
+    "open": 0,
+    "cards": 0,
+    "count": "5 个分组 · 24 条可读取记忆",
+    "names": [
+      "用户记忆",
+      "empty",
+      "missing",
+      "project",
+      "project"
+    ],
+    "paths": [
+      "USER / GLOBAL · 不属于任何项目",
+      "/private/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/memory-live-preview-5TqfWN/empty",
+      "/private/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/memory-live-preview-5TqfWN/missing",
+      "/private/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/memory-live-preview-5TqfWN/other/project",
+      "/private/var/folders/lr/zrjft2s57_38p9t1ctj4_57m0000gn/T/memory-live-preview-5TqfWN/project"
+    ],
+    "counts": [
+      "2 条",
+      "0 条",
+      "不可用",
+      "2 条",
+      "20 条"
+    ],
+    "paginationRemoved": true
+  },
+  "expanded": {
+    "cards": 20,
+    "columns": "200.188px 200.203px 200.203px 200.203px 200.188px",
+    "cardHeight": 150,
+    "padding": "12px"
+  },
+  "detail": {
+    "body": true,
+    "error": ""
+  },
+  "collapsedAgain": {
+    "open": false,
+    "height": 112.59375,
+    "visibleCards": 0
+  },
+  "empty": true,
+  "projectFilter": {
+    "count": "20 条",
+    "open": false
+  },
+  "userFilter": 2,
+  "restoreEntry": true,
+  "mobileOverflow": false,
+  "api": {
+    "groups": 5,
+    "total": 24,
+    "unavailable": 1,
+    "bodyAbsent": true,
+    "oldTotal": 24,
+    "oldPage": 20,
+    "unauthorized": 401
+  }
+}

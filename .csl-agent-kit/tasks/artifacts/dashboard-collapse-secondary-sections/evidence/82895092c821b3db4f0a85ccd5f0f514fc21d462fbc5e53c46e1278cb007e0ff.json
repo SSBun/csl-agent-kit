@@ -1,0 +1,30 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-collapse-secondary-sections",
+  "files": [
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "4689ae2754f9f13c0829698f0697da994a54352a8202950c1054a75ac7573694",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "ad65408f1e88ca30d368804dcc5a0fa7f25443b94c48873f8ad3230cd4564463",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "8ef81b11aa446d231d071a36af16b6be0bf6c83c529088bf3ef8e01f632855c0",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "dashboard-colorful-terminal-design",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-colorful-terminal-design/evidence/desktop.png",
+      "sha256": "f4624a48fd64c1ef2b7edac54a243b419dc2b1e6a26bf3e4eb464dabb64ba82e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/dashboard-colorful-terminal-design/evidence/mobile.png",
+      "sha256": "c299da6679c60048a7470554d1403565665e0ec212efdc24fcd6ca71ea1cc9ef",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.css",
+      "sha256": "adba8fbb38066da38c20f79a8f4780ffd2e3aa48a9d5ec4aeb38784cfd402c0a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "9bf5acf94ce326dfdbf3e3a476c071ce96e2263014adac216000f6fc4780285f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "c97fd4c43980ce3c7c3427032b361e5ac04dcab944cec30a23985042383869e8",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

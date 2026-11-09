@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "compact-task-mode-footer",
+  "files": [
+    {
+      "path": "pi/extensions/csl-settings.ts",
+      "sha256": "530187274bda210b57b899ac768f9d193373b898ae52753bbcbed714f1ef63e4",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c47a2856aee3eaa72c62b0690992afba76a2ff09"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c47a2856aee3eaa72c62b0690992afba76a2ff09",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}
