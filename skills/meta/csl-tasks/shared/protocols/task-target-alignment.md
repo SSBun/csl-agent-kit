@@ -236,7 +236,17 @@ L2 and L4 use the same localized Target body:
 - **Boundaries:** <material scope boundary>
 ```
 
-Keep the title exactly `**Task Target**`. Localize the labels to the conversation language. Outcome and Done when are required. Include the entire Boundaries item only when omission could cause misunderstanding. Render without a code fence, implementation method, file list, command sequence, internal plan, or checkbox.
+Keep the visible title exactly `Task Target` (bold in the Markdown fallback). Localize the labels to the conversation language. Outcome and Done when are required. Include the entire Boundaries item only when omission could cause misunderstanding. Render without a code fence, implementation method, file list, command sequence, internal plan, or checkbox.
+
+### Color Rendering
+
+Apply this presentation whenever the protocol calls for displaying a Task Target, including SOLO; it does not create a display or confirmation requirement where none exists.
+
+- When a native ANSI rendering tool is available, use it for the Target body; in Pi, use `render_ansi`. Send actual SGR escape characters through the tool's text argument (JSON `\u001b`), not literal escape notation or shell output.
+- Use pink `#FF78A5` (`38;2;255;120;165`) for the title and localized field labels, cyan `#73E1D2` (`38;2;115;225;210`) for every `•` bullet, and the terminal's default foreground for body text. Reset with SGR `0` after each colored span and at the end; do not force a white foreground or set a background.
+- Separate the title and top-level items with blank lines and indent completion-condition bullets by two spaces. Use plain visible text, not Markdown emphasis markers, inside the ANSI payload. Keep lines short enough for the renderer; split long text without omitting conditions or boundaries.
+- If the tool is unavailable, fails, or cannot display the complete body, use the Markdown body above without raw ANSI escapes. Do not add a rendering dependency, generate an image, or change the terminal theme to obtain colors or rounded corners.
+- Render the Target body once on success. Keep the required L2/L4 footer and any change-approval section visible as normal localized text after it; do not duplicate the body in the final reply. Color rendering is presentation only: retain all content, confirmation waits, SOLO behavior, and independent safety boundaries.
 
 ### L2 Checkpoint
 
