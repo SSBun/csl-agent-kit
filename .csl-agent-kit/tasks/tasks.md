@@ -1,6 +1,6 @@
 # 任务索引
 
-- [按独立关注点拆分并提交全部本地改动](tasks/group-local-changes-20261109.md) — In Progress (2026-11-09 11:12)
+- [按独立关注点拆分并提交全部本地改动](tasks/group-local-changes-20261109.md) — Blocked (2026-11-09 11:28)
 
 - [禁止任务回复附带内部流程说明](tasks/suppress-task-internal-explanations.md) — Completed (2026-11-09 11:08)
 
