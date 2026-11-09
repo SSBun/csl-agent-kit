@@ -248,13 +248,25 @@ Apply this presentation whenever the protocol calls for displaying a Task Target
 - If the tool is unavailable, fails, or cannot display the complete body, use the Markdown body above without raw ANSI escapes. Do not add a rendering dependency, generate an image, or change the terminal theme to obtain colors or rounded corners.
 - Render the Target body once on success. Keep the required L2/L4 footer and any change-approval section visible as normal localized text after it; do not duplicate the body in the final reply. Color rendering is presentation only: retain all content, confirmation waits, SOLO behavior, and independent safety boundaries.
 
+### 用户可见文案边界
+
+本节统一适用于 `task`、`task-plan` 和 `task-queue` 的所有用户可见回复，包括目标展示、确认、恢复、阻断、进度与最终交付；仅约束文案，不改变确认时机或授权边界。
+
+- 需要目标确认时，只展示完整目标和一句简短确认问题；不要在问题里再次复述整个目标。
+- 不得在任何回复场景附带内部流程说明块，包括“此次暂停来自……”“这次确认来自……技能”“协议要求我等待”及其改写；不得用脚注、括号、引用或结尾补充重新输出这类说明。
+- 不主动展示协议名称或原文、Skill 路径、L 级别、内部 action/reason code、当前 `confirm`/SOLO 模式、任务记账过程或“尚未执行”的例行声明。用户明确询问规则来源、查询模式或排查流程时，只直接回答所问事实，不恢复附带的内部流程说明块。
+- 必须解释具体阻断或重新确认的原因时，用用户能据此做决定的事实描述，例如“新增了一个交付项，需要你确认调整后的范围”；不要只说“协议要求”。保留缺少权限、必要输入、配置错误、无法恢复此前确认、实际审批拒绝和安全边界等重要信息。
+- 此展示约束不覆盖更高优先级的明确披露要求；确有冲突时，仅提供其强制要求的最少信息，不扩展为例行内部流程说明。不得以隐藏内部说明为由隐瞒真实阻断或跳过确认。
+
 ### L2 Checkpoint
 
 For `show_checkpoint`, keep the complete current Target visible, including inherited constraints. For `goal_recheck`, ask the user to check the Agent's understanding of their intended result, not merely grant permission. A material user revision may be highlighted without omitting the rest of the Target. For a mandatory graph, acceptance-recovery, trivial-display, or user-requested hold, explain that specific reason instead of pretending known facts are uncertain; name only explicitly requested local items when that is the sole pending check.
 
 Append a neutral localized footer with this meaning:
 
-`Does this Target accurately express the result you want? Please confirm it or state what should change. I will begin substantive work only after confirmation.`
+`这个目标是否准确？请确认，或指出需要调整的地方。`
+
+确认问题不再重复目标或附加例行等待说明；后续仍须按下面的规则结束本轮并等待。
 
 For a local or event hold on an already accepted unchanged Target, adapt the question to that hold. Do not show a commitment difference list or imply that an equivalent Target expands authorization. End the turn and wait. Creating or focusing the internal task record does not bypass this checkpoint. Do not continue source inspection, research, planning, delegation or editing while waiting, even if the next tool is read-only.
 
@@ -270,7 +282,9 @@ After the Target body, add a localized section:
 
 List only material commitment deltas. Do not include implementation details, broad risk commentary, or private reasoning. Then append a localized footer with this meaning:
 
-`This Target changes your current authorization. Explicitly approve these changes or state how to revise them. I will not execute before approval.`
+`这些调整是否可以接受？请确认，或指出需要修改的地方。`
+
+前面的变更列表已说明与当前授权的差异，不再重复目标或例行声明“批准前不会执行”；仍须等待明确批准后才能执行。
 
 ### L3 Clarification
 
