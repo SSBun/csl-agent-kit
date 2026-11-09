@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@earendil-works/pi-tui";
 
 const STATUS_KEY = "openai-codex-fast";
 const SERVICE_TIERS = { fast: "priority", ultrafast: "ultrafast" } as const;
@@ -196,7 +197,7 @@ function updateDisplay(pi: ExtensionAPI, ctx: ExtensionContext, mode: SpeedMode)
 					truncateToWidth(theme.fg("dim", cwd), width),
 					theme.fg("dim", statsLine),
 					truncateToWidth(theme.fg("dim", speedLabel(ctx, mode)), width),
-					...(extraStatuses ? [truncateToWidth(extraStatuses, width)] : []),
+					...(extraStatuses ? wrapTextWithAnsi(extraStatuses, width) : []),
 				];
 			},
 		};
@@ -233,20 +234,6 @@ function compactHome(path: string): string {
 
 function sanitizeStatusText(text: string): string {
 	return text.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim();
-}
-
-function visibleWidth(text: string): number {
-	return stripAnsi(text).length;
-}
-
-function truncateToWidth(text: string, width: number): string {
-	if (visibleWidth(text) <= width) return text;
-	if (width <= 1) return "";
-	return `${stripAnsi(text).slice(0, width - 1)}…`;
-}
-
-function stripAnsi(text: string): string {
-	return text.replace(/\x1b\[[0-9;]*m/g, "");
 }
 
 function loadConfig(): SpeedMode {
