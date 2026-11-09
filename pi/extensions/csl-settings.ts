@@ -28,14 +28,17 @@ const TASK_MODE_STATUS = "csl-task-mode";
 
 function updateTaskModeStatus(ctx: ExtensionContext) {
 	if (ctx.mode !== "tui") return;
+	const theme = ctx.ui.theme;
 	let text: string;
 	try {
 		const state = resolveTaskMode(taskModeOptions(ctx));
-		text = `Task: ${state.mode.toUpperCase()} · ${state.source}`;
+		text = state.mode === "solo"
+			? theme.fg("success", "⚡ SOLO")
+			: theme.fg("accent", "✋ CONFIRM");
 	} catch {
-		text = "Task: CONFIRM · config error";
+		text = theme.fg("accent", "✋ CONFIRM") + theme.fg("error", " · config error");
 	}
-	ctx.ui.setStatus(TASK_MODE_STATUS, `[${text}]`);
+	ctx.ui.setStatus(TASK_MODE_STATUS, text);
 }
 
 export default function cslSettings(pi: ExtensionAPI) {
