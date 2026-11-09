@@ -1,6 +1,9 @@
 {
   "recommended_threshold": 0.5,
   "should_trigger": [
+    "Create a new Yunxiao task for this fix.",
+    "在知乎云效创建一个普通任务，负责人和标题已给出。",
+    "帮我新建云效工作项，不关联项目。",
     "Create a Yunxiao MR for these committed branches without using zspec.",
     "Push these module branches and create a One union MR after showing me the plan.",
     "Use the internal One API to open first-time MRs for these two Zhihu repositories.",

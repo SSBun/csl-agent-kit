@@ -1,15 +1,16 @@
 ---
 name: yunxiao
-description: Create first-time Zhihu Yunxiao One MRs; list open MRs or QA; batch-approve requests; and manage the macOS approval daemon and dashboard. Use for Yunxiao MR creation, listing, QA, approval, or daemon management. Exclude metadata edits, code review, join/restore, and GitHub or GitLab PRs.
+description: 创建知乎云效 One 普通任务或首次 MR，查询未合并 MR 和 QA，批量审批，以及管理 macOS 审批守护进程和 Dashboard。用户要求创建云效任务、工作项、Yunxiao task 或 One MR 时使用。不用于已有工作项或 MR 的元数据编辑、代码评审、join/restore，以及 GitHub/GitLab PR。
 ---
 
 # Yunxiao
 
 ## Prerequisites
 
-- Require Node.js 18+, Git, `classic-level`, `mqtt`, and either `YUNXIAO_TOKEN` or Chrome/Chromium logged in to `one.in.zhihu.com`. Daemon needs `terminal-notifier` on `PATH` for clickable notifications.
+- MR／审批脚本需要 Node.js 18+、Git、`classic-level`、`mqtt`，并使用 `YUNXIAO_TOKEN` 或已登录 `one.in.zhihu.com` 的 Chrome/Chromium。Daemon needs `terminal-notifier` on `PATH` for clickable notifications. 普通任务 API 示例仅需 Node.js 18+ 和有效凭据。
 - Prefer the environment variable. Otherwise the script copies Chrome Local Storage LevelDB to a temporary directory, reads the exact `one.in.zhihu.com/token` record, and validates candidates with a One GET. Never request a token in chat, command arguments, a manifest, or logs.
-- Read `references/manifest-schema.md` and collect explicit inputs under that contract. Never read or invoke `zspec`, and never use `zspec.json` as runtime input.
+- 创建普通任务时直接使用 [普通任务创建流程](references/task-creation.md)，无需 Git 仓库、MR manifest 或项目链接。现有 `yunxiao.mjs create` 仍仅创建 MR，不能用于创建任务。
+- MR 创建才需读取 `references/manifest-schema.md` 并按契约收集输入。Never read or invoke `zspec`, and never use `zspec.json` as runtime input.
 
 ## Read-Only Queries
 
@@ -28,7 +29,7 @@ Follow `references/approval-workflow.md`; `approve-all` requires explicit confir
 
 Follow `references/daemon-workflow.md`. Confirm unattended approval of every eligible request before `daemon install --yes` or `daemon start --yes`. It is macOS-only, never merges, and exposes a read-only loopback Dashboard.
 
-## Creation Workflow
+## MR Creation Workflow
 
 1. Confirm each module's Git root, source and target branches, target repository, and push remote. Ask for missing targets; do not guess.
 2. Build a schema-compliant manifest. For temporary files, use `mktemp`, run `chmod 600`, then delete them. Do not rewrite user-supplied manifests.
@@ -53,7 +54,7 @@ Follow `references/daemon-workflow.md`. Confirm unattended approval of every eli
 - `plan` checks the same work item for a matching MR and fails before any push. Otherwise all branches are pushed first; one failed push prevents MR creation, without rolling back prior pushes.
 - Write requests are not replayed. If a post-preflight race returns an existing MR, the result is `partial`; no checks or union MR are written. Inspect remote state before retrying.
 - Multi-repository work may partially succeed. A union MR failure does not delete created single-repository MRs.
-- `plan`, `plan-approvals`, `list-unmerged`, `list-qa`, `daemon status`, and `daemon install --dry-run` perform only local reads plus Yunxiao GETs where applicable. Only confirmed `create --yes`, `approve-all --yes`, and the explicitly installed or restarted daemon write remotely.
+- `plan`, `plan-approvals`, `list-unmerged`, `list-qa`, `daemon status`, and `daemon install --dry-run` perform only local reads plus Yunxiao GETs where applicable. 远端写入限于已授权的普通任务创建、`create --yes`、`approve-all --yes` 和明确安装或重启的 daemon；各自遵守对应流程。
 - Chrome fallback does not modify browser data, persists no token, deletes its temporary copy, and passes no credential to Git.
 - Manual existing-MR approval uses the bounded bulk workflow. Unattended approval is allowed only through the separately confirmed daemon workflow. Neither path merges MRs, edits their metadata, performs join/restore, or modifies workspace configuration.
 

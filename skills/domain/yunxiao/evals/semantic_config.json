@@ -1,13 +1,25 @@
 {
   "fallback_positive_concepts": [
     "yunxiao_mr_creation",
+    "yunxiao_task_creation",
     "independent_one_api"
   ],
   "positive_concepts": {
+    "yunxiao_task_creation": {
+      "weight": 0.7,
+      "phrases": [
+        "create a new yunxiao task",
+        "create a yunxiao task",
+        "云效创建一个普通任务",
+        "新建云效工作项",
+        "创建云效任务"
+      ]
+    },
     "yunxiao_mr_creation": {
       "weight": 0.7,
       "phrases": [
         "create a yunxiao mr",
+        "首次 mr",
         "create a one mr",
         "create a one union mr",
         "push these module branches",
