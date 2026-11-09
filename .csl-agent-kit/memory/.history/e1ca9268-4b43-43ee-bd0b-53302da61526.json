@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "e1ca9268-4b43-43ee-bd0b-53302da61526",
+  "entryId": "review-comments-editor-portability",
+  "status": "committed",
+  "at": "2026-11-05T07:46:54.856Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "用户选择每处共同目标及本块说明、完整背景集中主块，更新原条目中详略未定的部分；后续覆盖率问题尚无选择。",
+  "source": "memory-event:79ade66b204e71ef0ba87e54c88e3e0629f06e3561626a6212140878726e0bf1:653e42f31a66aa7ef644ba04f89a4d704c1dfb61fef1dbf4aa3943dd82730f10; session:01a1aa8b-a9fa-75b1-82f3-d85c3adae02a/task:decide-review-explanation-comments/event:79ade66b204e71ef0ba87e54c88e3e0629f06e3561626a6212140878726e0bf1",
+  "session": "01a1aa8b-a9fa-75b1-82f3-d85c3adae02a",
+  "task": "decide-review-explanation-comments",
+  "before": "---\nschema: csl-memory/v2\nid: review-comments-editor-portability\nrevision: 1\ntype: fact\ntitle: 审查注释的编辑器兼容与逻辑关联\nsummary: 首版审查说明须在任意编辑器直接可见；采用源码注释，支持同一逻辑的多个改动块关联讨论。具体标记和说明详略未定。\nsources:\n  - session:01a1aa8b-a9fa-75b1-82f3-d85c3adae02a/task:decide-review-explanation-comments/event:d1cd7785e9044bbdc198cccd045c8af0c053269aa4f35f197c86f19089dfcc3b#user\n  - .csl-agent-kit/tasks/tasks/decide-review-explanation-comments.md#Target\nupdated: 2026-11-05T07:43:47.827Z\ndeleted: false\nretrieval:\n  aliases:\n    - 临时审查注释\n    - 代码改动说明\n    - 任意编辑器可见\n  situations:\n    - 选择源码注释或专用diff阅读器承载审查说明\n    - 设计同一逻辑跨代码块的说明关联\n  topics:\n    - 代码审查/改动说明\n  links: []\n---\n\n首版：源码内审查注释，任意编辑器直接可见；仅在专用 diff 视图显示不满足需求。围绕代码改动块说明，支持关联讨论属于同一逻辑的多个代码块。\n\n组／块 ID、标记语法、主块背景及各处说明详略仍为设计建议，未确定。\n",
+  "after": "---\nschema: csl-memory/v2\nid: review-comments-editor-portability\nrevision: 2\ntype: fact\ntitle: 审查注释的编辑器兼容与逻辑关联\nsummary: 首版源码审查注释须在任意编辑器可见；同一逻辑的完整背景集中一个主块，各关联块保留共同目标和本块说明。标记及覆盖规则未定。\nsources:\n  - session:01a1aa8b-a9fa-75b1-82f3-d85c3adae02a/task:decide-review-explanation-comments/event:d1cd7785e9044bbdc198cccd045c8af0c053269aa4f35f197c86f19089dfcc3b#user\n  - .csl-agent-kit/tasks/tasks/decide-review-explanation-comments.md#Target\n  - session:01a1aa8b-a9fa-75b1-82f3-d85c3adae02a/task:decide-review-explanation-comments/event:79ade66b204e71ef0ba87e54c88e3e0629f06e3561626a6212140878726e0bf1#user;\n    B对应前轮每处共同目标和本块说明、详细背景仅在主块\nupdated: 2026-11-05T07:46:54.818Z\ndeleted: false\nretrieval:\n  aliases:\n    - 临时审查注释\n    - 代码改动说明\n    - 任意编辑器可见\n    - 主块与关联块\n  situations:\n    - 选择源码注释或专用diff阅读器承载审查说明\n    - 设计同一逻辑跨代码块的说明关联\n    - 决定完整背景与各处说明的分配\n  topics:\n    - 代码审查/改动说明\n  links: []\n---\n\n首版：源码内审查注释，任意编辑器直接可见；仅在专用 diff 视图显示不满足需求。围绕代码改动块说明，支持关联讨论属于同一逻辑的多个代码块。\n\n同一逻辑：完整背景集中一个主块；每处保留一句共同目标和本块说明，避免各处重复完整背景。\n\n组／块 ID、标记语法及主块位置选择未定；是否要求每个独立改动块就地注释、机械性配套修改能否集中说明，尚未确定。\n",
+  "beforeHash": "cd47c4f9e1471dcb6dc251fbd008ee89df304098fc1214e42f1754406d310d9c",
+  "afterHash": "48f7901c9fb0f966d9eb057e9e1952ca5919b0a409c376e403816072943b2f2c"
+}

@@ -1,0 +1,31 @@
+---
+schema: csl-memory/v1
+id: legacy-context-bf4d7050557e0a133921
+revision: 1
+type: experience
+title: Task 历史文件迁移的安全边界
+summary: 显式整理 Task-owned 旧文件时使用；不把历史清理当作 Memory 日常维护或全仓架构清理。
+sources:
+  - legacy:tasks/context.md;
+    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;
+    unit:tasks/context.md#CTX-task-maintenance — Task workspace data and
+    architecture maintenance:1
+updated: 2026-11-02T03:43:08.825Z
+deleted: false
+---
+
+# 职责
+
+Task-owned 历史文件和目录的迁移必须先确定唯一 owner、当前权威路径与全部相关引用。Memory 替代方案已确定不再保留 Context/Lessons 的独立日常维护入口；长期知识的整理交给 Memory，Task 历史记录不顺带改写。
+
+# 迁移与删除
+
+含唯一内容的非空路径只能保真迁移，不能当作重复项删除。Duplicate Delete 必须证明非空源与保留目标在路径、类型、权限、字节及 hash 上一致。空目录删除需要确认整个候选树确实为空且不含他人内容。源与目标不得互相包含。
+
+删除或移动稳定身份前核对当前非历史消费者；无法证明消费者有效就暂缓。执行前展示准确变化与恢复边界并取得明确确认，不自动扩大到其他任务或目录。
+
+# 并发与恢复
+
+执行前后重验源、目标和引用。使用已验证的同文件系统无覆盖原子迁移能力和私有隔离区，保护并行写入；能力不可用时不能声称安全迁移。失败恢复不得覆盖已经重建的源；保留全部候选、隔离区和冲突信息，由用户决定不能安全自动解决的冲突。
+
+执行日志和任务证据记录发生了什么；当前状态以实际产物为准，缺少日志不证明操作没有发生。

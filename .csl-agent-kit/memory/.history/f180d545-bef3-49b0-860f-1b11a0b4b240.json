@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "f180d545-bef3-49b0-860f-1b11a0b4b240",
+  "entryId": "legacy-lessons-c4d4acd64f5ea359d5f3",
+  "status": "committed",
+  "at": "2026-11-02T03:43:09.712Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留模型文本必须由代码落实长度和格式边界的经验。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:c4d4acd64f5ea359d5f3382987e1f3fe84ae797b45349a4a79e7314145a4510a",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-c4d4acd64f5ea359d5f3\nrevision: 1\ntype: experience\ntitle: 模型生成短 UI 标签的确定性约束\nsummary: 生成标题、标签或徽标时，由代码验证长度与格式并跳过纯操作型消息，不只依赖提示词。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-28 为模型生成的短 UI 标签设置确定性边界:1\nupdated: 2026-11-02T03:43:09.712Z\ndeleted: false\n---\n\n## 2026-07-28 为模型生成的短 UI 标签设置确定性边界\n\n- **Trigger:**\n  - 模型生成终端标题、标签、徽标或其他要求严格简短且禁止出现操作过程的 UI 文本。\n- **Rule:**\n  - Prompt 负责描述核心语义，代码负责强制长度、清理模型元标签，并确定性跳过已知的纯操作型跟进；不得只依赖模型遵守格式和分类要求。\n  - 将用户报告的实际坏输出加入回归测试。\n- **Check:**\n  - 生成文本不超过产品规定的 Unicode 码点上限，且不含模型元标签。\n  - commit、push、test、retry、continue 等纯操作样例不会覆盖现有标签。\n",
+  "beforeHash": null,
+  "afterHash": "afbc0f26da075f06ad24be79431f0889684c886705d134bb11735a6cb542d071"
+}

@@ -1,0 +1,6 @@
+{
+  "schema": "csl-memory-write-fence/v3",
+  "host": "csl-memory-format-v3",
+  "pid": 0,
+  "reason": "Permanent format fence; do not delete to run an older writer."
+}

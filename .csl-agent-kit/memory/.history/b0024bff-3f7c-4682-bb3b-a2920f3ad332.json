@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "b0024bff-3f7c-4682-bb3b-a2920f3ad332",
+  "entryId": "legacy-lessons-ee92e47c51ca9b06138d",
+  "status": "committed",
+  "at": "2026-11-02T03:43:11.550Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留用户数据与可分发源码分离；更新旧措辞以覆盖已批准的记忆和服务状态，不改变禁止放代码镜像的边界。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:ee92e47c51ca9b06138da7d7fde385da27d569c4b5a5822b59ce472750ecf578",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-ee92e47c51ca9b06138d\nrevision: 1\ntype: experience\ntitle: 用户数据目录不承载源码镜像\nsummary: 用户根保存记忆、配置、审计与服务状态；可分发代码留在安装包或仓库。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-06-28 CSL Agent Kit Local Data Boundary:1\nupdated: 2026-11-02T03:43:11.550Z\ndeleted: false\n---\n\n## 2026-06-28 CSL Agent Kit Local Data Boundary\n\n- **Trigger:** 修改安装脚本、hooks 或任何 `~/.csl-agent-kit` 路径时。\n  - **Rule:** `~/.csl-agent-kit` 保存用户经验、记忆、配置、审计和服务运行状态；不要把 repository mirror 或 skill 代码 symlink 放进去。\n  - **Why:** 本地经验数据和安装发现路径混在一起会让输出变吵，也会模糊用户数据与仓库源码的边界。\n",
+  "beforeHash": null,
+  "afterHash": "3012ccb8e7cbf73ca65d540b369cf024a216af85279dcaa2076e6b7f7d4ad0c4"
+}

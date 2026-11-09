@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "9fa8be6a-0103-4a24-8a9c-93ca9450a502",
+  "entryId": "legacy-context-bf4d7050557e0a133921",
+  "status": "committed",
+  "at": "2026-11-05T11:35:21.575Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 agent-migration-directory-memory-routing 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-context-bf4d7050557e0a133921\nrevision: 2\ntype: experience\ntitle: Task 历史文件迁移的安全边界\nsummary: 显式整理 Task-owned 旧文件时使用；不把历史清理当作 Memory 日常维护或全仓架构清理。\nsources:\n  - legacy:tasks/context.md;\n    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;\n    unit:tasks/context.md#CTX-task-maintenance — Task workspace data and\n    architecture maintenance:1\nupdated: 2026-11-03T08:13:21.918Z\ndeleted: false\n---\n\n# 职责\n\nTask-owned 历史文件和目录的迁移必须先确定唯一 owner、当前权威路径与全部相关引用。Memory 替代方案已确定不再保留 Context/Lessons 的独立日常维护入口；长期知识的整理交给 Memory，Task 历史记录不顺带改写。\n\n# 迁移与删除\n\n含唯一内容的非空路径只能保真迁移，不能当作重复项删除。Duplicate Delete 必须证明非空源与保留目标在路径、类型、权限、字节及 hash 上一致。空目录删除需要确认整个候选树确实为空且不含他人内容。源与目标不得互相包含。\n\n删除或移动稳定身份前核对当前非历史消费者；无法证明消费者有效就暂缓。执行前展示准确变化与恢复边界并取得明确确认，不自动扩大到其他任务或目录。\n\n# 并发与恢复\n\n执行前后重验源、目标和引用。使用已验证的同文件系统无覆盖原子迁移能力和私有隔离区，保护并行写入；能力不可用时不能声称安全迁移。失败恢复不得覆盖已经重建的源；保留全部候选、隔离区和冲突信息，由用户决定不能安全自动解决的冲突。\n\n执行日志和任务证据记录发生了什么；当前状态以实际产物为准，缺少日志不证明操作没有发生。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-context-bf4d7050557e0a133921\nrevision: 3\ntype: experience\ntitle: Task 历史文件迁移的安全边界\nsummary: 显式整理 Task-owned 旧文件时使用；不把历史清理当作 Memory 日常维护或全仓架构清理。\nsources:\n  - legacy:tasks/context.md;\n    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;\n    unit:tasks/context.md#CTX-task-maintenance — Task workspace data and\n    architecture maintenance:1\nupdated: 2026-11-05T11:35:21.511Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "c7ec9f1c2ca3ca0161205b466c0ac21898c8a9054d44435ad3b8a2f30ba618ee",
+  "afterHash": "d865337e7df049f48528505c590155f212664bae4ae0cdda1c5ec9e2f3575902"
+}

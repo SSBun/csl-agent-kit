@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "d24f632e-38db-4282-a92e-184933f38948",
+  "entryId": "legacy-lessons-6a85751b7c6e6815ad29",
+  "status": "committed",
+  "at": "2026-11-02T03:43:11.877Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留可分发模板与用户私有配置的可移植性边界。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:6a85751b7c6e6815ad299a64f0d3ba2968584e0a9071e48d8d2f6d428561f5c2",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-6a85751b7c6e6815ad29\nrevision: 1\ntype: experience\ntitle: 可分发 Agent 模板不包含本机绝对路径\nsummary: 模板不能带作者机器的本地 include；用户自己的私有配置不属于同一分发边界。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-08 AGENTS Template No Local Include:1\nupdated: 2026-11-02T03:43:11.876Z\ndeleted: false\n---\n\n## 2026-07-08 AGENTS Template No Local Include\n\n- **Trigger:** 修改 `AGENTS.md` 或 agent template 文件时。\n  - **Rule:** 不要在可注入的 AGENTS template/example 中保留 `@/Users/...` 这类用户本机绝对路径 include；本地 `/Users/caishilin/.codex/AGENTS.md` 可以保留用户本机工具 include。\n  - **Why:** AGENTS 模板会被注入到其它项目，本机绝对路径 include 不可移植；但用户自己的本地 AGENTS 可以包含本机专用工具规则。\n",
+  "beforeHash": null,
+  "afterHash": "1bd5c4db44eaac87e9deb8035e2ce491a9d93941fe6074e7ebe3ce3ebe6f28e4"
+}

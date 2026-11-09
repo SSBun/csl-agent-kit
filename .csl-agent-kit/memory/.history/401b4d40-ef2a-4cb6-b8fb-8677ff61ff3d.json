@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "401b4d40-ef2a-4cb6-b8fb-8677ff61ff3d",
+  "entryId": "legacy-lessons-86b15cd6e022d3d4c89d",
+  "status": "committed",
+  "at": "2026-11-05T11:17:18.934Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "读写方、fixture和历史例外已完整合并到legacy-context-3f04e0f0972b0b999ca0并回读。",
+  "source": "memory-event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de:ae73790a537594ae5027b75dafc414e19054ed20064cba139faed5628b589ce5; maintenance:event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de",
+  "session": "memory-budget-activation",
+  "task": "memory-file-count-budget",
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-86b15cd6e022d3d4c89d\nrevision: 2\ntype: experience\ntitle: 共享格式迁移覆盖全部读写方\nsummary: 修改公共文件格式前检查所有读写方和 fixture；仅写入侧通过不足以证明兼容。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-31 共享格式迁移必须覆盖所有读写方:1\nupdated: 2026-11-03T08:13:22.979Z\ndeleted: false\n---\n\n## 2026-07-31 共享格式迁移必须覆盖所有读写方\n\n- **Trigger:**\n  - 修改由 workflow、检查脚本、扩展或其他组件共同读写的文件格式。\n- **Rule:**\n  - 变更前搜索所有生产者、消费者和格式样例，并以实际运行时消费者的解析契约验证候选格式。\n  - 在同一改动中同步规则、校验器和受影响的消费者测试；不能只验证写入侧格式。\n- **Check:**\n  - 同一个候选 fixture 同时通过写入侧校验和运行时消费者测试。\n  - 搜索旧格式后只剩有意保留的历史记录或明确的拒绝用例。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-86b15cd6e022d3d4c89d\nrevision: 3\ntype: experience\ntitle: 共享格式迁移覆盖全部读写方\nsummary: 修改公共文件格式前检查所有读写方和 fixture；仅写入侧通过不足以证明兼容。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-31 共享格式迁移必须覆盖所有读写方:1\nupdated: 2026-11-05T11:17:18.922Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "e8addeaf018c0ac7c75e206e91639b1387dbcaaa236d6cf4f0e170856c70e940",
+  "afterHash": "dc42984e5bc656646780c69582d2497ad518dfb85e5ebaf26993f8b4ee5a6a95"
+}

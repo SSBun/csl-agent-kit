@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "73b4a495-cf14-45fd-b6bc-26926f4ee419",
+  "entryId": "legacy-lessons-8d4dd4d0e6e77c693311",
+  "status": "committed",
+  "at": "2026-11-02T03:43:09.936Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留共享 Skill 不能依赖项目私有 RFC 的经验。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:8d4dd4d0e6e77c693311f9779bb25d6a0a5f4efb2e1ff6a4b924c88a51526c19",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-8d4dd4d0e6e77c693311\nrevision: 1\ntype: experience\ntitle: 可分发 Skill 必须自包含\nsummary: 项目 RFC 可提供设计背景，但共享 Skill 的运行契约必须随包分发。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-22 Keep Distributed Skills Self-Contained:1\nupdated: 2026-11-02T03:43:09.936Z\ndeleted: false\n---\n\n## 2026-07-22 Keep Distributed Skills Self-Contained\n\n- **Trigger:** A project RFC or guide informed a distributable skill, but the user clarified that the project document is not part of the skill source.\n  - **Rule:** Put operational guidance inside the skill package, keep Agent-facing prose in the requested distribution language, and treat project RFCs as rationale only unless they are explicitly part of the runtime contract.\n  - **Why:** A distributed skill must remain usable without repository-only documents, and design history must not override implemented behavior.\n",
+  "beforeHash": null,
+  "afterHash": "0f8e19136ff856c09bd0c58211f23088bc43e816bef676d6c05eda8f34507ae7"
+}

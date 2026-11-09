@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "544e5b8c-f4c0-4fa2-8528-f5938e306874",
+  "entryId": "legacy-lessons-f70055900a7ae1733947",
+  "status": "committed",
+  "at": "2026-11-05T11:35:26.290Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-9e202660c5470b4d1098 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-f70055900a7ae1733947\nrevision: 2\ntype: experience\ntitle: 共享 UI 状态的保持与恢复\nsummary: Hook 与宿主都写 UI 状态时，保持决定可能需要重应用旧值，不能等同于不操作。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-28 共享 UI 状态的“保持”不能等同于无操作:1\nupdated: 2026-11-03T08:13:24.069Z\ndeleted: false\n---\n\n## 2026-07-28 共享 UI 状态的“保持”不能等同于无操作\n\n- **Trigger:**\n  - Hook 或后台任务要求保持标题、状态栏或其他 UI 值，而宿主生命周期也可能改写同一状态。\n- **Rule:**\n  - 保存最后一次成功写入的所属值；明确的保持决定应重新应用该值，不能假设当前外部状态未被覆盖。\n  - 将保持决定与生成失败分开处理；失败路径继续遵守其独立的不写入约束。\n- **Check:**\n  - 测试模拟外部覆盖后，保持路径恢复最后一次成功值。\n  - 测试确认无历史值的初始化行为和生成失败行为分别符合产品约束。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-f70055900a7ae1733947\nrevision: 3\ntype: experience\ntitle: 共享 UI 状态的保持与恢复\nsummary: Hook 与宿主都写 UI 状态时，保持决定可能需要重应用旧值，不能等同于不操作。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-28 共享 UI 状态的“保持”不能等同于无操作:1\nupdated: 2026-11-05T11:35:26.249Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "c55b3b653dd65cac129a338ebadc5f3931e83a1300e7ba561fb5663f546065ee",
+  "afterHash": "9ea6195aea6ae4955c565ecafa67e63f7f03ef788d88acea401523b1322ff9f5"
+}

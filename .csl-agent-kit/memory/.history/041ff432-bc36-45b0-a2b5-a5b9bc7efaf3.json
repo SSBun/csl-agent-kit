@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "041ff432-bc36-45b0-a2b5-a5b9bc7efaf3",
+  "entryId": "legacy-lessons-8113726141f45d9803cd",
+  "status": "committed",
+  "at": "2026-11-05T11:35:24.506Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-d3613f68e48dfcd44c44 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-8113726141f45d9803cd\nrevision: 2\ntype: preference\ntitle: CLI 人类输出默认启用颜色\nsummary: 人类可读 CLI 默认启用颜色；显式关闭、NO_COLOR 或机器 JSON 输出例外。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-10 CLI Colors Default On:1\nupdated: 2026-11-03T08:13:22.799Z\ndeleted: false\n---\n\n## 2026-07-10 CLI Colors Default On\n\n- **Trigger:** Rendering human-readable CSL Agent Kit CLI output.\n  - **Rule:** Enable ANSI colors by default, including non-TTY output. Disable only for `--no-color`, `NO_COLOR`, or machine-readable JSON.\n  - **Why:** The user prefers consistently colorful CLI output rather than terminal-detection-based behavior.\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-8113726141f45d9803cd\nrevision: 3\ntype: preference\ntitle: CLI 人类输出默认启用颜色\nsummary: 人类可读 CLI 默认启用颜色；显式关闭、NO_COLOR 或机器 JSON 输出例外。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-10 CLI Colors Default On:1\nupdated: 2026-11-05T11:35:24.474Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "416068f54c2e1942baffdeefcb82153a541161f338af6ebdc385de754b01b6d7",
+  "afterHash": "64b6f6277cfbf8974b8762ab51ce1801ad60844fd7fd6a949554c4e2ff3f2b62"
+}

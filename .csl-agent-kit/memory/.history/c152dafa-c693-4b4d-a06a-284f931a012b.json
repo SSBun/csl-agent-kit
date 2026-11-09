@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "c152dafa-c693-4b4d-a06a-284f931a012b",
+  "entryId": "pi-git-status-display",
+  "status": "committed",
+  "at": "2026-11-05T07:47:55.816Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "用户对本项目Git状态图标提出可复用的展示约束；相关Task和Memory底栏记忆未覆盖此偏好，保留其独立范围。仅收录用户明确要求，不将助手报告的图标、配色或实现完成情况当作已核实事实。",
+  "source": "memory-event:91f64d78e4f04ef3f5e674d2ef4348a5c20188b92f3dddf48d7a959288bb29ce:306ace0b4d803dbce9ed12ae175f268c185e56ef7c72cc262409a1db863aa9a0; session:01a1aa58-9de8-71d2-8315-2cedf5cf3d26/task:compact-git-clean-status/event:91f64d78e4f04ef3f5e674d2ef4348a5c20188b92f3dddf48d7a959288bb29ce",
+  "session": "01a1aa58-9de8-71d2-8315-2cedf5cf3d26",
+  "task": "compact-git-clean-status",
+  "before": null,
+  "after": "---\nschema: csl-memory/v2\nid: pi-git-status-display\nrevision: 1\ntype: preference\ntitle: Pi Git 状态显示偏好\nsummary: Git状态图标只显示工作区是否干净，不显示改动数量。\nsources:\n  - session:01a1aa58-9de8-71d2-8315-2cedf5cf3d26/task:compact-git-clean-status/event:91f64d78e4f04ef3f5e674d2ef4348a5c20188b92f3dddf48d7a959288bb29ce#user\nupdated: 2026-11-05T07:47:55.791Z\ndeleted: false\nretrieval:\n  aliases:\n    - Git状态图标\n    - git status\n    - 工作区是否干净\n  situations:\n    - 调整Pi底栏Git状态展示\n  topics:\n    - Pi/状态栏\n  links: []\n---\n\nPi Git 状态图标：仅区分工作区干净／有改动；不显示改动数量。\n",
+  "beforeHash": null,
+  "afterHash": "328879758034c4ef1af2d4fa0db8d0d77e2214a9b4cfb2975efa71b34179638b"
+}

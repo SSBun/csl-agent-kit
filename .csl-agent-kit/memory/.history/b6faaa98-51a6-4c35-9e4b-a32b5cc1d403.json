@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "b6faaa98-51a6-4c35-9e4b-a32b5cc1d403",
+  "entryId": "memory-workspace-concurrency-goal",
+  "status": "committed",
+  "at": "2026-11-05T11:12:11.399Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "workspace会话复用、跨工作区无全局两个上限、同工作区串行及激活边界与来源已并入legacy-context-97c02696d8c555646b77 revision 11并回读；删除同主题重复条目。",
+  "source": "memory-event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de:1f03539b19c5aa7ed18ad976975fa8d3cf85e6736b751d4ebf523f6e36f9bdda; event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de/session:memory-budget-activation/task:memory-file-count-budget",
+  "session": "memory-budget-activation",
+  "task": "memory-file-count-budget",
+  "before": "---\nschema: csl-memory/v2\nid: memory-workspace-concurrency-goal\nrevision: 2\ntype: preference\ntitle: Memory 按工作区独立并行处理\nsummary: 不同workspace独立并行，取消全局两个并发上限；同workspace仍串行。运行契约与后台激活证据分别核对。\nsources:\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-discard-invalid-backlog/event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936#user-and-assistant\n  - docs/memory.md#后台与宿主接入\n  - .csl-agent-kit/tasks/tasks/memory-workspace-concurrency.md#Scope\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-workspace-concurrency/event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523#user-and-assistant\nupdated: 2026-11-05T08:59:36.466Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory工作区并发\n    - 每个workspace独立Memory Agent\n  situations:\n    - 设计Memory跨工作区并行调度\n    - 区分Memory Agent会话隔离与全局并发上限\n  topics:\n    - Memory/并发调度\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\nMemory：每workspace独立复用Agent会话；不同workspace独立并行，不设全局两个并发上限；同workspace串行。正式契约见 docs/memory.md。契约与隔离验证不证明真实后台已启用新版本，激活依据查任务记录。\n",
+  "after": "---\nschema: csl-memory/v2\nid: memory-workspace-concurrency-goal\nrevision: 3\ntype: preference\ntitle: Memory 按工作区独立并行处理\nsummary: 不同workspace独立并行，取消全局两个并发上限；同workspace仍串行。运行契约与后台激活证据分别核对。\nsources:\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-discard-invalid-backlog/event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936#user-and-assistant\n  - docs/memory.md#后台与宿主接入\n  - .csl-agent-kit/tasks/tasks/memory-workspace-concurrency.md#Scope\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-workspace-concurrency/event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523#user-and-assistant\nupdated: 2026-11-05T11:12:11.388Z\ndeleted: true\nretrieval:\n  aliases:\n    - Memory工作区并发\n    - 每个workspace独立Memory Agent\n  situations:\n    - 设计Memory跨工作区并行调度\n    - 区分Memory Agent会话隔离与全局并发上限\n  topics:\n    - Memory/并发调度\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "f8c80c7b15ee73425bcdcb198ddb6afdac6979dc2716937d93390422190e7980",
+  "afterHash": "764f435474f33d74d63c13bd64c41280211b2021c0c7a5bd6884a3c7ff15ccd8"
+}

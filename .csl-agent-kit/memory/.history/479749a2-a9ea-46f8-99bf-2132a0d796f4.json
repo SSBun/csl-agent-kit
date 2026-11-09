@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "479749a2-a9ea-46f8-99bf-2132a0d796f4",
+  "entryId": "legacy-lessons-9151dbd1441ef552561c",
+  "status": "committed",
+  "at": "2026-11-02T03:43:10.764Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留核对实际宿主加载来源的经验；已观察历史 super-agent 链接目标不存在，不把旧机器状态当作当前事实。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:9151dbd1441ef552561cc20617ebde480cad22bc387b73f57538c5acbd6f5d3d",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-9151dbd1441ef552561c\nrevision: 1\ntype: experience\ntitle: 核对宿主实际加载的 Agent 指令来源\nsummary: 不要将 home 根规则文件、agent-specific 文件和宿主实际注入来源混为一谈。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-13 Distinguish Agent-Specific And Parent\n    AGENTS Files:1\nupdated: 2026-11-02T03:43:10.764Z\ndeleted: false\n---\n\n## 2026-07-13 Distinguish Agent-Specific And Parent AGENTS Files\n\n- **Trigger:** 判断当前 agent 使用哪份全局 `AGENTS.md`，或决定默认规则模板的更新范围时。\n  - **Rule:** 同时检查 harness 实际注入的规则来源和 `~/.agents/AGENTS.md`；不要把 `~/AGENTS.md` 自动等同于 agent-specific 全局配置。历史软链接或默认路径不能证明当前宿主实际加载了相应规则；使用前核对链接目标与实际注入来源。\n  - **Why:** 不同 agent 客户端可能从不同位置加载规则，仅检查 home 根目录会错误判断模板更新是否能对目标客户端生效。\n",
+  "beforeHash": null,
+  "afterHash": "953cb8d93dc7a2f25be29037deef040c7a1d9a01bd5a82b5ac4897051008458d"
+}

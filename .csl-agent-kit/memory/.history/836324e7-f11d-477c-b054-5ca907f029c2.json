@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "836324e7-f11d-477c-b054-5ca907f029c2",
+  "entryId": "task-score-display-preference",
+  "status": "committed",
+  "at": "2026-11-03T08:13:24.255Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:task-score-display-preference:9a5c50030ad9029380a5d0ff0a1dd4babbec40ccaf433cf37955b045a4ea6b31",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: task-score-display-preference\nrevision: 2\ntype: preference\ntitle: 任务评分留在记录，回复默认不展示\nsummary: 项目任务评分默认只保留在任务记录，用户明确要求才展示；重要验证、风险和未完成事项仍说明。正式契约见Task技能。\nsources:\n  - session:01a19f74-985b-71ed-b277-8ea38b727416/task:task-score-record-only/event:4f3ec2ed35adeedf9b62ed41dcee15da6c4c89fe6d6c7390e26c5556911764b7\n  - session:01a19f74-985b-71ed-b277-8ea38b727416/task:task-score-record-only/event:e8c951a87562a78fbf6633adcc2443480a22747db0476cfa3d93d95c8985ac58\n  - skills/meta/task/SKILL.md#self-assessment\nupdated: 2026-11-03T03:50:36.750Z\ndeleted: false\n---\n\n## 项目展示偏好与权威引用\n用户提出任务系统不必每次回复附带自评等级，并在后续事件中确认调整。核对 `skills/meta/task/SKILL.md#self-assessment`（第211行）可见：三维等级、证据和局限保留在任务记录；用户回复（含完成交付）默认不展示等级或评分表，用户明确要求时除外；重要验证结果、风险、局限和未完成事项仍需说明。正式细则以该技能为准，不以记忆替代契约。\n\n## 纠正与适用范围\n取代此前‘仅确认不必逐次展示、尚无规则修改证据’的描述。仅适用于本项目任务系统，不推广为全局偏好，不取消自评或质量门禁。助手报告已同步 Task、Queue 和注入契约；本次直接核对的是 Task 条款，不将该报告视为模型行为已验证。\n",
+  "after": "---\nschema: csl-memory/v2\nid: task-score-display-preference\nrevision: 3\ntype: preference\ntitle: 任务评分留在记录，回复默认不展示\nsummary: 项目任务评分默认只保留在任务记录，用户明确要求才展示；重要验证、风险和未完成事项仍说明。正式契约见Task技能。\nsources:\n  - session:01a19f74-985b-71ed-b277-8ea38b727416/task:task-score-record-only/event:4f3ec2ed35adeedf9b62ed41dcee15da6c4c89fe6d6c7390e26c5556911764b7\n  - session:01a19f74-985b-71ed-b277-8ea38b727416/task:task-score-record-only/event:e8c951a87562a78fbf6633adcc2443480a22747db0476cfa3d93d95c8985ac58\n  - skills/meta/task/SKILL.md#self-assessment\nupdated: 2026-11-03T08:13:24.255Z\ndeleted: false\n---\n\n## 项目展示偏好与权威引用\n用户提出任务系统不必每次回复附带自评等级，并在后续事件中确认调整。核对 `skills/meta/task/SKILL.md#self-assessment`（第211行）可见：三维等级、证据和局限保留在任务记录；用户回复（含完成交付）默认不展示等级或评分表，用户明确要求时除外；重要验证结果、风险、局限和未完成事项仍需说明。正式细则以该技能为准，不以记忆替代契约。\n\n## 纠正与适用范围\n取代此前‘仅确认不必逐次展示、尚无规则修改证据’的描述。仅适用于本项目任务系统，不推广为全局偏好，不取消自评或质量门禁。助手报告已同步 Task、Queue 和注入契约；本次直接核对的是 Task 条款，不将该报告视为模型行为已验证。\n",
+  "beforeHash": "9a5c50030ad9029380a5d0ff0a1dd4babbec40ccaf433cf37955b045a4ea6b31",
+  "afterHash": "d7cd565fb532957af149c42ffd982e560cbc42172d578accde8795a9a8cdc303"
+}

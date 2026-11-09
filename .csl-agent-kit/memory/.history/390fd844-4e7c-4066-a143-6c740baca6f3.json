@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "390fd844-4e7c-4066-a143-6c740baca6f3",
+  "entryId": "legacy-lessons-c4d4acd64f5ea359d5f3",
+  "status": "committed",
+  "at": "2026-11-05T11:35:26.083Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-9e202660c5470b4d1098 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-c4d4acd64f5ea359d5f3\nrevision: 2\ntype: experience\ntitle: 模型生成短 UI 标签的确定性约束\nsummary: 生成标题、标签或徽标时，由代码验证长度与格式并跳过纯操作型消息，不只依赖提示词。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-28 为模型生成的短 UI 标签设置确定性边界:1\nupdated: 2026-11-03T08:13:23.546Z\ndeleted: false\n---\n\n## 2026-07-28 为模型生成的短 UI 标签设置确定性边界\n\n- **Trigger:**\n  - 模型生成终端标题、标签、徽标或其他要求严格简短且禁止出现操作过程的 UI 文本。\n- **Rule:**\n  - Prompt 负责描述核心语义，代码负责强制长度、清理模型元标签，并确定性跳过已知的纯操作型跟进；不得只依赖模型遵守格式和分类要求。\n  - 将用户报告的实际坏输出加入回归测试。\n- **Check:**\n  - 生成文本不超过产品规定的 Unicode 码点上限，且不含模型元标签。\n  - commit、push、test、retry、continue 等纯操作样例不会覆盖现有标签。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-c4d4acd64f5ea359d5f3\nrevision: 3\ntype: experience\ntitle: 模型生成短 UI 标签的确定性约束\nsummary: 生成标题、标签或徽标时，由代码验证长度与格式并跳过纯操作型消息，不只依赖提示词。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-28 为模型生成的短 UI 标签设置确定性边界:1\nupdated: 2026-11-05T11:35:26.039Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "176f0cc40563276cd130fba4b61a81dd424c14b2b2bdecd692c671b6fbc2753c",
+  "afterHash": "9f84b34bda70c21011676ee21f51f2b419853808c298791f8b58915a8b883d70"
+}

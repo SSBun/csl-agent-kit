@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "64264f37-44fd-4c4a-8216-113f23101569",
+  "entryId": "legacy-context-3f04e0f0972b0b999ca0",
+  "status": "committed",
+  "at": "2026-11-02T03:43:08.149Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留仍有效的质量门禁职责与验证边界，不把测试源码或结构通过当作行为验证。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:3f04e0f0972b0b999ca02fbe3b482d989dc79467a4c99fc4f81bdf39f329b680",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-context-3f04e0f0972b0b999ca0\nrevision: 1\ntype: fact\ntitle: Skill package 质量门禁\nsummary: 修改 Skill package 后如何运行确定性质量检查，以及它不能证明哪些行为。\nsources:\n  - legacy:tasks/context.md;\n    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;\n    unit:tasks/context.md#CTX-skill-quality — Built-in Skill package quality\n    gate:1\nupdated: 2026-11-02T03:43:08.149Z\ndeleted: false\n---\n\n## CTX-skill-quality — Built-in Skill package quality gate\n- Scope: 日常 Skill package 的确定性结构、资源、上下文预算与 routing fixture 验证，以及共享和项目本地 package 的检查入口。\n- Paths: `skills/meta/skill-quality/`, `AGENTS.md`, `.claude-plugin/plugin.json`, `README.md`, `tests/skill-quality.test.mjs`, `tests/pi-skill-commands.test.mjs`\n- Keywords: skill quality, validation, frontmatter, context budget, routing fixtures\n- Authority: `skills/meta/skill-quality/SKILL.md`, `skills/meta/skill-quality/scripts/check.js`, `AGENTS.md`\n- Recheck: 当 Skill package schema、routing fixture 格式、发现目录、上下文预算或日常维护门禁变化时复核。\n\n### Purpose and Boundaries\n- `skill-quality` 是仓库唯一的日常 Skill package 确定性质量门禁。\n- 工具只验证声明的 package 契约；不验证非 Skill 规则，也不运行 package 脚本、项目测试、构建、打包或 telemetry。\n\n### Structure\n- `scripts/check.js <skill-dir>` 检查单个 package；`--all --workspace <workspace>` 递归发现 `skills/` 与 `.agents/skills/` 下的叶子 `SKILL.md`。共享 Skill 仍由宿主递归发现，Claude manifest 显式枚举共享叶子，项目本地 Skill 不进入共享分发。\n- JSON 输出与人类输出都使用 package 级 `pass`、`warning`、`failure`；质量失败返回退出码 2，只有 warning 时返回 0，调用错误返回 1。\n- 门禁验证 frontmatter、JSON/YAML、现有 `agents/openai.yaml` display metadata、资源目录和 1000-token 初始加载 warning budget；存在 `trigger_cases.json` 与 `semantic_config.json` 时执行确定性 routing 分类。\n\n### Decision and Verification Boundaries\n- 日常 Skill 修改必须逐包运行内置门禁，失败阻塞完成；warning 需要结合 package 语义评估，workflow 的完整性优先于初始加载预算。\n- 聚焦行为测试、宿主发现、manifest 一致性和 package 专属验证仍由对应项目检查证明，不能由结构门禁替代。\n",
+  "beforeHash": null,
+  "afterHash": "b46eb38ca9d77a240dc35f85f07b58c4db7d7d797a3a701d58aa09bab4079950"
+}

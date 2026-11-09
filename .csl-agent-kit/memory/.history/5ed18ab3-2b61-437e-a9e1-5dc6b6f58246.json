@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "5ed18ab3-2b61-437e-a9e1-5dc6b6f58246",
+  "entryId": "legacy-lessons-85aba95d4e2536609b3c",
+  "status": "committed",
+  "at": "2026-11-03T08:13:22.917Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-85aba95d4e2536609b3c:dadd90055e3dc817fa85456bd8a53e241d72165717d96300c2078ddcfcae420b",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-85aba95d4e2536609b3c\nrevision: 1\ntype: fact\ntitle: Skill package 的项目语言约定\nsummary: 编写 Skill 规则、运行契约或评测说明时使用；用户回复与报告语言独立处理。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-08-07 Skill packages use English:1\nupdated: 2026-11-02T03:43:09.359Z\ndeleted: false\n---\n\n## 2026-08-07 Skill packages use English\n\n- **Trigger:**\n  - Creating or modifying any project-local or distributable skill package.\n- **Rule:**\n  - Write `SKILL.md`, runtime references, prompts, templates, and eval-facing prose in English.\n  - Keep generated reports and user-facing answers in the user's language.\n  - Do not bulk-translate unrelated existing skill packages unless the user explicitly requests a repository-wide migration.\n- **Check:**\n  - Changed skill-package prose is English, except fixtures that intentionally test another language.\n  - Report language remains independent from skill-source language.\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-85aba95d4e2536609b3c\nrevision: 2\ntype: fact\ntitle: Skill package 的项目语言约定\nsummary: 编写 Skill 规则、运行契约或评测说明时使用；用户回复与报告语言独立处理。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-08-07 Skill packages use English:1\nupdated: 2026-11-03T08:13:22.917Z\ndeleted: false\n---\n\n## 2026-08-07 Skill packages use English\n\n- **Trigger:**\n  - Creating or modifying any project-local or distributable skill package.\n- **Rule:**\n  - Write `SKILL.md`, runtime references, prompts, templates, and eval-facing prose in English.\n  - Keep generated reports and user-facing answers in the user's language.\n  - Do not bulk-translate unrelated existing skill packages unless the user explicitly requests a repository-wide migration.\n- **Check:**\n  - Changed skill-package prose is English, except fixtures that intentionally test another language.\n  - Report language remains independent from skill-source language.\n",
+  "beforeHash": "dadd90055e3dc817fa85456bd8a53e241d72165717d96300c2078ddcfcae420b",
+  "afterHash": "51b0ebb804f7dbea90cc76ecdb8734a81d58e80695d18662bb444a28d8e5d860"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "09aecd6c-0e2b-41f6-b257-956859ccbf9b",
+  "entryId": "legacy-lessons-85aba95d4e2536609b3c",
+  "status": "committed",
+  "at": "2026-11-05T11:06:09.596Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "全部语言约定、fixture例外、局部修改边界及来源已合入legacy-context-c9e1b7a7d7d8266238aa revision 4并回读验证；无项目活跃入链。删除重复chip以收敛容量。",
+  "source": "memory-event:05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c:10d259836f814a644c98d4e17ce752a8fff40e3b591c7c30552151a5cd0efc7d; maintenance event:05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c; session:memory-budget-activation; task:memory-file-count-budget",
+  "session": "memory-budget-activation",
+  "task": "memory-file-count-budget",
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-85aba95d4e2536609b3c\nrevision: 2\ntype: fact\ntitle: Skill package 的项目语言约定\nsummary: 编写 Skill 规则、运行契约或评测说明时使用；用户回复与报告语言独立处理。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-08-07 Skill packages use English:1\nupdated: 2026-11-03T08:13:22.917Z\ndeleted: false\n---\n\n## 2026-08-07 Skill packages use English\n\n- **Trigger:**\n  - Creating or modifying any project-local or distributable skill package.\n- **Rule:**\n  - Write `SKILL.md`, runtime references, prompts, templates, and eval-facing prose in English.\n  - Keep generated reports and user-facing answers in the user's language.\n  - Do not bulk-translate unrelated existing skill packages unless the user explicitly requests a repository-wide migration.\n- **Check:**\n  - Changed skill-package prose is English, except fixtures that intentionally test another language.\n  - Report language remains independent from skill-source language.\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-85aba95d4e2536609b3c\nrevision: 3\ntype: fact\ntitle: Skill package 的项目语言约定\nsummary: 编写 Skill 规则、运行契约或评测说明时使用；用户回复与报告语言独立处理。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-08-07 Skill packages use English:1\nupdated: 2026-11-05T11:06:09.583Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "51b0ebb804f7dbea90cc76ecdb8734a81d58e80695d18662bb444a28d8e5d860",
+  "afterHash": "57b7b68536d229dc3a5e74cd3efe132443ef76afe662d4f9ed51f21c72f86f5e"
+}

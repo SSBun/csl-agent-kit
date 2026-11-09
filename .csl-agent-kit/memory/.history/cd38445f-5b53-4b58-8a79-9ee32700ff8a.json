@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "cd38445f-5b53-4b58-8a79-9ee32700ff8a",
+  "entryId": "recall-first-index-design-reference",
+  "status": "committed",
+  "at": "2026-11-03T08:13:24.193Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:recall-first-index-design-reference:fd98d246ed8da5183f1b4b85267d29d56034548db4c354baf522c72e31da7bb7",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: recall-first-index-design-reference\nrevision: 3\ntype: reference\ntitle: 召回优先Memory架构设计文档引用\nsummary: 召回优先、多入口及检索卡片方向已获认可；架构稿集中描述chip、卡片库、主题导航与薄总览。仅为设计提案，不代表当前运行时。\nsources:\n  - tasks/tasks/design-recall-first-memory-index.md\n  - tasks/artifacts/design-recall-first-memory-index/specs/2026-11-03-recall-first-memory-architecture.md\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:5be932f7d55631e8e4cf8b5ef75a370121a8b4a37eec3f4d275d9fd8355072bc\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:c54a8c2968c4ec9a52c4bd7d0709235619048b48e850a3dc2154caf9869638b1\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:a154e51db5a586914e61a5f83b08917794288115b37af11b9138e74c44a95ac4\nupdated: 2026-11-03T07:27:55.300Z\ndeleted: false\n---\n\n## 设计来源\n新版架构提案：`tasks/artifacts/design-recall-first-memory-index/specs/2026-11-03-recall-first-memory-architecture.md`。任务载体：`tasks/tasks/design-recall-first-memory-index.md`。查阅设计时优先读文档，不以本条复制或替代规格。\n\n## 已认可的方向\n用户强调相关知识及适用条件的召回优先，成本次之；已确认同一权威正文允许多个发现入口，不限单一目录分支，不复制知识版本。用户随后认可检索卡片思路，并明确要求根据讨论形成新版架构设计文档。\n\n## 提案与实现边界\n文档提出权威chip正文、完整检索卡片库、多入口主题导航及薄总览。它自述为供后续实施的架构提案，不表示运行时已实现，也不替代现有正式规范；具体schema、预算、迁移步骤和验收阈值仍属于提案。用户要求文档，不等于逐项批准文档新增细节或授权运行模型实验。\n这更新了此前仅以讨论中的待确认三层建议定位该方案的描述：现在已有可回查的设计文档，但仍不能把提案当作已实施行为。原试跑证据及外推限制另见 `memory-index-pilot-evidence`。\n",
+  "after": "---\nschema: csl-memory/v2\nid: recall-first-index-design-reference\nrevision: 4\ntype: reference\ntitle: 召回优先Memory架构设计文档引用\nsummary: 召回优先、多入口及检索卡片方向已获认可；架构稿集中描述chip、卡片库、主题导航与薄总览。仅为设计提案，不代表当前运行时。\nsources:\n  - tasks/tasks/design-recall-first-memory-index.md\n  - tasks/artifacts/design-recall-first-memory-index/specs/2026-11-03-recall-first-memory-architecture.md\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:5be932f7d55631e8e4cf8b5ef75a370121a8b4a37eec3f4d275d9fd8355072bc\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:c54a8c2968c4ec9a52c4bd7d0709235619048b48e850a3dc2154caf9869638b1\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:a154e51db5a586914e61a5f83b08917794288115b37af11b9138e74c44a95ac4\nupdated: 2026-11-03T08:13:24.193Z\ndeleted: false\n---\n\n## 设计来源\n新版架构提案：`tasks/artifacts/design-recall-first-memory-index/specs/2026-11-03-recall-first-memory-architecture.md`。任务载体：`tasks/tasks/design-recall-first-memory-index.md`。查阅设计时优先读文档，不以本条复制或替代规格。\n\n## 已认可的方向\n用户强调相关知识及适用条件的召回优先，成本次之；已确认同一权威正文允许多个发现入口，不限单一目录分支，不复制知识版本。用户随后认可检索卡片思路，并明确要求根据讨论形成新版架构设计文档。\n\n## 提案与实现边界\n文档提出权威chip正文、完整检索卡片库、多入口主题导航及薄总览。它自述为供后续实施的架构提案，不表示运行时已实现，也不替代现有正式规范；具体schema、预算、迁移步骤和验收阈值仍属于提案。用户要求文档，不等于逐项批准文档新增细节或授权运行模型实验。\n这更新了此前仅以讨论中的待确认三层建议定位该方案的描述：现在已有可回查的设计文档，但仍不能把提案当作已实施行为。原试跑证据及外推限制另见 `memory-index-pilot-evidence`。\n",
+  "beforeHash": "fd98d246ed8da5183f1b4b85267d29d56034548db4c354baf522c72e31da7bb7",
+  "afterHash": "73c9268418d55725b458a6df26385780eb110c6792a5aeeb1c3c363cd4a95471"
+}

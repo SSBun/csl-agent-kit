@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "022fa7ba-2e8e-4fc5-a8f5-e98129a866a8",
+  "entryId": "legacy-lessons-b2bf252c5ad15be46531",
+  "status": "committed",
+  "at": "2026-11-03T08:13:23.298Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-b2bf252c5ad15be46531:fc0139ea479fa2ddb5b933940cb10767976c9ae0277883bffb683c184ebeabec",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-b2bf252c5ad15be46531\nrevision: 1\ntype: experience\ntitle: 新记录校验不要被历史样例放宽\nsummary: 同一索引保留旧记录时，只对当前触及的新记录落实现行契约，不借机批量迁移。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-29 用目标化检查阻止历史样例覆盖新记录契约:1\nupdated: 2026-11-02T03:43:09.567Z\ndeleted: false\n---\n\n## 2026-07-29 用目标化检查阻止历史样例覆盖新记录契约\n\n- **Trigger:**\n  - 同一索引保留旧格式历史记录，但新建、重新打开或更新的记录必须采用新格式。\n- **Rule:**\n  - 为当前触及的记录提供可执行格式检查，并在写入后强制运行；不得因历史兼容边界而只依赖提示文本。\n  - 检查只针对当前记录，不能要求批量迁移未触及的历史数据。\n- **Check:**\n  - 新格式目标记录通过，旧格式或与 canonical record 不一致的目标记录失败。\n  - 未触及的旧格式兄弟记录不阻塞当前检查。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-b2bf252c5ad15be46531\nrevision: 2\ntype: experience\ntitle: 新记录校验不要被历史样例放宽\nsummary: 同一索引保留旧记录时，只对当前触及的新记录落实现行契约，不借机批量迁移。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-29 用目标化检查阻止历史样例覆盖新记录契约:1\nupdated: 2026-11-03T08:13:23.297Z\ndeleted: false\n---\n\n## 2026-07-29 用目标化检查阻止历史样例覆盖新记录契约\n\n- **Trigger:**\n  - 同一索引保留旧格式历史记录，但新建、重新打开或更新的记录必须采用新格式。\n- **Rule:**\n  - 为当前触及的记录提供可执行格式检查，并在写入后强制运行；不得因历史兼容边界而只依赖提示文本。\n  - 检查只针对当前记录，不能要求批量迁移未触及的历史数据。\n- **Check:**\n  - 新格式目标记录通过，旧格式或与 canonical record 不一致的目标记录失败。\n  - 未触及的旧格式兄弟记录不阻塞当前检查。\n",
+  "beforeHash": "fc0139ea479fa2ddb5b933940cb10767976c9ae0277883bffb683c184ebeabec",
+  "afterHash": "2f2ca5911223f04747fb7b3c4ff4bb53a9f3847b8b2f6f4e9d7074db19819ddc"
+}

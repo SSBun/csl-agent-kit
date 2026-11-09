@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "982dad57-5d38-4181-8109-ca38443121f4",
+  "entryId": "legacy-lessons-cab48fff3215d7a069b0",
+  "status": "committed",
+  "at": "2026-11-03T08:13:23.759Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-cab48fff3215d7a069b0:0def5d22c1a67103adbee47d6457a82ecd4e1571688913ee7d74874caafe4493",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-cab48fff3215d7a069b0\nrevision: 1\ntype: experience\ntitle: 发布后核对最终远端 CI\nsummary: push、打 tag 或发布后核对远端 headSha 和最终 CI 结论，不复用旧证据。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-31 发布完成前必须验证最终远端 CI:1\nupdated: 2026-11-02T03:43:09.423Z\ndeleted: false\n---\n\n## 2026-07-31 发布完成前必须验证最终远端 CI\n\n- **Trigger:**\n  - 任务包含向受 CI 保护的分支 push、打 tag 或发布包。\n- **Rule:**\n  - 最终 push 后必须定位与远端目标 branch HEAD 完全一致的 CI run，并等待其成功；本地测试、dry-run、registry 发布成功或旧 commit 的 CI 结果都不能替代该检查。\n  - CI 失败时立即重新打开所属任务，修复并验证新的最终 run 后才能报告发布完成。\n- **Check:**\n  - CI run 的 `headSha` 与远端 branch HEAD 一致，且结论为 `success`。\n  - 任务 Result 记录最终 run 的 ID 或 URL 与成功结论。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-cab48fff3215d7a069b0\nrevision: 2\ntype: experience\ntitle: 发布后核对最终远端 CI\nsummary: push、打 tag 或发布后核对远端 headSha 和最终 CI 结论，不复用旧证据。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-31 发布完成前必须验证最终远端 CI:1\nupdated: 2026-11-03T08:13:23.758Z\ndeleted: false\n---\n\n## 2026-07-31 发布完成前必须验证最终远端 CI\n\n- **Trigger:**\n  - 任务包含向受 CI 保护的分支 push、打 tag 或发布包。\n- **Rule:**\n  - 最终 push 后必须定位与远端目标 branch HEAD 完全一致的 CI run，并等待其成功；本地测试、dry-run、registry 发布成功或旧 commit 的 CI 结果都不能替代该检查。\n  - CI 失败时立即重新打开所属任务，修复并验证新的最终 run 后才能报告发布完成。\n- **Check:**\n  - CI run 的 `headSha` 与远端 branch HEAD 一致，且结论为 `success`。\n  - 任务 Result 记录最终 run 的 ID 或 URL 与成功结论。\n",
+  "beforeHash": "0def5d22c1a67103adbee47d6457a82ecd4e1571688913ee7d74874caafe4493",
+  "afterHash": "180e10221d1d848bc9443deee467154fcd7441efae9f1b4d39cacf7af8a685e1"
+}

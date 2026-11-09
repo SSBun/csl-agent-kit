@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "66872e7e-085c-4428-ac49-b48d83ce48e9",
+  "entryId": "memory-workspace-concurrency-goal",
+  "status": "committed",
+  "at": "2026-11-05T08:59:36.507Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "用户明确取消跨workspace两个并行上限；以当前正式契约替换旧的尚属建议描述。",
+  "source": "memory-event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523:eccce007c2870a3c4e49584903c8d9a00b89d548c2848c428589ddb99b30dff4; session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-workspace-concurrency/event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523",
+  "session": "01a1a559-31fa-7763-ad77-d5e88546996a",
+  "task": "memory-workspace-concurrency",
+  "before": "---\nschema: csl-memory/v2\nid: memory-workspace-concurrency-goal\nrevision: 1\ntype: preference\ntitle: Memory 按工作区独立并行处理目标\nsummary: 期望每个workspace有独立Memory Agent并行处理；现有契约已隔离会话但最多两个workspace并行，取消全局上限尚属建议。\nsources:\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-discard-invalid-backlog/event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936#user-and-assistant\n  - docs/memory.md:143-145\nupdated: 2026-11-05T08:37:30.208Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory工作区并发\n    - 每个workspace独立Memory Agent\n  situations:\n    - 设计Memory跨工作区并行调度\n    - 区分Memory Agent会话隔离与全局并发上限\n  topics:\n    - Memory/并发调度\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\n项目目标：每个 workspace 拥有独立 Memory Agent，使不同工作区可并行处理记忆。\n\n现有运行契约见 `docs/memory.md`：每工作区独立复用会话，工作区内串行，跨工作区最多两个并行。目标不代表已取消并发上限；取消全局上限是助手建议，尚无具体新上限决定。\n",
+  "after": "---\nschema: csl-memory/v2\nid: memory-workspace-concurrency-goal\nrevision: 2\ntype: preference\ntitle: Memory 按工作区独立并行处理\nsummary: 不同workspace独立并行，取消全局两个并发上限；同workspace仍串行。运行契约与后台激活证据分别核对。\nsources:\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-discard-invalid-backlog/event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936#user-and-assistant\n  - docs/memory.md#后台与宿主接入\n  - .csl-agent-kit/tasks/tasks/memory-workspace-concurrency.md#Scope\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-workspace-concurrency/event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523#user-and-assistant\nupdated: 2026-11-05T08:59:36.466Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory工作区并发\n    - 每个workspace独立Memory Agent\n  situations:\n    - 设计Memory跨工作区并行调度\n    - 区分Memory Agent会话隔离与全局并发上限\n  topics:\n    - Memory/并发调度\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\nMemory：每workspace独立复用Agent会话；不同workspace独立并行，不设全局两个并发上限；同workspace串行。正式契约见 docs/memory.md。契约与隔离验证不证明真实后台已启用新版本，激活依据查任务记录。\n",
+  "beforeHash": "f029afd69c3f6ffe8131135fc6956129b206eb74cab1c3c4ef1fc83687228a4d",
+  "afterHash": "f8c80c7b15ee73425bcdcb198ddb6afdac6979dc2716937d93390422190e7980"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "69ccb384-ae18-461e-a8b3-30ea32c11806",
+  "entryId": "memory-workspace-concurrency-goal",
+  "status": "committed",
+  "at": "2026-11-05T08:37:30.227Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "用户提出按工作区独立Memory Agent并行处理的项目目标；现有运行边界与自动恢复条目不包含此需求。文档仍规定最多两个工作区并行，保留目标与实现的区别，不保存临时队列数字或将取消上限建议当成决定。",
+  "source": "memory-event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936:598512d33f3cb6b9988fdd6c691c76e1cb80602035c87383a4d319c0b7f00ba2; session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-discard-invalid-backlog/event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936",
+  "session": "01a1a559-31fa-7763-ad77-d5e88546996a",
+  "task": "memory-discard-invalid-backlog",
+  "before": null,
+  "after": "---\nschema: csl-memory/v2\nid: memory-workspace-concurrency-goal\nrevision: 1\ntype: preference\ntitle: Memory 按工作区独立并行处理目标\nsummary: 期望每个workspace有独立Memory Agent并行处理；现有契约已隔离会话但最多两个workspace并行，取消全局上限尚属建议。\nsources:\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-discard-invalid-backlog/event:8ef96be9c8f281a485fd5fc039231215932bfb19f602c3517016066c6b74a936#user-and-assistant\n  - docs/memory.md:143-145\nupdated: 2026-11-05T08:37:30.208Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory工作区并发\n    - 每个workspace独立Memory Agent\n  situations:\n    - 设计Memory跨工作区并行调度\n    - 区分Memory Agent会话隔离与全局并发上限\n  topics:\n    - Memory/并发调度\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\n项目目标：每个 workspace 拥有独立 Memory Agent，使不同工作区可并行处理记忆。\n\n现有运行契约见 `docs/memory.md`：每工作区独立复用会话，工作区内串行，跨工作区最多两个并行。目标不代表已取消并发上限；取消全局上限是助手建议，尚无具体新上限决定。\n",
+  "beforeHash": null,
+  "afterHash": "f029afd69c3f6ffe8131135fc6956129b206eb74cab1c3c4ef1fc83687228a4d"
+}

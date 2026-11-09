@@ -1,0 +1,8 @@
+{
+  "schema": "csl-memory-store/v1",
+  "version": 4,
+  "scope": "project",
+  "completed": "2026-11-05T10:54:45.754Z",
+  "migration": ".migrations/format-v3",
+  "originalSourcesPreserved": true
+}

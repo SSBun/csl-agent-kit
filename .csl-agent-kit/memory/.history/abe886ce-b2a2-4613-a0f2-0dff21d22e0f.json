@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "abe886ce-b2a2-4613-a0f2-0dff21d22e0f",
+  "entryId": "pi-git-status-display",
+  "status": "committed",
+  "at": "2026-11-05T11:35:27.674Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-66a03bd93c7948718f2d 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: pi-git-status-display\nrevision: 1\ntype: preference\ntitle: Pi Git 状态显示偏好\nsummary: Git状态图标只显示工作区是否干净，不显示改动数量。\nsources:\n  - session:01a1aa58-9de8-71d2-8315-2cedf5cf3d26/task:compact-git-clean-status/event:91f64d78e4f04ef3f5e674d2ef4348a5c20188b92f3dddf48d7a959288bb29ce#user\nupdated: 2026-11-05T07:47:55.791Z\ndeleted: false\nretrieval:\n  aliases:\n    - Git状态图标\n    - git status\n    - 工作区是否干净\n  situations:\n    - 调整Pi底栏Git状态展示\n  topics:\n    - Pi/状态栏\n  links: []\n---\n\nPi Git 状态图标：仅区分工作区干净／有改动；不显示改动数量。\n",
+  "after": "---\nschema: csl-memory/v2\nid: pi-git-status-display\nrevision: 2\ntype: preference\ntitle: Pi Git 状态显示偏好\nsummary: Git状态图标只显示工作区是否干净，不显示改动数量。\nsources:\n  - session:01a1aa58-9de8-71d2-8315-2cedf5cf3d26/task:compact-git-clean-status/event:91f64d78e4f04ef3f5e674d2ef4348a5c20188b92f3dddf48d7a959288bb29ce#user\nupdated: 2026-11-05T11:35:27.580Z\ndeleted: true\nretrieval:\n  aliases:\n    - Git状态图标\n    - git status\n    - 工作区是否干净\n  situations:\n    - 调整Pi底栏Git状态展示\n  topics:\n    - Pi/状态栏\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "328879758034c4ef1af2d4fa0db8d0d77e2214a9b4cfb2975efa71b34179638b",
+  "afterHash": "b58842602b4b6529905166589d4cca62f2706d8411e6949fbda53c717cff1ff4"
+}

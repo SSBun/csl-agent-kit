@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "d61a7960-437e-4155-92d6-82f46d168758",
+  "entryId": "legacy-lessons-3a8f298b3b233c63d7fa",
+  "status": "committed",
+  "at": "2026-11-05T11:15:34.778Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "完整有效条件及来源已合并到legacy-context-c1c22f866bd05d47dfff并回读核对；无活跃入链。",
+  "source": "memory-event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de:c10790441a81dfec14f12fcd11fc1e1b965de50d56c4880e4d4b4e4d1f873d1e; maintenance:event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de/session:memory-budget-activation/task:memory-file-count-budget",
+  "session": "memory-budget-activation",
+  "task": "memory-file-count-budget",
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-3a8f298b3b233c63d7fa\nrevision: 2\ntype: experience\ntitle: 避免无用途的 Skill 特殊接口目录\nsummary: 清理孤立结构前核查运行和打包消费者；仅在无用途且任务授权覆盖时移除。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-10 Avoid One-Off Skill Interface Folders:1\nupdated: 2026-11-03T08:13:22.495Z\ndeleted: false\n---\n\n## 2026-07-10 Avoid One-Off Skill Interface Folders\n\n- **Trigger:** 某个 skill 单独包含 `agents/` 接口元数据，但项目中的其他 skills 不采用该结构，且运行时和打包配置都不依赖它。\n  - **Rule:** 先检查引用和运行依赖；没有实际用途时删除这个一次性目录，不要为了形式完整保留孤立元数据。\n  - **Why:** 单个 skill 的特殊目录会制造错误的项目约定，并增加维护和审计噪声。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-3a8f298b3b233c63d7fa\nrevision: 3\ntype: experience\ntitle: 避免无用途的 Skill 特殊接口目录\nsummary: 清理孤立结构前核查运行和打包消费者；仅在无用途且任务授权覆盖时移除。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-10 Avoid One-Off Skill Interface Folders:1\nupdated: 2026-11-05T11:15:34.769Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "1874cd687d2a30e7a2128945b14747fba889b46bf20135bde445451d66a5362d",
+  "afterHash": "eacb42c64abe33b6131a2a23cd6061ee232f08df9af1c6751522262e0118af34"
+}

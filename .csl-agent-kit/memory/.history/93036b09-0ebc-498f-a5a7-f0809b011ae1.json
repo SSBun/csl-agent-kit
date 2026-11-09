@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "93036b09-0ebc-498f-a5a7-f0809b011ae1",
+  "entryId": "memory-automatic-failure-recovery-goal",
+  "status": "committed",
+  "at": "2026-11-05T09:00:33.362Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "将未定的自动重试方案改为用户要求与正式文档规定的累计两次上限，保留部分提交、重启及周期冷却例外。",
+  "source": "memory-event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523:ab80409ff249ef16da52d6501629ef98500d24affe71e3f07a9a037b5fa5195c; session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-workspace-concurrency/event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523",
+  "session": "01a1a559-31fa-7763-ad77-d5e88546996a",
+  "task": "memory-workspace-concurrency",
+  "before": "---\nschema: csl-memory/v2\nid: memory-automatic-failure-recovery-goal\nrevision: 1\ntype: preference\ntitle: Memory 失败与阻塞的自动恢复目标\nsummary: 希望Memory自动修复失败或阻塞批次；自动重试次数、退避及恢复判定仍是方案建议，不代表已实施。\nsources:\n  - session:01a1aa58-9de8-71d2-8315-2cedf5cf3d26/task:fix-memory-failed-batches/event:ac474ce3f470378e989c585fc4ef9a82a46be1413d44748b9d47412fb35e60d8;\n    用户询问如何让Memory Agent自动修复失败或阻塞任务；助手提出分层恢复方案\n  - docs/memory.md:145; 当前显式retry运行边界\nupdated: 2026-11-05T06:41:33.519Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory自动恢复\n    - 失败批次自愈\n  situations:\n    - 设计Memory失败或阻塞批次的自动恢复\n    - 区分自动恢复目标与现有显式retry机制\n  topics:\n    - Memory/自动恢复\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\n项目目标：Memory Agent 能自动修复失败或阻塞的记忆处理批次，减少依赖人工逐批恢复。\n\n需求方向不等于现有能力；当前运行契约仍要求失败后显式 retry。批次内工具纠错、基于已有提交续做、退避与有限重试是助手建议；最多自动重试2次及 blocked 状态设计未定案。\n",
+  "after": "---\nschema: csl-memory/v2\nid: memory-automatic-failure-recovery-goal\nrevision: 2\ntype: preference\ntitle: Memory 自动恢复与两次尝试上限\nsummary: 每条输入累计最多两次尝试，首次加一次自动重试；耗尽标记exhausted并继续后续记录。重启和手动retry不重置上限，部分提交保留；周期复查仍有24小时冷却。\nsources:\n  - session:01a1aa58-9de8-71d2-8315-2cedf5cf3d26/task:fix-memory-failed-batches/event:ac474ce3f470378e989c585fc4ef9a82a46be1413d44748b9d47412fb35e60d8;\n    自动恢复目标\n  - docs/memory.md#后台与宿主接入\n  - .csl-agent-kit/tasks/tasks/memory-workspace-concurrency.md#Scope\n  - .csl-agent-kit/tasks/tasks/memory-workspace-concurrency.md#Result\n  - session:01a1a559-31fa-7763-ad77-d5e88546996a/task:memory-workspace-concurrency/event:f8ca6e61b4756d31842221060be029ea088499a966be656e9702492060382523#user-and-assistant\nupdated: 2026-11-05T09:00:33.332Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory自动恢复\n    - 失败批次自愈\n    - exhausted\n    - 两次尝试上限\n    - 已跳过\n  situations:\n    - 设计Memory失败或阻塞批次的自动恢复\n    - 判断重启或手动retry能否重置尝试次数\n    - 处理周期复查耗尽后的调度与冷却\n  topics:\n    - Memory/自动恢复\n    - Memory/定期复查与清理\n  links:\n    - kind: related\n      scope: project\n      id: legacy-context-97c02696d8c555646b77\n---\n\nMemory 自动恢复：每条事件累计最多两次尝试＝首次＋一次自动重试；成功不重复处理。失败、中断和历史 attempts 均计入，跨重启保留，手动 retry 不得绕过。两次仍未完成标记 exhausted（已跳过），继续后续记录；保留输入、错误及已有部分提交，续做前核对知识和审计。\n\n周期复查同样受两次上限约束；耗尽不冒充成功、不推进成功游标，调度从该批候选末尾继续，仍等待24小时周期，防止换批次立即重试同一内容。正式运行契约见 docs/memory.md；运行态激活另查任务证据。\n",
+  "beforeHash": "72fe9d207e8341de1941ed793d07578df6d825fdcfe0c5ff48d30e2f3b353708",
+  "afterHash": "c6ebb3a4ebfdd959989149fbd16ae6d9694f8697492d053fbb96be064eb16a9e"
+}

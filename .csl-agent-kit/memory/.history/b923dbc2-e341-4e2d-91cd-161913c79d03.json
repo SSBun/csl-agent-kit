@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "b923dbc2-e341-4e2d-91cd-161913c79d03",
+  "entryId": "legacy-lessons-c5a35c3c5696edfe3676",
+  "status": "committed",
+  "at": "2026-11-02T03:43:11.438Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留架构理解应解释职责与关系而非堆砌目录清单的经验。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:c5a35c3c5696edfe3676d8f277c9cd0798c98cf0dab6fdd9e6f39b9a5c604d77",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-c5a35c3c5696edfe3676\nrevision: 1\ntype: experience\ntitle: Repo Map 聚焦职责和关系\nsummary: 解释代码库时呈现入口、类型、职责与调用关系，不重复显而易见的元数据。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-06-25 Repo Map Deep Concepts Only:1\nupdated: 2026-11-02T03:43:11.438Z\ndeleted: false\n---\n\n## 2026-06-25 Repo Map Deep Concepts Only\n\n- **Trigger:** 设计 repo-map 输出或示例内容时。\n  - **Rule:** 不要输出一眼就能看出的项目名、语言、框架等 inventory；只输出通过文件结构、CodeGraph、调用关系和代码阅读确认的组件职责、模块边界、关键类型职责和客观流程。\n  - **Why:** repo-map 的价值是帮助 agent 快速理解项目结构和核心职责，不是重复项目元数据或解释实现细节。\n",
+  "beforeHash": null,
+  "afterHash": "f2fc367fc5afe22d4b1d71e10eee45b881cb9138821af43d4546d11df02a7547"
+}

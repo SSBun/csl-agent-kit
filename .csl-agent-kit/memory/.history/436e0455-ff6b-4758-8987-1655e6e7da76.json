@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "436e0455-ff6b-4758-8987-1655e6e7da76",
+  "entryId": "legacy-lessons-4d41e994a36c0cfd127b",
+  "status": "committed",
+  "at": "2026-11-02T03:43:10.021Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留稳定规则与易变工作流的职责分离。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:4d41e994a36c0cfd127b9195e017bd1f1e727ba3d640dfec067997d0f860b5e6",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-4d41e994a36c0cfd127b\nrevision: 1\ntype: experience\ntitle: 稳定触发规则与易变工作流分开\nsummary: 精简规则时保留触发、强制动作和顺序，把易变步骤放入对应 Skill，而非只留一个名字。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-21 将易变工作流留在 Skill 中:1\nupdated: 2026-11-02T03:43:10.021Z\ndeleted: false\n---\n\n## 2026-07-21 将易变工作流留在 Skill 中\n\n- **Trigger:** 优化通用或项目 `AGENTS.md`，且相关 workflow 依赖 skill 主动触发。\n- **Rule:** `AGENTS.md` 必须保留稳定的触发条件、强制动作、先后顺序和跳过边界；只有易变的字段、循环和输出契约留在 skill。不得把启动工作流所必需的信息压缩成只有 skill 名称或高层路由。\n- **Check:** 脱离 hook 注入时，仅阅读 `AGENTS.md` 也能判断何时加载 skill、实施前应读写哪些文件，以及何时可以跳过。\n",
+  "beforeHash": null,
+  "afterHash": "9f84e50bc2af1d22ddc77675d2e077caf3ccfa5f2104cbdc4126504a6222ef2f"
+}

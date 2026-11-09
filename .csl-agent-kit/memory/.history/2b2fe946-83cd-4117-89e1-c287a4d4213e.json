@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "2b2fe946-83cd-4117-89e1-c287a4d4213e",
+  "entryId": "legacy-lessons-9a3d0f352a67b63c4671",
+  "status": "committed",
+  "at": "2026-11-05T11:16:27.708Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "清空后保持为空及推荐不授权重装完整合并至已回读的legacy-context-c1c22f866bd05d47dfff。",
+  "source": "memory-event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de:d12388e83533037fe79e6b88d93ffaac315d6436e155de43cf65cafb5eac5039; maintenance:event:c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de",
+  "session": "memory-budget-activation",
+  "task": "memory-file-count-budget",
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-9a3d0f352a67b63c4671\nrevision: 2\ntype: experience\ntitle: 清空与重新选择整合是独立授权\nsummary: 用户要求清空后查看候选时，目录应保持为空；推荐清单不等于安装授权。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-16 将“清空”和“选择整合”视为两个独立阶段:1\nupdated: 2026-11-03T08:13:23.174Z\ndeleted: false\n---\n\n## 2026-07-16 将“清空”和“选择整合”视为两个独立阶段\n\n- **Trigger:** 用户要求清空 `~/.agents/skills` 后列出上游技能，随后纠正我不应自动重装推荐集合。\n  - **Rule:** 当用户要求清空目标目录、再从候选列表选择未来整合项时，清理完成后的目录必须保持为空；只列出候选并等待明确选择，不能把推荐清单当作安装授权。\n  - **Why:** 清理的最终状态和后续整合选择是两个独立决策；自动重装会违背“清空全部”的字面结果。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-9a3d0f352a67b63c4671\nrevision: 3\ntype: experience\ntitle: 清空与重新选择整合是独立授权\nsummary: 用户要求清空后查看候选时，目录应保持为空；推荐清单不等于安装授权。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-16 将“清空”和“选择整合”视为两个独立阶段:1\nupdated: 2026-11-05T11:16:27.699Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "ee5731c60039a54ee22564f60d636ef97a8ed25f87702b633a3f2c0b9b4cc80e",
+  "afterHash": "b927e3ca8c188bbefca4ec9bb23587462cd1226a1e77656912f6baa5f7c43a5a"
+}

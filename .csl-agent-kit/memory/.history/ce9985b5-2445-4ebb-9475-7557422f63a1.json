@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "ce9985b5-2445-4ebb-9475-7557422f63a1",
+  "entryId": "legacy-lessons-bc839c3424a94bad3409",
+  "status": "committed",
+  "at": "2026-11-02T03:43:11.181Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留用户明确不要求兼容时不增加旧 alias 的经验。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:bc839c3424a94bad3409b8b437c21853fcaebe9b45ca7e7c2a0f0d10a8c373cc",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-bc839c3424a94bad3409\nrevision: 1\ntype: experience\ntitle: 无兼容要求的重命名不保留旧入口\nsummary: 用户明确取消旧兼容时，同步移除旧 fallback、环境变量与示例，不保留长期双轨。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-09 Rename Means No Legacy Compatibility By\n    Default:1\nupdated: 2026-11-02T03:43:11.181Z\ndeleted: false\n---\n\n## 2026-07-09 Rename Means No Legacy Compatibility By Default\n\n- **Trigger:** Renaming project-owned paths, plugin namespaces, or user-facing identifiers after the user says compatibility is not needed.\n  - **Rule:** Remove old fallback paths, old environment variables, and old invocation examples instead of preserving compatibility layers.\n  - **Why:** Compatibility code keeps stale branding alive and makes docs, scripts, and behavior harder to reason about.\n",
+  "beforeHash": null,
+  "afterHash": "32bbd2e08d97e4ae725464fcd78b50179aa62c3472dd479515f8a921e2d72b85"
+}

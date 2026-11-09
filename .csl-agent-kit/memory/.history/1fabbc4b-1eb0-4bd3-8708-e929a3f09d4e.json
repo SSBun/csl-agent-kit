@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "1fabbc4b-1eb0-4bd3-8708-e929a3f09d4e",
+  "entryId": "legacy-lessons-51c13e20793a7d0143dc",
+  "status": "committed",
+  "at": "2026-11-02T03:43:11.768Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留 SOP 示例元数据的最小化经验。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:51c13e20793a7d0143dc708c611b1b243d136c1f272dba130a374f4960a6b5e1",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-51c13e20793a7d0143dc\nrevision: 1\ntype: experience\ntitle: SOP 示例避免无需求的治理字段\nsummary: 没有明确需要时，不添加 owner、reviewer、approver 等流程元数据。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-08 SOP Example Metadata Minimalism:1\nupdated: 2026-11-02T03:43:11.768Z\ndeleted: false\n---\n\n## 2026-07-08 SOP Example Metadata Minimalism\n\n- **Trigger:** 设计或修改 SOP 示例文件的 YAML frontmatter 时。\n  - **Rule:** 不要默认加入 SOP id、owner、creator、reviewer、approver、effective_date 这类治理字段；示例 SOP 默认只保留 `version` 和 `update_date` 这类轻量元数据。\n  - **Why:** 示例文件应展示轻量现代格式，过多治理元数据会让新 SOP 创建变重。\n",
+  "beforeHash": null,
+  "afterHash": "b4770225ecb595d4b66db1f14bc11b1209c40f4b740d4ecb6437d7578ed021bb"
+}

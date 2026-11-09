@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "2fbfc8ad-f947-4f7b-83c6-4336505861f0",
+  "entryId": "legacy-lessons-390b42ee70500603083a",
+  "status": "committed",
+  "at": "2026-11-03T08:13:22.431Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-390b42ee70500603083a:3751b40061339fe15b3a757b57db9e8d69af82f60a240f4a8e3a189e79769b93",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-390b42ee70500603083a\nrevision: 1\ntype: experience\ntitle: 任务计划不等于 plan mode 或委派授权\nsummary: 必须写任务计划不代表必须进入 plan mode，也不自动授权使用 subagent。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-13 Separate Todo Planning From Plan Mode And\n    Subagents:1\nupdated: 2026-11-02T03:43:10.687Z\ndeleted: false\n---\n\n## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents\n\n- **Trigger:** 精简默认 agent 原则但仍要求任务计划时。\n  - **Rule:** 保留在所属 `tasks/tasks/<task-slug>.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；plan mode 按实际需要使用；subagent 仍须当前用户或适用指令授权，不能仅凭任务复杂度自行委派。\n  - **Why:** todo 是持久化任务控制和验证记录，plan mode 与 subagent 是可选执行能力，三者不应绑定。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-390b42ee70500603083a\nrevision: 2\ntype: experience\ntitle: 任务计划不等于 plan mode 或委派授权\nsummary: 必须写任务计划不代表必须进入 plan mode，也不自动授权使用 subagent。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-13 Separate Todo Planning From Plan Mode And\n    Subagents:1\nupdated: 2026-11-03T08:13:22.430Z\ndeleted: false\n---\n\n## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents\n\n- **Trigger:** 精简默认 agent 原则但仍要求任务计划时。\n  - **Rule:** 保留在所属 `tasks/tasks/<task-slug>.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；plan mode 按实际需要使用；subagent 仍须当前用户或适用指令授权，不能仅凭任务复杂度自行委派。\n  - **Why:** todo 是持久化任务控制和验证记录，plan mode 与 subagent 是可选执行能力，三者不应绑定。\n",
+  "beforeHash": "3751b40061339fe15b3a757b57db9e8d69af82f60a240f4a8e3a189e79769b93",
+  "afterHash": "cb555bcf2c7ee7a7e8dcf45575d5336a5e59b44906f4771b3b911f7adefb73a3"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "f79eafc4-8ba3-4eac-88e1-fbbe650dfacc",
+  "entryId": "legacy-lessons-bacee4d7ea884d043950",
+  "status": "committed",
+  "at": "2026-11-05T11:35:22.705Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-5b681e886bf85282d88e 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-bacee4d7ea884d043950\nrevision: 2\ntype: experience\ntitle: 仓库与产品命名保持一致\nsummary: 重命名产品、包或命名空间时保持一致，平台约束除外。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-10 Keep Repository Name Aligned With Product:1\nupdated: 2026-11-03T08:13:23.416Z\ndeleted: false\n---\n\n## 2026-07-10 Keep Repository Name Aligned With Product\n\n- **Trigger:** Renaming the product, npm package, CLI, and local data namespace.\n  - **Rule:** Prefer the same distinctive base name across GitHub, npm, CLI, and local data paths unless a platform constraint requires otherwise.\n  - **Why:** Using generic `agent-kit` for GitHub while using `csl-agent-kit` everywhere else creates broken assumptions, weaker discoverability, and extra release-time corrections.\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-bacee4d7ea884d043950\nrevision: 3\ntype: experience\ntitle: 仓库与产品命名保持一致\nsummary: 重命名产品、包或命名空间时保持一致，平台约束除外。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-10 Keep Repository Name Aligned With Product:1\nupdated: 2026-11-05T11:35:22.645Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "405a49e6bb53fb88191001e2b6be5ffa8791239d51a6a8e1f4ca29bea5e52ea0",
+  "afterHash": "fc989fb80e69557c340c3f5a55135e5000ad5e09006ed4b56cfb5879ea1ea1b9"
+}

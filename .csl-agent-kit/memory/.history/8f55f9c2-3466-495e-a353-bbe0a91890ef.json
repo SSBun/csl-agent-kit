@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "8f55f9c2-3466-495e-a353-bbe0a91890ef",
+  "entryId": "legacy-context-3dc1c2253be6bf9e46ea",
+  "status": "committed",
+  "at": "2026-11-02T03:43:08.758Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留可复用防错知识的准入和纠错原则；取消独立 Lessons 文件、Legacy parser 与 Task Agent 写入维护门。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:3dc1c2253be6bf9e46ea106da87ba1d43def85a00731bd6ddcd7913cfc75ebd3",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-context-3dc1c2253be6bf9e46ea\nrevision: 1\ntype: experience\ntitle: 可复用经验的准入与纠错\nsummary: 处理用户纠正或保存防错经验时使用；优先机械约束，Memory 只承载仍需判断的有效知识。\nsources:\n  - legacy:tasks/context.md;\n    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;\n    unit:tasks/context.md#CTX-task-lessons — Workspace preventive lessons:1\nupdated: 2026-11-02T03:43:08.758Z\ndeleted: false\n---\n\n# 经验何时有价值\n\n一条经验应当能跨越当前任务复用，有可提前识别的触发条件，改变实际行为并阻止同类错误，而且有可观察的检查方式。态度要求、一次性细节、推测、进度和秘密不应被当作经验。\n\n能由源码、schema、类型检查、测试、lint、CI 或正式工作流完全约束的错误，应优先在那些位置修复；记忆不能代替机械约束。只保留仍需 Agent 判断的剩余部分。\n\n# 如何表达与使用\n\n经验正文保留适用条件、具体防护动作和检查方式；这些是语义内容，不再要求单独 Lessons 文件或专属 parser。类型只是 experience 元数据，不构成额外权限层或检索排除条件。Task Agent 自主读取相关经验并应用，但不承担生成维护候选或常规写入。\n\n用户纠正先应用到当前工作。独立 Memory Agent 在后台判断是新增、修订、合并、替换、删除还是无变化。同类错误重复出现时检查既有防护是否失效，优先修订而不是添加重复条目。\n\n合并保留所有有效独有条件、动作与检查；原始权威规则和来源不能丢失。实际约束发生冲突时服从当前有效的更高优先级指令，不能按记忆日期机械决定优先级。\n\n项目级经验按来源、审计和恢复约束维护；用户级提案必须展示具体变化与理由并获得明确批准。\n",
+  "beforeHash": null,
+  "afterHash": "e68cad8bcaeaebd3f4223f4473b083214f17371787a167feaed4cbadcbec6a23"
+}

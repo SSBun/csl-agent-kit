@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "54f7fea8-512b-4146-ac46-0989b2c25a42",
+  "entryId": "legacy-lessons-390b42ee70500603083a",
+  "status": "committed",
+  "at": "2026-11-05T11:06:18.643Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "计划记录与可选执行能力分离及来源已合入legacy-context-c9e1b7a7d7d8266238aa revision 4并回读。原文旧路径按活动根解析；原chip额外委派限制不获原来源支持，以当前用户/适用指令权限边界替代。无项目活跃入链。",
+  "source": "memory-event:05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c:299528a3c0ca7cec4d7b182337157b209acead1179a6cd4556309c67d299fa4f; maintenance event:05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c; session:memory-budget-activation; task:memory-file-count-budget",
+  "session": "memory-budget-activation",
+  "task": "memory-file-count-budget",
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-390b42ee70500603083a\nrevision: 2\ntype: experience\ntitle: 任务计划不等于 plan mode 或委派授权\nsummary: 必须写任务计划不代表必须进入 plan mode，也不自动授权使用 subagent。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-13 Separate Todo Planning From Plan Mode And\n    Subagents:1\nupdated: 2026-11-03T08:13:22.430Z\ndeleted: false\n---\n\n## 2026-07-13 Separate Todo Planning From Plan Mode And Subagents\n\n- **Trigger:** 精简默认 agent 原则但仍要求任务计划时。\n  - **Rule:** 保留在所属 `tasks/tasks/<task-slug>.md` 中写可检查计划的要求，不要因此强制进入 plan mode 或调用 subagent；plan mode 按实际需要使用；subagent 仍须当前用户或适用指令授权，不能仅凭任务复杂度自行委派。\n  - **Why:** todo 是持久化任务控制和验证记录，plan mode 与 subagent 是可选执行能力，三者不应绑定。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-390b42ee70500603083a\nrevision: 3\ntype: experience\ntitle: 任务计划不等于 plan mode 或委派授权\nsummary: 必须写任务计划不代表必须进入 plan mode，也不自动授权使用 subagent。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-13 Separate Todo Planning From Plan Mode And\n    Subagents:1\nupdated: 2026-11-05T11:06:18.633Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "cb555bcf2c7ee7a7e8dcf45575d5336a5e59b44906f4771b3b911f7adefb73a3",
+  "afterHash": "577e53fe42e75db186c932b81d36a9d3c764097318a120415cf1009b14ddaf95"
+}

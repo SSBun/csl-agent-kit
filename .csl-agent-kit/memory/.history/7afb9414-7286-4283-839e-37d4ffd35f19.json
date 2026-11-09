@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "7afb9414-7286-4283-839e-37d4ffd35f19",
+  "entryId": "legacy-lessons-ed7ba763a9bff7d3c6d7",
+  "status": "committed",
+  "at": "2026-11-03T08:13:23.882Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-ed7ba763a9bff7d3c6d7:825bffae6ee6fe87121e85384219ad98d6b3e862a3a9cd5bd7137028073413f3",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-ed7ba763a9bff7d3c6d7\nrevision: 1\ntype: experience\ntitle: 显式安装选择后避免重复确认\nsummary: 交互安装已提交同一选择时，不再增加无意义确认；实质范围变化和 Task 对齐门仍独立适用。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-23 Avoid Redundant Confirmation After Explicit\n    Selection:1\nupdated: 2026-11-02T03:43:09.858Z\ndeleted: false\n---\n\n## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection\n\n- **Trigger:** A user explicitly selects installation targets, then the workflow asks a generic second confirmation for the same selected actions.\n  - **Rule:** For the same interactive installation selection, treat the explicit selection-and-submit step as authorization unless the later action introduces a materially different risk or irreversible consequence. This does not replace Task Target acceptance or separately required safety gates. When removing a prompt, remove every reader and guard for its response value in the same change.\n  - **Why:** Reconfirming the same scope adds friction, while leaving a downstream response guard makes the accepted path fail after the prompt disappears.\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-ed7ba763a9bff7d3c6d7\nrevision: 2\ntype: experience\ntitle: 显式安装选择后避免重复确认\nsummary: 交互安装已提交同一选择时，不再增加无意义确认；实质范围变化和 Task 对齐门仍独立适用。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-23 Avoid Redundant Confirmation After Explicit\n    Selection:1\nupdated: 2026-11-03T08:13:23.882Z\ndeleted: false\n---\n\n## 2026-07-23 Avoid Redundant Confirmation After Explicit Selection\n\n- **Trigger:** A user explicitly selects installation targets, then the workflow asks a generic second confirmation for the same selected actions.\n  - **Rule:** For the same interactive installation selection, treat the explicit selection-and-submit step as authorization unless the later action introduces a materially different risk or irreversible consequence. This does not replace Task Target acceptance or separately required safety gates. When removing a prompt, remove every reader and guard for its response value in the same change.\n  - **Why:** Reconfirming the same scope adds friction, while leaving a downstream response guard makes the accepted path fail after the prompt disappears.\n",
+  "beforeHash": "825bffae6ee6fe87121e85384219ad98d6b3e862a3a9cd5bd7137028073413f3",
+  "afterHash": "fdbe7eb796c8d9fc3aa4231cf3d4669ff05743adafb19d68e2cd052aa6abb20f"
+}

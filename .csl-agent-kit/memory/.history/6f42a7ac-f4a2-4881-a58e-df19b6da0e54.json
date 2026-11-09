@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "6f42a7ac-f4a2-4881-a58e-df19b6da0e54",
+  "entryId": "recall-first-index-design-reference",
+  "status": "committed",
+  "at": "2026-11-03T07:17:19.915Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "reason": "用户认可上一轮检索卡片思路，更新确认边界；本轮新提出的三层结构仍未确认。",
+  "source": "memory-event:c54a8c2968c4ec9a52c4bd7d0709235619048b48e850a3dc2154caf9869638b1:81fb58f73dcab59f5a4078c0fc03fbe1c75eff1a479389a754b858444b8fa9ed; session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:c54a8c2968c4ec9a52c4bd7d0709235619048b48e850a3dc2154caf9869638b1",
+  "session": "01a19b59-bfc3-7059-9e02-1764335d17d0",
+  "task": "design-recall-first-memory-index",
+  "before": "---\nschema: csl-memory/v1\nid: recall-first-index-design-reference\nrevision: 1\ntype: reference\ntitle: 召回优先索引：多入口设计决策引用\nsummary: 用户已确认一份权威正文允许多个检索入口，不限单一目录分支；具体卡片字段仍是建议。设计以任务文件为准。\nsources:\n  - tasks/tasks/design-recall-first-memory-index.md#Decisions\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:5be932f7d55631e8e4cf8b5ef75a370121a8b4a37eec3f4d275d9fd8355072bc\nupdated: 2026-11-03T06:59:51.109Z\ndeleted: false\n---\n\n## 已确认方向\n用户确认同一份记忆可以有多个检索入口，不限于单一目录分支；各入口指向同一权威正文，不复制知识或制造多份有效版本。该确认对应上一轮的多入口问题，不是对本轮随后提出的卡片结构的确认。\n\n## 权威与范围\n设计决策查阅 `tasks/tasks/design-recall-first-memory-index.md`，不以本条替代正式设计。该任务以任务相关知识和适用条件的召回为先、读取成本为次；只讨论设计，不构成产品实施或模型实验授权。已完成试跑证据另见 `memory-index-pilot-evidence`。\n\n## 尚未确认的建议\n标题、覆盖摘要、别名/相关说法、适用情境和正文链接组成的‘检索卡片’，以及每份有效记忆都配卡片，是助手后续提出的方案；本事件没有用户对这些字段的接受，不视为当前索引实现或既定规格。\n",
+  "after": "---\nschema: csl-memory/v1\nid: recall-first-index-design-reference\nrevision: 2\ntype: reference\ntitle: 召回优先索引：多入口与检索卡片设计引用\nsummary: 用户认可单一权威正文、多发现入口及检索卡片思路；薄总览、主题索引、完整卡片库的分工仍为待确认建议。\nsources:\n  - tasks/tasks/design-recall-first-memory-index.md#Decisions\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:5be932f7d55631e8e4cf8b5ef75a370121a8b4a37eec3f4d275d9fd8355072bc\n  - session:01a19b59-bfc3-7059-9e02-1764335d17d0/task:design-recall-first-memory-index/event:c54a8c2968c4ec9a52c4bd7d0709235619048b48e850a3dc2154caf9869638b1\nupdated: 2026-11-03T07:17:19.914Z\ndeleted: false\n---\n\n## 已确认方向\n用户确认同一份记忆可以有多个检索入口，不限于单一目录分支；各入口指向同一权威正文，不复制知识或制造多份有效版本。\n在后续事件c54a8c29中，用户对上一轮检索卡片提议表示‘good idea’，并继续询问多个memory chips的索引设计。这支持认可卡片思路：除标题摘要外提供覆盖范围、相关说法、适用情境和正文入口；不代表精确字段格式或必填校验已定稿。取代此前‘卡片思路尚未获认可’的描述。\n\n## 权威与范围\n设计载体为 `tasks/tasks/design-recall-first-memory-index.md`，不以本条替代正式设计。此次读取该文件时，Decisions仍仅明确多入口方向，其余字段和协议待讨论；后续卡片认可来自上述会话，不声称已同步进文件。该任务以任务相关知识和适用条件的召回为先、读取成本为次；只讨论设计，不构成产品实施或模型实验授权。已完成试跑证据另见 `memory-index-pilot-evidence`。\n\n## 尚未确认的建议\n本轮助手新提出‘薄总览＋主题索引＋完整卡片库’，主题按语义拆分、全库卡片覆盖全部有效chip、检索不得只依赖主题导航等分工，并再次询问认可。本事件没有用户对此新方案的回答，不视为既定规格或当前实现。\n",
+  "beforeHash": "e72b9137aadec744e13d791f0f4b74cec58fc21721bcdd7df4534382d0d208c4",
+  "afterHash": "23c9b459dd2d8f2cd9a00b8adcae0f988e39bbf3a001c05deef4cb27c90951da"
+}

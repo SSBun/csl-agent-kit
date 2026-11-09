@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "3bae8c28-900c-4923-bad2-81dbf2ee82ff",
+  "entryId": "legacy-lessons-7ac549285b858276f3af",
+  "status": "committed",
+  "at": "2026-11-03T08:13:22.739Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-7ac549285b858276f3af:a49b18a3d48384e6de4f2a7d61e7046375764da99c1656a020c38b0d9d7e171e",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-7ac549285b858276f3af\nrevision: 1\ntype: experience\ntitle: 取消限制不等于取消流程\nsummary: 用户调整轮次、预算或次数上限时，保留未被明确取消的流程本身。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-19 区分取消流程与取消流程限制:1\nupdated: 2026-11-02T03:43:10.186Z\ndeleted: false\n---\n\n## 2026-07-19 区分取消流程与取消流程限制\n\n- **Trigger:** 用户要求取消某个流程的轮次、次数、预算或上限。\n  - **Rule:** 保留流程本身，只移除被点名的限制；除非用户明确说停止或取消整个流程，否则不得把限制变更解释成终止任务。\n  - **Why:** “取消循环次数上限”改变的是终止策略，不是取消循环本身。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-7ac549285b858276f3af\nrevision: 2\ntype: experience\ntitle: 取消限制不等于取消流程\nsummary: 用户调整轮次、预算或次数上限时，保留未被明确取消的流程本身。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-19 区分取消流程与取消流程限制:1\nupdated: 2026-11-03T08:13:22.739Z\ndeleted: false\n---\n\n## 2026-07-19 区分取消流程与取消流程限制\n\n- **Trigger:** 用户要求取消某个流程的轮次、次数、预算或上限。\n  - **Rule:** 保留流程本身，只移除被点名的限制；除非用户明确说停止或取消整个流程，否则不得把限制变更解释成终止任务。\n  - **Why:** “取消循环次数上限”改变的是终止策略，不是取消循环本身。\n",
+  "beforeHash": "a49b18a3d48384e6de4f2a7d61e7046375764da99c1656a020c38b0d9d7e171e",
+  "afterHash": "8dfd7636452ffd278faf65f19e03649d749a0aa27cde8dba85df9a8d7d25c207"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "e0cc1d9e-dfd2-4362-8837-1a65d648e73a",
+  "entryId": "legacy-lessons-b6cd5b4be4b8b0ece77b",
+  "status": "committed",
+  "at": "2026-11-05T11:35:24.318Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-22ba57285e51417e1ae9 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-b6cd5b4be4b8b0ece77b\nrevision: 2\ntype: experience\ntitle: SOP 语言约束不扩大范围\nsummary: 按当前有效语言指令处理 SOP；不要把某个字段的约束擅自扩大到全部正文。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-06-28 SOP Create Language Scope:1\nupdated: 2026-11-03T08:13:23.356Z\ndeleted: false\n---\n\n## 2026-06-28 SOP Create Language Scope\n\n- **Trigger:** 用户要求调整 SOP create 的语言行为时。\n  - **Rule:** 不要把 SOP 文件全文强制为某一种语言；主流程描述可以使用任意语言，只有用户明确要求的字段或模板片段才固定语言。\n  - **Why:** 把语言约束扩大到整份 SOP 会错误限制用户的流程描述和团队文档习惯。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-b6cd5b4be4b8b0ece77b\nrevision: 3\ntype: experience\ntitle: SOP 语言约束不扩大范围\nsummary: 按当前有效语言指令处理 SOP；不要把某个字段的约束擅自扩大到全部正文。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-06-28 SOP Create Language Scope:1\nupdated: 2026-11-05T11:35:24.284Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "5d1a234ddc515e08a073c1a10933d6112a07c006d0ef67818b3c6b3bcf23ae8f",
+  "afterHash": "aacff3e7156084facfb104de00739568c78c724fa1c78c1c7b05e415260cba86"
+}

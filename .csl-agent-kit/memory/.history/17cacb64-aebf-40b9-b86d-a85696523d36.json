@@ -1,0 +1,17 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "17cacb64-aebf-40b9-b86d-a85696523d36",
+  "entryId": "legacy-lessons-f70055900a7ae1733947",
+  "status": "committed",
+  "at": "2026-11-02T03:43:09.641Z",
+  "actor": "user-approved-migration",
+  "proposal": null,
+  "reason": "保留共享状态被宿主覆盖后的正确恢复经验。",
+  "source": "migration:3e5a0b293d2275e9b93d7564396eeb81c462bdb86d750d3213a38f5c5d02ea42:f70055900a7ae1733947b2b176946b91716098abb0ed72f17a84a6e92e74983d",
+  "session": null,
+  "task": null,
+  "before": null,
+  "after": "---\nschema: csl-memory/v1\nid: legacy-lessons-f70055900a7ae1733947\nrevision: 1\ntype: experience\ntitle: 共享 UI 状态的保持与恢复\nsummary: Hook 与宿主都写 UI 状态时，保持决定可能需要重应用旧值，不能等同于不操作。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-28 共享 UI 状态的“保持”不能等同于无操作:1\nupdated: 2026-11-02T03:43:09.641Z\ndeleted: false\n---\n\n## 2026-07-28 共享 UI 状态的“保持”不能等同于无操作\n\n- **Trigger:**\n  - Hook 或后台任务要求保持标题、状态栏或其他 UI 值，而宿主生命周期也可能改写同一状态。\n- **Rule:**\n  - 保存最后一次成功写入的所属值；明确的保持决定应重新应用该值，不能假设当前外部状态未被覆盖。\n  - 将保持决定与生成失败分开处理；失败路径继续遵守其独立的不写入约束。\n- **Check:**\n  - 测试模拟外部覆盖后，保持路径恢复最后一次成功值。\n  - 测试确认无历史值的初始化行为和生成失败行为分别符合产品约束。\n",
+  "beforeHash": null,
+  "afterHash": "98683eeb719d1ee43a38a4286f7af37dfec6813c00a49a343473c395a53c75fe"
+}

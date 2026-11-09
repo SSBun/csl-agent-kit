@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "9b53e735-9ab3-4298-aec4-ebc1560b1eff",
+  "entryId": "legacy-lessons-86b15cd6e022d3d4c89d",
+  "status": "committed",
+  "at": "2026-11-03T08:13:22.980Z",
+  "actor": "automatic-upgrade",
+  "proposal": null,
+  "deferIndex": true,
+  "reason": "格式升级：保留身份、来源、正文与墓碑，仅升级schema和revision。",
+  "source": "schema-upgrade-v3:legacy-lessons-86b15cd6e022d3d4c89d:b30656feef1cfeda87d2def24ad4badc95338b4e22a99efd14f916f9f4159017",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v1\nid: legacy-lessons-86b15cd6e022d3d4c89d\nrevision: 1\ntype: experience\ntitle: 共享格式迁移覆盖全部读写方\nsummary: 修改公共文件格式前检查所有读写方和 fixture；仅写入侧通过不足以证明兼容。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-31 共享格式迁移必须覆盖所有读写方:1\nupdated: 2026-11-02T03:43:09.493Z\ndeleted: false\n---\n\n## 2026-07-31 共享格式迁移必须覆盖所有读写方\n\n- **Trigger:**\n  - 修改由 workflow、检查脚本、扩展或其他组件共同读写的文件格式。\n- **Rule:**\n  - 变更前搜索所有生产者、消费者和格式样例，并以实际运行时消费者的解析契约验证候选格式。\n  - 在同一改动中同步规则、校验器和受影响的消费者测试；不能只验证写入侧格式。\n- **Check:**\n  - 同一个候选 fixture 同时通过写入侧校验和运行时消费者测试。\n  - 搜索旧格式后只剩有意保留的历史记录或明确的拒绝用例。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-86b15cd6e022d3d4c89d\nrevision: 2\ntype: experience\ntitle: 共享格式迁移覆盖全部读写方\nsummary: 修改公共文件格式前检查所有读写方和 fixture；仅写入侧通过不足以证明兼容。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-31 共享格式迁移必须覆盖所有读写方:1\nupdated: 2026-11-03T08:13:22.979Z\ndeleted: false\n---\n\n## 2026-07-31 共享格式迁移必须覆盖所有读写方\n\n- **Trigger:**\n  - 修改由 workflow、检查脚本、扩展或其他组件共同读写的文件格式。\n- **Rule:**\n  - 变更前搜索所有生产者、消费者和格式样例，并以实际运行时消费者的解析契约验证候选格式。\n  - 在同一改动中同步规则、校验器和受影响的消费者测试；不能只验证写入侧格式。\n- **Check:**\n  - 同一个候选 fixture 同时通过写入侧校验和运行时消费者测试。\n  - 搜索旧格式后只剩有意保留的历史记录或明确的拒绝用例。\n",
+  "beforeHash": "b30656feef1cfeda87d2def24ad4badc95338b4e22a99efd14f916f9f4159017",
+  "afterHash": "e8addeaf018c0ac7c75e206e91639b1387dbcaaa236d6cf4f0e170856c70e940"
+}

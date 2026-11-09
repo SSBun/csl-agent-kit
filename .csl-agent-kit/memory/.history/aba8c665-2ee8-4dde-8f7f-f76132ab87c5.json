@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "aba8c665-2ee8-4dde-8f7f-f76132ab87c5",
+  "entryId": "legacy-lessons-01aa1afd3ed4938569c4",
+  "status": "committed",
+  "at": "2026-11-05T11:35:22.162Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "正文及来源已合入 legacy-context-5b681e886bf85282d88e 并完整回读；组内关系映射到保留条目，删除仍经writer入链检查。",
+  "source": "task:memory-file-count-budget; 用户本轮明确要求按新设计整理当前工作区记忆; evidence/reorganization-before.json与reorganization-plan.json",
+  "session": null,
+  "task": null,
+  "before": "---\nschema: csl-memory/v2\nid: legacy-lessons-01aa1afd3ed4938569c4\nrevision: 2\ntype: fact\ntitle: CSL Agent Kit 本机数据根\nsummary: 用户数据使用既有 .csl-agent-kit 根，并遵循 CSL_AGENT_KIT_HOME；不要发明第二个产品数据根。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-09 CSL Agent Kit Local Data Directory:1\nupdated: 2026-11-03T08:13:22.302Z\ndeleted: false\n---\n\n## 2026-07-09 CSL Agent Kit Local Data Directory\n\n- **Trigger:** Modifying SOP, tips, hooks, installer, or docs that reference CSL Agent Kit local user data.\n  - **Rule:** Use `~/.csl-agent-kit/` as the canonical local data directory for user SOPs, tips, settings, and future config.\n  - **Why:** The project is now named CSL Agent Kit; the local data directory should match the product name and not the old SSBun Skills branding.\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-lessons-01aa1afd3ed4938569c4\nrevision: 3\ntype: fact\ntitle: CSL Agent Kit 本机数据根\nsummary: 用户数据使用既有 .csl-agent-kit 根，并遵循 CSL_AGENT_KIT_HOME；不要发明第二个产品数据根。\nsources:\n  - legacy:tasks/lessons.md;\n    sha256:9cef14eb55068009da5418c84d48992d3802853f4e07ca6a8c5a47e32bbc68c6;\n    unit:tasks/lessons.md#2026-07-09 CSL Agent Kit Local Data Directory:1\nupdated: 2026-11-05T11:35:22.100Z\ndeleted: true\nretrieval:\n  aliases: []\n  situations: []\n  topics: []\n  links: []\n---\n\n此条目已删除；历史正文保留在审计记录中。\n",
+  "beforeHash": "a63a0877724d80e63ab203a8b98602617b07bed527de9efcaae228376095045b",
+  "afterHash": "3180eeb5d11a5bec0410692c9efa33ddf04b5c477e1fef155c73ea01e1f8347b"
+}

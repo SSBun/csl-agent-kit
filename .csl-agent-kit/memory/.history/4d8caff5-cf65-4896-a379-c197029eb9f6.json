@@ -1,0 +1,18 @@
+{
+  "schema": "csl-memory-change/v1",
+  "id": "4d8caff5-cf65-4896-a379-c197029eb9f6",
+  "entryId": "legacy-context-042589327b4342aa11f6",
+  "status": "committed",
+  "at": "2026-11-04T06:44:13.401Z",
+  "actor": "memory-agent",
+  "proposal": null,
+  "deferIndex": false,
+  "reason": "主动复查发现用户级提案逐项授权的旧表述与当前agent-memory规范冲突；局部纠正，保留其余知识和历史来源。",
+  "source": "memory-event:fbb6f97d977bf491a3232a3a78f8e43380a956bf087889739373e5fdfc90e82c:4ae391854c9ee201e159af623c3cf98d95484f6e7db56b07bb2afaba36071ac7; session:01a1a0cb-07d5-7305-bc60-c84e0b5271b2/task:dashboard-newest-memory-file-changes/event:fbb6f97d977bf491a3232a3a78f8e43380a956bf087889739373e5fdfc90e82c; skills/meta/agent-memory/SKILL.md",
+  "session": "01a1a0cb-07d5-7305-bc60-c84e0b5271b2",
+  "task": "dashboard-newest-memory-file-changes",
+  "before": "---\nschema: csl-memory/v2\nid: legacy-context-042589327b4342aa11f6\nrevision: 2\ntype: experience\ntitle: Memory 检索与知识准入边界\nsummary: 检索覆盖不足、来源冲突或维护记忆时使用；保留可核对知识，不把历史机制或任务进度当作当前事实。\nsources:\n  - legacy:tasks/context.md;\n    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;\n    unit:tasks/context.md#CTX-task-context — Workspace Context dispatch and\n    maintenance:1\nupdated: 2026-11-03T08:13:21.067Z\ndeleted: false\n---\n\n# 检索与来源\n\n短索引负责发现相关知识，正文按需读取。先按任务目标、领域、路径、约束及组件关系检索，再核对相关权威来源；查询没有结果不等于组件不存在。别名、遗漏关系或新边界出现时补充查询，不设固定检索条数上限。\n\n需要建立项目理解时，检查项目用途与词汇、组件职责、入口与产物、控制流和数据流、权威与派生产物、跨组件约束、可观察验证信号。只探索足以支持当前决策的范围，不把普通任务升级为全仓审计。\n\n# 进入记忆的条件\n\n内容必须已确认、适用于对应作用域、稳定或具有明确复核触发点、能够改变未来决策、比反复重建更经济、确属记忆而非任务或规则、且来源可回查。来源存在不等于它支持当前断言。无法确认的内容留在当前任务证据缺口中，不伪装为记忆事实。\n\n# 维护约束\n\n独立 Memory Agent 根据会话增量维护，Task Agent 不负责提出日常维护候选。更新必须使用读取所得 revision/hash，发生冲突先重读；错误不能被当作未写入或已回滚。\n\n删除只针对经证据证明失效的最小知识单元；合并必须保留所有有效独有信息及来源。不能按近期未使用删除。来源不可用不等于事实不存在。用户级提案必须得到用户明确授权，项目级维护保留理由、差异与恢复记录。\n\n# 不应保存\n\n当前进度、下一步、临时阻塞、秘密、未经证实的推测归其他载体；正式规则与流程继续由 Rules/SOP/Skill 管理。记忆检索不能制造目标接受或执行授权。\n",
+  "after": "---\nschema: csl-memory/v2\nid: legacy-context-042589327b4342aa11f6\nrevision: 3\ntype: experience\ntitle: Memory 检索与知识准入边界\nsummary: 检索覆盖不足、来源冲突或维护记忆时使用；保留可核对知识。两级自动维护依当前Skill，用户明确限制仍优先，不沿用旧用户级逐项审批要求。\nsources:\n  - legacy:tasks/context.md;\n    sha256:976794f4739c373530b0cbc9a350956e9ef3ba6f87e02125487bb11e6c752ca0;\n    unit:tasks/context.md#CTX-task-context — Workspace Context dispatch and\n    maintenance:1\n  - skills/meta/agent-memory/SKILL.md\nupdated: 2026-11-04T06:44:13.382Z\ndeleted: false\nretrieval:\n  aliases:\n    - Memory知识准入\n    - 记忆来源核对\n    - 两级自动维护\n  situations:\n    - 判断会话增量是否值得保存\n    - 检索覆盖不足或来源冲突时核对知识\n    - 纠正旧用户级记忆逐项审批表述\n  topics:\n    - Memory/检索与知识准入\n  links: []\n---\n\n# 检索与来源\n\n短索引负责发现相关知识，正文按需读取。先按任务目标、领域、路径、约束及组件关系检索，再核对相关权威来源；查询没有结果不等于组件不存在。别名、遗漏关系或新边界出现时补充查询，不设固定检索条数上限。\n\n需要建立项目理解时，检查项目用途与词汇、组件职责、入口与产物、控制流和数据流、权威与派生产物、跨组件约束、可观察验证信号。只探索足以支持当前决策的范围，不把普通任务升级为全仓审计。\n\n# 进入记忆的条件\n\n内容必须已确认、适用于对应作用域、稳定或具有明确复核触发点、能够改变未来决策、比反复重建更经济、确属记忆而非任务或规则、且来源可回查。来源存在不等于它支持当前断言。无法确认的内容留在当前任务证据缺口中，不伪装为记忆事实。\n\n# 维护约束\n\n独立 Memory Agent 根据会话增量维护，Task Agent 不负责提出日常维护候选。更新必须使用读取所得 revision/hash，发生冲突先重读；错误不能被当作未写入或已回滚。\n\n删除只针对经证据证明失效的最小知识单元；合并必须保留所有有效独有信息及来源。不能按近期未使用删除。来源不可用不等于事实不存在。\n\n维护权限以 `skills/meta/agent-memory/SKILL.md` 的 Storage and authority 与 Mutations 为准：用户级与项目级均允许按协议自动维护，不要求用户级逐条审批；用户明确限制仍优先，写入保留理由及可追溯审计。此当前正式来源纠正旧导入内容中的“用户级提案必须得到用户明确授权”，不改变其他知识的历史来源。\n\n# 不应保存\n\n当前进度、下一步、临时阻塞、秘密、未经证实的推测归其他载体；正式规则与流程继续由 Rules/SOP/Skill 管理。记忆检索不能制造目标接受或执行授权。\n",
+  "beforeHash": "63a9249e297c22fc0be2a5a1a9f1c4bc6b2dcf030d307d834bcc51a51453a328",
+  "afterHash": "45bfd551dcf85e656d28f8ad14e673f8423dcc40e2df5b0d7642f9bb0ec70bca"
+}
