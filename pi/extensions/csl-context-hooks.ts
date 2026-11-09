@@ -164,7 +164,7 @@ export function buildTitleContext(entries: SessionEntry[], latestPrompt: string)
 	let lastUserText = "";
 
 	for (const entry of entries) {
-		if (entry.type !== "message" || !["user", "assistant"].includes(entry.message.role)) continue;
+		if (entry.type !== "message" || (entry.message.role !== "user" && entry.message.role !== "assistant")) continue;
 		const text = messageText(entry.message.content);
 		if (!text) continue;
 		if (entry.message.role === "user") lastUserText = text;
@@ -328,8 +328,9 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 
 	pi.on("before_agent_start", async (event, ctx) => {
 		refresh(ctx.cwd);
+		const prompt = event.messageType === "user" ? event.prompt : "";
 		try {
-			activeCandidates = candidateModule.findCandidates(event.prompt, sops);
+			activeCandidates = candidateModule.findCandidates(prompt, sops);
 		} catch {
 			activeCandidates = [];
 		}
@@ -340,14 +341,14 @@ export default function cslContextHooks(pi: ExtensionAPI) {
 		const sessionPrompts = triggerPrompts("session-start", ctx.cwd, {
 			sessionId: ctx.sessionManager.getSessionId(),
 		});
-		const titleContext = event.prompt
-			? buildTitleContext(ctx.sessionManager.buildContextEntries(), event.prompt)
+		const titleContext = prompt
+			? buildTitleContext(ctx.sessionManager.buildContextEntries(), prompt)
 			: "";
-		const promptPrompts = event.prompt
+		const promptPrompts = prompt
 			? triggerPrompts(
 					"prompt-submit",
 					ctx.cwd,
-					{ prompt: event.prompt },
+					{ prompt },
 					{ [TITLE_HOOK_ID]: { sessionContext: titleContext } },
 				)
 			: [];
