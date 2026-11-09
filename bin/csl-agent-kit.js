@@ -39,6 +39,11 @@ async function main() {
     process.exit(agentHooks.runCli(args));
   }
 
+  if (command === "memory") {
+    process.exitCode = await require("./memory/cli.js").run(args);
+    return;
+  }
+
   if (command === "install") {
     const options = parseInstallArgs(args);
     const selected = await resolveInstallTargets(options);
@@ -563,7 +568,7 @@ function printHelp(colorMode = "auto") {
     else update = colors.green("up to date");
   }
 
-  console.log(`${colors.bold(colors.cyan("CSL Agent Kit CLI"))} ${colors.dim(`v${packageManifest.version}`)}\n${colors.bold("Update")}  ${update}\n\nUsage:\n  csl-agent-kit install [options]\n\nRun \"csl-agent-kit install --help\" for details.`);
+  console.log(`${colors.bold(colors.cyan("CSL Agent Kit CLI"))} ${colors.dim(`v${packageManifest.version}`)}\n${colors.bold("Update")}  ${update}\n\nUsage:\n  csl-agent-kit install [options]\n  csl-agent-kit memory <command> [options]\n\nRun \"csl-agent-kit install --help\" or \"csl-agent-kit memory --help\" for details.`);
 }
 
 function printInstallHelp() {

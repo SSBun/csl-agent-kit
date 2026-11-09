@@ -113,8 +113,7 @@ test("current maintenance contracts use the built-in gate", () => {
   const files = [
     "AGENTS.md",
     "skills/meta/task/SKILL.md",
-    "skills/meta/task-context/SKILL.md",
-    "skills/meta/task-lessons/SKILL.md",
+    "skills/meta/agent-memory/SKILL.md",
     "skills/meta/task-review/SKILL.md",
     ".agents/skills/integrate-third-skills/SKILL.md",
   ];

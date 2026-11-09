@@ -1,18 +1,18 @@
 ---
 name: task-maintenance
-description: Clean stale Context, consolidate overlapping Lessons, and migrate Task-owned historical files or directories to the current authoritative architecture after an exact user-approved change set. Use only when the user explicitly asks to remove stale Context/Lessons history, consolidate duplicate entries, clean obsolete Task paths, or migrate legacy Task artifacts and records. Exclude ordinary Context updates, correction-driven Lesson maintenance, whole-repository architecture cleanup, and automatic scheduling.
+description: Perform explicitly requested cleanup of stale Markdown memory or Task-owned historical paths after an exact approved change set. Use for a user-directed historical cleanup, duplicate consolidation, or legacy Task artifact move. Exclude routine background memory maintenance, automatic data upgrades, whole-repository cleanup, and scheduling.
 ---
 
 # Task Maintenance
 
-Maintain accumulated Task workspace state without turning cleanup into a new source of truth. Work that changes a fact, preventive rule, task record, or artifact still owns its immediate maintenance; this Skill is an explicit backstop.
+Maintain accumulated Task workspace state without turning cleanup into a new source of truth. Background Memory Agents own routine knowledge maintenance; task owners retain their record and artifact duties. This Skill is only an explicitly requested cleanup backstop, not a second memory system.
 
 It supports two scopes:
 
-- `Data maintenance`: Delete or Merge stale and overlapping Context/Lessons content.
+- `Data maintenance`: explicitly requested deletion or consolidation of stale Markdown memory, using its existing writer and provenance.
 - `Structure maintenance`: Migrate or delete historical Task-owned files and directories that no longer match the current authoritative Task architecture.
 
-A data-only Context/Lessons run uses their routine-maintenance task-record exception. Any structure-maintenance run is a concrete file-changing outcome: activate and align one canonical `$task` before the full audit, and exclude that active maintenance record and its artifacts from the current run's candidates.
+An explicit cleanup run is a concrete file-changing outcome: activate and align one canonical `$task` before the full audit, and exclude that active maintenance record and its artifacts from the current run's candidates. Routine background maintenance does not enter this workflow.
 
 Do not create a persistent report, audit ledger, timestamp, schedule, compatibility link, cache, or long-lived owner.
 
@@ -21,16 +21,15 @@ Do not create a persistent report, audit ledger, timestamp, schedule, compatibil
 Resolve this Skill's directory and read these sibling contracts in full before auditing:
 
 - `../task/SKILL.md`
-- `../task-context/SKILL.md`
-- `../task-lessons/SKILL.md`
+- `../agent-memory/SKILL.md`
 - `../archive/SKILL.md`
 
 Use their existing read-only validators and lifecycle tools; do not implement another parser or task-state core:
 
 ```text
 node ../csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> validate
-node ../task-context/scripts/context.js --workspace <workspace> core|index|show <id>...|validate
-node ../task-lessons/scripts/lessons.js --workspace <workspace> index|show <id>...|validate
+csl-agent-kit memory paths --workspace <workspace>
+csl-agent-kit memory list --workspace <workspace>
 ```
 
 Also inspect current, non-historical Skill and rule sources that actively produce or consume Task workspace paths. Those live contracts define the latest destination architecture. Use canonical task links, embedded ownership metadata, formal migration decisions, or version-control history only to prove that an obsolete source belonged to the Task system; historical evidence never overrides the current destination Authority.
@@ -46,18 +45,18 @@ Build a fresh map for every structure run. For each Task-owned carrier, record:
 - active readers, writers, and validators; and
 - reference locations that must continue to resolve.
 
-The current contracts normally cover singleton Context/Lessons/index files, canonical task records, task-owned artifacts, and verbatim conversation archives. Treat that list only as a discovery starting point: include a path only when a current Authority claims it, and let newer Authority override this summary.
+The current contracts normally cover Memory entries and indexes, canonical task records, task-owned artifacts, and verbatim conversation archives. Treat that list only as a discovery starting point: include a path only when a current Authority claims it, and let newer Authority override this summary.
 
 A path beneath `tasks/` is not automatically Task-owned, and a historical Task-owned source may exist outside the current `tasks/` root. Include an obsolete source only when explicit evidence proves past Task-system ownership. Exclude project source, long-lived project documentation, build output, user data, and any path without current destination Authority plus source-ownership evidence. Never scan the rest of the repository for generic architecture cleanup.
 
-An explicit maintenance run may read selected canonical data files and Task-owned historical trees completely after lifecycle activation and preflight. This is task-direct maintenance, not ordinary Context orientation.
+An explicit maintenance run may read selected canonical data files and Task-owned historical trees completely after lifecycle activation and preflight. This is task-direct cleanup, not ordinary Memory orientation.
 
 ## Operations
 
 Produce only these operations:
 
-- `Data Delete`: remove the smallest independently stale Context or Lessons unit.
-- `Data Merge`: replace compatible same-carrier Context or Lessons units with one canonical unit.
+- `Data Delete`: remove the smallest independently stale Memory unit through a conditional audited mutation.
+- `Data Merge`: combine compatible same-scope Memory entries while preserving all valid knowledge and sources.
 - `Migrate`: copy a uniquely owned historical Task file or tree to its exact current canonical destination, preserve approved live references, verify it, then remove the source.
 - `Duplicate Delete`: remove a historical Task path only when a retained canonical path is byte-for-byte and structurally identical.
 - `Empty Directory Delete`: remove only an explicitly approved historical Task directory that is still empty immediately before deletion.
@@ -69,11 +68,11 @@ Produce only these operations:
 1. Require an explicit user maintenance request. A calendar, daemon, Hook, or inferred cadence is not authorization.
 2. Determine whether the requested scope is data-only or includes structure maintenance. Activate `$task` before structure inspection or mutation.
 3. Load the runtime Authorities above and build the current architecture map from live producers and consumers.
-4. Run the applicable Context, Lessons, and task validators before candidate discovery. Legacy Lesson warnings are compatible input; malformed current records and duplicate IDs are blockers for their carrier.
+4. Read the selected Memory entries through the current parser and validate the task graph before candidate discovery. Malformed records and duplicate identities block changes to their carrier; use the existing Memory writer, never direct file overwrites.
 5. Inventory tracked and untracked entries inside current Authority-declared Task roots and explicitly evidenced historical Task source roots. Candidate historical roots must come from the user's scope, canonical task links, embedded metadata, formal migration records, or version-control evidence—not a broad repository scan. Include hidden entries, empty directories, file type, byte size, and SHA-256 for regular files. Defer symlinks and special files unless a current Authority explicitly defines their migration semantics.
 6. Do not write while discovering or classifying candidates.
 
-A missing Lessons file is an empty set and must not be created merely for maintenance. A missing Context routes to `task-context` bootstrap. An invalid task graph blocks task-record or artifact structure migration; do not repair it implicitly.
+An absent Memory root is an empty set, not permission to create legacy knowledge files. Automatic first-use conversion belongs to the product migration mechanism, not this cleanup workflow. An invalid task graph blocks task-record or artifact structure migration; do not repair it implicitly.
 
 ## Data Delete Gate
 
@@ -82,13 +81,13 @@ Create a Data Delete candidate only when current evidence proves at least one co
 - Authority contradicts or supersedes the content.
 - The referenced object, path, component, or mechanism no longer exists.
 - A more accurate canonical unit fully preserves the same decision effect, scope, Authority, and verification boundary, leaving no unique value.
-- A stronger source, schema, type, test, lint rule, CI gate, or mandatory workflow fully prevents a Lesson's failure mechanism and leaves no residual Agent judgment.
+- A stronger source, schema, type, test, lint rule, CI gate, or mandatory workflow fully covers an experience entry's preventive value and leaves no unique applicable knowledge.
 
 Age, legacy format, wording similarity, low recent use, or lack of a recent match never proves staleness. Missing, ambiguous, or conflicting evidence means Defer.
 
-Delete the smallest self-contained stale bullet or field. Delete an entire Context Pack or Lesson only when none of it remains valid.
+Delete the smallest self-contained stale bullet or field. Delete an entire memory entry only when none of its information remains valid or its valid information is verified in a replacement.
 
-Before deleting a stable Context or Lesson ID, inventory every current non-historical consumer in Task-owned and non-Task sources. Every consumer must remain valid without that ID; otherwise Defer. Include the consumer search and result in the change set, and do not edit another carrier merely to make the deletion possible.
+Before deleting a stable Memory ID, inventory every current non-historical consumer in Task-owned and non-Task sources. Every consumer must remain valid without that ID; otherwise Defer. Include the consumer search and result in the change set, and do not edit another carrier merely to make the deletion possible.
 
 ## Data Merge Gate
 
@@ -100,11 +99,7 @@ Create a Data Merge candidate only when every condition holds:
 4. One merged unit can retain every unique current constraint and verification boundary without weakening meaning.
 5. Live references can continue to resolve through the retained stable ID.
 
-For Context, keep the existing ID whose Scope and Authority best describe the result, and preserve every still-valid Authority and Recheck condition.
-
-For Lessons, prefer an existing v1 ID with the most specific applicable Trigger, never record age; preserve and deduplicate the complete Trigger, Rule, and Check sets. Retain a qualifying v1 ID when legacy records join it. When every source is legacy, create one new `L-YYYYMMDD-ascii-slug` v1 record. Leave untouched legacy records unchanged.
-
-Context and Lessons never merge into each other. A Data Merge candidate is atomic.
+Retain the existing ID that best identifies the combined topic, not the oldest record by default. Preserve sources, applicability, exceptions and preventive checks. Write and verify the complete replacement before tombstoning obsolete entries. Cross-entry merging is not a filesystem-wide atomic transaction; an interruption must leave recoverable knowledge and explicit partial effects. Never silently promote project knowledge into user scope.
 
 ## Structure Candidate Gates
 
@@ -158,11 +153,11 @@ Treat each selected canonical data file as an independent transaction:
 
 1. Preserve its exact pre-write content.
 2. Apply all approved operations for that file in one coherent edit.
-3. Run its existing validator and index command.
+3. Use the current conditional Memory writer to validate, publish the index and preserve audit; do not write raw entry bytes or decrement revisions.
 4. Re-run the approved live-consumer search for every deleted stable ID, then re-read surviving merge targets and confirm every valid constraint remains.
-5. On failure, restore the exact source and validate the restoration.
+5. On failure, inspect actual committed effects before retrying or requesting an audited restore; never overwrite a newer entry or erase audit history.
 
-The stricter Safety Confirmation applies even when ordinary Context Pack maintenance would otherwise be automatic.
+This explicit cleanup confirmation is distinct from routine automatic Memory maintenance, which does not require per-entry approval.
 
 ## Apply Structure Changes
 
@@ -227,6 +222,6 @@ Completion requires:
 
 ## Maintainer Validation
 
-Keep `evals/trigger_cases.json`, `evals/semantic_config.json`, and `evals/structure_operation_cases.json` aligned with both data and structure maintenance boundaries. After modifying this package or sibling contracts, run the built-in `$skill-quality` gate against every changed package, validate current Context, Lessons, and tasks, verify shared Skill discovery and the Claude manifest, parse changed JSON/YAML, and run `git diff --check`.
+Keep `evals/trigger_cases.json`, `evals/semantic_config.json`, and `evals/structure_operation_cases.json` aligned with both data and structure maintenance boundaries. After modifying this package or sibling contracts, run the built-in `$skill-quality` gate against every changed package, validate current Memory entries and tasks, verify shared Skill discovery and the Claude manifest, parse changed JSON/YAML, and run `git diff --check`.
 
 Run project tests only when the user and governing project rules explicitly authorize them. Quality failures block completion; review context-budget warnings without deleting required workflow guidance.

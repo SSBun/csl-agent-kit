@@ -5,9 +5,9 @@ CSL Agent Kit 把规则注入、任务管理、上下文恢复、纠错学习和
 整个系统以两族 meta 工作流为核心：
 
 - **`agent-*`** 管理“Agent 应当如何长期行动”：无条件规则、条件触发、脚本自动化和按需 SOP；
-- **`task-*`** 管理“一个结果如何被承诺、执行、验证和恢复”：任务激活、Target 对齐、计划、队列、评审、Context 与 Lessons。
+- **`task-*`** 管理“一个结果如何被承诺、执行、验证和恢复”：任务激活、Target 对齐、计划、队列与评审。
 
-`task-context`、`task-lessons`、`skill-quality`、`archive` 以及共享 task core/protocol 提供定向、记忆、质量与历史支撑。
+`agent-memory`、`skill-quality`、`archive` 以及共享 task core/protocol 提供定向、记忆、质量与历史支撑。
 
 ---
 
@@ -37,7 +37,7 @@ CSL Agent Kit 由此建立了一条短而可信的工作路径：
 |---|---|---|
 | **持久指令层** | `agent-rules`、`agent-hooks`、`agent-sops` | 什么行为长期生效、何时注入、按什么条件执行 |
 | **任务执行层** | `task`、`task-plan`、`task-queue`、`task-review`、`task-grill` | 一个或多个结果如何对齐、执行、审查和交接 |
-| **任务记忆层** | `task-context`、`task-lessons` | 项目事实与防复发规则如何跨会话保留 |
+| **记忆层** | `agent-memory` 与后台 Memory Agent | 用户及项目知识如何跨会话保留、按需读取与自动维护 |
 | **共享状态层** | `csl-tasks` core、Task Target Alignment Protocol | 状态、证据、父子关系、索引和对齐语义如何保持一致 |
 | **辅助质量层** | `skill-quality`、`archive` | Skill 包如何确定性检查；原始会话如何逐字保存 |
 
@@ -48,7 +48,7 @@ CSL Agent Kit 由此建立了一条短而可信的工作路径：
   │
   ├─ 会话开始：Agent Hooks 注入 Rules、工作流契约与 SOP 摘要
   │
-  ├─ Orient：加载 Project Core，恢复最小项目模型
+  ├─ Orient：读取用户级与项目级 Memory 小索引，按需恢复知识
   │
   ├─ 是否形成具体结果？
   │    ├─ 否：普通问答或开放讨论，不创建任务
@@ -56,7 +56,7 @@ CSL Agent Kit 由此建立了一条短而可信的工作路径：
   │
   ├─ Align：对齐 Task Target，只承诺结果与完成条件
   │
-  ├─ Prepare：按需读取 Context Packs、Lessons、SOP 与任务直接来源
+  ├─ Prepare：按需读取 Markdown Memory、SOP 与任务直接来源
   │
   ├─ Execute：按当前路线做最小正确改动
   │
@@ -64,7 +64,7 @@ CSL Agent Kit 由此建立了一条短而可信的工作路径：
   │
   ├─ Complete：fail-closed 门禁确认所有条件满足
   │
-  └─ Maintain：必要时更新 Context 或经确认更新 Lessons
+  └─ Maintain：后台 Memory Agent 独立维护两级知识，前台保留任务证据
 ```
 
 这条链路依赖固定顺序：先获得授权，再调查；先调查，再编辑；验证通过后才完成任务。
@@ -281,8 +281,7 @@ Task Target 最重要的作用是让用户再次检查 Agent 是否理解了真�
 | **task-queue** | 用有序父子任务串行执行多个结果 | 不为单任务使用；父任务不复制子任务内容 |
 | **task-review** | 对任务、PR、diff、文件或无文件结果做一次只反馈评审 | 不修改、不补救、不重审、不批准 |
 | **task-grill** | 逐题压测计划、决定或话题 | 不把拷问过程污染进已有任务记录 |
-| **task-context** | 恢复 Project Core，按任务选择 Context Packs | 不保存进度、秘密、推测和实时缓存 |
-| **task-lessons** | 查询和维护 Trigger / Rule / Check 防复发规则 | 不保存任务历史、一次性细节和普通偏好 |
+跨会话知识由 `agent-memory` 读写规范与独立 Memory 服务承担，不再由 Task 家族维护另一份 Context/Lessons。
 
 ### 4.6 Queue 的关键是集成门
 
@@ -308,30 +307,19 @@ Task Target 最重要的作用是让用户再次检查 Agent 是否理解了真�
 
 ---
 
-## 5. Context、Lessons 与其他支撑能力
+## 5. Memory 与其他支撑能力
 
-### 5.1 Context：恢复项目模型，不替代权威来源
+### 5.1 Markdown Memory：按需读取，不替代权威来源
 
-`tasks/context.md` 有两层：
+用户级与项目级 Memory 都以 Markdown 为权威，以小索引和续页导航。普通 Agent 使用文件工具按需读取，不需要专用检索工具，也不等待后台整理。知识按内容自然形成主题，以 `title` 标识；没有预设主题，也没有 Core/Normal 层次。
 
-- **Project Core**：每次 session start、resume 或 compaction 都加载的最小项目模型；
-- **Context Packs**：理解具体任务后按需选择的一到三个完整组件或跨组件模型。
+记忆保留来源和适用范围，不能覆盖当前指令或权威源码。任务进度仍属于 Task，强制规则与流程仍属于 Rules/SOP。旧 Context/Lessons 在升级或工作区首次访问时自动迁移，保留原文和恢复记录，不形成长期双权威。
 
-Context 只存已确认、项目特有、稳定、会改变未来决策且能指向 Authority 的事实。它不保存任务进度、规则、流程、秘密或实时环境值。
+### 5.2 自动维护：独立会话、条件写入与可恢复历史
 
-Context 帮助新 Agent 跳过宽泛探索，但任务直接源码仍需检查。Context 与 Authority 冲突时，Authority 永远优先。
+后台服务管理每个工作区隔离、可复用的 Memory Agent 会话。同工作区串行处理持久化对话，不同工作区可并行；普通 Agent 退出不终止已投递的后台处理。用户级和项目级知识均可自动维护，不再逐条请求批准。
 
-### 5.2 Lessons：保存防复发控制，不保存纠错历史
-
-Lesson 只有同时满足可复用、可预判、可预防、可验证、需要 Agent 判断且载体正确时才应进入 `tasks/lessons.md`。
-
-固定结构：
-
-- **Trigger**：复发前可识别的条件；
-- **Rule**：直接阻断失败机制的动作或边界；
-- **Check**：证明控制覆盖当前范围的证据。
-
-用户纠正后先立刻修正当前任务，再判断是否需要更新 Lesson。持久化 Add / Update / Merge / Replace / Delete 都必须先展示准确变更并取得确认。若 schema、测试、lint 或强制工作流可以彻底防住问题，应优先用更强机制，而不是再写一句提醒。
+`agent-memory` 仅定义读写规范；提取判断和调度分别属于 Memory Agent 提示词与服务。写入保留 revision/hash 条件、锁、来源、审计和恢复保障，不因近期未使用而删除知识。用户纠正首先作用于当前任务；可复用经验与其他知识一样由来源和适用条件约束，而非另设固定模板。
 
 ### 5.3 Skill Quality：确定性门禁，不冒充测试
 
@@ -355,11 +343,11 @@ Lesson 只有同时满足可复用、可预判、可预防、可验证、需要 
 
 ### 6.2 正确载体优先于更多内容
 
-规则、Hook、SOP、Task、Context、Lessons、Archive 各有单一责任。放错地方的信息会污染检索、扩大上下文并制造冲突。
+规则、Hook、SOP、Task、Memory、Archive 各有单一责任。放错地方的信息会污染检索、扩大上下文并制造冲突。
 
 ### 6.3 一个事实只有一个权威来源
 
-任务正文权威于索引；Authority 权威于 Context；同名 SOP 只暴露最高优先级版本；Queue 的有序子任务列表就是恢复游标；不额外创建重复 cache、cursor 或状态副本。
+任务正文权威于索引；Authority 权威于 Memory；同名 SOP 只暴露最高优先级版本；Queue 的有序子任务列表就是恢复游标；不额外创建重复 cache、cursor 或状态副本。
 
 ### 6.4 结果优先于活动
 
@@ -379,7 +367,7 @@ Task 记录完成条件与证据，不记录 Agent 有多忙；Plan 记录当前
 
 ### 6.8 关键门禁 fail-closed
 
-出现以下任一情况时都不能默认为成功：规则无效、Hook 不受支持、Context Authority 冲突、Lesson Check 失败、任务缺 Result 或验证、Queue 有未完成子任务。状态不可信时停下，比生成一个漂亮但错误的完成报告更重要。
+出现以下任一情况时都不能默认为成功：规则无效、Hook 不受支持、Memory 来源冲突、适用的防复发控制验证失败、任务缺 Result 或验证、Queue 有未完成子任务。状态不可信时停下，比生成一个漂亮但错误的完成报告更重要。
 
 ### 6.9 独立评审只在明确要求时
 
@@ -399,8 +387,8 @@ Task 记录完成条件与证据，不记录 Agent 有多忙；Plan 记录当前
 | “按顺序完成多个独立结果” | `task-queue` | 父子任务 + 最终集成门 |
 | “只审查，不要修改” | `task-review` | 一次 evidence-based feedback |
 | “把这个决定问到底” | `task-grill` | 逐题决策压力测试 |
-| “新会话不要重新摸索项目” | `task-context` | Project Core + 按需 Context Packs |
-| “避免以后再犯同类错误” | `task-lessons` | Trigger / Rule / Check 防复发控制 |
+| “新会话不要重新摸索项目” | `agent-memory` | 小索引 + 按需读取 Markdown 知识 |
+| “避免以后再犯同类错误” | `agent-memory` | 保留有来源、适用条件和验证依据的可复用经验 |
 | “检查 Skill 包是否符合结构契约” | `skill-quality` | 确定性 package gate |
 | “逐字保存这段会话” | `archive` | 非权威历史归档 |
 
@@ -411,8 +399,8 @@ Task 记录完成条件与证据，不记录 Agent 有多忙；Plan 记录当前
 - 不把 Task 变成完整项目管理软件；
 - 不默认记录详细实现步骤和执行流水账；
 - 不自动持久化普通偏好或一次性请求；
-- 不把 Context 当作源码、测试或 Authority 的替代品；
-- 不把 Lessons 当作纠错日记；
+- 不把 Memory 当作源码、测试或 Authority 的替代品；
+- 不把 Memory 当作纠错日记；
 - 不因为任务大就自动触发独立评审；
 - 不让 task core 执行任意命令或成为后台 worker；
 - 不在没有可靠原始数据时“尽力”重建历史；
@@ -424,6 +412,6 @@ Task 记录完成条件与证据，不记录 Agent 有多忙；Plan 记录当前
 
 ## 9. 总结
 
-CSL Agent Kit 让 Agent 以可信、可恢复、可验证的方式工作。`agent-*` 管理行为何时、在什么作用域和载体中生效；`task-*` 管理结果的承诺、执行与证明；Context、Lessons、quality gate、archive 和共享 core/protocol 负责记忆、质量、历史与状态边界。
+CSL Agent Kit 让 Agent 以可信、可恢复、可验证的方式工作。`agent-*` 管理行为何时、在什么作用域和载体中生效；`task-*` 管理结果的承诺、执行与证明；Memory、quality gate、archive 和共享 core/protocol 负责记忆、质量、历史与状态边界。
 
 > **规则放对地方，结果先于实现，理解先于编辑，证据先于完成，持久化只保存未来真正需要的东西。**

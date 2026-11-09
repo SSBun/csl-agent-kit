@@ -18,13 +18,12 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 | deliberate | `/csl:deliberate` | `/deliberate` | 由 Synthesizer 与独立 Challenger 先内部批量审议，仅在关键用户选择上暂停询问。 |
 | bug-fix | `/csl:bug-fix` | `/bug-fix` | Diagnose and fix bugs, failing tests, CI failures, and regressions. |
 | repo-map | `/csl:repo-map` | `/repo-map` | Build a lightweight map of an unfamiliar repo or module before coding. |
-| task-context | `/csl:task-context` | `/task-context` | Establish source-backed Core and task-relevant coverage, retrieve sufficient Packs, and maintain affected durable facts. |
+| agent-memory | `/csl:agent-memory` | `/agent-memory` | 用户级与项目级 Markdown 记忆读写规范：普通文件工具按需读取、主题聚合、写作预算和可恢复条件写入；不预设主题。 |
 | topic | `/csl:topic` | `/topic` | 管理长期维护主题的共享规格、版本及任务引用；支持实现、Bug 修复和审查，不限于多平台。 |
 | task | `/csl:task` | `/task` | Manage one canonical task through evidence and completion. |
 | task-plan | `/csl:task-plan` | `/task-plan` | Prepare a read-only, decisions-only implementation handoff. |
 | task-queue | `/csl:task-queue` | `/task-queue` | Run ordered parent and child tasks with a final integration gate. |
-| task-lessons | `/csl:task-lessons` | `/task-lessons` | Query, apply, and maintain reusable workspace lessons. |
-| task-maintenance | `/csl:task-maintenance` | `/task-maintenance` | 整理 Context/Lessons 数据，并按当前权威架构安全清理或迁移 Task 系统拥有的历史文件与目录。 |
+| task-maintenance | `/csl:task-maintenance` | `/task-maintenance` | 按明确请求清理陈旧 Memory，或按当前权威架构安全整理 Task 历史文件与目录；不承担例行记忆维护或自动升级。 |
 | agent-rules | `/csl:agent-rules` | `/agent-rules` | 管理 Built-in、User 与 Project 三层持久 Agent Rules。 |
 | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
 | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |
@@ -37,7 +36,15 @@ Personal agent toolkit for [Claude Code](https://docs.claude.com/en/docs/claude-
 
 Claude-only slash commands: `/csl:sop-activate`, `/csl:doc-sync`.
 
-内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Context、Lessons、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+内置、用户级与项目级 Agent Rules 分别存放在 `skills/meta/agent-rules/agent-rules.md`、`<data-root>/agent-rules.md` 与 `<workspace>/.agents/agent-rules.md`，由 `inner:agent-rules` 按 Built-in → User → Project 合并注入；workspace 的 `AGENTS.md` / `CLAUDE.md` 仍由宿主读取，但不属于 Agent Rules 系统。项目级 SOP 存放在 `<workspace>/.agents/sops/`，用户级 SOP 存放在 `<data-root>/sops/`，同名时项目级优先；跨会话持久指令保存为 `<data-root>/hooks/` 下的全局 `session-start` Prompt 规则。`data-root` 优先取 `CSL_AGENT_KIT_HOME`，否则为 `~/.csl-agent-kit`。Codex 与 Claude Code 在 `SessionStart` 注入，Pi 在每次 agent turn 重建 system context；这些规则不按用户 prompt 关键词匹配。内置 `inner:csl-agent-kit-contract` 默认启用并注入自包含的 CSL Agent Kit 行为契约，覆盖 task-family 路由、目标对齐、Memory 读取与后台维护分工、最小与手术式修改及验证边界；用户可通过 Agent Hooks 禁用。Cursor V1 不支持 Prompt 注入，不能把该宿主上的规则报告为 active。
+
+## Markdown Memory
+
+Memory 以用户级和项目级 Markdown 为权威内容，用 `title` 表达动态主题。普通 Agent 通过文件工具读取精简分页索引和相关正文，后台服务为每个 workspace 复用独立 Memory Agent 会话；前台退出不停止已经入队的处理。两级均自动维护，保留条件写入、审计和恢复。
+
+首次使用自动转换旧 Context/Lessons，保留原文及备份，不重复导入已有知识；旧流程不再并行维护。`memory upgrade --dry-run` 可预览，`memory agents` 查看会话，`memory dashboard --open` 打开审计面板。旧版后台进程仍在运行时，需要 `memory service restart` 后继续；失败或未入队状态不会冒充成功。
+
+详见 ["/Users/caishilin/Desktop/personal/skills/docs/memory.md"](file:///Users/caishilin/Desktop/personal/skills/docs/memory.md)。首版后台自动接入 Pi；其他宿主只加载读写规范与数据升级入口，不宣称已接通其会话维护。
 
 ## 长期 Topic 与独立任务
 
@@ -455,7 +462,8 @@ csl-agent-kit install --all
 skills/                  # Shared skill source (all platforms)
 skills/meta/{task,task-plan,task-queue}/ # Cross-host task workflow skills
 skills/meta/csl-tasks/shared/           # Shared task-state core
-skills/meta/{task-context,task-lessons,task-maintenance}/ # Context and lessons workflow skills
+skills/meta/{agent-memory,task-maintenance}/ # Memory 读写与显式历史整理
+bin/memory/              # 存储、自动升级、workspace Agent 与独立后台服务
 .agents/skills/integrate-third-skills/ # 仅当前仓库发现的第三方技能集成流程
 .claude-plugin/          # Claude Code plugin manifest
 .cursor-plugin/          # Cursor plugin manifest

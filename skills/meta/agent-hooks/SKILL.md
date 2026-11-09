@@ -35,6 +35,10 @@ Validate proposed rule files with `node scripts/validate-rules.js [--scope globa
 
 Update the CSL Agent Kit Codex plugin and review its hooks before enabling this provider in iTermate. The app migrates only its own legacy native entries on explicit enable; unrelated hooks remain, although removal can change their group indices and require review. A CLI `effective: active` result proves rule eligibility, not plugin trust, app opt-in, socket availability, or observed delivery. Do not mark the integration operational without checking those separately.
 
+## Memory Maintenance Integration
+
+`inner:memory-maintenance` queues visible conversation increments after Pi `agent_settled`, not low-level `agent_end`. The Pi bridge dispatches only that hook through `runEvent(..., { onlyHooks: [...] })`, so unrelated stop hooks do not run twice. `scripts/memory-enqueue.js` persists the event before requesting the detached service; it never waits for model completion. `inner:agent-memory` performs first-use versioned conversion with backups and exposes Markdown roots/indexes to non-Pi hosts; Pi supplies its indexes through the bridge. Dispatch requires the completed current store-version marker, not a manually created activation flag. Disabled/failed hooks do not advance the durable conversation cursor. The detached service reuses one isolated SDK Memory session per workspace, loads only the bundled read/write specification, and loads no ambient extensions, preventing recursive maintenance. Both user and project maintenance are automatic; historical pending proposals remain unapproved.
+
 ## Persistent Directives
 
 For explicit future-session persistence, use one global `session-start` / `inject-prompt` rule per atomic directive.

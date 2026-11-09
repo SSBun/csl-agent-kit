@@ -9,7 +9,7 @@ A Topic owns a bounded, persistent specification and references to related tasks
 
 ## Entry and Ownership
 
-1. Load Project Core. Resolve an explicitly named Topic or the current task's exact Topic reference. Ambiguous names or cross-repository owner choices require a focused question; never scan unregistered repositories.
+1. Load the small user/project Memory indexes under `agent-memory`. Resolve an explicitly named Topic or the current task's exact Topic reference. Ambiguous names or cross-repository owner choices require a focused question; never scan unregistered repositories.
 2. Read only the selected Topic's scope/specification and relevant task references before forming a Task Target. This narrow read is governed by [Task Target Alignment](../csl-tasks/shared/protocols/task-target-alignment.md); it does not permit implementation exploration before alignment.
 3. For a concrete change, activate and focus one owning `task-plan` or `task` record before substantive work. Internal Topic CLI operations do not each create another task. A create-topic task attaches after creating the Topic. Read-only listing/showing needs no mutation task.
 4. Apply the owning task's full alignment and authorization gates. Topic state or a stored statement of approval never replaces recoverable user acceptance. Planning does not authorize implementation; effective delegation retains its existing boundary.

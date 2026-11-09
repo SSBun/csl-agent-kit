@@ -34,8 +34,7 @@ test("registers nested skill commands without removed Matt Pocock skills", () =>
     "task-queue",
     "git-conflict",
     "tldr",
-    "task-lessons",
-    "task-context",
+    "agent-memory",
   ];
   const removedNames = [
     "domain-modeling",

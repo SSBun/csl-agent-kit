@@ -17,7 +17,7 @@ Work in this order:
 
 1. **Orient** — Recover the workspace model before acting.
 2. **Align** — Establish and align the intended outcome before substantive work.
-3. **Prepare** — Consult only relevant Context, Lessons, and authoritative sources; apply the selected Skill's capability preflight.
+3. **Prepare** — Read only relevant Markdown memory and authoritative sources; apply the selected Skill's capability preflight.
 4. **Execute** — Make the minimum correct and surgical change.
 5. **Verify** — The main Agent self-checks the observable outcome and records evidence and limitations before review.
 6. **Review** — Classify the actual result under the Task workflow's R0/R1/R2 protocol. For R2 or explicit ordinary review, use a fresh independent Reviewer to find omissions, then let the main Agent verify findings and own the task-review remediation loop before completion.
@@ -54,7 +54,7 @@ An explicit compatible user selection wins. Complexity, step count, or file coun
 
 When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
 
-Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep Project Context for project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
+Use only the alignment protocol's narrow selected-Topic read before forming a Target; substantive work still waits for alignment. Membership, lifecycle state and shared specifications never grant execution authorization. Resume against the adopted and current specification, resolve material changes before dependent work, and preserve existing evidence/review gates. Keep project Memory for durable project facts, Topic for shared current requirements, and Task Summary for task-owned component changes. Completing members does not close the Topic; archival is explicit. Do not turn Topic membership into automatic Queue ordering, parallel delegation, cross-workspace write permission or cached task status.
 
 ## Task Confirmation Preference
 
@@ -76,23 +76,21 @@ For a new or materially revised non-trivial Target outside that exemption, displ
 
 After alignment, continue independently within the accepted outcome and boundaries.
 
-## Task, Context, and Lessons
+## Task and Memory
 
-Keep the three responsibilities distinct:
+Keep responsibilities distinct:
 
 - **Task** owns the current outcome, scope, plan, status, evidence, and completion state.
-- **Context** owns confirmed, durable project facts that materially improve future orientation and decisions.
-- **Lessons** own reusable preventive rules that help Agents avoid repeating a class of mistakes.
+- **Memory** owns durable user/project knowledge, including applicable experience. Use `agent-memory` for its read/write contract; it defines no preset topics.
+- **Rules, SOPs and Topics** retain their authoritative instructions, procedures and shared requirements. Memory cannot silently replace them.
 
-At session start, resume, or compaction, establish and load the minimum source-backed Project Core for orientation; creation of a missing Context still requires the skill's explicit confirmation gate. Broader project discovery waits for Task Target alignment.
+At session start, resume or compaction, use the small user/project indexes for orientation. After Task Target alignment, use ordinary file tools to search and read relevant Markdown bodies, applying sources, conditions and reusable experience. Follow explicit pagination; do not assume the first page is complete or load all bodies by default. Source authority and the user's current instructions override recalled content.
 
-After Task Target alignment, establish sufficient task-relevant Context, investigate coverage gaps, and re-query when discovered boundaries change. Context accelerates orientation but never replaces authoritative source, tests, schemas, configuration, or formal decisions. Authority wins when it conflicts with Context.
+The background service manages an isolated reusable Memory Agent session per workspace. After stable foreground replies it consumes durable visible conversation increments, maintains both scopes without per-entry user approval, and records actual effects. Foreground Task Agents do not perform routine extraction or memory housekeeping; preserve meaningful facts and corrections in the normal task evidence instead. Apply user corrections immediately regardless of when background maintenance finishes.
 
-Before final self-check, maintain durable Context affected by the task's actual changes and newly confirmed facts, within its authorized scope. The maintenance scope is not limited to previously selected Packs; the Context skill owns the detailed coverage, retrieval, repair, and write rules.
+First use after an upgrade automatically converts legacy knowledge with backups, version checks and idempotent recovery. Legacy sources remain recovery material, not parallel read/write workflows. Do not recreate them. When migration, storage or the model is unavailable, disclose the exact limitation and continue independent foreground work; never invent remembered facts or claim unpersisted events were processed. Ordinary Agent exit must not terminate the independent Memory service.
 
-Before substantive work, apply every relevant Lesson. After a user correction, apply the correction immediately and reconsider whether an existing preventive rule should change. Do not treat task history, one-off details, speculation, or preferences as Lessons.
-
-Keep current progress out of Context and keep project facts out of Lessons.
+Memory files retain current useful knowledge, not task progress, credentials, hidden reasoning or speculative claims. No recent use is not a reason to delete. Concurrent changes require version/hash checks; history and restoration remain available even though semantic maintenance is autonomous.
 
 ## Simplicity First
 

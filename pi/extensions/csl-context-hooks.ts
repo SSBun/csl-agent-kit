@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { createRequire } from "node:module";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { registerMemoryBridge } from "../lib/memory-bridge.ts";
 import type { ExtensionAPI, SessionEntry } from "@earendil-works/pi-coding-agent";
 
 interface SopSummary {
@@ -264,6 +265,7 @@ function watchTitleResult(requestId: string, ctx: { ui: { notify(message: string
 }
 
 export default function cslContextHooks(pi: ExtensionAPI) {
+	registerMemoryBridge(pi);
 	let sops: SopSummary[] = [];
 	let activeCandidates: SopSummary[] = [];
 	let toolReminderShown = false;

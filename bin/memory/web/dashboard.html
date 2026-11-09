@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Memory Console · CSL Agent Kit</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/vendor/markdown-it.js" defer></script>
+  <script src="/vendor/json-formatter.js" defer></script>
+  <script src="/detail-renderer.js" defer></script>
+  <script src="/dashboard.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">跳转到页面内容</a>
+<aside class="sidebar" aria-label="主导航">
+  <a class="sidebar-brand" href="?page=overview" data-route="overview"><span aria-hidden="true">▦</span> Memory<span class="brand-subtitle">CSL AGENT KIT</span></a>
+  <p class="nav-label">WORKSPACE / 控制台</p>
+  <nav class="sidebar-nav">
+    <a href="?page=overview" data-route="overview" aria-current="page"><span aria-hidden="true">◈</span> 全局概览</a>
+    <a href="?page=storage" data-route="storage"><span aria-hidden="true">▤</span> 记忆存储</a>
+    <a href="?page=processing" data-route="processing"><span aria-hidden="true">⟳</span> 记忆处理</a>
+  </nav>
+  <div class="sidebar-foot"><span class="local-dot" aria-hidden="true"></span> 本机服务<p>私有记忆 · 独立工作区</p></div>
+</aside>
+<div class="app-shell">
+<header>
+  <div><p class="eyebrow">MEMORY CONSOLE / <span id="page-eyebrow">OVERVIEW</span></p><h1 id="page-title" tabindex="-1">全局概览</h1><p class="intro" id="page-description">查看记忆系统的运行状态与工作区活动。</p></div>
+  <div class="header-actions"><span id="connection" class="state-badge" role="status">[··] 连接中</span><button id="refresh" type="button"><span aria-hidden="true">↻</span> 刷新</button></div>
+</header>
+<main id="main-content" tabindex="-1">
+  <p id="error" role="alert"></p>
+  <section id="page-overview" data-page-panel="overview" aria-label="全局概览">
+  <div class="health-panel" id="health-panel"><div><p class="eyebrow">SYSTEM HEALTH</p><h2 id="system-health">正在连接记忆系统…</h2><p id="system-description">状态由本机后台实时提供。</p></div><span class="health-orbit" aria-hidden="true">◉</span></div>
+  <div class="metrics" aria-label="全局服务快照">
+    <div class="metric"><span class="metric-label">进程 / PID</span><strong id="metric-pid">—</strong><small>本机后台服务</small></div>
+    <div class="metric"><span class="metric-label">执行中 / ACTIVE</span><strong id="metric-active">—</strong><small>当前维护批次</small></div>
+    <div class="metric"><span class="metric-label">等待 / QUEUED</span><strong id="metric-queued">—</strong><small>待处理批次</small></div>
+    <div class="metric"><span class="metric-label">异常 / ATTENTION</span><strong id="metric-failed">—</strong><small>失败与中断记录</small></div>
+  </div>
+  <div class="overview-grid">
+    <section class="scope-panel"><h2>运行环境</h2><dl class="system-facts"><div><dt>工作区</dt><dd id="overview-workspaces">—</dd></div><div><dt>模型</dt><dd id="overview-model">—</dd></div><div><dt>启动时间</dt><dd id="overview-started">—</dd></div></dl></section>
+    <section class="scope-panel"><h2>处理规则</h2><p class="policy-number">2 <span>次 / 每批最多尝试</span></p><p class="help">工作区之间独立并行；耗尽后标记并继续。只有已提交的记忆进入历史。</p><a class="text-link" href="?page=processing" data-route="processing">查看处理状态 →</a></section>
+  </div>
+  <section class="scope-panel"><h2>工作区状态</h2><p class="help">当前是否执行以后台活动列表为准；空闲工作区同时展示上次运行结果。</p><div id="overview-agents" class="workspace-grid"></div></section>
+  <details aria-labelledby="status-title"><summary><h2 id="status-title">服务诊断</h2></summary><pre id="status">加载中…</pre></details>
+  </section>
+  <section id="page-storage" data-page-panel="storage" aria-label="记忆存储" hidden>
+  <section class="scope-panel" aria-labelledby="scope-panel-title">
+    <h2 id="scope-panel-title"><span class="prompt" aria-hidden="true">&gt;_</span> 记忆筛选</h2>
+    <form id="filters">
+      <label>记忆范围<select id="scope"><option value="all">全部记忆</option><option value="user">用户记忆</option><option value="project">项目记忆</option></select></label>
+      <label>项目（选择或输入绝对路径）<input id="workspace" list="workspace-options" placeholder="留空查看全部项目" disabled><datalist id="workspace-options"></datalist></label>
+      <div class="filter-actions"><button class="primary" type="submit">应用筛选</button><button type="reset">重置</button></div>
+    </form>
+    <p id="scope-description" class="help" role="status">浏览用户与项目的当前记忆。</p>
+  </section>
+  <nav id="memory-views" class="view-switch" aria-label="记忆视图"><button type="button" data-view="memories" aria-pressed="true" aria-controls="library-panel">记忆库</button><button type="button" data-view="commits" aria-pressed="false" aria-controls="records">变更记录</button></nav>
+  <section id="library-panel" class="library-panel" aria-labelledby="library-title">
+    <h2 id="library-title"><span class="prompt" aria-hidden="true">&gt;_</span> 当前记忆库</h2>
+    <p class="help">默认展示全部项目分组，用户记忆独立分组。点击分组展开全部记忆，再次点击收起；点击记忆卡片查看完整正文。</p>
+    <p id="memory-groups-count" class="help" role="status"></p>
+    <div id="memories" class="memory-groups-grid" aria-live="polite">正在读取项目分组…</div>
+  </section>
+  <details id="records" class="records-panel" hidden open aria-labelledby="commits-title">
+    <summary><span class="section-index" aria-hidden="true">01</span><h2 id="commits-title"><span class="prompt" aria-hidden="true">&gt;_</span> 记忆变更记录</h2><span class="section-hint">COMMITS</span></summary>
+    <div class="record-toolbar"><p><span class="comment-mark" aria-hidden="true">#</span> 仅记录已提交变更 · 最新优先</p></div>
+    <div id="commits" class="record-list" aria-live="polite">正在读取记录…</div>
+    <nav class="pagination" aria-label="提交分页"><span id="commits-page"></span><div><button data-page="commits" data-step="prev">← 上一页</button><button data-page="commits" data-step="next">下一页 →</button></div></nav>
+  </details>
+  </section>
+  <section id="page-processing" data-page-panel="processing" aria-label="记忆处理" hidden>
+  <section class="scope-panel" aria-labelledby="agents-title">
+    <h2 id="agents-title">Memory Agent · 实时处理</h2>
+    <p class="help">按工作区查看正在处理的内容。过程仅在内存暂存，结束后最多保留两分钟。</p>
+    <p id="agents-error" role="status"></p><div id="processing-agents">正在读取运行状态…</div>
+  </section>
+  <section class="scope-panel" aria-labelledby="jobs-title"><h2 id="jobs-title">处理队列与异常</h2><p class="help">每批最多尝试两次；已耗尽记录保留供查看，不阻塞后续批次。</p>
+    <form id="processing-filters"><label>工作区<input id="processing-workspace" list="workspace-options" placeholder="全部工作区"></label><button type="submit">应用筛选</button></form>
+    <div id="jobs"></div><nav class="pagination" aria-label="处理队列分页"><span id="jobs-page"></span><div><button data-page="jobs" data-step="prev">← 上一页</button><button data-page="jobs" data-step="next">下一页 →</button></div></nav>
+  </section>
+  </section>
+  <dialog id="detail-section" aria-labelledby="detail-title">
+    <div class="detail-header"><div><p class="eyebrow">memory / inspect</p><h2 id="detail-title">核对详情</h2></div><button id="detail-close" type="button" autofocus>关闭 <kbd>Esc</kbd></button></div>
+    <section id="change-summary" class="change-summary" aria-labelledby="change-summary-title" hidden><h3 id="change-summary-title">变更摘要 <span> / 提交说明</span></h3><ul id="change-summary-list"></ul></section>
+    <p id="detail-error" role="alert"></p><p id="detail-reason">选择一项查看具体内容与来源。</p>
+    <section id="job-conversation" hidden aria-label="批次会话">
+      <label for="job-history">会话历史</label><select id="job-history"></select>
+      <h3 id="job-message-heading"></h3><div id="job-message" class="rendered-content"></div>
+    </section>
+    <section id="agent-live" hidden>
+      <p id="agent-live-state" role="status"></p>
+      <h3>Agent 决策说明</h3><p class="help">公开摘要与依据，不包含隐藏思维链。实时内容结束两分钟后释放。</p><div id="agent-decisions"></div>
+      <h3>候选记忆 · 提交请求</h3><p class="help">请求不代表写入成功；实际结果以提交审计为准。</p><div id="agent-candidates"></div>
+      <details id="agent-technical"><summary>原始输入与工具日志</summary><pre id="agent-live-input"></pre><pre id="agent-live-events"></pre></details>
+    </section>
+    <section id="job-changes" hidden><h3 id="job-changes-heading">实际提交</h3><p class="help">从提交审计读取，失败批次也可能有已保存的变更。</p><div id="job-effects"></div></section>
+    <details id="job-diagnostics" hidden><summary>批次详情与原始输入</summary><p id="job-attempts" class="help"></p><pre id="job-failure"></pre><div id="job-input" class="rendered-content"></div></details>
+    <div id="memory-content" class="rendered-content" hidden></div>
+    <div class="comparison"><div class="before-pane"><h3><span aria-hidden="true">−</span> 当前内容 / 变更前</h3><div id="before" class="rendered-content"></div></div><div class="after-pane"><h3><span aria-hidden="true">+</span> 提议内容 / 变更后</h3><div id="after" class="rendered-content"></div></div></div>
+    <details id="detail-metadata" class="detail-metadata"><summary>来源与元数据<span class="section-hint">JSON</span></summary><div id="detail-meta" class="rendered-content"></div></details><div id="actions"></div>
+  </dialog>
+</main>
+<footer><span class="footer-tag">MEMORY</span><span>仅限本机 · 授权地址请勿分享</span><span class="footer-note">记忆是参考，不是规则</span></footer>
+</div>
+</body>
+</html>

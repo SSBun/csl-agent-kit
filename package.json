@@ -39,13 +39,14 @@
     "yunxiao": "skills/domain/yunxiao/scripts/yunxiao.mjs"
   },
   "scripts": {
-    "test": "npm run test:cli && npm run test:agent-hooks && npm run test:tasks && npm run test:archive",
+    "test": "npm run test:cli && npm run test:agent-hooks && npm run test:tasks && npm run test:archive && npm run test:memory",
     "test:all": "npm test && npm run test:pi",
     "test:cli": "node --test tests/cli-install-output.test.js tests/third-party-skills.test.js",
     "test:agent-hooks": "node --test tests/agent-hooks.test.js tests/commit-guard.test.js",
     "test:commit-guard": "node --test tests/commit-guard.test.js",
     "test:tasks": "node --test tests/task-files.test.mjs tests/csl-tasks-core.test.mjs tests/task-evidence.test.mjs tests/topics.test.mjs tests/task-mode.test.js",
     "test:archive": "node --test tests/archive-session.test.mjs",
+    "test:memory": "node --test tests/memory-store.test.js tests/memory-runtime.test.js tests/memory-migration.test.js",
     "test:pi": "node tests/run-pi-tests.js",
     "check": "node --check bin/csl-agent-kit.js && npm run test:all && node bin/csl-agent-kit.js install --yes --dry-run --json",
     "check:cli": "node --check bin/csl-agent-kit.js && npm run test:cli && node bin/csl-agent-kit.js install --yes --dry-run --json"
@@ -81,6 +82,8 @@
   },
   "dependencies": {
     "classic-level": "^3.0.0",
+    "json-formatter-js": "2.5.23",
+    "markdown-it": "14.2.0",
     "mqtt": "^5.15.2",
     "prompts": "^2.4.2",
     "sharp": "^0.32.6",
