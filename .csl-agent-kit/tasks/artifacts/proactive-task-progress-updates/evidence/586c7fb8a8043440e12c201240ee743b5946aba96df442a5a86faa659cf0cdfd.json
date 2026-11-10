@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "proactive-task-progress-updates",
+  "files": [
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "be1f51c6eda97af8cf5fe1c3ee239d11376d5b86aefdab7c1c44d1287d6d06eb",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "1d21576180d03d8ecfc5ee5f4b17af7193bd86a1"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "1d21576180d03d8ecfc5ee5f4b17af7193bd86a1",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}
