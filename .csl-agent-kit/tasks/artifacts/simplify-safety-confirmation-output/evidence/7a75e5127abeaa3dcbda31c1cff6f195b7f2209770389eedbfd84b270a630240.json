@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "simplify-safety-confirmation-output",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "2a026f5c483f9554ebe213d1bdd231f1c9d196ce7552fc894c89857e9117f671",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2fc98f5eb2edb80813635d2d0dae12b1876507aa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2fc98f5eb2edb80813635d2d0dae12b1876507aa",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

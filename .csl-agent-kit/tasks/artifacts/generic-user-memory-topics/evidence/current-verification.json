@@ -1,0 +1,63 @@
+{
+  "userMemory": {
+    "generation": "a058ce83069bf4a7c7128d4ccf1da3933d75329ab2f3740b0ce4ba24c7429e49",
+    "indexState": "published",
+    "count": 3,
+    "entries": [
+      {
+        "id": "memory-persistent-only",
+        "title": "记忆管理偏好",
+        "hash": "725f263d93d676004ee46bf1a56bc8d6a05079f3617bd6993eca880809c60e1e",
+        "caseCount": 2,
+        "dates": [
+          "2026-11-10",
+          "2026-11-10"
+        ]
+      },
+      {
+        "id": "agent-environment-and-models",
+        "title": "Agent 环境与模型配置",
+        "hash": "456aa10cb5d97224ec50b10a666a960112b3eb08e29a52e93ea67306c5ff23de",
+        "caseCount": 3,
+        "dates": [
+          "2026-11-06",
+          "2026-11-06",
+          "2026-11-06"
+        ]
+      },
+      {
+        "id": "tool-use-and-interaction",
+        "title": "工具使用与交互",
+        "hash": "cbdffb75dea1a663a066b95f69dc2712ffb5a9095892e5d4952a0fa57ff108e1",
+        "caseCount": 6,
+        "dates": [
+          "2026-11-07",
+          "2026-11-07",
+          "2026-11-09",
+          "2026-11-09",
+          "2026-11-05",
+          "2026-11-05"
+        ]
+      }
+    ]
+  },
+  "preservation": {
+    "originalCases": 10,
+    "currentCases": 11,
+    "comparison": "主Agent对照本轮归并前CLI完整读取与当前正文逐条核对：10条原case语义和日期保留，增加1条2026-11-10用户主题组织偏好；后台对部分措辞作了作用域显式化，非逐字复制。",
+    "originalCopiesRetained": false
+  },
+  "promptInspection": {
+    "sdkSessionCreated": true,
+    "modelCallPerformed": false,
+    "systemPromptIncludesCurrentSkill": true,
+    "includesUserTopicSpecification": true,
+    "skillHash": "62a82135213ed59f1db7014c4aba443362308d688519bcc4ec8aec26decc3f67"
+  },
+  "limits": [
+    "原文件已由后台归并删除，独立复核不能从磁盘重新读取旧原文。",
+    "正文完整性对照为主Agent证据，独立审查需区分继承证据与自行检查。",
+    "语义主题约束由提示词执行，存储schema不硬编码主题分类。",
+    "后台已由现有机制自动恢复为PID13937；未建立持续无写入隔离，送审与交付前需复查hash。"
+  ]
+}

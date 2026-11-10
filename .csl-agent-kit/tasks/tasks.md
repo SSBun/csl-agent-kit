@@ -1,6 +1,68 @@
 # 任务索引
 
+- [豁免测试证据审查标记并提交全部改动](tasks/exempt-test-evidence-commit.md) — Completed (2026-11-10 19:36)
+
+- [将当前项目重命名为 csl-agent-kit](tasks/rename-project-csl-agent-kit.md) — Completed (2026-11-10 18:08)
+
+- [更新内置规则的本地链接目标格式](tasks/builtin-local-link-target.md) — Completed (2026-11-10 16:33)
+
+- [统一内置 SOP 的本地 Markdown 链接格式](tasks/local-markdown-link-style-three.md) — Completed (2026-11-10 16:31)
+
+- [精简安全确认的阻断说明](tasks/simplify-safety-confirmation-output.md) — Completed (2026-11-10 14:51)
+
+- [用户记忆通用主题归并与持续约束](tasks/generic-user-memory-topics.md) — Completed (2026-11-10 14:58)
+
+- [删除MyTwitter的15份错误任务记录](tasks/remove-invalid-mytwitter-task-records.md) — Completed (2026-11-10 14:33)
+
+- [评估用户级记忆主题分类](tasks/evaluate-user-memory-topics.md) — Completed (2026-11-10 14:29)
+
+- [迁移MyTwitter任务存储并恢复读取](tasks/migrate-mytwitter-task-storage.md) — Blocked (2026-11-10 14:31)
+
+- [特殊记忆卡片固定优先排列](tasks/memory-special-files-first.md) — Completed (2026-11-10 14:24)
+
+- [精简目标确认的防护提示](tasks/refine-target-check-prompts.md) — Completed (2026-11-10 14:15)
+
+- [调整默认审查模型为Sol Low](tasks/set-review-model-sol-low.md) — Completed (2026-11-10 14:11)
+
+- [Memory Dashboard 显示当前模型与提供商](tasks/memory-dashboard-model-provider.md) — Completed (2026-11-10 14:11)
+
+- [按新标准统一现有Memory文件](tasks/standardize-existing-memory-stores.md) — Blocked (2026-11-10 14:07)
+
+- [启用已审查的 ISO Memory 提示词](tasks/activate-iso-memory-prompt.md) — Completed (2026-11-10 11:54)
+
+- [对抗审查并精简 ISO Memory 提示词](tasks/adversarial-memory-prompt.md) — Completed (2026-11-10 11:27)
+
+- [最近七天临时记忆与特殊文件徽标](tasks/memory-seven-day-context-badges.md) — Completed (2026-11-10 11:33)
+
+- [整合 ISO 原则与现行 Memory 记录提示词](tasks/iso-memory-record-prompt.md) — Completed (2026-11-10 10:46)
+
+- [提炼五项 ISO 标准核心概念](tasks/iso-core-concept-notes.md) — Completed (2026-11-10 10:34)
+
 - [强化任务执行期间的主动进度记录](tasks/proactive-task-progress-updates.md) — Completed (2026-11-09 20:16)
+
+- [Memory 基础文件与 BCP14 案例约束](tasks/memory-context-lessons-bcp14.md) — Completed (2026-11-09 20:09)
+
+- [添加用户级 SOP 更新同步规则并同步现有 SOP](tasks/sync-user-sops-rule.md) — Completed (2026-11-09 18:25)
+
+- [内置英文 STE100 写作 SOP 与参考资源](tasks/add-ste100-writing-sop.md) — Completed (2026-11-09 18:25)
+
+- [将七个专用 SOP 移到用户级](tasks/move-platform-sops-to-user.md) — Completed (2026-11-09 18:11)
+
+- [将两条内置规则保存为英文](tasks/english-built-in-rules.md) — Completed (2026-11-09 17:55)
+
+- [精简 STE100 规则 Markdown 为章节正文](tasks/simplify-ste100-rules-markdown.md) — Completed (2026-11-09 17:52)
+
+- [精简 STE100 词典 JSON 为纯词条内容](tasks/simplify-ste100-dictionary-json.md) — Completed (2026-11-09 17:46)
+
+- [转换 ASD-STE100 写作规则及完整词典](tasks/convert-ste100-issue9.md) — Completed (2026-11-09 17:39)
+
+- [Memory仅保留当前知识文件并移除历史恢复体系](tasks/memory-current-files-only.md) — Completed (2026-11-09 18:52)
+
+- [获取最新 ASD-STE100 规范 PDF](tasks/download-ste100-latest.md) — Completed (2026-11-09 16:11)
+
+- [设计按长期知识领域组织记忆主题](tasks/memory-topic-organization.md) — Completed (2026-11-09 16:31)
+
+- [明确主题记忆片的无序列表正文格式](tasks/memory-chip-list-format.md) — Completed (2026-11-09 11:55)
 
 - [按独立关注点拆分并提交全部本地改动](tasks/group-local-changes-20261109.md) — Blocked (2026-11-09 11:28)
 

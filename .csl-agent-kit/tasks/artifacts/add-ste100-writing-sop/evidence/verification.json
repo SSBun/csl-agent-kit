@@ -1,0 +1,43 @@
+{
+  "frontmatter_valid": true,
+  "sections": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "discovered_scope": "built-in",
+  "routing_prompts": [
+    "Write an internal technical document and runbook",
+    "Use ASD-STE100 to write an English response"
+  ],
+  "rule_count": 53,
+  "dictionary_entries": 2198,
+  "copies_byte_identical": true,
+  "local_links_valid": true,
+  "files": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-sops/sops/asd-ste100-writing.md",
+      "sha256": "ae680dd9d284b7b6253a905bf97bffb0f02d2533fa2e85def1f057296b4b468d"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-sops/references/asd-ste100/writing-rules.md",
+      "sha256": "ff7d1394e36a0754eabf35ecfc433f7fe831c0696be4b7ff5ed408b20cf67671"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-sops/references/asd-ste100/dictionary.json",
+      "sha256": "66c29b08dae98434a458ff195307f6a6e640692de437d7d7f2db9317dd85dd59"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-sops/references/asd-ste100/NOTICE.md",
+      "sha256": "1aeb29e1ee2b1a90d4e5b20c6741611812fc50de4adaefb7beb9daffbe860381"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills/skills/meta/agent-sops/references/asd-ste100/assets/page-73-image-170.jpeg",
+      "sha256": "fab13a5f77844d981e43f28074eb82f800485bf6c38029c10b6e43299f66fabf"
+    }
+  ]
+}

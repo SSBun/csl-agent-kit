@@ -49,7 +49,7 @@ Memory 以用户级和项目级 Markdown 为权威内容，用 `title` 表达动
 
 首次使用自动转换旧 Context/Lessons，保留原文及备份，不重复导入已有知识；旧流程不再并行维护。`memory upgrade --dry-run` 可预览，`memory agents` 查看会话，`memory dashboard --open` 打开审计面板。旧版后台进程仍在运行时，需要 `memory service restart` 后继续；失败或未入队状态不会冒充成功。
 
-详见 ["/Users/caishilin/Desktop/personal/skills/docs/memory.md"](file:///Users/caishilin/Desktop/personal/skills/docs/memory.md)。首版后台自动接入 Pi；其他宿主只加载读写规范与数据升级入口，不宣称已接通其会话维护。
+详见 [Memory 文档](docs/memory.md)。首版后台自动接入 Pi；其他宿主只加载读写规范与数据升级入口，不宣称已接通其会话维护。
 
 ## 长期 Topic 与独立任务
 

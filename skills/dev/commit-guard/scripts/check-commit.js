@@ -80,9 +80,9 @@ function inspectIndex(cwd, executable = "git") {
   const root = requireSuccess(gitResult(executable, cwd, ["rev-parse", "--show-toplevel"]), "定位仓库").trim();
   const unmerged = requireSuccess(gitResult(executable, root, ["ls-files", "--unmerged", "-z"]), "读取冲突状态");
   if (unmerged) throw new Error("暂存区仍有冲突，无法确定提交内容");
-  // git grep reads the complete staged blobs, including unchanged lines; -a
-  // prevents binary attributes/content from silently hiding a marker.
-  const result = gitResult(executable, root, ["grep", "--cached", "--full-name", "--no-color", "-n", "-z", "-a", "-F", "-o", "-e", MARKER_PATTERN]);
+  // Read complete staged blobs outside the root-owned runtime data directory.
+  // -a prevents binary attributes/content from silently hiding a marker.
+  const result = gitResult(executable, root, ["grep", "--cached", "--full-name", "--no-color", "-n", "-z", "-a", "-F", "-o", "-e", MARKER_PATTERN, "--", ":(top,glob)**", ":(top,exclude,glob).csl-agent-kit/**"]);
   if (result.status === 1) return [];
   requireSuccess(result, "扫描暂存内容");
   const locations = [];

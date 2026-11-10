@@ -1,0 +1,71 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "standardize-existing-memory-stores",
+  "files": [
+    {
+      "path": ".csl-agent-kit/memory/entries/hosts-and-automation.md",
+      "sha256": "cb3b4785a9c2396da291d1f13d819e4016b65598fb249c3fbac29b3d40ed7d23",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/knowledge-and-recall.md",
+      "sha256": "3ff63f4a7f44641d4e55e83925c6a40d3ffdb5b5fe871e4750b1236240e4a85c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/skills-and-procedures.md",
+      "sha256": "3f5937c37164301cfe4a6e1dad8dffe231eed4361494b424fe53441db8c59a54",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/tasks-and-collaboration.md",
+      "sha256": "8ab132bba56ad8ff1d7b8ca6ae1f32cf3ecf17baa4d1568eac548a04257ec3f5",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/standardize-existing-memory-stores/evidence/current-identities.json",
+      "sha256": "f9afe7fe96ae5de9e758be4861fd4b2f7ffea1eb4fdb21f6f7ccddebfaf5ca70",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "ba154c87ae3cf973ff90e0c05f7de9e42a15025e94c4dc65649feaca1289c3c1",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a72e57f03222dc21d71d035e0917cd15e44ddb41"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a72e57f03222dc21d71d035e0917cd15e44ddb41",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/references/recording-prompt.md",
+      "sha256": "05fbf6e392677609bfc652be14fd530365148aece647ef015b2b32e4d44e1681",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

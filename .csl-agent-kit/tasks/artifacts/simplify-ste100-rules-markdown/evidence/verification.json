@@ -1,0 +1,12 @@
+{
+  "sections": 9,
+  "unique_rules": 53,
+  "all_rule_mentions_and_order_preserved": true,
+  "all_retained_nonempty_lines_preserved": true,
+  "code_fences_unchanged": true,
+  "removed_metadata_lines": 173,
+  "cover_removed": true,
+  "before_bytes": 160502,
+  "after_bytes": 153361,
+  "sha256": "ff7d1394e36a0754eabf35ecfc433f7fe831c0696be4b7ff5ed408b20cf67671"
+}

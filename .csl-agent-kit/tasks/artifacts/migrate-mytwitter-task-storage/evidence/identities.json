@@ -1,0 +1,17 @@
+{
+  "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+  "entries": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/task-storage.json",
+      "sha256": "b125bfb29c53b8fd6cdf3305cec5279db95a680e4a61975f0b1af96e08c6b87c"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/migrations/task-storage-20261110/manifest.json",
+      "sha256": "5a8c1e4a56132c4516ca953042308163e98dbeb7cb436c7a35cab14eed540fdc"
+    },
+    {
+      "path": "/Users/caishilin/Desktop/personal/MyTwitter/scripts/x-target-runtime.mjs",
+      "sha256": "7b38c23bd09dc452f139bb2c44adeacd87a0f1eae846902df47a73d89b97c607"
+    }
+  ]
+}

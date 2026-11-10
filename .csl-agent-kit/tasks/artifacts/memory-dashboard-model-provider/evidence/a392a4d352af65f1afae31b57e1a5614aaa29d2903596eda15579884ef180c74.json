@@ -1,0 +1,40 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-dashboard-model-provider",
+  "files": [
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "sha256": "385985b028fe8758ba9fb0430cd82a46113f446e1ba6fe32f1a4af9205ca4cd4",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "6d02b85352ecef9c76d5475dbcb69a6cc7bb0c85"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "6d02b85352ecef9c76d5475dbcb69a6cc7bb0c85",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "5f7314c4a3462b432915cbc4b2199607296ff8b502c14cb0ad546c7423877693",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "1c49bad44b7f148feabe4d39e3b3d5dfe0afcdaa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "1c49bad44b7f148feabe4d39e3b3d5dfe0afcdaa",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

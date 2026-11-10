@@ -1,0 +1,18 @@
+{
+  "entry_count": 2198,
+  "retained_fields": [
+    "headword",
+    "part_of_speech",
+    "approved",
+    "word_and_forms",
+    "meaning_or_alternatives",
+    "ste_examples",
+    "non_ste_examples"
+  ],
+  "all_retained_values_equal_to_original": true,
+  "root_type": "array",
+  "before_bytes": 6205308,
+  "after_bytes": 787532,
+  "before_sha256": "f0571b3b38a323dadc6f058330ea0bf4dd4553f4260eb78b71bec9de970a1ea0",
+  "after_sha256": "66c29b08dae98434a458ff195307f6a6e640692de437d7d7f2db9317dd85dd59"
+}

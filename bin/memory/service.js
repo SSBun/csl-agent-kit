@@ -66,7 +66,7 @@ async function dashboard() {
   }
   if (!state.running) return { ...state, message: state.startupError?.message || "服务尚未就绪；就绪后重新执行 memory dashboard。" };
   const descriptor = runtime.read("daemon.json");
-  return { url: `http://127.0.0.1:${descriptor.port}/#${descriptor.token}`, warning: "此 URL 含本机审计授权；不要分享。" };
+  return { url: `http://127.0.0.1:${descriptor.port}/#${descriptor.token}`, warning: "此 URL 含本机记忆访问授权；不要分享。" };
 }
 
 async function restart() {

@@ -1,0 +1,56 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "generic-user-memory-topics",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/generic-user-memory-topics/evidence/current-verification.json",
+      "sha256": "04e6d78477f60f848d3697f5c6d974c6e97ef5a8d34930aad5ad9d14a86eb81c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "1e76fd60815431b84121541a3056f8f9aeb6af26b5677456c646ad7d6fd5aa4d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "5458fbe8a5af273df6a88b416889c5159f33acfa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "5458fbe8a5af273df6a88b416889c5159f33acfa",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "62a82135213ed59f1db7014c4aba443362308d688519bcc4ec8aec26decc3f67",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a72e57f03222dc21d71d035e0917cd15e44ddb41"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a72e57f03222dc21d71d035e0917cd15e44ddb41",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/references/recording-prompt.md",
+      "sha256": "05fbf6e392677609bfc652be14fd530365148aece647ef015b2b32e4d44e1681",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

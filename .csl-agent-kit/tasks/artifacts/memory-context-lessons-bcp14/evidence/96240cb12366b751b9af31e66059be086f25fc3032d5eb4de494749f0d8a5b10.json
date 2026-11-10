@@ -1,0 +1,155 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-context-lessons-bcp14",
+  "files": [
+    {
+      "path": ".csl-agent-kit/memory/entries/context.md",
+      "sha256": "dcd2b86309b328bc740d81c7d435b471a06f2fc664d452394016f3abfad1080e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/hosts-and-automation.md",
+      "sha256": "e802c17836a5abd3a53590191d1f6af163df998a910277431b5ab5350f59f192",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/interaction-and-experience.md",
+      "sha256": "f207d5ce7adb69258f55b83d88886b12e1ee61db9ea8086e7f505c889a8d363f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/knowledge-and-recall.md",
+      "sha256": "8cc184b41b9f365196cb92ffe196998dcf1fcac1171744b084090c40f94afd2b",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/lessons.md",
+      "sha256": "63022985fea732172f77250e55ef8ea14edc544f28652e8020f041606806a4c2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/runtime-and-data.md",
+      "sha256": "59a21280180c3378c8d007e6241993105c6c201d50ef94529939419b8e6ac04c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/skills-and-procedures.md",
+      "sha256": "48cd972a036067049a9808a5e6fe158b987349b97bc17639446305470363453e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/entries/tasks-and-collaboration.md",
+      "sha256": "26048fa5039a8496c39e233fa2a8e4ec345389e91e5907ee763c9631fe514c46",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/memory/index.md",
+      "sha256": "02c2487eb40077d57aa869de9531682568432fd2131070c0de5ef8cfd8e54129",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "f8e45b6bdfd2c1cdb6a91a7ebcf9da42dde2eea7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "f8e45b6bdfd2c1cdb6a91a7ebcf9da42dde2eea7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "f5bc975e4e75abfada5a1b4299a89516b013f812e99bd29aaf484a2b4b1f83a2",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "5458fbe8a5af273df6a88b416889c5159f33acfa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "5458fbe8a5af273df6a88b416889c5159f33acfa",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "ee0ce93f3581fd30ee96742fed4e01f22522c0b6ef3a7a3666ebe562ee1c7c94",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "27c1031ebbb5f939e20efd4b6f26ad8979fb41f0"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "27c1031ebbb5f939e20efd4b6f26ad8979fb41f0",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "332523cec15b5682147cbc7a98db943edbe0236828e80168ad45dc6e3a349cc2",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d1ad54781e6d462af085770dceb1afa43b801f9e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d1ad54781e6d462af085770dceb1afa43b801f9e",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "ce06eb813ce6a70c34f84fd1be6fcf99cc697d6e4fa8d3589643272c58d874cd",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a72e57f03222dc21d71d035e0917cd15e44ddb41"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a72e57f03222dc21d71d035e0917cd15e44ddb41",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

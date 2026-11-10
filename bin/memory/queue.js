@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const store = require("./store.js");
+const recent = require("./recent.js");
 const runtime = require("./runtime-files.js");
 
 function validateEvent(event) {
@@ -16,6 +17,7 @@ function validateEvent(event) {
     if (!Array.isArray(event.messages) || event.messages.length) store.fail("INVALID_EVENT", "Maintenance events cannot impersonate conversation messages");
   } else if (!Array.isArray(event.messages) || !event.messages.length || event.messages.length > 200) store.fail("INVALID_EVENT", "Event must contain 1..200 visible messages");
   for (const message of event.messages) {
+    if (message?.at !== undefined && !recent.day(message.at)) store.fail("INVALID_EVENT", "Message timestamp must be canonical UTC ISO time");
     if (!message || !["user", "assistant"].includes(message.role) || typeof message.text !== "string" || !message.text.trim()) store.fail("INVALID_EVENT", "Only non-empty visible user/assistant text is accepted");
   }
   if (Buffer.byteLength(JSON.stringify(event.messages)) > 128 * 1024) store.fail("EVENT_TOO_LARGE", "Conversation increment exceeds 128 KiB; split at message boundaries, never silently truncate");
@@ -82,7 +84,7 @@ function enqueue(input) {
   if (!fs.statSync(workspace).isDirectory()) store.fail("INVALID_EVENT", "Workspace is not a directory");
   const event = {
     schema: "csl-memory-event/v1", workspace, session: input.session, eventKey: input.eventKey,
-    task: input.task || null, messages: input.messages.map(({ role, text }) => ({ role, text })),
+    task: input.task || null, messages: input.messages.map(({ role, text, at }) => ({ role, text, ...(at ? { at } : {}) })),
     ...(input.maintenance ? { maintenance: { scope: input.maintenance.scope, ids: input.maintenance.ids } } : {}),
   };
   const id = store.hash(JSON.stringify([workspace, event.session, event.eventKey]));
@@ -220,7 +222,7 @@ function reconcile() {
     } else if (["queued", "running", "failed", "interrupted"].includes(state.status) && state.attempts >= MAX_ATTEMPTS) {
       update(event.id, { status: "exhausted", error: state.error || "处理次数已达两次；保留记录并继续后续批次。" });
     } else if (state.status === "running") {
-      update(event.id, { status: "interrupted", error: "后台服务在处理期间退出；可能已有审计变更。下次处理沿用effects，累计最多两次尝试。" });
+      update(event.id, { status: "interrupted", error: "后台服务在处理期间退出；当前文件可能已改变。下次处理重读当前知识并参考effects，累计最多两次尝试。" });
     }
   }
   compactCompleted();

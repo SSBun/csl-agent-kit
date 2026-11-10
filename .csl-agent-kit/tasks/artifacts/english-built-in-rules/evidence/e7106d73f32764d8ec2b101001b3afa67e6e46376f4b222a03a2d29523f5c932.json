@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "english-built-in-rules",
+  "files": [
+    {
+      "path": "skills/meta/agent-rules/agent-rules.md",
+      "sha256": "9ba791d11584dfd453d5494ccc7ea3c15e6a0f4a97b9a0d986a40bcc1c766851",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "268588b12852b4f9a14d1f9cc7d2714415275d9c"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "268588b12852b4f9a14d1f9cc7d2714415275d9c",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

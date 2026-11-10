@@ -1,0 +1,149 @@
+--- before/skills/dev/commit-guard/scripts/check-commit.js
++++ after/skills/dev/commit-guard/scripts/check-commit.js
+@@ -5,8 +5,8 @@
+ const path = require("node:path");
+ const { spawnSync } = require("node:child_process");
+ 
+-// Reserved comment-line prefix. Match damaged delimiters too, not just pairs.
+-const MARKER_PATTERN = "^[[:blank:]]*(//|#|--|;|/\\*|<!--|\\*)[[:blank:]]*@code-review";
++// Match the reserved substring anywhere, even without comment syntax or a valid pair.
++const MARKER_PATTERN = "@code" + "-review";
+ const NON_COMMIT_COMMANDS = new Set([
+   "add", "status", "diff", "log", "show", "restore", "reset", "checkout", "switch",
+   "branch", "tag", "fetch", "push", "remote", "config", "rev-parse", "rev-list",
+@@ -82,7 +82,7 @@
+   if (unmerged) throw new Error("暂存区仍有冲突，无法确定提交内容");
+   // git grep reads the complete staged blobs, including unchanged lines; -a
+   // prevents binary attributes/content from silently hiding a marker.
+-  const result = gitResult(executable, root, ["grep", "--cached", "--full-name", "--no-color", "-n", "-z", "-a", "-E", "-o", "-e", MARKER_PATTERN]);
++  const result = gitResult(executable, root, ["grep", "--cached", "--full-name", "--no-color", "-n", "-z", "-a", "-F", "-o", "-e", MARKER_PATTERN]);
+   if (result.status === 1) return [];
+   requireSuccess(result, "扫描暂存内容");
+   const locations = [];
+@@ -230,7 +230,7 @@
+     const locations = inspectIndex(cwd, executable);
+     if (locations.length) {
+       const visible = locations.slice(0, 30).map((item) => `${JSON.stringify(item.path)}:${item.line}`).join("\n");
+-      return denied(`提交内容包含 code-review 审查块（含残缺标记）：\n${visible}${locations.length > 30 ? "\n其余位置已省略。" : ""}`);
++      return denied(`提交内容包含 code-review 审查标记（任意位置，含残缺说明块）：\n${visible}${locations.length > 30 ? "\n其余位置已省略。" : ""}`);
+     }
+     return { blocked: false };
+   } catch (error) { return denied(`无法完成提交内容检查：${error.message}`); }
+--- before/skills/dev/commit-guard/SKILL.md
++++ after/skills/dev/commit-guard/SKILL.md
+@@ -9,7 +9,7 @@
+ 
+ 负责提交内容检查和阻断诊断。内置保护默认开启，独立于是否调用本 Skill；调用本 Skill 不会自动提交、暂存、清理文件或改变 hook 设置。
+ 
+-当前只实现保留 `@code-review` 注释标记检查。规则、支持的提交形式与覆盖限制见 [提交保护边界](references/commit-guard.md)，唯一检查实现为 [check-commit.js](scripts/check-commit.js)。不要把检查通过解释为代码正确、没有密钥或可安全推送。
++当前对完整暂存内容搜索保留字符串（`@code` 与 `-review` 无间隔拼接）。任何位置命中均拒绝，包括字符串、行尾、文档示例和二进制内容，不要求注释前缀或完整 begin/end。规则、支持的提交形式与覆盖限制见 [提交保护边界](references/commit-guard.md)，唯一检查实现为 [check-commit.js](scripts/check-commit.js)。不要把检查通过解释为代码正确、没有密钥或可安全推送。
+ 
+ ## 检查与诊断
+ 
+--- before/skills/dev/commit-guard/references/commit-guard.md
++++ after/skills/dev/commit-guard/references/commit-guard.md
+@@ -4,12 +4,12 @@
+ 
+ ## 判定
+ 
+-对直接 shell Git 调用做受限参数解析，不执行传入的 shell 文本来探测效果。支持 `git -C <目录> commit -m <消息>`、`-F`、`--amend --no-edit` 等显式暂存提交流程。检查实际仓库整个 index 的文件内容，包含未改动行；从子目录调用也扫描整个仓库。匹配以原生注释前缀开头的保留字 `@code-review`，残缺 begin/end 同样拒绝。
++对直接 shell Git 调用做受限参数解析，不执行传入的 shell 文本来探测效果。支持 `git -C <目录> commit -m <消息>`、`-F`、`--amend --no-edit` 等显式暂存提交流程。检查实际仓库整个 index 的文件内容，包含未改动行；从子目录调用也扫描整个仓库。匹配由 `@code` 与 `-review` 无间隔拼接得到的保留字符串；使用固定字符串搜索，区分大小写。任何位置命中均拒绝，不依赖注释前缀、文件类型或 begin/end 的完整性。
+ 
+ | 情况 | 行为 |
+ | --- | --- |
+ | index 干净，工作区或未跟踪文件有说明 | 放行，不清理工作区 |
+-| index 有说明标记 | 阻断并报告绝对文件路径与行号 |
++| index 任意位置有保留字符串，包括字符串、行尾、文档示例和二进制 | 阻断并报告绝对文件路径与行号 |
+ | 冲突、Git 失败、超时或检查输出超限 | 阻断并说明检查未完成 |
+ | `commit -a`、路径提交、交互暂存、组合命令、环境变量前缀、条件语句、重定向、变量展开 | 阻断，要求拆分为显式暂存和独立提交；here-document 结束后的可见 Git 调用也检查 |
+ | Git 别名或其他可能产生提交的子命令 | 不自动放行，要求使用可检查流程 |
+@@ -29,6 +29,6 @@
+ 
+ 检查与 Git 真正创建提交之间不持有跨进程锁。不得把暂存/修改 index 与提交并行调用，也不要在检查期间由其他进程改变 index；原生 Git hooks 也可能改变内容。第一版不声称消除了这类竞态或对恶意绕过提供绝对保证。需要跨客户端和并发写入的强制保障时，应另行设计 Git/CI 层检查。
+ 
+-标记是保留协议，注释行中的同形文本也会被阻断。文档和夹具请使用占位符或拆分字符串，不为某种文件扩展名设置绕过。说明的生成、维护和授权清理由 `code-inline-review` 负责，本检查器不承担这些职责。
++标记是保留协议，同形文本一律阻断，不区分是否真正的审查说明。协议实现、文档和夹具用占位符、转义或拆分字符串表示；不为某个文件或扩展名设置豁免。说明的生成、维护和授权清理由 `code-inline-review` 负责，本检查器不承担这些职责。检测只保证对暂存字节中完整保留字符串的匹配，不声称识别去掉标记后的自然语言或编码／变形后的文本；不得删除或改写标记来夹带真实临时说明。
+ 
+ 当前不检查 `git push` 的待推送提交历史，不实现密钥扫描或通用代码质量规则。提交检查通过不能作为这些内容已通过检查的证据。
+--- before/skills/dev/code-inline-review/scripts/preview-clean.js
++++ after/skills/dev/code-inline-review/scripts/preview-clean.js
+@@ -27,8 +27,8 @@
+   for (let index = 0; index < lines.length; index += 1) {
+     const line = lines[index].replace(/\r?\n$/, "");
+     const parsed = comment(line);
+-    const marker = parsed?.body.match(/^@code-review:(begin|end) ([a-zA-Z0-9][a-zA-Z0-9._-]*\/[a-zA-Z0-9][a-zA-Z0-9._-]*)$/);
+-    if (parsed?.body.includes("@code-review") && !marker) throw new Error(`第 ${index + 1} 行审查标记残缺或格式不合法`);
++    const marker = parsed?.body.match(/^@code\x2dreview:(begin|end) ([a-zA-Z0-9][a-zA-Z0-9._-]*\/[a-zA-Z0-9][a-zA-Z0-9._-]*)$/);
++    if (parsed?.body.includes("@code" + "-review") && !marker) throw new Error(`第 ${index + 1} 行审查标记残缺或格式不合法`);
+     if (marker?.[1] === "begin") {
+       if (active) throw new Error(`第 ${index + 1} 行出现嵌套审查块`);
+       active = { id: marker[2], start: index + 1, prefix: parsed.prefix };
+--- before/skills/dev/code-inline-review/references/comment-format.md
++++ after/skills/dev/code-inline-review/references/comment-format.md
+@@ -1,6 +1,6 @@
+ # 审查说明格式
+ 
+-保留字是 `@code-review:begin` 与 `@code-review:end`。标记独占注释行，后接相同的 `<组 ID>/<块 ID>`，例如 `cancel-01/client`。组 ID 在当前改动中唯一；每个块 ID 在组内唯一。不要依赖行号建立关联。
++保留前缀由 `@code` 与 `-review` 无间隔拼接，起止保留字分别为此前缀加 `:begin` 与 `:end`。标记独占注释行，后接相同的 `<组 ID>/<块 ID>`，例如 `cancel-01/client`。组 ID 在当前改动中唯一；每个块 ID 在组内唯一。不要依赖行号建立关联。
+ 
+ 下面用 `BEGIN`、`END` 作为文档占位符；生成到源码时分别替换为上述保留字。文档、测试夹具或示例需要描述协议时也用占位符或拆分字符串，避免产生看似待清理的实际说明块。
+ 
+--- before/tests/commit-guard.test.js
++++ after/tests/commit-guard.test.js
+@@ -161,10 +161,44 @@
+   assert.ok(hits.some((hit) => hit.path.endsWith("binary.dat") && hit.line === 2));
+ });
+ 
+-test("ordinary comments and marker text in strings are not reserved comment lines", (t) => {
+-  const { repo, write } = fixture(t);
+-  write("ordinary.js", `// Normal explanation\nconst label = "${marker}:begin sample/main";\nconst value = 1; // ${marker}\n`, true);
++test("ordinary comments and unrelated strings remain allowed", (t) => {
++  const { repo, write } = fixture(t);
++  write("ordinary.js", '// Normal explanation\nconst label = "business text";\nconst value = 1; // Preserve this comment\n', true);
+   assert.deepEqual(guard.inspectIndex(repo), []);
++});
++
++for (const [name, content, line] of [
++  ["literal.js", `const label = "${marker}:begin sample/main";\n`, 1],
++  ["trailing.js", `const value = 1; // ${marker}:end orphan\n`, 1],
++  ["example.json", JSON.stringify({ example: `${marker}:beg` }), 1],
++  ["example.md", `# Example\nInline documentation: \`${marker}\`\n`, 2],
++  ["plain.txt", `embedded-prefix${marker}suffix`, 1],
++  ["binary.dat", Buffer.from(`\0binary payload ${marker}:end\0`), 1],
++]) {
++  test(`reserved substring anywhere blocks staged ${name}`, (t) => {
++    const { repo, write } = fixture(t);
++    const file = write(name, content, true);
++    assert.deepEqual(guard.inspectIndex(repo), [{ path: file, line }]);
++    blocked(guard.checkCommand("git commit -m x", repo), /审查标记/);
++  });
++}
++
++test("marker protocol implementation and docs do not contain literal reserved content", (t) => {
++  const { repo, git } = fixture(t);
++  for (const skill of ["code-inline-review", "commit-guard"]) {
++    fs.cpSync(path.join(root, "skills/dev", skill), path.join(repo, skill), { recursive: true });
++  }
++  git(["add", "--", "code-inline-review", "commit-guard"]);
++  assert.deepEqual(guard.inspectIndex(repo), []);
++});
++
++test("cleanup keeps its original protocol and CRLF behavior after literal representation changes", () => {
++  const { preview } = require("../skills/dev/code-inline-review/scripts/preview-clean.js");
++  const source = `// Keep ordinary comment\r\n${notes.replace(/\n/g, "\r\n")}const value = 1;\r\n`;
++  const cleaned = preview(source);
++  assert.equal(cleaned.content, "// Keep ordinary comment\r\nconst value = 1;\r\n");
++  assert.deepEqual(cleaned.ranges, [{ id: "sample/main", start: 2, end: 4 }]);
++  assert.throws(() => preview(`// ${marker}:beg\n`), /残缺或格式不合法/);
+ });
+ 
+ test("report truncates locations but blocks every staged occurrence", (t) => {
+@@ -249,7 +283,7 @@
+     assert.equal(run().blocked, false);
+     write("main.js", notes, true);
+     const before = fs.readFileSync(path.join(repo, ".git/index"));
+-    blocked(run(), /审查块/);
++    blocked(run(), /审查标记/);
+     assert.deepEqual(fs.readFileSync(path.join(repo, ".git/index")), before);
+     assert.equal(fs.readFileSync(path.join(repo, "main.js"), "utf8"), notes);
+     fs.mkdirSync(path.join(data, "hooks"), { recursive: true });

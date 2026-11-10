@@ -1,0 +1,46 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "iso-core-concept-notes",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/iso-core-concept-notes/reports/iso-15489-1-2016.md",
+      "sha256": "8425bdd5277521b357461431915b9f983592641dd1af59c7fecfd39d5913af26",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/iso-core-concept-notes/reports/iso-23081-1-2017.md",
+      "sha256": "cc8186880cbee4e154a8917ad6b97bc9f897e6364959b05fbbc96d23dc913b4c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/iso-core-concept-notes/reports/iso-30401-2018.md",
+      "sha256": "1f5275d32f9c6ea00a4752110475cd38dd7f8f6e19eacde6048ea3a62f91025f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/iso-core-concept-notes/reports/iso-iec-25012-2008.md",
+      "sha256": "64b2b0ec4e0d6b61cdfa488d5fcbf78e0d7b318cfc17d12c651a2a0ea9d4eb84",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/iso-core-concept-notes/reports/iso-iec-ieee-29148-2018.md",
+      "sha256": "30c18ee8c8975f34734af85d6db2915b763cd09d7a0bbfa8d7b14a53ea8cd02a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,98 +1,101 @@
 ---
 name: agent-memory
-description: Read and write CSL Agent Kit user and project Markdown memory. Use for session orientation, task-relevant recall, explicit remember/correct/forget requests, a Memory Agent's maintenance writes, or `$agent-memory dashboard` to open the local web dashboard. Defines file and mutation contracts plus this dashboard entry point, not predefined topics or task progress tracking.
+description: Read and write CSL Agent Kit user and project Markdown memory. Use for session orientation, task-relevant recall, explicit remember/correct/forget requests, a Memory Agent's maintenance writes, or `$agent-memory dashboard` to open the local web dashboard. Defines current-file and mutation contracts, project context/lessons, case requirement levels, and the dashboard entry point; excludes task progress tracking.
 ---
 
 # Agent Memory
 
-## Dashboard command
+## 记录质量指导
 
-When the user invokes `$agent-memory dashboard` in the Agent conversation, open the existing local Memory dashboard rather than only explaining its terminal command:
+记录与维护案例时，结合[ISO配套记录提示词](references/recording-prompt.md)判断知识准入、表达、数据质量、证据与上下文。后台将该文件作为系统提示词，与本Skill和实际Memory根路径一同加载。配套提示词仅应用选定ISO原则；存储格式、容量、日期、temp保留规则和写入协议仍以本Skill为准，不宣称完整ISO符合性。仅做索引定位或打开Dashboard时无需额外读取该提示词。
 
-1. Run `csl-agent-kit memory dashboard --open` with the host's command tool. This starts the existing local service on demand and asks the system browser to open its authenticated URL; it does not request memory edits or model maintenance.
-2. If the CLI is not installed, resolve `../../../bin/csl-agent-kit.js` from this Skill's directory. Only if that file exists, run `node <resolved-absolute-path> memory dashboard --open`. Do not install software or create another dashboard service.
-3. Check the exit status and returned result. Report a successful browser-open request, not proof that the page rendered. On failure, report the actual error without claiming success or repeatedly restarting the service. If opening is unsupported, obtain the address with `csl-agent-kit memory dashboard` (or the same resolved local CLI) and tell the user to open it manually.
-4. The URL contains an access token. Do not persist it in task records, logs or shared reports. Return it to the user only when needed for manual opening.
+## Dashboard入口
 
-此管理入口不请求新的提取批次，也不预设记忆主题。运行中的后台服务还会执行下述有界周期维护。 Other arguments do not authorize unrelated management operations.
+用户调用 `$agent-memory dashboard` 时运行 `csl-agent-kit memory dashboard --open`。未安装CLI时，确认本Skill相对路径 `../../../bin/csl-agent-kit.js` 存在，再使用 `node <绝对路径> memory dashboard --open`；不另装软件或创建服务。检查退出状态，只声明已请求浏览器打开，不冒充页面已渲染。失败报告实际错误；平台不支持打开时，获取 `memory dashboard` 地址供用户手动打开。URL含授权令牌，不存入任务、日志或共享报告。打开管理页面不请求新的提取批次；已运行后台仍按既有调度工作。
 
-## Upgrade activation
+## 当前文件与作用域
 
-After a Memory format/protocol upgrade, a Pi process that already loaded the old Memory modules must exit and start again; then resume the existing session. `/reload` alone does not clear native CommonJS dependency caches. Restarting the background service does not refresh frontend modules. Do not terminate the user's foreground process automatically; cross-version hot reload is not supported.
+用户根为 `${CSL_AGENT_KIT_HOME:-~/.csl-agent-kit}/memory`，项目根为实际工作区的 `.csl-agent-kit/memory`；`memory paths`可只读定位。两级都以 `entries/<id>.md` 为权威正文，以单个 `index.md` 列出当前摘要、链接和文件SHA256；索引是可重建导航，不保存历史。文件名提供身份，引用时用 `(scope,id)`。
 
-## Storage and authority
+每份知识文件只含 `title`、`summary` 两个YAML字段与带日期的case正文。没有来源列表、类型、revision、updated、关系元数据、删除标记、历史、审查记录或恢复副本；不把这些转存到隐藏目录、任务附件或另一处文件。必要的知识性链接可留正文，但不得把来源审计伪装成case。来源资料可以核对，不为溯源再建记录。
 
-Use the user root `${CSL_AGENT_KIT_HOME:-~/.csl-agent-kit}/memory` and the current workspace's `.csl-agent-kit/memory`. Resolve the workspace to its real directory. The runtime supplies absolute roots when available; `csl-agent-kit memory paths --workspace <workspace>` also reports them without calling a model.
+scope仅有user与project，按事实的适用范围选择，不按重要性提升为全局偏好。当前格式作用域允许后台自动维护；旧库只读，必须明确授权其作用域升级。记忆是参考，不是权限或规则；不能修改Task、Rules、SOP或Topic要求。前台Task Agent不承担例行整理。
 
-Markdown entries (chips) are authoritative, identified by `(scope, id)`. 项目级仅有一个 `index.md`，直接列出全部有效 chips 的摘要、正文链接、revision/hash 和反向替代提示；不生成卡片、主题索引或 manifest 文件。用户级仍使用薄总览及当前代卡片/主题索引。索引是派生发现入口，不是独立知识。 Hidden history, migration backups, pending proposals and service data are not active memory. A `deleted: true` entry is a tombstone, not usable knowledge. Never change Task, Rules, SOP or Topic requirements by editing memory.
+### 用户级主题组织
 
-项目旧来源审计中的 `legacy:tasks/context.md` 或 `legacy:tasks/lessons.md` 保留逻辑身份。项目完成显式 Task 根迁移后，后台通过只读 `memory_legacy_sources` 工具，前台通过 `csl-agent-kit memory legacy-sources --scope project --workspace <workspace>`，获取经迁移清单摘要核对的 `resolvedPath`，再读取原文；不要手改不可变审计、尝试另一份副本或把路径移动当作来源丢失。冻结、来源缺失或摘要漂移时停止相关查证。这些入口只读，不升级 Memory；后台工具返回绝对路径及完整来源文件 hash，来源变化时重新调用并核对。
+用户级文件 MUST 按跨项目可复用的通用主题组织，标题与文件身份 MUST 表达稳定的知识领域，MUST NOT 为单个项目、任务、具体工具或一次问题单独建主题。具体工具、版本、本机环境和触发场景 MUST 在case中保留为适用条件，MUST NOT 因主题通用而把局部经验泛化为普遍要求。仅对一个项目有效的知识 MUST 归入该项目；个人跨项目工具配置与偏好可保留在用户级。
 
-Scope is `user` or `project`. Both permit automatic maintenance under this contract; user scope does not require per-change approval. Choose scope from evidence, not importance: do not generalize a project-specific statement into a cross-project preference. Explicit user restrictions still apply.
+新增或归并用户知识前 MUST 检索现有宽主题，能覆盖时 MUST 更新已有文件；只有现有主题无法合理覆盖的独立知识领域才可新建。记忆管理偏好、Agent环境与模型配置、工具使用与交互是宽主题示例，不是必建文件或封闭分类清单；MUST NOT 为凑齐分类创建空文件。发现工具或项目命名的窄主题时，SHOULD 在当前授权与可写范围内归并，先回读完整替代内容并检查引用，再按写入协议移除旧文件，保留原case日期与独有条件。工具入口位置不代表使用偏好；通用操作流程 MUST 以当前Skill或SOP为准，记忆只保留必要入口、个人差异和可复用边界。
 
-## Reading
+## 读取
 
-1. 明确知识需求并读取两级 `index.md`，记录 generation。项目级单索引覆盖全部有效 chips；用户级另记录当前 `cards` 路径，主题导航不是全集。
-2. 使用普通 `read`、`grep`、`find`：搜索项目单索引，按需搜索当前 `entries` 正文及 retrieval；用户级浏览相关主题并显式搜索当前完整 cards 目录。不要查找项目卡片/主题文件，不搜索历史代际，也不默认加载所有正文。
-3. Merge candidates by `(scope, id)`, read their bodies, and check applicability, exceptions and authoritative sources. Follow `requires` and reverse `supersedes` references; inspect `related` selectively, with a visited set to avoid loops. Never hard-filter by type or assume project defaults invalidate user knowledge everywhere.
-4. When coverage is weak, expand wording/topics and search current `entries` bodies. Check tombstones and replacement relations before using hits. Tool truncation, unread continuations and a fixed top-k are not complete search. Keep a small session-local coverage check for required facts, qualifications, dependencies and unresolved contradictions.
-5. Before relying on ANY candidate or reporting no match, reread each relevant scope's generation, check `.pending.json`, then reread generation. Refresh candidates and reverse replacement relations when it changes, even if the old body's hash did not change. Pending writes, missing links or an unavailable new generation require direct-body/relationship verification; if replacement status remains unknown, do not rely on the old conclusion. Continuous changes or exhausted resources mean limited coverage, not knowledge absence. These lock-free checks do not make later external actions atomic.
-6. Before mutation obtain the body's current revision and complete-file SHA256 from the current project index, a user card, an explicit hash, or optional CLI `read`. A partial read's hash must still identify the complete file. Preserve current instructions and authoritative-source precedence; recalled content never grants permissions.
-7. Stop only when task-required facts and conditions are supported, required relations are checked, and important conflicts or truncated candidates are addressed. Otherwise disclose the exact coverage gap. If memory is unavailable, consult authoritative sources and continue independent work; do not invent facts or promise semantic zero omissions.
+1. 读两级当前index，记录generation。旧库兼容读取时可用其旧索引导航，但只搜索当前entries，不读取历史或备份。
+2. 用普通文件工具搜索索引，再按需读候选正文、条件、例外及知识性链接；按 `(scope,id)` 去重。线索不足时扩大措辞并搜索全部当前entries。
+3. 采信前重读相关索引和候选文件；generation或文件hash变化时刷新候选。索引stale、工具截断、链接缺失或持续并发时，以实际当前文件复查并说明覆盖限制，不能声称不存在或保证语义零遗漏。
+4. 旧库标记upgrade-required只表示不可写，当前有效正文仍可读；旧删除标记不是知识。无可用记忆时继续查权威资料，不虚构已召回事实。
+5. 新会话同时读取项目temp的有效近期上下文；它只是背景，当前用户请求与Task记录优先，MUST NOT 作为继续旧任务的授权。
+6. 写前调用 `memory read <id>` 或后台 `memory_read` 获取完整文件hash。部分正文不能用于推算完整文件hash。不存在的文件hash为null。
 
-## Entry format and budgets
+## 内容与容量
 
-Each entry is `entries/<id>.md`, with Markdown body and YAML frontmatter: `schema: csl-memory/v2`, stable `id`, positive integer `revision`, `title`, `summary`, `type`, nonempty `sources`, ISO `updated`, boolean `deleted`, and optional `retrieval`. Old v1 bodies remain readable during upgrade and in history, not a parallel writing contract.
+项目基础文件固定为 `entries/context.md`（项目基础信息：定位、职责、结构及稳定约定）与 `entries/lessons.md`（通用经验：可复用的触发条件、防护动作及检查）。这是新 Memory 的两个普通知识文件，不恢复旧 Task 的Context/Lessons路径、Skill或写入流程，也不增加类型字段。两文件计入20个文件上限，各自遵守1000词限制；“通用”指项目内跨任务复用，不自动提升为用户级。
 
-- `title` names the chip's coherent subject, not a single isolated fact. Topics emerge from actual content, not a preset taxonomy. Keep conclusions with their qualifications; update a relevant chip before creating a new one.
-- `summary` is a coverage summary, including signals for important conditions or exceptions. Optional `retrieval` has `aliases`, `situations`, `topics` string arrays and `links: [{kind, scope, id}]`. Discovery hints need evidence in the body; do not invent applicability or add irrelevant keywords.
-- Topic strings are dynamic semantic paths; a chip may have multiple routes. Strings are single-line: at most 64 values per array, aliases up to 160 characters, situations 400, topic paths 512 with at most eight segments of 80 characters. Invalid/duplicate values are rejected rather than truncated.
-- Links have kind `related`, `requires` or `supersedes`, with at most 128 unique references. New references must point to active chips. Complete replacement is same-scope, acyclic and evidence-backed; partial correction updates the original chip rather than hiding its other valid knowledge. Missing required references block reliance, not all unrelated work.
-- `type` is one of `fact`, `preference`, `experience`, `reference`; it is descriptive metadata, not a directory, permission tier, or exclusion filter.
-- `title`: at most 60 Unicode characters; `summary`: at most 200. Keep metadata single-line and sufficient for discovery.
-- 项目容量：每个项目独立最多 20 个有效 chips；墓碑、索引、历史和恢复备份不计数。新增及复活使数量超过上限时返回 `MEMORY_CAPACITY`；已有条目的合并更新和删除仍可进行。
-- 项目正文：最多 1000 词，使用 `Intl.Segmenter("zh", {granularity: "word"})` 统计 `isWordLike` 段，覆盖中英文混排，标点和空白不计；Markdown 正文里的代码及链接文字也参与分词。超限返回 `MEMORY_BUDGET`，不截断。
-- 用户正文沿用 8,000 Unicode 字符上限；兼容字段 `bodyTarget: 4000` 仅是参考，没有最低长度。两级都保留必要条件与来源。
-- 项目单索引完整列出摘要与正文链接，不套用用户薄总览的 4,000 字符限制。用户级保留原索引布局及预算；两级检索遇截断须继续读取。
-- 旧导入及升级保留原文，已有项目超限状态可读且通过 `index-status.budget` 报告，后台优先整理。新项目写入、提案批准及历史恢复都遵守项目限制；超限历史仍可读取，不允许直接恢复进有效集合。用户级精确历史恢复继续保真。
+首次维护可写项目时，核对并补齐两个基础文件；只用可核实知识，不写空壳、占位case或编造经验。缺少必要知识或容量时报告缺项；旧格式作用域仍只读。已有重叠专题按下述先保存、回读、再移除重复case的顺序归并，保留独有内容和日期。日常维护 MUST 保留两个基础入口，不因拆分、合并或腾配额而删除或改名；用户明确要求遗忘时仍移除指定知识，不为保留入口而保留已要求遗忘的内容。
 
-## 知识准入与速记提炼
+除两个基础文件外，主题来自工作区长期关注的对象或问题，适用于软件、Wiki、研究和聊天工作区。优先更新基础文件或已有宽主题；新任务通常贡献case，不默认新建文件。只有边界清晰且现有主题无法合理覆盖时才拆分，不追求填满配额。
 
-记忆是 Agent 的速记本。只保留能改变未来判断、值得跨任务复用且有证据的信息；不把每轮对话或每次交付改写成摘要。稳定偏好、难以重建的项目事实、带适用条件的经验可进入；临时进度、确认经过、验证流水、易从权威文档重建的重复说明不进入。不得保存凭证、隐藏推理或无依据的推测。明确的记住、纠正、忘记要求按其范围处理。
+- title最多60个Unicode字符，summary最多200个，均为单行；summary说明收录范围。
+- 正文每个非空行固定为 `- [YYYY-MM-DD] 知识及必要条件`。不用独立标题、段落、嵌套列表、表格或围栏；行内代码、知识链接可用。一个case完整保留条件、否定、例外、单位和关键数值。
+- 日期用有效UTC日历日。新增或实质纠正case才更新其日期，未变case保留原日期，排版或重排不刷新。不凭空编造旧知识日期；无可靠日期时报告转换阻塞。
+- 每项目最多20个当前文件，每片1000词；用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike段计数。用户正文最多8000个Unicode字符。索引不占知识文件配额，无最低正文长度。
+- 长期主题只留影响未来判断的稳定偏好、事实、条件经验；temp仅按下节短期例外维护。允许零修改；不收临时进度、确认经过、流水、凭据、隐藏推理、无依据推测或可直接从权威资料重建的大段重复文本。
+- 短句提炼但不丢独有信息，不保存会话、事件、任务、事务编号和来源审查过程。规则已有载体时只留必要提示，不复制规范。
 
-- **先筛选，再压缩**：确认信息值得保留后，提取结论、适用范围、必要条件、例外和关键因果。已被旧 chip 覆盖且没有纠正或实质增量时不写入；不要仅追加新的会话来源或确认措辞。
-- **碎片表达，语义精准**：优先短句、关键词和并列项；不要求完整文章、固定章节、开头结尾或衔接。删除不改变判断的修饰、重复解释及“用户明确要求”“随后澄清”“本批核对”等叙述。信息属于同一主题即可，不为每个短句拆 chip。
-- **知识与溯源分开**：title、summary、body 和检索词不写会话/事件/事务 ID、任务编号、审计 hash、确认原话或执行顺序。证据位置与这些过程标识保留在 sources；本次维护理由放 reason/source，核查过程和未完成项只作即时结果或未完成队列状态，不保存为长期处理日志。来源需能定位支持该结论的段落，必要时在 sources 分别标注；不把正文变成来源目录。结构性 id、revision、hash 和关系 links 照常保留。
-- **精简不失真**：保留影响决策的对象、条件、例外、否定、单位、阈值、时效及必要 API/配置键/错误码。不能去掉限定后把项目经验扩大为全局规则。稳定的能力限制可简记；某轮“未复测、待重启、审查中”留任务记录。不确定的信息不写成事实，必要限制不能因压缩消失。
-- **权威规范只留入口**：规则、流程、正式需求已有载体时，最多保留有复用价值的提示和 sources 引用，不复制规范或整段实现说明。
-- **写前逐项复核**：删掉这句话是否影响未来判断？若不影响就删。是否留下了条件和独有有效知识？过程标识是否留在溯源层？旧条目已充分覆盖时允许零修改，不为追求更短反复改写。
+## 最近七天临时上下文
 
-例如，输入“事件某编号中用户回复 yes；执行记录证明已重启；失败但已有写入也要显示”，可提炼为“Dashboard：有 transaction 即显示，含失败但已写入记录。”过程来源留 sources；这只是表达示例，不是其他项目的默认知识。
+项目额外保留特殊文件 `entries/temp.md`，供新Agent了解用户近期意图、关注点、未决问题及必要背景。它是短期内容的明确例外，不替代Task权威状态，不授予继续执行权限，不复制完整对话或任务日志。context、lessons仍为长期知识，不适用临时期满删除。
 
-## 主动维护
+- temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文仍用带日期case，可以为空。它计入20个项目文件与每份1000词上限；不创建占位case。
+- 保留窗口为UTC当天及前6个自然日。临时case的日期 MUST 来自该批消息的真实UTC时间；缺少时间的消息 MUST NOT 猜日期写入temp。旧内容 MUST NOT 因重排、复查或重试刷新日期，未来日期和窗口外日期不可写入。
+- 会话批次 SHOULD 合并有效近期背景，移除被新意图替代的内容；周期批次 MUST NOT 新增临时条目或续期。过期内容 MUST NOT 自动转存到长期主题；长期知识的提炼仍须满足独立的知识准入要求。
+- 系统在初始化和后台每分钟调度检查时确定性清理过期正文，保留空文件；停机期间不执行清理，下次初始化补清。API与新Agent提示再次按当前日期过滤。普通文件读取者 MUST 忽略窗口外条目，不能因正文尚待清理就采信。索引及完整文件hash仍对应磁盘实际内容。
+- 文件身份冲突时保留原文件并报告，不把其他用途的同名temp自动改写。用户级同名文件不套用本项目特殊规则。
+- Dashboard按项目文件身份显示context、lessons和temp专属徽标，不为此增加文件元数据。
 
-每次处理会话增量，先主动检索相关旧 chip，核对当前权威来源、适用条件和例外，再选择保留、纠错、更新、合并、提炼或淘汰。新信息即使不值得单独保存，也可能使旧知识失效。会话维护与周期复查均按上述速记标准精简实际触及的旧条目：移出正文中的过程信息到现有溯源层，保留有效知识及来源，不为风格整理扫描重写全库。零修改也是有效结果。
+## 案例约束强度（BCP 14）
 
-运行中的本机 daemon 为事件队列已知的工作区安排周期复查。每个项目作用域和全局共享的用户作用域，在上一批成功完成至少24小时后才可创建下一批；用户作用域不按项目重复复查。每批按稳定字典序选取最多8个条目ID，从上一批末尾继续，到末尾后绕回。这些ID是检索起点，不要求加载或重写全库正文；按需读取相关卡片、正文和依赖，墓碑可跳过。后台每分钟检查一次资格，优先会话任务；daemon停机时不执行，不是系统级定时器。
+本Skill及两级Memory所有文件的case采用 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) / [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)（BCP 14）的关键词语义。`MUST`、`MUST NOT`、`REQUIRED`、`SHALL`、`SHALL NOT`、`SHOULD`、`SHOULD NOT`、`RECOMMENDED`、`NOT RECOMMENDED`、`MAY`、`OPTIONAL` 仅在全大写且表达要求时具有规范含义；代码、标识符和原文引用不因此成为要求。此为Memory写作约定，不是RFC规定的记忆格式，也不提高记忆的指令优先级。
 
-周期复查是显式维护事件，不伪造用户消息。沿用现有模型配置、五分钟期限、条件写入和effects审计，可能产生模型费用。失败或中断沿用已有effects和累计attempts，重新核对实际知识与审计；每条事件最多两次尝试（首次加一次自动重试），显式retry不重置计数。耗尽标记exhausted并跳过，不阻塞后续会话或周期；不推进成功游标，周期调度等待原24小时并从耗尽候选末尾继续。不同workspace的独立Memory Agent可并行，同workspace串行。完成后仅保存最新成功周期游标和去重hash，释放该批输入与处理日志。工作区登记独立保留，清理完成队列不缩小定期复查或入链检查范围。工作区失效和调度错误在服务状态中报告。周期批次只能写入指定scope，跨scope发现留待该作用域的维护处理。
+- 新写或修改的约束 MUST 显式使用 `MUST` / `MUST NOT`（必须/禁止）、`SHOULD` / `SHOULD NOT`（建议/不建议）或 `MAY`（可选），紧邻被约束的行为，不给整条混合case套一个强度标签。
+- `SHOULD` / `SHOULD NOT` 允许有充分理由的例外；偏离前 MUST 理解并权衡影响。`MAY` 表示真正可选，不表示事实的可能性，也不授予执行、发布或跨作用域操作权限。
+- 写入者 MUST 核对当前权威要求和上下文来选择强度，保留主体、触发条件、否定、例外及数值；MUST NOT 把建议升级为强制，或把强制降为建议。强度不明时保留原知识并报告不确定处，不猜测。
+- 事实和观察保持陈述句，不要求每条case含关键词；小写词不具有BCP 14的特殊含义，但不据此否定原有文字表达的要求。新增关键词而不改变原意属于格式调整，保留case日期。
+- 保存前 MUST 检查该文件全部case，基础文件和专题文件适用同一规则。旧格式库保持只读；本规则本身不授权全库迁移。存储校验只验证结构、日期和容量，不用关键词正则冒充语义核验。
 
-只有明确失效、到期或适用条件消失的证据，或经过核验的替代知识保留全部有效信息时，才淘汰旧条目。不能只根据存放时间或低使用率删除。合并须确认知识相容，保留独有事实、条件、例外和来源。提炼的共性必须得到案例支持；仍有价值的案例细节和限定不能丢失。优先更新已有合适chip，而非另造一条摘要。
+例如：`- [2026-11-09] 项目使用Node.js；修改共享格式时 MUST 核对生产者与消费者；SHOULD 复用已有解析器；在现有授权内 MAY 增加辅助诊断。`
 
-淘汰前先保存并回读替代知识，检查反向引用，在授权范围内修正依赖。Memory Agent删除工具遇到当前两级根目录的活跃入链、相关pending写入时拒绝删除；删除用户记忆还检查队列已知的项目根目录。不得绕过保护。依赖属于其他工作区或无法安全修正时，保留旧chip并报告原因。保留`supersedes`链接时也保留其目标，避免删除成断链。这只是已知根目录内的保守保护，不证明未知外部引用或外部并发写入不存在。
+## 写入、合并与删除
 
-每批会话维护及项目周期复查都会获得当前项目容量与超长条目清单，先处理超限；超容量时扫描完整项目单索引，按相容主题分组合并，周期候选只是起点，不是本批预算修复的范围上限。不能仅因初始候选已处理就结束，应继续至达标或遇到具体无法安全解决的阻塞。结束时仍超限返回 `MEMORY_BUDGET_UNRESOLVED`，保留部分提交和未完成输入，沿用原有两次尝试上限。用户级周期批次不修改项目。容量已满时先合并到已有 chip，回读确认、修正入链后再删除冗余 chip；腾出空间后才能新增。不得先删再保存、截断正文或把项目事实移到用户级绕过限制；无法无损收敛时报告具体阻塞。
+使用 `memory_apply` 或 `memory put|delete --scope <scope> --workspace <workspace> --input <JSON文件>`；普通工具用于读取，不绕过writer覆盖文件。
 
-每批结束简短说明实际修改或无修改结论；这是即时输出，不存为长期处理记录。永久历史仅保留已提交记忆的before/after、理由与来源；无变更批次不创建历史。失败批次中已提交的部分仍保留，未完成输入及effects暂留供检查重试；完成后释放输入和处理状态，仅保留去重hash与必要周期游标。来源中的事件标识用于溯源身份，不保证已释放事件的对话回放。不以删除数量作为质量目标；项目超限时必须尝试有证据的提炼合并，不能把无修改当作达标，不自动把项目事实提升为用户偏好。
+```json
+{"id":"wide-topic","operation":"put","expected":{"hash":null},"content":{"title":"宽主题","summary":"收录范围","body":"- [2026-11-09] 写入前 MUST 重读当前文件；冲突后 MUST 重新判断。"}}
+```
 
-## Mutations
+修改既有文件时expected.hash必须是最新完整文件SHA256；delete不含content。不传reason、source、revision或其他旧字段。writer在 `.write-lock-v5` 临时锁内比较hash，以临时文件原子替换当前文件并重建索引；删除实际移除文件，无墓碑或撤销。锁和临时文件只用于当前操作，不形成持久恢复资料。
 
-Use the supplied `memory_apply` mutation tool or `csl-agent-kit memory put|delete --scope <scope> --workspace <workspace> --input <json>`. Do not bypass the writer by directly overwriting entry, index, audit or migration files: ordinary tools are for reading; the writer provides locks, conditional commits and audit.
+CONFLICT后重读并重新判断，不强制覆盖；LOCKED时查明所有者，不删未知活动锁。INDEX_STALE表示当前文件已经改变但索引未成功刷新，应回读entries后执行reindex，不假定回滚。中断不会提供历史还原；不根据工具响应缺失认定未写入。
 
-A mutation contains `id`, `operation` (`put` or `delete`), `expected: {revision, hash}`, a concrete `reason`, a traceable `source`, and, for put only, `content: {title, summary, type, sources, body, retrieval?}`. Omitted retrieval preserves existing hints; use an explicit empty object to clear them deliberately. Keep hints aligned when changing the body. New IDs use `0/null`. Existing IDs, including tombstones, require their current revision and complete-file SHA256. The hash is returned or computed from bytes, not embedded into the hashed file itself.
+合并先保存、回读完整替代知识，再检查当前正文引用并删除冗余文件。容量已满时合并到既有主题腾出空间，不能先删再存、截断正文或移入user绕限。仅在明确失效、完整替代或明确遗忘请求时删除；久未使用不构成依据。无法保真收敛或引用属于未授权项目时保留文件并报告阻塞。
 
-Read the current file before editing; preserve unrelated content. On `CONFLICT`, reread and reconsider rather than force overwriting. On `LOCKED`, do not remove an unverifiable lock. `.write-lock` 与 `.write-lock-v3` 是旧写入程序的永久隔离标记，不能删除以强行运行旧程序；当前写入使用 `.write-lock-v4`。 On `RECOVERY_REQUIRED`, inspect actual history before retrying: the mutation may already have committed.
+## 后台维护与升级
 
-When splitting or merging, first save and verify the replacement knowledge, then remove obsolete entries. Temporary duplication is safer than losing unique knowledge. Delete only with evidence of invalidity, replacement preserving all valid information, or an explicit forget request; lack of recent use is not evidence.
+每批会话检索相关旧知识并纠错、合并或保留。周期复查按scope每24小时、每批最多8个ID轮转，候选只是起点；项目超限时需检查完整索引。不同工作区并行，同工作区串行；周期批次只写指定scope。旧格式scope不自动升级，也不安排写入维护。
 
-writer 递增 revision，项目原子发布单索引并移除旧派生索引目录，用户级继续发布完整卡片/主题/总览代际；记录 before/after、reason 和 source。 Verify the returned result, not a natural-language claim. `csl-agent-kit memory history|change` inspects effects. `restore <transaction-id> --input <json>` accepts current `expected` and `reason`, and creates a new audited revision, never rewinds history. Historical pending proposals are not automatically approved by an upgrade. Approval rechecks new relationship targets against the current roots; a historical size-budget exception does not bypass this validation. Only exact historical restoration may preserve recorded dangling references, which remain diagnostic gaps rather than permission to rely on unresolved dependencies.
+每批最多两次模型尝试、五分钟期限。失败后核对当前文件，effects只是短期操作结果，不是来源或历史。成功后释放输入和处理状态，仅保留调度所需去重hash与最新游标；待处理/失败队列属于运行状态，不提供正文恢复。模型会话和公开过程只在内存中，实时缓存结束两分钟后释放。不创建长期处理报告。
+
+`memory upgrade --dry-run --scope <scope>`仅预览；实际upgrade永久转换指定库并删除其旧历史、来源元数据、提案、墓碑、迁移备份与旧索引代际，不创建备份。必须核对明确授权的scope、全部当前知识格式、服务空闲停止及旧写入方；不自动升级另一级或其他项目，不导入旧Context/Lessons。转换失败后检查当前文件，不能宣称已回滚或提供恢复。索引可由reindex从现存正文重建。
+
+旧正文需先整理时，`upgrade --input <JSON文件>`接受人工核对的put数组，每项仍用当前完整expected.hash，只能替换该库现存有效旧条目；不能新增、删除或修改当前格式条目。升级器在首个写入前校验全部替代内容和hash；不猜日期，不自动归并，不与--dry-run组合。输入仅用于本次操作，MUST NOT 留作历史或恢复副本。日期依据不足时仍按上述阻塞规则处理。
+
+协议升级后，已加载旧模块的Pi必须完整退出并重新启动，再恢复会话；`/reload`与后台重启不能刷新前台CommonJS依赖缓存。不自动退出用户前台，不让旧版本writer继续工作。

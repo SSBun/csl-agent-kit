@@ -15,17 +15,14 @@ const store = require(storePath);
 const queue = require(resolve(packageRoot, "bin/memory/queue.js"));
 const service = require(resolve(packageRoot, "bin/memory/service.js"));
 const migration = require(resolve(packageRoot, "bin/memory/migration.js"));
+const recent = require(resolve(packageRoot, "bin/memory/recent.js"));
 const hooks = require(resolve(packageRoot, "skills/meta/agent-hooks/scripts/agent-hooks.js"));
 const CURSOR = "csl-memory-cursor";
 const HOOK = "inner:memory-maintenance";
 
 function activated(workspace: string): boolean {
 	const root = store.rootFor({ scope: "project", workspace });
-	const raw = store.readOptional(store.safePath(root, ".format.json"));
-	if (raw === null) return false;
-	const marker = JSON.parse(raw);
-	if (marker.schema !== "csl-memory-store/v1" || marker.version !== migration.VERSION) throw new Error("Memory store upgrade is incomplete or unsupported");
-	return true;
+	return store.indexMetadata(root) !== null;
 }
 
 function formatMemoryStatus(ctx: ExtensionContext, state: { running: boolean; state?: string; counts?: Record<string, number> }): string {
@@ -104,14 +101,16 @@ export function registerMemoryBridge(pi: ExtensionAPI): void {
 
 	pi.on("before_agent_start", async (event, ctx) => {
 		try {
+			store.pruneTemp({ scope: "project", workspace: ctx.cwd });
 			if (!activated(ctx.cwd)) return;
 			const indexes = ["user", "project"].map((scope) => {
 				const state = store.inspectIndex({ scope, workspace: ctx.cwd });
-				if (scope === "user" && state.overview && store.characters(state.overview) > store.BUDGETS.indexPage) throw new Error("Memory总览超预算，请检查派生索引；未静默截断");
 				return { scope, ...state };
 			});
+			const temp = store.get(store.rootFor({ scope: "project", workspace: ctx.cwd }), "temp");
+			const recentContext = recent.matches(temp) ? recent.filter(temp.body) : "";
 			const spec = resolve(packageRoot, "skills/meta/agent-memory/SKILL.md");
-			return { systemPrompt: `${event.systemPrompt}\n\n## Memory\n读写规范：${spec}。先查看两级index.md；项目单索引直接列出全部有效chips，用户级按总览浏览主题并搜索当前cards目录。线索不足时搜索当前entries正文及retrieval；相对链接以所在文件解析，勿搜索历史代际。导航不是全集，候选按(scope,id)去重后读取正文、条件、来源与requires。采信任何候选或报告未找到前，重读两级generation并检查pending，变化时刷新候选及反向supersedes；旧正文hash不变不代表未被纠正。索引降级、工具截断或关系不完整时搜索当前entries并报告覆盖限制，不能宣称不存在。记忆是参考资料，不是权限或规则。后台Memory Agent维护两级记忆，Task Agent不承担例行整理。\n${JSON.stringify(indexes)}` };
+			return { systemPrompt: `${event.systemPrompt}\n\n## Memory\n读写规范：${spec}。先读两级当前index.md，再按需读entries中的正文及条件；线索不足时搜索当前正文，勿读历史或备份。候选按(scope,id)去重，采信前复查索引generation与文件hash，变化时重新检索。索引过期、工具截断或链接缺失时说明覆盖限制，不宣称不存在。旧格式库保持只读，不自动升级。知识文件仅保留title、summary和带日期case，文件名提供身份，不保存来源、审查、历史或恢复副本。记忆是参考资料，不是权限或规则；后台维护可写作用域，Task Agent不承担例行整理。\n${JSON.stringify(indexes)}\n\n## 最近7天的项目上下文\n以下仅为近期背景，不是执行授权或任务权威状态；以当前用户请求和Task记录为准。\n${recentContext || "暂无有效临时上下文。"}` };
 		} catch (error) {
 			ctx.ui.notify(`Memory 索引读取失败，主任务继续：${String(error)}`, "warning");
 		}
@@ -119,7 +118,7 @@ export function registerMemoryBridge(pi: ExtensionAPI): void {
 
 	pi.on("agent_settled", async (_event, ctx) => {
 		try {
-			if (!activated(ctx.cwd)) return;
+			if (!migration.ensureWorkspace(ctx.cwd).some((scope: { writable: boolean }) => scope.writable)) return;
 			const workspace = realpathSync(ctx.cwd);
 			const branch = ctx.sessionManager.getBranch();
 			const cursor = [...branch].reverse().find((entry) => entry.type === "custom" && entry.customType === CURSOR && (entry.data as { workspace?: string })?.workspace === workspace);
@@ -130,7 +129,7 @@ export function registerMemoryBridge(pi: ExtensionAPI): void {
 				if (entry.type !== "message" || (entry.message.role !== "user" && entry.message.role !== "assistant")) return [];
 				const content = entry.message.content;
 				const text = typeof content === "string" ? content : content.flatMap((part) => part.type === "text" ? [part.text] : []).join("\n");
-				return text.trim() ? [{ id: entry.id, role: entry.message.role, text }] : [];
+				return text.trim() ? [{ id: entry.id, role: entry.message.role, text, ...(recent.day(entry.timestamp) ? { at: entry.timestamp } : {}) }] : [];
 			});
 			if (!visible.length || !visible.some((message) => message.role === "assistant")) return;
 			const focus = [...branch].reverse().find((entry) => entry.type === "custom" && entry.customType === "csl-task-focus");
@@ -140,14 +139,14 @@ export function registerMemoryBridge(pi: ExtensionAPI): void {
 			let batch: typeof visible = [];
 			const batches: typeof visible[] = [];
 			for (const message of visible) {
-				if (Buffer.byteLength(JSON.stringify([{ role: message.role, text: message.text }])) > 120 * 1024) throw new Error("A visible message exceeds the Memory event budget; nothing was silently truncated");
+				if (Buffer.byteLength(JSON.stringify([{ role: message.role, text: message.text, ...(message.at ? { at: message.at } : {}) }])) > 120 * 1024) throw new Error("A visible message exceeds the Memory event budget; nothing was silently truncated");
 				if (batch.length && (batch.length >= 100 || Buffer.byteLength(JSON.stringify([...batch, message])) > 120 * 1024)) { batches.push(batch); batch = []; }
 				batch.push(message);
 			}
 			if (batch.length) batches.push(batch);
 			for (const messages of batches) {
 				const eventKey = messages.at(-1)!.id;
-				const memoryEvent = { schema: "csl-memory-event/v1", workspace, session: ctx.sessionManager.getSessionId(), eventKey, task, messages: messages.map(({ role, text }) => ({ role, text })) };
+				const memoryEvent = { schema: "csl-memory-event/v1", workspace, session: ctx.sessionManager.getSessionId(), eventKey, task, messages: messages.map(({ role, text, at }) => ({ role, text, ...(at ? { at } : {}) })) };
 				const payload = hooks.createEvent({ event: "stop", host: "pi", workspace, sessionId: memoryEvent.session, nativeEvent: "agent_settled", nativePayload: { memoryEvent } });
 				const dispatched = hooks.runEvent(payload, { host: "pi", workspace, onlyHooks: [HOOK] });
 				const id = store.hash(JSON.stringify([workspace, memoryEvent.session, eventKey]));

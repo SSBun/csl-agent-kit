@@ -1,0 +1,22 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "migrate-mytwitter-task-storage",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/migrate-mytwitter-task-storage/evidence/identities.json",
+      "sha256": "0e0e99630b4133c7d9d0cbd7d5efaac8e1154a82716f56f511c2c4377f47969e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/migrate-mytwitter-task-storage/evidence/verify.cjs",
+      "sha256": "a6e4145dbc42342fc7ad25a019aa6b7fb5b1644801726d3f0d54342b65ca8c63",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "builtin-local-link-target",
+  "files": [
+    {
+      "path": "skills/meta/agent-rules/agent-rules.md",
+      "sha256": "fc604922fa617e738f7d447ce839505b3e4718ed2b446f49b53fe64195de993d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "268588b12852b4f9a14d1f9cc7d2714415275d9c"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "268588b12852b4f9a14d1f9cc7d2714415275d9c",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+--- before/scripts/x-target-runtime.mjs
++++ after/scripts/x-target-runtime.mjs
+@@ -2,12 +2,33 @@
+ 
+ import crypto from "node:crypto";
+ import fs from "node:fs/promises";
++import { existsSync, readFileSync } from "node:fs";
+ import os from "node:os";
+ import path from "node:path";
+ 
+-const defaultStatePath = path.resolve(
+-  "tasks/topics/x-bluev-following-leads/resources/target-list-state.json",
+-);
++function taskReference(reference) {
++  const workspace = process.cwd();
++  const markerPath = path.join(workspace, ".csl-agent-kit/task-storage.json");
++  let root = "tasks";
++  if (existsSync(markerPath)) {
++    const marker = JSON.parse(readFileSync(markerPath, "utf8"));
++    if (marker.schema !== "csl-task-storage/v1" || marker.state !== "unified" ||
++        !/^migrations\/[a-z0-9-]+\/manifest\.json$/.test(marker.manifest ?? "") ||
++        !/^[a-f0-9]{64}$/.test(marker.sha256 ?? "")) {
++      fail("Task storage migration is incomplete or invalid");
++    }
++    if (existsSync(path.join(workspace, "tasks/tasks.md"))) fail("Legacy Task index reappeared after cutover");
++    root = ".csl-agent-kit/tasks";
++  } else if (existsSync(path.join(workspace, ".csl-agent-kit/tasks"))) {
++    fail("Task target exists without a completed storage migration");
++  }
++  const absolute = path.resolve(reference);
++  const logical = path.relative(workspace, absolute).split(path.sep).join("/");
++  return logical === "tasks" || logical.startsWith("tasks/")
++    ? path.resolve(workspace, root + logical.slice(5)) : absolute;
++}
++
++const defaultStatePath = "tasks/topics/x-bluev-following-leads/resources/target-list-state.json";
+ const expectedSource = "tasks/topics/x-target-accounts-registry/resources/targets.jsonl";
+ const terminalStatuses = new Set(["completed", "partial", "failed", "uncertain"]);
+ const handoffStopReasons = new Set([
+@@ -129,7 +150,7 @@
+ }
+ 
+ function statePaths(options) {
+-  const statePath = path.resolve(options.state ?? defaultStatePath);
++  const statePath = taskReference(options.state ?? defaultStatePath);
+   return {
+     statePath,
+     allocationLockPath: path.join(path.dirname(statePath), "target-list-state.allocate.lock"),
+@@ -496,9 +517,9 @@
+   const generation = positiveInteger(required(options, "generation"), "generation");
+   const fence = expectedRangeFence(options);
+   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(fence.ownerTaskId)) fail("invalid task ID");
+-  const authorizationPath = path.resolve(
++  const authorizationPath = taskReference(path.join(
+     "tasks/artifacts", fence.ownerTaskId, "evidence/recovery-authorization.json",
+-  );
++  ));
+   const authorizationBytes = await fs.readFile(authorizationPath);
+   const binding = JSON.parse(authorizationBytes.toString("utf8"));
+   if (binding.schema !== "x-failed-range-recovery-authorization/v1" ||
+@@ -555,7 +576,7 @@
+         if (dispatch.lastAction?.rangeToken === rangeToken) {
+           fail("dispatch records an action for this range");
+         }
+-        const evidencePath = path.resolve(required(oldRange, "resultEvidence"));
++        const evidencePath = taskReference(required(oldRange, "resultEvidence"));
+         const evidenceBytes = await fs.readFile(evidencePath);
+         if (crypto.createHash("sha256").update(evidenceBytes).digest("hex") !== evidenceHash) {
+           fail("original failure evidence digest mismatch");
+@@ -607,9 +628,9 @@
+   const rangeToken = required(options, "token");
+   const generation = positiveInteger(required(options, "generation"), "generation");
+   const fence = expectedRangeFence(options);
+-  const authorizationPath = path.resolve(
++  const authorizationPath = taskReference(path.join(
+     "tasks/artifacts", fence.ownerTaskId, "evidence/partial-recovery-authorization.json",
+-  );
++  ));
+   const authorizationBytes = await fs.readFile(authorizationPath);
+   const binding = JSON.parse(authorizationBytes.toString("utf8"));
+   if (binding.schema !== "x-partial-range-recovery-authorization/v1" ||
+@@ -662,7 +683,7 @@
+             dispatch.inFlight !== null || dispatch.reservation !== null) {
+           fail("account dispatch state prevents recovery");
+         }
+-        const evidencePath = path.resolve(binding.evidencePath);
++        const evidencePath = taskReference(binding.evidencePath);
+         const evidenceBytes = await fs.readFile(evidencePath);
+         if (crypto.createHash("sha256").update(evidenceBytes).digest("hex") !== evidenceHash) {
+           fail("partial evidence digest mismatch");

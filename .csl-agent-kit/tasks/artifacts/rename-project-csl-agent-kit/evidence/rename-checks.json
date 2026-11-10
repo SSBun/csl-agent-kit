@@ -1,0 +1,81 @@
+{
+  "files": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/csl-agent-kit/README.md",
+      "sha256": "49ce9a36e5ccd2d77bc8f50da3534f736cb3054a3d4cdd61e71b248e3c1165af",
+      "bytes": 39632
+    },
+    {
+      "path": "/Users/caishilin/.pi/agent/settings.json",
+      "sha256": "161f778576db56b6fd8876abe2f26429d96bd55f76d4e7ef736f7d05f420dcd2",
+      "bytes": 1430
+    },
+    {
+      "path": "/Users/caishilin/.codex/config.toml",
+      "sha256": "00bd06d8a075a480d196fd1b6b696459ffdf1b64ef5ff07cbcce25f3cc1beec6",
+      "bytes": 23441
+    },
+    {
+      "path": "/Users/caishilin/.claude/settings.json",
+      "sha256": "fdc29c55f55da433c64a57c0f8cd9ad51e898403cb2025a2b16026ea76ab1b29",
+      "bytes": 9161
+    },
+    {
+      "path": "/Users/caishilin/.claude/plugins/known_marketplaces.json",
+      "sha256": "b7e1c99689db1bf44fc06a0554e67da7ae036b63afc797c4a7dbba6619d6e5cf",
+      "bytes": 2069
+    },
+    {
+      "path": "/Users/caishilin/.claude.json",
+      "sha256": "d4cdaecc2e18d2ae253da6f2ac322131d54d166256322994a72bedb44c990a1e",
+      "bytes": 227333
+    },
+    {
+      "path": "/Users/caishilin/.codex/.codex-global-state.json",
+      "sha256": "6e529d7b8f5c5c12a36addccf527fa01f0b0a402a0d1d19c14e15dd527ea48a5",
+      "bytes": 509373
+    },
+    {
+      "path": "/Users/caishilin/Library/LaunchAgents/com.csl-agent-kit.yunxiao-auto-approve.plist",
+      "sha256": "c7a0abea2a140d689f6cd1bcf20e8adfd5154d116423ba144924976788b5633e",
+      "bytes": 1159
+    }
+  ],
+  "links": [
+    {
+      "path": "/Users/caishilin/Desktop/personal/skills",
+      "target": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "resolved": "/Users/caishilin/Desktop/personal/csl-agent-kit"
+    },
+    {
+      "path": "/Users/caishilin/.pi/agent/agents/pi-agent.md",
+      "target": "/Users/caishilin/Desktop/personal/csl-agent-kit/references/agents/pi-agent.md",
+      "resolved": "/Users/caishilin/Desktop/personal/csl-agent-kit/references/agents/pi-agent.md"
+    },
+    {
+      "path": "/Users/caishilin/.cursor/plugins/local/CSL",
+      "target": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "resolved": "/Users/caishilin/Desktop/personal/csl-agent-kit"
+    },
+    {
+      "path": "/Users/caishilin/.local/share/mise/installs/node/22/lib/node_modules/csl-agent-kit",
+      "target": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "resolved": "/Users/caishilin/Desktop/personal/csl-agent-kit"
+    }
+  ],
+  "checks": [
+    "配置格式解析通过",
+    "当前配置不含旧绝对路径",
+    "Codex显示名称已更新",
+    "全局CLI帮助可执行",
+    "任务check通过",
+    "git diff --check通过"
+  ],
+  "limitations": [
+    "旧路径兼容链接保留",
+    "未重新加载宿主或重启云效审批服务",
+    "Memory运行时旧workspace身份保留",
+    "未运行测试"
+  ],
+  "origin": "https://github.com/SSBun/csl-agent-kit.git"
+}

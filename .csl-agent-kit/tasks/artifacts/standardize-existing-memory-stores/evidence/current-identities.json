@@ -1,0 +1,530 @@
+{
+  "checkedAt": "2026-11-10T06:03:36.938Z",
+  "scopes": [
+    {
+      "scope": "user",
+      "root": "/Users/caishilin/.csl-agent-kit/memory",
+      "indexHash": "7d379ab0bdde9091e203dafdc141558141a8fd5d16648c4f22066f08dcfc212a",
+      "state": "published",
+      "entries": [
+        {
+          "id": "claude-code-local-diagnostics",
+          "hash": "ecf3b4d970ca395d5b63c24f912b37e2161e0173240b74a8e417db129768cc01"
+        },
+        {
+          "id": "memory-persistent-only",
+          "hash": "349af48e1e86a20e1375af78d967ffee721db47474385906ce464e4d18175902"
+        },
+        {
+          "id": "pi-agent-desktop-integration",
+          "hash": "09bec8c61a813439ceb1d63cf6034e25906e7d45ed2b232b3f7b1686dd150b09"
+        },
+        {
+          "id": "pi-ego-browser-entry",
+          "hash": "cc08350cf26b39db1ba60ffef2acef8ca4608e23f052bfd801f2e0b0a6ce9544"
+        },
+        {
+          "id": "pi-magpie-model-overrides",
+          "hash": "e6615cdfbaaf6493fed4e16b2d2bf318536adfc5fb1888e783e1a47e748ab8f0"
+        },
+        {
+          "id": "yunxiao-personal-skill-entry",
+          "hash": "7cf94576e8daed1262348db114b142a03ebf89f605416f8ef4aa5b9b867177a4"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/Filio",
+      "root": "/Users/caishilin/Desktop/personal/Filio/.csl-agent-kit/memory",
+      "indexHash": "a94d0406e2378f32dfb08560ea4f9476594375ee267061c0fc46b7374d42ff96",
+      "state": "published",
+      "entries": [
+        {
+          "id": "context",
+          "hash": "c8c0a7ac2473310add97effd5260f1a62a9fc21087939f3c102e388a35f78fb2"
+        },
+        {
+          "id": "document-formats",
+          "hash": "f969dc5e1940d91bcd3d266952f1a14f9627e9fe6bf89a7f9543172271cd957d"
+        },
+        {
+          "id": "lessons",
+          "hash": "20d1af31a703bc78250d479d3979aaf9fbe33561dc32ae55e8771567f34e038e"
+        },
+        {
+          "id": "reader-tabs",
+          "hash": "8c3195db839a87adfec4613291c1f127ac027e47af5acb94f63d3f665d6cc3bd"
+        },
+        {
+          "id": "system-opening",
+          "hash": "4ad92491c88f133c3f3736caa68e8dfc8bfc998d67884c4798a64766110fe48e"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/LinguaMark",
+      "root": "/Users/caishilin/Desktop/personal/LinguaMark/.csl-agent-kit/memory",
+      "indexHash": "9ddc2f734ab30629be8a3733486afd182056518baf57d812aec88661441927ee",
+      "state": "published",
+      "entries": [
+        {
+          "id": "analysis-protocol",
+          "hash": "f740157a6b4aec26da85848b53f6e0795249109e0eca748d863d8c3663f05f2a"
+        },
+        {
+          "id": "context",
+          "hash": "1b3d27a9d390b6e3d71292c6a662749204e030511a738e0b03897e6e699c73c8"
+        },
+        {
+          "id": "display-settings",
+          "hash": "4a7866281cf22e4266bc11a9db645328f9a49da7b6b0f0c49b5edffb52bd80e3"
+        },
+        {
+          "id": "lessons",
+          "hash": "6970876807263d0cf7b8c978639cf8c30a646bdb723b32183309a61bb16f63d8"
+        },
+        {
+          "id": "markdown-reader",
+          "hash": "36ad4cabdd39afe0a331dc5424baa7817aa38abe60129cdb5b3b697c6f5b9cf4"
+        },
+        {
+          "id": "parsed-vocabulary",
+          "hash": "2ead46d2b0e308d03bffcb4cb794012986a03830c685ccb16a5927bf8c3f7fb8"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        },
+        {
+          "id": "vocabulary",
+          "hash": "a0a20c854961408d196471f946362114dcf544665ecda22ac424e60b9abb6a53"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "root": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/memory",
+      "indexHash": "08509cee8d884a3dd6cbe886ce7393c5dfc93ef2766fe23692f132e3ca6cf72b",
+      "state": "published",
+      "entries": [
+        {
+          "id": "automation",
+          "hash": "63342ae8e011bb73b82d13c6764fc9fe910c954891842bb45cf38efbe7b4970b"
+        },
+        {
+          "id": "context",
+          "hash": "e1b74a74794599a886c03358da040c9cdbf0cf3a25fd411a18a0c2ab1f4e1a1a"
+        },
+        {
+          "id": "lessons",
+          "hash": "7b2d1d49c639c509d9aa88b0401f80aa222ecc1a1caf08840bd1384d8d5343b8"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "root": "/Users/caishilin/Desktop/personal/iTermate/.csl-agent-kit/memory",
+      "indexHash": "8bdebaf8b4ba84074419550722fdee9395c690493bb9639eafb4cff679482fc6",
+      "state": "published",
+      "entries": [
+        {
+          "id": "agent-lifecycle",
+          "hash": "468f97e9860381e6cee763baf98920d058e3443f19c49ed2cc549e2ddb4a254e"
+        },
+        {
+          "id": "bridge-protocol",
+          "hash": "28a2ca31d28be2810f41f092cbff6c54eb5333c66428a7f3e44925cd2119b2dd"
+        },
+        {
+          "id": "bridge-recovery",
+          "hash": "b5e316fbd788264c23b45fac4364e203ced6955eb8aed78e17c48b8ba17338d8"
+        },
+        {
+          "id": "configuration",
+          "hash": "1dc7abac489ebd0d681fd0acb22f99d212ec224c24b8179217333fb62ef4b03b"
+        },
+        {
+          "id": "context",
+          "hash": "6e56a670711e7cb4f331c8714eb73ef9657b7b137b5c8365085133e765e755ae"
+        },
+        {
+          "id": "dynamic-titles",
+          "hash": "d4af77508a6775f3cfa7a8b3fc4392a1236ee7d25854ee464b42311ddf403435"
+        },
+        {
+          "id": "lessons",
+          "hash": "ad63df4ae56711de329e005b423eea9156e85c624e1da951e031cedba72e3ded"
+        },
+        {
+          "id": "local-model",
+          "hash": "5c09478a098281f41219b45f5821e56be449d33d660e477c44cb6a1f575d0373"
+        },
+        {
+          "id": "panel-hover",
+          "hash": "db4149c8987c48ad1228ce07c81706f43d5fbe0de6c2fd6daa8a727f36eedf35"
+        },
+        {
+          "id": "panel-visibility",
+          "hash": "bf236ad75d0e3aeffc303c9ab882323f24f99aaa07244f4ecefd0e5ee6779bed"
+        },
+        {
+          "id": "pi-archives",
+          "hash": "dcdfdfce4f75d303e194c845d6b0f52825da88ff7aa0feb53928c4295e22e68f"
+        },
+        {
+          "id": "pi-status",
+          "hash": "288daed6bf000006c201784cceb56a0483a806ace77889f2300304e62b2df883"
+        },
+        {
+          "id": "session-grouping",
+          "hash": "312867029d7bc5c8bdd31583916031581e9e52a38d31bb77cc60c0332680b6af"
+        },
+        {
+          "id": "session-navigation",
+          "hash": "1fe2146c5447e035e4db6bd6cf36ccf00ab2bb664b7d0d3f5afa6c55a8698504"
+        },
+        {
+          "id": "session-ui",
+          "hash": "fba1786426620d8b74a4677693562b8a2b455c0068ed2a48418a93bb2351cdce"
+        },
+        {
+          "id": "system-integration",
+          "hash": "dbe8045ec8f48f3246338f3bf711d1e2f609b3b2102bc82e93655c8951095f39"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        },
+        {
+          "id": "visual-design",
+          "hash": "8a9d10e2e7f83b0c3089f95dc7a4afbcb723f07d66337e0a07132fa1b2fa7f8b"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/last-vocabulary",
+      "root": "/Users/caishilin/Desktop/personal/last-vocabulary/.csl-agent-kit/memory",
+      "indexHash": "2f46c395cde2955d4a34b6b40183ca9746c7d242dac0455880cefd021a410d9d",
+      "state": "published",
+      "entries": [
+        {
+          "id": "context",
+          "hash": "b37c7191bcd77e0f31304ffc0b4d0205f8300fff7091fe4aa29b996977f9b845"
+        },
+        {
+          "id": "external-reference",
+          "hash": "2f33e5a56f2c303665a2ab935035fd5734129d3eed9567685581afd314f976ac"
+        },
+        {
+          "id": "lessons",
+          "hash": "ad4d308431da3ec0d11a387c40fe815bb62cc1983df2ca4acd76d16ca1fcc5a1"
+        },
+        {
+          "id": "synchronization",
+          "hash": "b970c04a38c67fe3c28f9997d07af5c25e34c8a3a3faa1f033fbad59161a0a17"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/skills",
+      "root": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/memory",
+      "indexHash": "9ddf3526b25bd36cbcbde7ea346258e70c43855dd06cfed0a71df5dde2ca50f2",
+      "state": "published",
+      "entries": [
+        {
+          "id": "context",
+          "hash": "dcd2b86309b328bc740d81c7d435b471a06f2fc664d452394016f3abfad1080e"
+        },
+        {
+          "id": "hosts-and-automation",
+          "hash": "cb3b4785a9c2396da291d1f13d819e4016b65598fb249c3fbac29b3d40ed7d23"
+        },
+        {
+          "id": "interaction-and-experience",
+          "hash": "ef05b7ab1585c51b02fd6d79de11fc81243a0add5431a8a94bc947acf9735c8d"
+        },
+        {
+          "id": "knowledge-and-recall",
+          "hash": "3ff63f4a7f44641d4e55e83925c6a40d3ffdb5b5fe871e4750b1236240e4a85c"
+        },
+        {
+          "id": "lessons",
+          "hash": "bb6e7f4cf5739ff274c74367ef8028192e8329c893154c55b01824223b8899d1"
+        },
+        {
+          "id": "runtime-and-data",
+          "hash": "7d1e72deeb488c50d226f89f046c71ce30345726c48e56cd347655fca5da3841"
+        },
+        {
+          "id": "skills-and-procedures",
+          "hash": "3f5937c37164301cfe4a6e1dad8dffe231eed4361494b424fe53441db8c59a54"
+        },
+        {
+          "id": "tasks-and-collaboration",
+          "hash": "8ab132bba56ad8ff1d7b8ca6ae1f32cf3ecf17baa4d1568eac548a04257ec3f5"
+        },
+        {
+          "id": "temp",
+          "hash": "343446cebc03033afd1a20b216cdbfd5bd121366ec7aff41c02fce1901071ac0"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/personal/word-atlas",
+      "root": "/Users/caishilin/Desktop/personal/word-atlas/.csl-agent-kit/memory",
+      "indexHash": "7865ab558cff0a77ff71ee4b16cb92afbf5df673ffedcb29cb5c25cf9be5ec8a",
+      "state": "published",
+      "entries": [
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": [
+        "context",
+        "lessons"
+      ]
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/work/apps/venom-cli",
+      "root": "/Users/caishilin/Desktop/work/apps/venom-cli/.csl-agent-kit/memory",
+      "indexHash": "1ac6e6a4f51857d789af61832f0295e90de83bcffd73af958ab19d74b8fe5bb6",
+      "state": "published",
+      "entries": [
+        {
+          "id": "context",
+          "hash": "4cf34a60af394388345e8bf46c61c4a0bada8000b162a634234f0203dd8b868d"
+        },
+        {
+          "id": "lessons",
+          "hash": "3cd97fd44f063451eea43ef2f44e04a1e9b02a330ec5c4f6b50a93f78c79af2f"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/work/apps/zhvipios/zhvip",
+      "root": "/Users/caishilin/Desktop/work/apps/zhvipios/zhvip/.csl-agent-kit/memory",
+      "indexHash": "7865ab558cff0a77ff71ee4b16cb92afbf5df673ffedcb29cb5c25cf9be5ec8a",
+      "state": "published",
+      "entries": [
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": [
+        "context",
+        "lessons"
+      ]
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Desktop/work/zhihu_components/OneRNFoundation",
+      "root": "/Users/caishilin/Desktop/work/zhihu_components/OneRNFoundation/.csl-agent-kit/memory",
+      "indexHash": "6678b3210d87ed84e2a37529cb386f7e5439ab5247a650a1420888502e040fb7",
+      "state": "published",
+      "entries": [
+        {
+          "id": "context",
+          "hash": "09a6dc14702abb7175dfba76be9e3c7dc157499773d0394334491b349f318927"
+        },
+        {
+          "id": "lessons",
+          "hash": "b1c43a5025bc0b36f1e400ff5178e19e3b28ad3c5ae7f557d81926d154b9217f"
+        },
+        {
+          "id": "temp",
+          "hash": "b4bceda78ff68a04c8467c6bc864ea9cf80c9a9bd872de17b64f64b075b357c8"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/LongManuscript",
+      "root": "/Users/caishilin/Documents/SharkSpace/LongManuscript/.csl-agent-kit/memory",
+      "indexHash": "4ca7588122be956ab8e3fa85c7322e3fb1ccdd25da2864b7b2c9e5f513f439f1",
+      "state": "published",
+      "entries": [
+        {
+          "id": "context",
+          "hash": "8e0dc86d41216fd10a6d8489457f68069218bc07b61b0fa85b36817806b8eb85"
+        },
+        {
+          "id": "lessons",
+          "hash": "eb5b83c5196638987bac80c9a2cc981fe728fe68a4f9a9675b3cb9374f6a0b60"
+        },
+        {
+          "id": "page-turning",
+          "hash": "b56b6dff2b6ccefa18a1b17fcb3f1ea5f796b617d6ec064100ad6bc5de011dd3"
+        },
+        {
+          "id": "reader-progress-upload",
+          "hash": "c400445aaf8882621c6c82ede0d28212a15905beba45c49756d2c65c7257bb8d"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "root": "/Users/caishilin/Documents/SharkSpace/native-short-reader/.csl-agent-kit/memory",
+      "indexHash": "848a5a3be73504f9dfe88104ab6380472eaa205bef4487a9ba1e86e51e8368b9",
+      "state": "published",
+      "entries": [
+        {
+          "id": "cache-authentication",
+          "hash": "ee3a2fa22b50c3fbd1c12f3c0622a5a8bdab6408084f1d402715af51f69a48d4"
+        },
+        {
+          "id": "catalogs",
+          "hash": "6e927c47b21f94284d53a721d92d36bb4b075108ed7e855dde4564a587e62c82"
+        },
+        {
+          "id": "comments",
+          "hash": "299e5510c33f55b791555577eab18e6fe94078d23675d5f6f53cbde727b82060"
+        },
+        {
+          "id": "container-style",
+          "hash": "a3b98517ae0aeb6639a2c16e8a7d1204a39ca6f47135edb6fea59c18a77e8dc6"
+        },
+        {
+          "id": "content-preload",
+          "hash": "194778dcec8d6e754998c6e4227841bd0a78f661378794bc7872d881d4d5a358"
+        },
+        {
+          "id": "context",
+          "hash": "e921a51c9e24fb6ea91e6c7ed52434938921a9a33e158c424347e488b548ab7b"
+        },
+        {
+          "id": "hybrid-preload",
+          "hash": "319a0be97addf876fcb6de01904545f19e2ed66fe8c2db2fb270a20350aa45ee"
+        },
+        {
+          "id": "interaction-models",
+          "hash": "8704523c4c4e74edf744b49a29dc97d9a4baa326c7025df6dc3959dbd05a2df7"
+        },
+        {
+          "id": "lessons",
+          "hash": "43ebb71c61760c0680bca7fa34dd08cfcfebff0c619cc99acbe214b42e7e9398"
+        },
+        {
+          "id": "list-layout",
+          "hash": "a11867a1198556a59d4bb9caf1aefd65bb735fc63f58b2652abffa9217bf81cd"
+        },
+        {
+          "id": "network-routing",
+          "hash": "dd2599bf76ce98bb0fce7296391837bf62006c1091d5af8ced2fff5c9253edec"
+        },
+        {
+          "id": "next-story",
+          "hash": "ee32b953ee9661da13e96721a65d9e380c4297a24a9c46a0ea4d77f261def1b5"
+        },
+        {
+          "id": "performance",
+          "hash": "5901dc97408bb364670e2b4f3c4a3e5dc0306ebb842bae4930b1f588bf8fd2aa"
+        },
+        {
+          "id": "reader-validation",
+          "hash": "a23def28b5e4990691502177b9268f83218208f98105071749e99b60dd271a6f"
+        },
+        {
+          "id": "reading-progress",
+          "hash": "c7acc46eaf180c4554fe7852b94eda3f7903fe257859b5dc37635409b4786e4a"
+        },
+        {
+          "id": "rendering",
+          "hash": "58f965e3b6c5ab3b479b212ef323d7047ede9330bc337163e8943299d6e1ede3"
+        },
+        {
+          "id": "swift-components",
+          "hash": "e0ba6b0977e1855f2c6743ddb8723bd0d01f5098695753bb9b8ba2143299a475"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        },
+        {
+          "id": "themes",
+          "hash": "cc64aed73d0efa467ae10a403786095bc36c6732df826a53f21c6fafe7828065"
+        }
+      ],
+      "missingBasics": []
+    },
+    {
+      "scope": "project",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "root": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki/.csl-agent-kit/memory",
+      "indexHash": "6d0428bb6cfe6ce0eca15bb49167d1aee129bbcdf5b06b4aa3eeab769d881f68",
+      "state": "published",
+      "entries": [
+        {
+          "id": "agent-practice-writing",
+          "hash": "5c6f5c95916c4bfa2ddfc3d1102dd2b2140d33a6670423c6771f5e985a13d904"
+        },
+        {
+          "id": "context",
+          "hash": "68a083f3d97dd5cfb405fb74209e960dc91974b67b4d2329daaf78991ed4b52f"
+        },
+        {
+          "id": "launchmate",
+          "hash": "a61411565cab1a72af8f17edf4c72e39a74ea85fe64ec448c44ff13c304f6a09"
+        },
+        {
+          "id": "lessons",
+          "hash": "7addfe9e26997fbe1ab90eead34ea21a15bce70b30c90dc2ff46c746c8437329"
+        },
+        {
+          "id": "performance-writing",
+          "hash": "566c80d94c6bc8d2b2ff16137d1df80201a16acd8bac176273998b17dacaf8cc"
+        },
+        {
+          "id": "technical-references",
+          "hash": "f1b45c91b72c2b86180ec69ea75ce93634e7106bf5cb4e76f12765249168cf86"
+        },
+        {
+          "id": "temp",
+          "hash": "14c331edd5dd567d0b72fb05866eca4e9c47f553f880bfde82707c4a787727f9"
+        }
+      ],
+      "missingBasics": []
+    }
+  ]
+}

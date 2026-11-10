@@ -213,11 +213,11 @@ checkpointReason
 
 For `show_checkpoint` and `continue_unchanged`, `authorizedClauses` contains `{ clause, basis, sources }` entries covering the complete Target, with basis `direct_user` or `accepted_target` and source message references. This is authorization evidence, not an automatic confirmation. For evaluation, address clauses as `outcome`, `doneWhen.0`, `doneWhen.1`, etc., and optional `boundaries`; source references are zero-based indexes into the supplied authorization messages. Each clause is one checkable unit. A mechanical summary may cite the same explicit sources as its Done when items.
 
-`show_checkpoint` uses `goal_recheck`, `user_requested`, `plan_graph_change`, `acceptance_unavailable`, or `trivial_display`. For `goal_recheck`, `confirmationItems` covers the complete Target, even when the same clauses have direct-user authorization. These lists may overlap: authorized content still needs a user goal check. A user-requested check names only the item(s) the user asked to inspect; graph/acceptance/trivial holds explain the governing event and use empty confirmation items rather than inventing unknown clauses. For a combined hold, retain every active hold in `reasonCodes` and the user-facing explanation; a new goal still requires whole-Target acceptance even when another hold supplies the primary reason.
+`show_checkpoint` uses `goal_recheck`, `user_requested`, `plan_graph_change`, `acceptance_unavailable`, or `trivial_display`. For `goal_recheck`, `confirmationItems` covers the complete Target, even when the same clauses have direct-user authorization. These lists may overlap: authorized content still needs a user goal check. A user-requested check names only the item(s) the user asked to inspect; graph/acceptance/trivial holds use empty confirmation items rather than inventing unknown clauses. For a combined hold, retain every active hold in `reasonCodes`; user-facing wording follows 用户可见文案边界 below. A new goal still requires whole-Target acceptance even when another hold supplies the primary reason.
 
 `continue_unchanged` requires complete authorized-clause coverage with `accepted_target` evidence for every clause, empty `confirmationItems`, and null `checkpointReason`. The owner must verify that the cited proposal and later acceptance cover the whole unchanged Target in the current scope; source-role or index checks alone cannot prove this. Other actions use empty lists and null reason.
 
-Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 names the governing safety rule or action boundary.
+Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 在内部决策包中标明适用的安全规则或动作边界；这不要求向用户展示规则来源或阻断原因。
 
 `continue_exploration` has null `level`, empty goal-check lists and null `checkpointReason`. It describes an authorized investigation, never accepted-target reuse or execution permission; an optional progress statement is not a displayed confirmation action.
 
@@ -250,17 +250,17 @@ Apply this presentation whenever the protocol calls for displaying a Task Target
 
 ### 用户可见文案边界
 
-本节统一适用于 `task`、`task-plan` 和 `task-queue` 的所有用户可见回复，包括目标展示、确认、恢复、阻断、进度与最终交付；仅约束文案，不改变确认时机或授权边界。
+本节统一适用于 `task`、`task-plan` 和 `task-queue` 的所有用户可见回复；仅约束文案，不改变确认时机或授权边界。
 
-- 需要目标确认时，只展示完整目标和一句简短确认问题；不要在问题里再次复述整个目标。
-- 不得在任何回复场景附带内部流程说明块，包括“此次暂停来自……”“这次确认来自……技能”“协议要求我等待”及其改写；不得用脚注、括号、引用或结尾补充重新输出这类说明。
-- 不主动展示协议名称或原文、Skill 路径、L 级别、内部 action/reason code、当前 `confirm`/SOLO 模式、任务记账过程或“尚未执行”的例行声明。用户明确询问规则来源、查询模式或排查流程时，只直接回答所问事实，不恢复附带的内部流程说明块。
-- 必须解释具体阻断或重新确认的原因时，用用户能据此做决定的事实描述，例如“新增了一个交付项，需要你确认调整后的范围”；不要只说“协议要求”。保留缺少权限、必要输入、配置错误、无法恢复此前确认、实际审批拒绝和安全边界等重要信息。
-- 此展示约束不覆盖更高优先级的明确披露要求；确有冲突时，仅提供其强制要求的最少信息，不扩展为例行内部流程说明。不得以隐藏内部说明为由隐瞒真实阻断或跳过确认。
+- 常规目标确认只输出完整目标和一句简短确认问题，然后结束本轮。不要复述目标、解释为何需要确认，或补充等待提示。
+- 不附带内部流程说明，包括确认依据、规则来源、协议原文、Skill 路径、L 级别、action/reason code、模式和任务记账信息。正文、脚注、括号、引用及结尾补充均遵守此限制；例如不得追加“此次确认依据 task 技能引用的目标对齐规则……”。
+- 只有影响用户决定的具体事实需要说明，例如范围新增、缺少权限或必要输入、配置错误、无法恢复此前确认或实际审批拒绝。直接说明事实及所需决定，不把内部触发原因逐项翻译成提示。安全确认可暂停执行并直接请求确认，无需附带阻断原因或规则来源；保留动作、对象和后果等决定所需信息。
+- 用户明确询问规则来源、模式或流程时，直接回答所问内容。更高优先级明确要求披露时，仅给出必需信息；这两种情况均不扩展为例行流程说明。
+- 发送前检查目标正文之外的内容：删除不帮助用户判断目标、范围或真实阻断的流程提示。不得因此隐瞒真实阻断或跳过必要确认。
 
 ### L2 Checkpoint
 
-For `show_checkpoint`, keep the complete current Target visible, including inherited constraints. For `goal_recheck`, ask the user to check the Agent's understanding of their intended result, not merely grant permission. A material user revision may be highlighted without omitting the rest of the Target. For a mandatory graph, acceptance-recovery, trivial-display, or user-requested hold, explain that specific reason instead of pretending known facts are uncertain; name only explicitly requested local items when that is the sole pending check.
+For `show_checkpoint`, keep the complete current Target visible, including inherited constraints. For `goal_recheck`, ask the user to check the Agent's understanding of their intended result, not merely grant permission. A material user revision may be highlighted without omitting the rest of the Target. For a mandatory graph, acceptance-recovery, trivial-display, or user-requested hold, state only facts that affect the user's decision under 用户可见文案边界; an internal hold name does not require a user-facing explanation. Name only explicitly requested local items when that is the sole pending check.
 
 Append a neutral localized footer with this meaning:
 
@@ -325,7 +325,7 @@ Compute safety independently from L0-L4:
 - `S0 NONE`: no separate governing safety or permission gate applies.
 - `S1 REQUIRED`: publication, payment, destructive action, credentials, permissions, privacy data, deployment, or another external side effect is governed by a separate workflow.
 
-L2 or L4 acceptance never clears S1. The SOLO execution path skips in-scope framework/SOP confirmation-only pauses, including those labeled Safety Confirmation; it never clears substantive safeguards, host or higher-priority gates. In `confirm` mode, at the actual action boundary, the main session renders a separate localized `**Safety Confirmation**` block naming the action, affected object, consequence, and governing rule. A delegated child reaching that boundary returns to the main session and does not render the block itself. Do not attach safety approval to the L2 or L4 footer. Conversely, safety confirmation does not align a materially different Target.
+L2 或 L4 的目标接受不解除 S1。SOLO 路径跳过范围内框架或 SOP 的确认性暂停，包括名为 Safety Confirmation 的步骤；实质保障、宿主限制和更高优先级门禁仍然保留。在 `confirm` 模式下，到达实际动作边界时，主会话暂停依赖确认的执行，单独展示本地化的 `**Safety Confirmation**`：说明动作、受影响对象和后果，并提出一句简短确认问题。不要求附带阻断原因、规则名称或来源；更高优先级明确要求披露时，遵循“用户可见文案边界”的最少披露要求。等待明确确认后才能继续该动作；确认不替代必要权限、输入或其他实质保障。委派子 Agent 到达此边界时返回主会话，不直接展示确认。不要把安全批准附在 L2 或 L4 的确认问题后；安全确认也不接受一个实质不同的目标。
 
 ## Consumer Responsibilities
 

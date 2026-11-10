@@ -1,0 +1,67 @@
+[
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100_ISSUE9.pdf",
+    "bytes": 3316157,
+    "sha256": "d1f4ea9e7cd6e46b47aa9057209f99e78c0e9cfc4e27a5b07895b05c1a166431"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/转换校验说明.md",
+    "bytes": 5303,
+    "sha256": "e0573f5ece0aeec32d3408cb81172911277f1af26c402327c740cc40ab272a45"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/ASD-STE100-Issue9-Part1-Writing-Rules.md",
+    "bytes": 160502,
+    "sha256": "016a3850ab4b651343a2bfc97352cf18a426db4ef59836ee1ce58a95eaf71902"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/ASD-STE100-Issue9-Dictionary.json",
+    "bytes": 6205308,
+    "sha256": "f0571b3b38a323dadc6f058330ea0bf4dd4553f4260eb78b71bec9de970a1ea0"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/assets/page-144-word-selection-flowchart.png",
+    "bytes": 168624,
+    "sha256": "e364d4db64a1e9ec031e348faadddbf7281ffdf1c9d64b2fba3bc9076881c529"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/assets/page-129-image-296.jpeg",
+    "bytes": 16413,
+    "sha256": "caf11db5500f3060092d5afe53a922edebffa112d030155096bb3340e30a6331"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/assets/page-73-image-170.jpeg",
+    "bytes": 36040,
+    "sha256": "fab13a5f77844d981e43f28074eb82f800485bf6c38029c10b6e43299f66fabf"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/assets/page-43-image-105.jpeg",
+    "bytes": 32748,
+    "sha256": "d821c5acae9970f03f04d127e0067b92d4b481f24f3837487b0d56449d742949"
+  },
+  {
+    "path": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/convert-ste100-issue9/evidence/convert_ste100.py",
+    "bytes": 16749,
+    "sha256": "e4c04f87a75ebcb05103843bf9a6b71d69015f833bc2484af6debc66eed3c8df"
+  },
+  {
+    "path": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/convert-ste100-issue9/evidence/verify_ste100.py",
+    "bytes": 9665,
+    "sha256": "d1b0d0aa6d79906f3de01e7bd86efd8ec45b6b2c64a28dc6f9243b13552f5674"
+  },
+  {
+    "path": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/convert-ste100-issue9/evidence/verification.json",
+    "bytes": 2058,
+    "sha256": "36d4634aae1067d291f943f633e3aabe18fb9b6b4c535d16ac2be1ebe20a9b11"
+  },
+  {
+    "path": "/tmp/ste100-layout.txt",
+    "bytes": 1170813,
+    "sha256": "a216fe199bd6e9c77fc743dfe6dc081ee5f245adcb115ed6ca1aa45ee50fa3f5"
+  },
+  {
+    "path": "/tmp/ste100-bbox.html",
+    "bytes": 15651266,
+    "sha256": "42b75bc8345f8cadb17a706c9ce40aab7bc1ff8918c96485c550083d99b5df10"
+  }
+]

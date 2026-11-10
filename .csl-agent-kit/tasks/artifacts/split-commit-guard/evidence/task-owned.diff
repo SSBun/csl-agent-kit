@@ -1,0 +1,742 @@
+--- before/skills/dev/code-inline-review/SKILL.md
++++ after/skills/dev/code-inline-review/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: code-inline-review
+-description: 仅在用户明确要求使用 code-inline-review 或为改动添加临时源码审查说明时使用。按逻辑变更组在源码中添加、维护或清理可在任意编辑器阅读的说明。不因普通编码、修复、提交或代码审查请求自动启用；提交保护由独立内置 hook 持续执行。
++description: 仅在用户明确要求使用 code-inline-review 或为改动添加临时源码审查说明时使用。按逻辑变更组在源码中添加、维护或清理可在任意编辑器阅读的说明。不因普通编码、修复、提交或代码审查请求自动启用；不负责提交检查或 hook 管理。
+ ---
+ 
+ # Code Inline Review
+@@ -23,9 +23,9 @@
+ 
+ 仅在支持注释、允许人工维护的源码中插入。标准 JSON、生成文件、二进制和不确定语法的区域不插入；在相关主块或聊天/PR 说明中交代。不要将标记放进字符串、模板字面量、文档字符串或业务代码行尾。
+ 
+-## 提交与清理
++## 清理
+ 
+-内置 `inner:code-inline-review-commit` 独立于 Skill 调用状态运行；详见 [提交保护边界](references/commit-guard.md)。先检查其 `show --host pi` 或实际宿主状态，不把配置成功当作已运行证据。
++本 Skill 只负责说明内容的生命周期；提交检查与阻断诊断由独立的 `commit-guard` 负责。
+ 
+ 工作区可以保留说明，只要待提交版本没有说明。不要为了提交无关文件而清理所有说明；不要调用 `git add .` 掩盖部分暂存选择。
+ 
+@@ -36,10 +36,9 @@
+ 3. 确认每个区域在对应语言中确实是注释，且属于本任务。标记残缺、嵌套、ID 不匹配、含代码或来源不明时停止自动清理，报告位置。
+ 4. 重读确认原文未变化，再用精确编辑删除确认的说明区。保留其他字节与普通注释；对照预览检查 diff。
+ 5. 仅按用户授权的提交范围暂存。已有部分暂存时保留其选择，不整文件重新暂存；无法确定时报告问题。
+-6. 暂存与提交使用独立、顺序工具调用。提交被阻断时报告原因，请用户修复或授权清理；不得改用脚本、别名、禁用 hook 或其他入口绕过。
+ 
+ 远端需要这些说明时，基于实际提交重新核对保存的解释，再按用户授权整理进 PR/MR。第一版不自动发布评论或同步旧说明。
+ 
+ ## 验证
+ 
+-确认主块与关联 ID 可搜索且一致，清理只删除确认的说明，普通代码不变；说明不在提交版本中时允许工作区继续保留。检查生成和保护是两套独立开关。路由边界见 `evals/trigger_cases.json`；维护后执行 skill-quality。
++确认主块与关联 ID 可搜索且一致，清理只删除确认的说明，普通代码不变；说明不在提交版本中时允许工作区继续保留。路由边界见 `evals/trigger_cases.json`；维护后执行 skill-quality。
+--- before/skills/dev/code-inline-review/references/commit-guard.md
++++ after/skills/dev/code-inline-review/references/commit-guard.md
+@@ -1,32 +0,0 @@
+-# 提交保护边界
+-
+-内置规则 `inner:code-inline-review-commit` 使用 Agent Hooks 的 `before-tool` / `run-script`，默认启用。它不依赖用户本次是否调用生成 Skill；生成默认关闭，保护默认开启。通过 agent-hooks CLI 查看实际宿主状态，升级 Pi 扩展后需 `/reload` 或重新启动会话。
+-
+-## 判定
+-
+-对直接 shell Git 调用做受限参数解析，不执行传入的 shell 文本来探测效果。支持 `git -C <目录> commit -m <消息>`、`-F`、`--amend --no-edit` 等显式暂存提交流程。检查实际仓库整个 index 的文件内容，包含未改动行；从子目录调用也扫描整个仓库。匹配以原生注释前缀开头的保留字 `@code-review`，残缺 begin/end 同样拒绝。
+-
+-| 情况 | 行为 |
+-| --- | --- |
+-| index 干净，工作区或未跟踪文件有说明 | 放行，不清理工作区 |
+-| index 有说明标记 | 阻断并报告绝对文件路径与行号 |
+-| 冲突、Git 失败、超时或检查输出超限 | 阻断并说明检查未完成 |
+-| `commit -a`、路径提交、交互暂存、组合命令、环境变量前缀、条件语句、重定向、变量展开 | 阻断，要求拆分为显式暂存和独立提交；here-document 结束后的可见 Git 调用也检查 |
+-| Git 别名或其他可能产生提交的子命令 | 不自动放行，要求使用可检查流程 |
+-| 直接 `git status`、`git diff` 等已知非提交命令 | 放行 |
+-
+-hook 不修改工作区、index、Git 配置或 hooksPath，不自行清理或重新暂存。需要修复时请用户修复或明确授权 Agent 清理；不能重试另一种包装命令绕过。
+-
+-## 宿主与故障
+-
+-Pi 的 `tool_call` 将检查器返回的阻断结果交给宿主；Codex/Claude Code 使用原生 PreToolUse 返回码。`on-error: block` 使本规则的脚本启动失败、超时和非零退出也阻断调用；其他普通脚本保留原有尽力执行语义。
+-
+-规则源或启用配置损坏必须修复后再声称保护生效。宿主只加载旧版本、禁用规则、未安装插件或不经过对应工具调用时，没有保护保证。外部控制面可用 `csl-agent-kit agent-hooks disable inner:code-inline-review-commit` 恢复故障；Agent 不得为了完成提交自行禁用规则。
+-
+-## 明确限制
+-
+-这是 Agent 的提交前检查，不是 Git 服务端或操作系统沙箱。它不检查外部终端/GUI，也无法证明任意 Python/Node/shell 脚本、远端工具、隐藏 shell 函数或扩展私自执行的 Git 调用。Agent 必须直接调用 Git，不得通过这些方式绕过。
+-
+-检查与 Git 真正创建提交之间不持有跨进程锁。不得把暂存/修改 index 与提交并行调用，也不要在检查期间由其他进程改变 index；原生 Git hooks 也可能改变内容。第一版不声称消除了这类竞态或对恶意绕过提供绝对保证。需要跨客户端和并发写入的强制保障时，应另行设计 Git/CI 层检查。
+-
+-标记是保留协议，注释行中的同形文本也会被阻断。文档和夹具请使用占位符或拆分字符串，不为某种文件扩展名设置绕过。自动清理只识别完整格式，并要求 Agent 先验证语言上下文。
+--- before/skills/dev/code-inline-review/evals/trigger_cases.json
++++ after/skills/dev/code-inline-review/evals/trigger_cases.json
+@@ -10,6 +10,8 @@
+     "Review this diff for bugs.",
+     "Commit my staged changes.",
+     "给这个复杂算法添加长期维护注释。",
+-    "默认不要添加 code-inline-review 注释。"
++    "默认不要添加 code-inline-review 注释。",
++    "用 commit-guard 解释为什么提交被阻断。",
++    "检查内置提交保护 hook 在 Pi 是否生效。"
+   ]
+ }
+--- before/skills/meta/agent-hooks/SKILL.md
++++ after/skills/meta/agent-hooks/SKILL.md
+@@ -21,7 +21,7 @@
+ - Pi runs triggers inside the `csl-context-hooks` extension via `pi.on(...)`. Inject works where a handler can rewrite model-facing content (session-start systemPrompt, prompt-submit, after-tool tool_result). `before-tool` uses Pi's `tool_call` gate and returns `{ block: true, reason }` before execution. Other script events remain best-effort; permission/subagent events remain unsupported. A `run-script` rule with `inject-output: true` additionally surfaces stdout on inject-capable events.
+ - Use Agent Hooks for persistent automation and Agent tool-call guards, and direct commands for one-time work. Native Git hooks or CI are needed for enforcement outside Agent tool calls.
+ - `before-tool` / `run-script` rules may set `on-error: block`: checker launch failures, timeouts, nonzero exits and unknown conditions then deny execution. Script exit 2 continues to mean an explicit block. The before-tool adapters also deny on dispatcher exceptions or exhausted discovery/event budgets. Other rules retain existing best-effort behavior.
+-- `inner:code-inline-review-commit` runs [the staged-content guard](scripts/check-code-review-commit.js) independently of Skill activation. It blocks visible Git commits containing reserved review comment markers, permits clean index content while working files retain notes, and rejects unsupported commit forms. See [the guard boundary](../../dev/code-inline-review/references/commit-guard.md). Generation is opt-in through `code-inline-review`; this guard never edits or stages files.
++- `commit-guard` 拥有提交内容规则；`inner:code-inline-review-commit` 通过[薄入口](scripts/check-code-review-commit.js)调用其检查器。保留历史 ID 以兼容启用／禁用设置，运行不依赖 Skill 调用状态。检查逻辑与[保护边界](../../dev/commit-guard/references/commit-guard.md)由 `commit-guard` 维护；本 Skill 只负责 hook 发现、调度与状态管理。
+ 
+ ## Workflow
+ 
+--- before/skills/meta/agent-hooks/hooks/code-inline-review-commit.md
++++ after/skills/meta/agent-hooks/hooks/code-inline-review-commit.md
+@@ -2,7 +2,7 @@
+ schema: agent-hooks/v1
+ event: before-tool
+ action: run-script
+-description: Block Agent Git commits containing inline review blocks; allow clean staged content even when working files retain notes.
++description: commit-guard 的审查标记规则；阻止 Agent 提交暂存内容中的临时说明，工作区可保留说明。
+ enabled: true
+ script: check-code-review-commit.js
+ timeout: 30
+--- before/skills/meta/agent-hooks/scripts/check-code-review-commit.js
++++ after/skills/meta/agent-hooks/scripts/check-code-review-commit.js
+@@ -1,254 +1,8 @@
+ #!/usr/bin/env node
+ "use strict";
+ 
+-const fs = require("node:fs");
+-const path = require("node:path");
+-const { spawnSync } = require("node:child_process");
++// Keep the registered hook entry and its user settings stable; commit-guard owns policy.
++const guard = require("../../../dev/commit-guard/scripts/check-commit.js");
+ 
+-// Reserved comment-line prefix. Match damaged delimiters too, not just pairs.
+-const MARKER_PATTERN = "^[[:blank:]]*(//|#|--|;|/\\*|<!--|\\*)[[:blank:]]*@code-review";
+-const NON_COMMIT_COMMANDS = new Set([
+-  "add", "status", "diff", "log", "show", "restore", "reset", "checkout", "switch",
+-  "branch", "tag", "fetch", "push", "remote", "config", "rev-parse", "rev-list",
+-  "ls-files", "ls-tree", "cat-file", "grep", "check-ignore", "check-attr", "blame",
+-  "reflog", "init", "clone", "rm", "mv", "clean", "worktree", "help",
+-]);
+-const SHELL_WRAPPERS = new Set(["env", "command", "sudo", "exec", "time", "nice", "nohup", "timeout", "setsid", "xargs", "builtin", "sh", "bash", "zsh", "eval"]);
+-const VALUE_OPTIONS = new Set(["-m", "--message", "-F", "--file", "--author", "--date", "--cleanup", "--trailer"]);
+-const FLAG_OPTIONS = new Set(["--amend", "--no-edit", "--allow-empty", "--allow-empty-message", "-s", "--signoff", "-v", "--verbose", "-q", "--quiet", "--no-gpg-sign", "--reset-author"]);
+-
+-function denied(reason) {
+-  return { blocked: true, reason: `${reason}\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。` };
+-}
+-
+-// Deliberately accepts a literal argv, not a general-purpose shell program.
+-function literalWords(command) {
+-  const words = [];
+-  let value = "";
+-  let quote = null;
+-  let started = false;
+-  for (let i = 0; i < command.length; i += 1) {
+-    const ch = command[i];
+-    if (quote === "'") {
+-      if (ch === "'") quote = null;
+-      else value += ch;
+-      continue;
+-    }
+-    if (ch === "$" || ch === "`") throw new Error("不支持变量展开或命令替换");
+-    if (ch === "\\") {
+-      const next = command[++i];
+-      if (next === undefined || next === "\n" || next === "\r") throw new Error("不支持续行或残缺转义");
+-      if (quote === '"' && !['"', "\\", "$", "`"].includes(next)) value += "\\";
+-      value += next;
+-      started = true;
+-      continue;
+-    }
+-    if (quote === '"') {
+-      if (ch === '"') quote = null;
+-      else value += ch;
+-      continue;
+-    }
+-    if (ch === "'" || ch === '"') { quote = ch; started = true; continue; }
+-    if (/[\n\r;&|<>(){}*?\[\]~#]/.test(ch)) throw new Error("请将提交独立执行，不使用组合命令、重定向或 shell 展开");
+-    if (/[ \t]/.test(ch)) {
+-      if (started) words.push(value);
+-      value = "";
+-      started = false;
+-    } else { value += ch; started = true; }
+-  }
+-  if (quote) throw new Error("引号未闭合");
+-  if (started) words.push(value);
+-  return words;
+-}
+-
+-function gitResult(executable, cwd, args) {
+-  const result = spawnSync(executable, args, {
+-    cwd, encoding: "utf8", timeout: 8000, maxBuffer: 4 * 1024 * 1024,
+-    env: { ...process.env, GIT_OPTIONAL_LOCKS: "0", LC_ALL: "C" },
+-    shell: false,
+-  });
+-  if (result.error || result.signal) throw new Error("Git 检查超时、输出超限或无法启动");
+-  return result;
+-}
+-
+-function requireSuccess(result, operation) {
+-  if (result.status !== 0) throw new Error(`${operation}失败：${String(result.stderr || "Git 返回错误").trim().slice(0, 500)}`);
+-  return result.stdout;
+-}
+-
+-function inspectIndex(cwd, executable = "git") {
+-  const root = requireSuccess(gitResult(executable, cwd, ["rev-parse", "--show-toplevel"]), "定位仓库").trim();
+-  const unmerged = requireSuccess(gitResult(executable, root, ["ls-files", "--unmerged", "-z"]), "读取冲突状态");
+-  if (unmerged) throw new Error("暂存区仍有冲突，无法确定提交内容");
+-  // git grep reads the complete staged blobs, including unchanged lines; -a
+-  // prevents binary attributes/content from silently hiding a marker.
+-  const result = gitResult(executable, root, ["grep", "--cached", "--full-name", "--no-color", "-n", "-z", "-a", "-E", "-o", "-e", MARKER_PATTERN]);
+-  if (result.status === 1) return [];
+-  requireSuccess(result, "扫描暂存内容");
+-  const locations = [];
+-  const record = /([^\0]+)\0([0-9]+)\0[^\n]*(?:\n|$)/g;
+-  for (const match of result.stdout.matchAll(record)) {
+-    locations.push({ path: path.join(root, match[1]), line: Number(match[2]) });
+-  }
+-  if (locations.length === 0) throw new Error("Git 扫描发现标记，但无法解析位置");
+-  return locations;
+-}
+-
+-function visibleGitInvocation(command, depth = 0) {
+-  if (depth > 32) return /\bgit\b/.test(command);
+-  // Locate executable positions without executing shell syntax. Here-document
+-  // data is skipped through its delimiter; scanning resumes after the body.
+-  let token = "";
+-  let quote = null;
+-  let executable = true;
+-  let wrapper = false;
+-  let found = false;
+-  let redirectTarget = false;
+-  const documents = [];
+-  const flush = () => {
+-    if (!token) return;
+-    if (redirectTarget) { redirectTarget = false; token = ""; return; }
+-    const name = path.basename(token);
+-    if ((executable || wrapper) && name === "git" || wrapper && /\bgit\b/.test(token)) found = true;
+-    if (["if", "then", "else", "elif", "do", "while", "until", "coproc", "!"].includes(token) || /^[A-Za-z_][A-Za-z_0-9]*=/.test(token) && executable) {
+-      executable = true;
+-    } else {
+-      if (executable) wrapper = SHELL_WRAPPERS.has(name);
+-      executable = false;
+-    }
+-    token = "";
+-  };
+-  for (let i = 0; i < command.length; i += 1) {
+-    const ch = command[i];
+-    if (quote) {
+-      if (quote === '"' && (ch === "`" || ch === "$" && command[i + 1] === "(")) {
+-        if (visibleGitInvocation(command.slice(i + (ch === "`" ? 1 : 2)), depth + 1)) return true;
+-      }
+-      if (ch === quote) quote = null;
+-      else if (ch === "\\" && quote === '"') {
+-        const next = command[++i];
+-        if (next !== "\n") token += next || "";
+-      }
+-      else token += ch;
+-      continue;
+-    }
+-    if (ch === "`" || ch === "$" && command[i + 1] === "(") {
+-      if (visibleGitInvocation(command.slice(i + (ch === "`" ? 1 : 2)), depth + 1)) return true;
+-    }
+-    if (ch === "$" && ["'", '"'].includes(command[i + 1])) continue;
+-    if (ch === "'" || ch === '"') { quote = ch; continue; }
+-    if (ch === "\\") {
+-      const next = command[++i];
+-      if (next !== "\n") token += next || "";
+-      continue;
+-    }
+-    if (ch === "#" && !token) {
+-      while (i + 1 < command.length && command[i + 1] !== "\n") i += 1;
+-      continue;
+-    }
+-    if (ch === "<" && command[i + 1] === "<") {
+-      flush();
+-      const match = command.slice(i).match(/^<<(-?)[ \t]*(?:'([^'\n]+)'|"([^"\n]+)"|([A-Za-z_][A-Za-z_0-9]*))(?=[ \t\r\n;&|]|$)/);
+-      if (!match) return found || /\bgit\b/.test(command);
+-      documents.push({ delimiter: match[2] || match[3] || match[4], tabs: match[1] === "-", expands: Boolean(match[4]) });
+-      i += match[0].length - 1;
+-      continue;
+-    }
+-    if (ch === ">" || ch === "<") {
+-      if (executable && /^\d+$/.test(token)) token = "";
+-      flush();
+-      redirectTarget = true;
+-      while ([">", "<", "&", "|"].includes(command[i + 1])) i += 1;
+-      continue;
+-    }
+-    if (/[;&|\n(){}]/.test(ch)) { flush(); executable = true; wrapper = false; redirectTarget = false; }
+-    else if (/[ \t\r]/.test(ch)) flush();
+-    else token += ch;
+-    if (ch === "\n" && documents.length) {
+-      for (const document of documents) {
+-        let closed = false;
+-        while (i + 1 < command.length) {
+-          const start = i + 1;
+-          const newline = command.indexOf("\n", start);
+-          const end = newline === -1 ? command.length : newline;
+-          const line = command.slice(start, end);
+-          i = end;
+-          if ((document.tabs ? line.replace(/^\t+/, "") : line) === document.delimiter) { closed = true; break; }
+-          if (document.expands && /[$`]/.test(line) && /\bgit\b/.test(line)) found = true;
+-        }
+-        if (!closed) return found || /\bgit\b/.test(command);
+-      }
+-      documents.length = 0;
+-    }
+-  }
+-  flush();
+-  return found;
+-}
+-
+-function checkCommand(command, workspace) {
+-  if (typeof command !== "string") return denied("缺少 shell 命令，无法检查提交入口。");
+-  // This guard covers visible Git invocations, not arbitrary scripts that hide
+-  // Git calls. Do not evaluate shell text to discover what it would execute.
+-  let words;
+-  try { words = literalWords(command); } catch (error) {
+-    return visibleGitInvocation(command) ? denied(error.message) : { blocked: false };
+-  }
+-  const executable = words.shift();
+-  if (!executable || path.basename(executable) !== "git") {
+-    const name = path.basename(executable || "");
+-    const wrapper = SHELL_WRAPPERS.has(name);
+-    return visibleGitInvocation(command) || wrapper && words.some((word) => /\bgit\b/.test(word))
+-      ? denied("Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。")
+-      : { blocked: false };
+-  }
+-  let cwd = workspace;
+-  while (words[0]?.startsWith("-")) {
+-    const option = words.shift();
+-    if (option === "-C") {
+-      const directory = words.shift();
+-      if (directory === undefined) return denied("git -C 缺少目录。");
+-      cwd = path.resolve(cwd, directory || ".");
+-    } else if (option === "--no-pager") continue;
+-    else if (["--version", "--help"].includes(option) && words.length === 0) return { blocked: false };
+-    else return denied(`暂不支持 Git 全局选项 ${option}；请使用直接的 git -C <仓库> commit。`);
+-  }
+-  const subcommand = words.shift();
+-  if (!subcommand || NON_COMMIT_COMMANDS.has(subcommand)) return { blocked: false };
+-  if (subcommand !== "commit") return denied(`无法确定 git ${subcommand} 是否产生提交；别名及 merge/rebase/cherry-pick/revert/am/stash 等入口不自动放行。请使用可检查的显式暂存与 git commit 流程。`);
+-  for (let i = 0; i < words.length; i += 1) {
+-    const option = words[i];
+-    if (FLAG_OPTIONS.has(option) || option === "-S" || option.startsWith("--gpg-sign=")) continue;
+-    if (VALUE_OPTIONS.has(option)) {
+-      if (words[++i] === undefined) return denied(`${option} 缺少参数。`);
+-      continue;
+-    }
+-    if ([...VALUE_OPTIONS].some((name) => name.startsWith("--") && option.startsWith(`${name}=`))) continue;
+-    if (/^-[mF].+/.test(option)) continue;
+-    return denied(`暂不支持提交参数 ${option}。请先单独暂存，再使用 git commit -m 或 -F；不要使用 -a、路径、交互暂存、--no-verify 或组合命令。`);
+-  }
+-  try {
+-    const locations = inspectIndex(cwd, executable);
+-    if (locations.length) {
+-      const visible = locations.slice(0, 30).map((item) => `${JSON.stringify(item.path)}:${item.line}`).join("\n");
+-      return denied(`提交内容包含 code-review 审查块（含残缺标记）：\n${visible}${locations.length > 30 ? "\n其余位置已省略。" : ""}`);
+-    }
+-    return { blocked: false };
+-  } catch (error) { return denied(`无法完成提交内容检查：${error.message}`); }
+-}
+-
+-function main() {
+-  try {
+-    const payload = JSON.parse(fs.readFileSync(0, "utf8"));
+-    if (payload.event !== "before-tool" || payload.tool?.category !== "shell") return;
+-    const input = payload.native?.payload?.tool_input;
+-    const workspace = path.resolve(payload.workspace?.root || process.cwd(), input?.workdir || input?.cwd || ".");
+-    const result = checkCommand(payload.tool.command, workspace);
+-    if (result.blocked) { process.stderr.write(`${result.reason}\n`); process.exitCode = 2; }
+-  } catch (error) {
+-    process.stderr.write(`审查块检查失败，提交未获放行：${error.message}\n`);
+-    process.exitCode = 2;
+-  }
+-}
+-
+-if (require.main === module) main();
+-module.exports = { checkCommand, inspectIndex, literalWords, MARKER_PATTERN };
++if (require.main === module) guard.main();
++module.exports = guard;
+--- before/README.md
++++ after/README.md
+@@ -33,7 +33,8 @@
+ | agent-hooks | `/csl:agent-hooks` | `/agent-hooks` | 管理跨会话持久指令，以及按生命周期事件注入 Prompt 或执行脚本的 Hook。 |
+ | agent-sops | `/csl:agent-sops` | `/agent-sops` | List, create, inspect, and apply SOP documents. |
+ | brainstorming | `/csl:brainstorming` | `/brainstorming` | Explore design and requirements before implementation. |
+-| code-inline-review | `/csl:code-inline-review` | `/code-inline-review` | 明确调用时生成按逻辑组关联的源码审查说明；内置 CSL hook 检查提交内容，阻止说明块进入 Agent 提交。 |
++| code-inline-review | `/csl:code-inline-review` | `/code-inline-review` | 明确调用时生成、维护或清理按逻辑组关联的源码审查说明。 |
++| commit-guard | `/csl:commit-guard` | `/commit-guard` | 维护提交内容保护与阻断诊断；内置 CSL hook 阻止审查说明进入 Agent 提交，暂不检查推送历史。 |
+ | figma-describe | `/csl:figma-describe` | `/figma-describe` | Parse Figma URL into structured UI tree description. |
+ | align | `/csl:align` | `/align` | Re-explain prior messages with evidence and confidence levels. |
+ | tldr | `/csl:tldr` | `/tldr` | 按请求中的明确标准生成简略概览或带来源的深入会话报告。 |
+--- before/docs/rfcs/agent-hooks.md
++++ after/docs/rfcs/agent-hooks.md
+@@ -702,7 +702,7 @@
+ - Prompt 注入不能覆盖更高优先级指令，也不能递归触发。
+ - Agent Hooks 继承宿主 sandbox，不宣称提供额外隔离。
+ - `before-tool` 的 commit 检查保护 Agent 可见的工具调用；外部终端、GUI 和任意隐藏脚本不在覆盖范围，跨客户端强制约束仍需 Git `pre-commit` 或 CI。
+-- 内置 `inner:code-inline-review-commit` 检查完整暂存文件中的保留审查标记；干净暂存内容允许工作区保留说明。检查失败或不支持的提交形式阻断，不自动清理或暂存。
++- `commit-guard` 拥有提交内容检查逻辑与保护规范；`inner:code-inline-review-commit` 保留原 ID 和受控薄入口，以兼容已有启用／禁用设置。该规则检查完整暂存文件中的保留审查标记；干净暂存内容允许工作区保留说明。检查失败或不支持的提交形式阻断，不自动清理或暂存。`code-inline-review` 只负责说明的编写、维护与清理；当前不检查推送历史。
+ - Runtime error 默认尽力执行；`on-error: block` 的 before-tool 检查采用失败阻断。此机制不提供沙箱隔离，也不消除检查与提交之间的外部并发变更。
+ 
+ ## 22. 示例
+--- before/.claude-plugin/plugin.json
++++ after/.claude-plugin/plugin.json
+@@ -68,6 +68,7 @@
+     "./skills/meta/agent-sops",
+     "./skills/dev/brainstorming",
+     "./skills/dev/code-inline-review",
++    "./skills/dev/commit-guard",
+     "./skills/domain/figma-describe",
+     "./skills/dev/align",
+     "./skills/dev/tldr"
+--- before/skills/dev/commit-guard/SKILL.md
++++ after/skills/dev/commit-guard/SKILL.md
+@@ -0,0 +1,30 @@
++---
++name: commit-guard
++description: 检查 Agent Git 提交的内容保护、解释提交被阻断的原因或诊断内置提交 hook 时使用。当前规则阻止临时 code-review 说明进入提交；不负责生成或清理说明，不提供推送扫描、密钥扫描或通用代码质量审查。
++---
++
++# Commit Guard
++
++## 职责
++
++负责提交内容检查和阻断诊断。内置保护默认开启，独立于是否调用本 Skill；调用本 Skill 不会自动提交、暂存、清理文件或改变 hook 设置。
++
++当前只实现保留 `@code-review` 注释标记检查。规则、支持的提交形式与覆盖限制见 [提交保护边界](references/commit-guard.md)，唯一检查实现为 [check-commit.js](scripts/check-commit.js)。不要把检查通过解释为代码正确、没有密钥或可安全推送。
++
++## 检查与诊断
++
++1. 明确实际仓库、宿主、待执行命令和暂存内容；工作区仍有说明但 index 干净时允许提交。
++2. 使用 `agent-hooks` 查看 `inner:code-inline-review-commit` 在实际宿主的配置、校验和生效状态。配置有效不等于当前会话已加载或实际执行。
++3. 内置 hook 对 shell 调用执行检查，命中标记或无法完成检查时阻断，并报告位置或失败原因。检查器只读，不执行收到的提交命令。
++4. 提交被阻断时解释原因和可行修复。用户授权清理说明后，交由 `code-inline-review` 的清理流程处理；本 Skill 不复制其注释格式、生成或删除算法。
++5. 修复后重新检查实际 index。暂存与提交使用独立、顺序调用，保留部分暂存选择，不通过包装命令、禁用 hook 或其他入口绕过。
++
++## 内置 hook 接入
++
++`inner:code-inline-review-commit` 是本 Skill 的审查标记规则，保留历史 ID 以兼容已有启用／禁用设置。注册文件及薄脚本入口仍位于 `agent-hooks` 的受控目录，后者只调用本 Skill 的检查器；`agent-hooks` 负责发现、调度和宿主适配，不拥有内容规则。
++
++保护仅覆盖 CSL Hooks 可见的 Agent shell 调用；不安装原生 Git hooks，不检查外部终端／GUI，也不扫描 `git push` 的提交历史。不要以本 Skill 的名称承诺尚未实现的防泄露或远端强制保护。
++
++## 验证
++
++维护时核对 index 与工作区分离、完整文件扫描、失败阻断及 hook 调用链。路由边界见 [触发案例](evals/trigger_cases.json)；修改包后运行 skill-quality，不把静态门禁当作实际宿主已生效的证据。
+--- before/skills/dev/commit-guard/references/commit-guard.md
++++ after/skills/dev/commit-guard/references/commit-guard.md
+@@ -0,0 +1,34 @@
++# 提交保护边界
++
++`commit-guard` 拥有检查逻辑与规则语义。内置规则 `inner:code-inline-review-commit` 使用 Agent Hooks 的 `before-tool` / `run-script`，默认启用；保留历史 ID 以尊重已有启用／禁用设置。注册文件及薄入口留在 agent-hooks 的受控目录，薄入口调用本 Skill 的 `scripts/check-commit.js`。它不依赖用户本次是否调用任何 Skill。通过 agent-hooks CLI 查看实际宿主状态，升级 Pi 扩展后需 `/reload` 或重新启动会话。
++
++## 判定
++
++对直接 shell Git 调用做受限参数解析，不执行传入的 shell 文本来探测效果。支持 `git -C <目录> commit -m <消息>`、`-F`、`--amend --no-edit` 等显式暂存提交流程。检查实际仓库整个 index 的文件内容，包含未改动行；从子目录调用也扫描整个仓库。匹配以原生注释前缀开头的保留字 `@code-review`，残缺 begin/end 同样拒绝。
++
++| 情况 | 行为 |
++| --- | --- |
++| index 干净，工作区或未跟踪文件有说明 | 放行，不清理工作区 |
++| index 有说明标记 | 阻断并报告绝对文件路径与行号 |
++| 冲突、Git 失败、超时或检查输出超限 | 阻断并说明检查未完成 |
++| `commit -a`、路径提交、交互暂存、组合命令、环境变量前缀、条件语句、重定向、变量展开 | 阻断，要求拆分为显式暂存和独立提交；here-document 结束后的可见 Git 调用也检查 |
++| Git 别名或其他可能产生提交的子命令 | 不自动放行，要求使用可检查流程 |
++| 直接 `git status`、`git diff` 等已知非提交命令 | 放行 |
++
++hook 不修改工作区、index、Git 配置或 hooksPath，不自行清理或重新暂存。需要修复时请用户修复或明确授权 Agent 清理；不能重试另一种包装命令绕过。
++
++## 宿主与故障
++
++Pi 的 `tool_call` 将检查器返回的阻断结果交给宿主；Codex/Claude Code 使用原生 PreToolUse 返回码。`on-error: block` 使本规则的脚本启动失败、超时和非零退出也阻断调用；其他普通脚本保留原有尽力执行语义。
++
++规则源或启用配置损坏必须修复后再声称保护生效。宿主只加载旧版本、禁用规则、未安装插件或不经过对应工具调用时，没有保护保证。外部控制面可用 `csl-agent-kit agent-hooks disable inner:code-inline-review-commit` 恢复故障；Agent 不得为了完成提交自行禁用规则。
++
++## 明确限制
++
++这是 Agent 的提交前检查，不是 Git 服务端或操作系统沙箱。它不检查外部终端/GUI，也无法证明任意 Python/Node/shell 脚本、远端工具、隐藏 shell 函数或扩展私自执行的 Git 调用。Agent 必须直接调用 Git，不得通过这些方式绕过。
++
++检查与 Git 真正创建提交之间不持有跨进程锁。不得把暂存/修改 index 与提交并行调用，也不要在检查期间由其他进程改变 index；原生 Git hooks 也可能改变内容。第一版不声称消除了这类竞态或对恶意绕过提供绝对保证。需要跨客户端和并发写入的强制保障时，应另行设计 Git/CI 层检查。
++
++标记是保留协议，注释行中的同形文本也会被阻断。文档和夹具请使用占位符或拆分字符串，不为某种文件扩展名设置绕过。说明的生成、维护和授权清理由 `code-inline-review` 负责，本检查器不承担这些职责。
++
++当前不检查 `git push` 的待推送提交历史，不实现密钥扫描或通用代码质量规则。提交检查通过不能作为这些内容已通过检查的证据。
+--- before/skills/dev/commit-guard/scripts/check-commit.js
++++ after/skills/dev/commit-guard/scripts/check-commit.js
+@@ -0,0 +1,254 @@
++#!/usr/bin/env node
++"use strict";
++
++const fs = require("node:fs");
++const path = require("node:path");
++const { spawnSync } = require("node:child_process");
++
++// Reserved comment-line prefix. Match damaged delimiters too, not just pairs.
++const MARKER_PATTERN = "^[[:blank:]]*(//|#|--|;|/\\*|<!--|\\*)[[:blank:]]*@code-review";
++const NON_COMMIT_COMMANDS = new Set([
++  "add", "status", "diff", "log", "show", "restore", "reset", "checkout", "switch",
++  "branch", "tag", "fetch", "push", "remote", "config", "rev-parse", "rev-list",
++  "ls-files", "ls-tree", "cat-file", "grep", "check-ignore", "check-attr", "blame",
++  "reflog", "init", "clone", "rm", "mv", "clean", "worktree", "help",
++]);
++const SHELL_WRAPPERS = new Set(["env", "command", "sudo", "exec", "time", "nice", "nohup", "timeout", "setsid", "xargs", "builtin", "sh", "bash", "zsh", "eval"]);
++const VALUE_OPTIONS = new Set(["-m", "--message", "-F", "--file", "--author", "--date", "--cleanup", "--trailer"]);
++const FLAG_OPTIONS = new Set(["--amend", "--no-edit", "--allow-empty", "--allow-empty-message", "-s", "--signoff", "-v", "--verbose", "-q", "--quiet", "--no-gpg-sign", "--reset-author"]);
++
++function denied(reason) {
++  return { blocked: true, reason: `${reason}\n未执行提交，也未修改工作区或暂存区。请修复后重试；如需 Agent 清理，请明确要求清理审查说明。` };
++}
++
++// Deliberately accepts a literal argv, not a general-purpose shell program.
++function literalWords(command) {
++  const words = [];
++  let value = "";
++  let quote = null;
++  let started = false;
++  for (let i = 0; i < command.length; i += 1) {
++    const ch = command[i];
++    if (quote === "'") {
++      if (ch === "'") quote = null;
++      else value += ch;
++      continue;
++    }
++    if (ch === "$" || ch === "`") throw new Error("不支持变量展开或命令替换");
++    if (ch === "\\") {
++      const next = command[++i];
++      if (next === undefined || next === "\n" || next === "\r") throw new Error("不支持续行或残缺转义");
++      if (quote === '"' && !['"', "\\", "$", "`"].includes(next)) value += "\\";
++      value += next;
++      started = true;
++      continue;
++    }
++    if (quote === '"') {
++      if (ch === '"') quote = null;
++      else value += ch;
++      continue;
++    }
++    if (ch === "'" || ch === '"') { quote = ch; started = true; continue; }
++    if (/[\n\r;&|<>(){}*?\[\]~#]/.test(ch)) throw new Error("请将提交独立执行，不使用组合命令、重定向或 shell 展开");
++    if (/[ \t]/.test(ch)) {
++      if (started) words.push(value);
++      value = "";
++      started = false;
++    } else { value += ch; started = true; }
++  }
++  if (quote) throw new Error("引号未闭合");
++  if (started) words.push(value);
++  return words;
++}
++
++function gitResult(executable, cwd, args) {
++  const result = spawnSync(executable, args, {
++    cwd, encoding: "utf8", timeout: 8000, maxBuffer: 4 * 1024 * 1024,
++    env: { ...process.env, GIT_OPTIONAL_LOCKS: "0", LC_ALL: "C" },
++    shell: false,
++  });
++  if (result.error || result.signal) throw new Error("Git 检查超时、输出超限或无法启动");
++  return result;
++}
++
++function requireSuccess(result, operation) {
++  if (result.status !== 0) throw new Error(`${operation}失败：${String(result.stderr || "Git 返回错误").trim().slice(0, 500)}`);
++  return result.stdout;
++}
++
++function inspectIndex(cwd, executable = "git") {
++  const root = requireSuccess(gitResult(executable, cwd, ["rev-parse", "--show-toplevel"]), "定位仓库").trim();
++  const unmerged = requireSuccess(gitResult(executable, root, ["ls-files", "--unmerged", "-z"]), "读取冲突状态");
++  if (unmerged) throw new Error("暂存区仍有冲突，无法确定提交内容");
++  // git grep reads the complete staged blobs, including unchanged lines; -a
++  // prevents binary attributes/content from silently hiding a marker.
++  const result = gitResult(executable, root, ["grep", "--cached", "--full-name", "--no-color", "-n", "-z", "-a", "-E", "-o", "-e", MARKER_PATTERN]);
++  if (result.status === 1) return [];
++  requireSuccess(result, "扫描暂存内容");
++  const locations = [];
++  const record = /([^\0]+)\0([0-9]+)\0[^\n]*(?:\n|$)/g;
++  for (const match of result.stdout.matchAll(record)) {
++    locations.push({ path: path.join(root, match[1]), line: Number(match[2]) });
++  }
++  if (locations.length === 0) throw new Error("Git 扫描发现标记，但无法解析位置");
++  return locations;
++}
++
++function visibleGitInvocation(command, depth = 0) {
++  if (depth > 32) return /\bgit\b/.test(command);
++  // Locate executable positions without executing shell syntax. Here-document
++  // data is skipped through its delimiter; scanning resumes after the body.
++  let token = "";
++  let quote = null;
++  let executable = true;
++  let wrapper = false;
++  let found = false;
++  let redirectTarget = false;
++  const documents = [];
++  const flush = () => {
++    if (!token) return;
++    if (redirectTarget) { redirectTarget = false; token = ""; return; }
++    const name = path.basename(token);
++    if ((executable || wrapper) && name === "git" || wrapper && /\bgit\b/.test(token)) found = true;
++    if (["if", "then", "else", "elif", "do", "while", "until", "coproc", "!"].includes(token) || /^[A-Za-z_][A-Za-z_0-9]*=/.test(token) && executable) {
++      executable = true;
++    } else {
++      if (executable) wrapper = SHELL_WRAPPERS.has(name);
++      executable = false;
++    }
++    token = "";
++  };
++  for (let i = 0; i < command.length; i += 1) {
++    const ch = command[i];
++    if (quote) {
++      if (quote === '"' && (ch === "`" || ch === "$" && command[i + 1] === "(")) {
++        if (visibleGitInvocation(command.slice(i + (ch === "`" ? 1 : 2)), depth + 1)) return true;
++      }
++      if (ch === quote) quote = null;
++      else if (ch === "\\" && quote === '"') {
++        const next = command[++i];
++        if (next !== "\n") token += next || "";
++      }
++      else token += ch;
++      continue;
++    }
++    if (ch === "`" || ch === "$" && command[i + 1] === "(") {
++      if (visibleGitInvocation(command.slice(i + (ch === "`" ? 1 : 2)), depth + 1)) return true;
++    }
++    if (ch === "$" && ["'", '"'].includes(command[i + 1])) continue;
++    if (ch === "'" || ch === '"') { quote = ch; continue; }
++    if (ch === "\\") {
++      const next = command[++i];
++      if (next !== "\n") token += next || "";
++      continue;
++    }
++    if (ch === "#" && !token) {
++      while (i + 1 < command.length && command[i + 1] !== "\n") i += 1;
++      continue;
++    }
++    if (ch === "<" && command[i + 1] === "<") {
++      flush();
++      const match = command.slice(i).match(/^<<(-?)[ \t]*(?:'([^'\n]+)'|"([^"\n]+)"|([A-Za-z_][A-Za-z_0-9]*))(?=[ \t\r\n;&|]|$)/);
++      if (!match) return found || /\bgit\b/.test(command);
++      documents.push({ delimiter: match[2] || match[3] || match[4], tabs: match[1] === "-", expands: Boolean(match[4]) });
++      i += match[0].length - 1;
++      continue;
++    }
++    if (ch === ">" || ch === "<") {
++      if (executable && /^\d+$/.test(token)) token = "";
++      flush();
++      redirectTarget = true;
++      while ([">", "<", "&", "|"].includes(command[i + 1])) i += 1;
++      continue;
++    }
++    if (/[;&|\n(){}]/.test(ch)) { flush(); executable = true; wrapper = false; redirectTarget = false; }
++    else if (/[ \t\r]/.test(ch)) flush();
++    else token += ch;
++    if (ch === "\n" && documents.length) {
++      for (const document of documents) {
++        let closed = false;
++        while (i + 1 < command.length) {
++          const start = i + 1;
++          const newline = command.indexOf("\n", start);
++          const end = newline === -1 ? command.length : newline;
++          const line = command.slice(start, end);
++          i = end;
++          if ((document.tabs ? line.replace(/^\t+/, "") : line) === document.delimiter) { closed = true; break; }
++          if (document.expands && /[$`]/.test(line) && /\bgit\b/.test(line)) found = true;
++        }
++        if (!closed) return found || /\bgit\b/.test(command);
++      }
++      documents.length = 0;
++    }
++  }
++  flush();
++  return found;
++}
++
++function checkCommand(command, workspace) {
++  if (typeof command !== "string") return denied("缺少 shell 命令，无法检查提交入口。");
++  // This guard covers visible Git invocations, not arbitrary scripts that hide
++  // Git calls. Do not evaluate shell text to discover what it would execute.
++  let words;
++  try { words = literalWords(command); } catch (error) {
++    return visibleGitInvocation(command) ? denied(error.message) : { blocked: false };
++  }
++  const executable = words.shift();
++  if (!executable || path.basename(executable) !== "git") {
++    const name = path.basename(executable || "");
++    const wrapper = SHELL_WRAPPERS.has(name);
++    return visibleGitInvocation(command) || wrapper && words.some((word) => /\bgit\b/.test(word))
++      ? denied("Git 操作必须直接调用 git；请拆分 env、shell 包装和提交，使用 git -C 指定仓库。")
++      : { blocked: false };
++  }
++  let cwd = workspace;
++  while (words[0]?.startsWith("-")) {
++    const option = words.shift();
++    if (option === "-C") {
++      const directory = words.shift();
++      if (directory === undefined) return denied("git -C 缺少目录。");
++      cwd = path.resolve(cwd, directory || ".");
++    } else if (option === "--no-pager") continue;
++    else if (["--version", "--help"].includes(option) && words.length === 0) return { blocked: false };
++    else return denied(`暂不支持 Git 全局选项 ${option}；请使用直接的 git -C <仓库> commit。`);
++  }
++  const subcommand = words.shift();
++  if (!subcommand || NON_COMMIT_COMMANDS.has(subcommand)) return { blocked: false };
++  if (subcommand !== "commit") return denied(`无法确定 git ${subcommand} 是否产生提交；别名及 merge/rebase/cherry-pick/revert/am/stash 等入口不自动放行。请使用可检查的显式暂存与 git commit 流程。`);
++  for (let i = 0; i < words.length; i += 1) {
++    const option = words[i];
++    if (FLAG_OPTIONS.has(option) || option === "-S" || option.startsWith("--gpg-sign=")) continue;
++    if (VALUE_OPTIONS.has(option)) {
++      if (words[++i] === undefined) return denied(`${option} 缺少参数。`);
++      continue;
++    }
++    if ([...VALUE_OPTIONS].some((name) => name.startsWith("--") && option.startsWith(`${name}=`))) continue;
++    if (/^-[mF].+/.test(option)) continue;
++    return denied(`暂不支持提交参数 ${option}。请先单独暂存，再使用 git commit -m 或 -F；不要使用 -a、路径、交互暂存、--no-verify 或组合命令。`);
++  }
++  try {
++    const locations = inspectIndex(cwd, executable);
++    if (locations.length) {
++      const visible = locations.slice(0, 30).map((item) => `${JSON.stringify(item.path)}:${item.line}`).join("\n");
++      return denied(`提交内容包含 code-review 审查块（含残缺标记）：\n${visible}${locations.length > 30 ? "\n其余位置已省略。" : ""}`);
++    }
++    return { blocked: false };
++  } catch (error) { return denied(`无法完成提交内容检查：${error.message}`); }
++}
++
++function main() {
++  try {
++    const payload = JSON.parse(fs.readFileSync(0, "utf8"));
++    if (payload.event !== "before-tool" || payload.tool?.category !== "shell") return;
++    const input = payload.native?.payload?.tool_input;
++    const workspace = path.resolve(payload.workspace?.root || process.cwd(), input?.workdir || input?.cwd || ".");
++    const result = checkCommand(payload.tool.command, workspace);
++    if (result.blocked) { process.stderr.write(`${result.reason}\n`); process.exitCode = 2; }
++  } catch (error) {
++    process.stderr.write(`审查块检查失败，提交未获放行：${error.message}\n`);
++    process.exitCode = 2;
++  }
++}
++
++if (require.main === module) main();
++module.exports = { main, checkCommand, inspectIndex, literalWords, MARKER_PATTERN };
+--- before/skills/dev/commit-guard/evals/trigger_cases.json
++++ after/skills/dev/commit-guard/evals/trigger_cases.json
+@@ -0,0 +1,15 @@
++{
++  "should_trigger": [
++    "Use commit-guard to inspect why my commit was blocked.",
++    "检查暂存内容是否含禁止提交的 code-review 说明。",
++    "诊断内置提交保护 hook，确认当前宿主能否阻断提交。",
++    "解释为什么工作区有审查说明，但提交保护检查仍然通过。"
++  ],
++  "should_not_trigger": [
++    "用 code-inline-review 给本次改动添加源码内临时审查说明。",
++    "清理本次改动中的临时审查说明，保留普通注释。",
++    "Review this diff for bugs.",
++    "设计 Git pre-push 的历史扫描能力。",
++    "扫描仓库中的密钥和凭证。"
++  ]
++}

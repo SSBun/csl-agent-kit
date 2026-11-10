@@ -1,7 +1,0 @@
-{
-  "schema": "csl-memory-store/v1",
-  "version": 2,
-  "completed": "2026-11-03T03:07:46.168Z",
-  "migration": ".migrations/auto-v2-4bbb55e08ac7e29c69d5017f25b00a8a2e14e51097a270337278533ffd04d929",
-  "originalSourcesPreserved": true
-}

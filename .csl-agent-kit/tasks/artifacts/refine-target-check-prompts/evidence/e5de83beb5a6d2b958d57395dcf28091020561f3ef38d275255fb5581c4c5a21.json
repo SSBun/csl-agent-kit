@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "refine-target-check-prompts",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "ad8649d2cd01e9c36252f3f71deb4104da765c5efbffd132150ff5d0b246d18c",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "2fc98f5eb2edb80813635d2d0dae12b1876507aa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "2fc98f5eb2edb80813635d2d0dae12b1876507aa",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

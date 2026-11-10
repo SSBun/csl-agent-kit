@@ -1,0 +1,96 @@
+{
+  "records": [
+    {
+      "id": "execute-fifty-post-x-batch-33",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-fifty-post-x-batch-33.md",
+      "sha256": "82209388c264d6239b6978237e7e9f16da83000ea35a35ef78b91439a6c4266e",
+      "error": "invalid Review Assessment fingerprint"
+    },
+    {
+      "id": "execute-next-x-bluev-batch-4-20261030",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-next-x-bluev-batch-4-20261030.md",
+      "sha256": "dd9dbf489114defaafdccd201f53f38343cf0ab8f36332741abe913ff5b04146",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-ten-post-x-batch-14",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-ten-post-x-batch-14.md",
+      "sha256": "b4c9143ab58b813090387dac490dd12e4d117d879f81d366e95789f4a3311e98",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-ten-post-x-batch-16",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-ten-post-x-batch-16.md",
+      "sha256": "8f4586d9a141fe9714f1f382795fa963520aa668027292b2d1aa1dd612d6d13b",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-x-bluev-hot-engagement-next-batch-20261029",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-x-bluev-hot-engagement-next-batch-20261029.md",
+      "sha256": "c249db261093d87a007d9f8edaffc0e2597c32d8ec7d4cd4c9ec1bdc31e25780",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-x-target-engagement-20-b29-20261104",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-x-target-engagement-20-b29-20261104.md",
+      "sha256": "5435742e6a6188827bb704819f702782c063509bb1a4d99200c752332946f4c9",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-x-target-engagement-20-b42-20261105",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-x-target-engagement-20-b42-20261105.md",
+      "sha256": "7bada1b69db4e00bb8e0dc9431bb6e1296b2a80b37c95a4f93031f8b458b5812",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-x-target-engagement-20-b44-20261105",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-x-target-engagement-20-b44-20261105.md",
+      "sha256": "f384ca451df10d3d17c77163e546e6d38d57d6fb586fb1b934b87fed82324b94",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-x-target-engagement-20-b45-20261105",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-x-target-engagement-20-b45-20261105.md",
+      "sha256": "1f823cfc7e8c46980d959cd0329b822357944cc9fab50e4af6d21704b9a45986",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "execute-x-target-engagement-20-b46-20261105",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/execute-x-target-engagement-20-b46-20261105.md",
+      "sha256": "55d0f234ba945087878e0bdf6d2ffa0c13ac9812e32d3553f4ba9654bd54acff",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "preprocess-x-target-engagement-30-b28-20261103",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/preprocess-x-target-engagement-30-b28-20261103.md",
+      "sha256": "2f1ce1d9d0d73968779ed792d5505cb1024fe2e05d51bb24282f970ab24a3df6",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "retrieve-x-target-engagement-20-b43-20261105",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/retrieve-x-target-engagement-20-b43-20261105.md",
+      "sha256": "32668ec00c9ccd6ba0cdae6ab1c6322c22b58e7fffb050be7fdd443279bf33c7",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "retrieve-x-target-engagement-20-b61-20261107",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/retrieve-x-target-engagement-20-b61-20261107.md",
+      "sha256": "c0d5d8412fd5de8319ac42e6d86ff2a824102c7b4cddc2bb6393f5231228cb0a",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "retrieve-x-target-engagement-30-b62-20261107",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/retrieve-x-target-engagement-30-b62-20261107.md",
+      "sha256": "c74ebc9cca334cca75f117a055448717250035491c8d1cfa36eed766b64f6ec0",
+      "error": "canonical task is missing a standard status line"
+    },
+    {
+      "id": "retry-x-follow-unverified-b43-20261105",
+      "file": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/tasks/tasks/retry-x-follow-unverified-b43-20261105.md",
+      "sha256": "4785cd9fd67bc243c2e1206899217d3675f73c755d6976234ce31668d464a39f",
+      "error": "canonical task is missing a standard status line"
+    }
+  ],
+  "removedIndex": 6,
+  "preserved": "所有artifacts、历史证据与既有迁移备份保持；用户仅删除指定任务记录及索引条目。"
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "memory-special-files-first",
+  "files": [
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "sha256": "507e4243f899c1ea4474ce5e9325e3fa597bb763d981b03f016e6525ca8dc7ec",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "1c49bad44b7f148feabe4d39e3b3d5dfe0afcdaa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "1c49bad44b7f148feabe4d39e3b3d5dfe0afcdaa",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

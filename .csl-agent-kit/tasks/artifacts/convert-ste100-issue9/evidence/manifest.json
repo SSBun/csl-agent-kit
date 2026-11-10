@@ -1,0 +1,57 @@
+[
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100_ISSUE9.pdf",
+    "bytes": 3316157,
+    "sha256": "d1f4ea9e7cd6e46b47aa9057209f99e78c0e9cfc4e27a5b07895b05c1a166431"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/转换校验说明.md",
+    "bytes": 4420,
+    "sha256": "1a64e3ee47458deb3a790a26b993baac8567490fefa1b3082ff07a487d3f2a70"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/ASD-STE100-Issue9-Part1-Writing-Rules.md",
+    "bytes": 160502,
+    "sha256": "016a3850ab4b651343a2bfc97352cf18a426db4ef59836ee1ce58a95eaf71902"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/ASD-STE100-Issue9-Dictionary.json",
+    "bytes": 6199537,
+    "sha256": "53d146c7052f7b334169b6c898162aafd470d20d420b71b2f35402a5996625fa"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/assets/page-73-image-170.jpeg",
+    "bytes": 36040,
+    "sha256": "fab13a5f77844d981e43f28074eb82f800485bf6c38029c10b6e43299f66fabf"
+  },
+  {
+    "path": "/Users/caishilin/Downloads/ASD-STE100-Issue9/assets/page-43-image-105.jpeg",
+    "bytes": 32748,
+    "sha256": "d821c5acae9970f03f04d127e0067b92d4b481f24f3837487b0d56449d742949"
+  },
+  {
+    "path": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/convert-ste100-issue9/evidence/convert_ste100.py",
+    "bytes": 13131,
+    "sha256": "c502e6b14f960571fb85ac987993adae62b410fa2f70ab5765cd1a2a686aa2be"
+  },
+  {
+    "path": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/convert-ste100-issue9/evidence/verify_ste100.py",
+    "bytes": 7771,
+    "sha256": "1055262675b4ace05689ccdbd68dad29dc14a1697149e84ce3661e619b262fb3"
+  },
+  {
+    "path": "/Users/caishilin/Desktop/personal/skills/.csl-agent-kit/tasks/artifacts/convert-ste100-issue9/evidence/verification.json",
+    "bytes": 1501,
+    "sha256": "1a4d8b9d0598ca2318389da021fe8a7a9bdbffc3367d2dfe4f1d6625076226dc"
+  },
+  {
+    "path": "/tmp/ste100-layout.txt",
+    "bytes": 1170813,
+    "sha256": "a216fe199bd6e9c77fc743dfe6dc081ee5f245adcb115ed6ca1aa45ee50fa3f5"
+  },
+  {
+    "path": "/tmp/ste100-bbox.html",
+    "bytes": 15651266,
+    "sha256": "42b75bc8345f8cadb17a706c9ce40aab7bc1ff8918c96485c550083d99b5df10"
+  }
+]

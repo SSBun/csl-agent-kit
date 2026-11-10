@@ -1,0 +1,14 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "local-markdown-link-style-three",
+  "files": [
+    {
+      "path": "skills/meta/agent-sops/sops/asd-ste100-writing.md",
+      "sha256": "bffd2fcb10dd7643170ebfc22103d7164c9654f98b49783156e40d1b6463a126",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

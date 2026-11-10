@@ -1,48 +1,43 @@
-# Memory 系统迁移
+# Memory系统转换
 
-本流程适用于明确调用 agent-migration 的默认组合执行，以及用户限定的旧知识导入、新 Memory 格式升级或中断恢复；普通宿主首次使用自动升级仍由既有机制负责，不需再调度本 Skill。读写契约以[agent-memory](../../agent-memory/SKILL.md)为准，目录边界以[统一存储规范](storage.md)为准。
+本流程协调显式Memory格式转换，读写契约见[agent-memory](../../agent-memory/SKILL.md)，数据边界见[统一存储规范](storage.md)。当前格式只保存有效知识，不保留历史、来源审计、墓碑、审查或恢复副本。与通用目录搬迁不同，本分支不创建备份或持久转换日志。
 
 ## 核对最新目标结构
 
-每次迁移前先完成此只读检查，早于备份准备、格式升级、目录发布或索引重建等写入：
+1. 阅读当前可用的[Memory说明](../../../../docs/memory.md)与agent-memory契约，再核对实际安装CLI及 `bin/memory/store.js`、`recall-index.js`、`migration.js`、`cli.js` 的能力。文档较新不等于已安装运行时支持，不自动安装替代程序。
+2. 当前目标是store/service协议5，知识文件只含title、summary与带日期case，文件名作为身份；两级均为entries加单个当前index，索引schema为 `csl-memory-index/v4`。版本标识在当前索引，不另存 `.format.json`。
+3. 核对实际scope、全部当前正文、旧格式、历史目录、待决写入与锁。旧库可读但默认不可写，不因宿主启动或后台维护自动升级。project请求不授权user及其他项目。
+4. 检查写入方兼容性。先在空闲边界停止共享旧服务，不中断其他工作区批次；Pi旧模块需完整重启，不支持跨版本热更新。不用旧writer继续写新格式。
 
-1. **读取当前规范**：重新读取当前可用版本的 `agent-memory/SKILL.md`，以及该版本提供的 Memory 结构文档；本仓库为[docs/memory.md](../../../../docs/memory.md)。若安装包未附带文档，使用同版本的正式发布文档或可核实实现，不套用其他版本的说明。用户指定目标版本时以该版本为核对对象；目标资料不可获取或相互矛盾时，报告证据缺口，停止依赖该结构的迁移。不要把本地旧安装的帮助信息称为已核实的最新上游版本。
-2. **核实运行时能力**：定位实际使用的 CLI、安装包版本和源码，核对帮助及升级实现。本仓库的依据是 `bin/memory/store.js` 的目标 store/entry 定义、`bin/memory/recall-index.js` 的索引定义、`bin/memory/migration.js` 的支持来源和升级分支，以及 `bin/memory/cli.js` 的命令语义。对照当前规范与实际安装版本；文档较新而已安装读写方不支持时，报告所需升级条件，不自动下载安装或伪造格式标记。
-3. **核对结构而非只看版本号**：记录当前与目标的 store、entry、index schema，project/user 根及各自索引布局、权威正文、备份／审计／pending、当前写锁与旧 writer 隔离标记，以及宿主／后台服务协议。`.format.json`、`index.md` 和升级 dry-run 是实际状态证据，不单独证明全部兼容。历史备份目录名不能决定目标版本。
-4. **确定适用验收项**：当前实现中，project 使用 `entries/` 加单个 `index.md`，不要求 cards/topics/manifest；user 使用权威 `entries/`、薄总览及当前代 cards/topics/manifest。每次按前两步核实的目标结构选择验收项，不将一类scope的布局套到另一类，也不把旧版本表述永久固定为“最新”。
-5. **记录并复查**：在 owning Task 中简要记录规范来源／版本、实际安装版本、当前→目标结构差异、支持的升级路径及阻塞项，不复制记忆正文。写入前若规范、安装版本或源状态变化，重新预检；无有效升级路径、未知未来格式或读写方不兼容时停止相关分支，不降级、不覆盖。
+## 预览与执行
 
-## 预检与范围
+使用已安装的 `csl-agent-kit memory`；未安装时，只有确认本包 `../../../../bin/csl-agent-kit.js` 存在，才使用 `node <绝对路径> memory`。
 
-1. 识别实际工作区、用户根、授权 scope、安装版本、旧源、已有条目、格式标记、迁移登记、备份、pending、锁及服务状态。project 请求不自动授权 user 升级；不要调用同时升级两级的内部便捷函数代替明确 scope。
-2. 核实安装的 CLI 帮助及实现。已安装时使用 `csl-agent-kit memory`；否则仅在本包相对路径 `../../../../bin/csl-agent-kit.js` 实际存在时使用 `node <该文件绝对路径> memory`。下列以 `<memory-cli>` 表示该前缀；不安装替代工具，不编造总迁移命令。
-3. 只读命令先行，`<workspace>` 必须换成已确认的绝对路径：
-   ```text
-   <memory-cli> service status
-   <memory-cli> paths --scope project --workspace <workspace>
-   <memory-cli> upgrade --dry-run --scope project --workspace <workspace>
-   <memory-cli> index-status --scope project --workspace <workspace>
-   ```
-   user 范围单独授权后才将 scope 改为 user；service 操作是共享的，不接受 scope/workspace 参数。
-4. 从已核实的升级器读取支持的旧来源、输入版本、转换方式及目标版本；区分旧知识导入、既有条目schema转换和只重建派生索引。不要沿用旧版参考中的 store v3 或卡片布局作为固定目标。对未识别源、未知版本或权属不明内容停止对应项，不移动文件来欺骗探测、不手改格式标记。
-5. `dry-run` 的 `current` 只表示已达该升级器的目标版本；已有库不会因此重新扫描导入所有残留旧资料，也不代表索引健康。核对残留旧源与已有导入审计；未覆盖内容保留并报告，不能删源或声称全量知识迁移完成。预览可能包含原文及待写内容，任务只记录必要计数、摘要身份、路径和处置，不复制完整预览或凭据。
+```text
+<memory-cli> service status
+<memory-cli> paths --scope project --workspace <工作区>
+<memory-cli> upgrade --dry-run --scope project --workspace <工作区>
+<memory-cli> index-status --scope project --workspace <工作区>
+```
 
-## 授权执行
+dry-run只读，报告当前条目身份、hash、动作、计数和旧路径，不复制正文。明确列出永久删除旧历史、来源元数据、墓碑、提案及恢复资料的后果，按已有用户授权与当前Task模式执行；已明确接受本分支范围时不重复确认。只读请求止于预览。
 
-- 展示导入/转换范围、保留的旧源、备份、已存在内容、冲突及服务影响，按 Task 当前确认模式执行。默认组合调用已经包含本分支执行授权，满足必要门禁及预检后继续升级，不在 dry-run 后另问是否执行 Memory 迁移；显式只读检查或用户要求暂停时在此止步。
-- 升级前确认相关写入方安全，依赖正式锁与旧 writer 隔离，必要时协调活动维护。旧协议共享服务仍存活时，按实际授权及安全边界，在确认空闲后使用正式服务控制操作；不能仅因升级 project 就擅自停止其他工作区批次。无安全条件则暂停该项。
-- 对已批准 scope 执行 `<memory-cli> upgrade --scope project --workspace <workspace>`。不直接覆盖 entries、索引、迁移登记或审计；不清除永久旧 writer 隔离锁，不开启双写。该步骤本身不需要 LLM，不额外触发语义增强、实验或模型重试。
-- 复用升级器自己的备份和登记，位置以已核实实现及实际返回为准。现存 `.migrations/format-v3/`、`.upgrade-v3.json` 等名称可能只是历史转换恢复材料，不表示目标store仍为v3。协调任务引用这些材料及 `.history/` 审计，不另建平行提交日志，不为统一目录布局擅自重定位。
-- 分开处理“格式升级”与“索引损坏”：版本已是 current 但存在 pending 或派生异常时，进入诊断/恢复，不反复 upgrade 假装修复。`reindex` 是写操作，可能隐含首次升级，只有检查来源及取得相应执行授权后才使用。
+执行前对全部有效正文校验日期与预算；未知格式、未决旧pending、活跃或无法识别的旧锁、知识无法完整转换时停止受影响项。不要为了通过验证丢弃条件、编造日期或截断知识。
 
-## 恢复与验收
+```text
+<memory-cli> upgrade --scope project --workspace <工作区>
+```
 
-- 失败后先核对实际正文、审计、备份和登记。pending 可能意味着正文已经提交；来源漂移、备份冲突、未知锁所有者或恢复冲突须停止，不能盲目重放。仅在确认适用后使用正式 `recover`；不要删除锁强行继续。转换续做使用已核实的升级器幂等路径，不手工回退 revision。
-- 比较升级前后知识与来源：已有 chip 保持身份、正文和墓碑；旧来源导入检查每个单元的覆盖及保留备份。完整文件 hash 会因 schema/revision 改变，不能要求转换前后整文件 hash 相等，也不能仅看文件数就宣称保真。
-- 对照预检确定的目标结构验收实际版本、迁移登记、审计、pending清除、正文hash与引用；只重建索引的分支还需核对条目revision/hash未被改写。project当前应由单个index完整列出有效条目，不能因没有cards/topics/manifest判为失败；user应核对当前代manifest/card集合覆盖全部有效条目，包括无主题的基础卡片，薄总览、主题与卡片可用普通文件工具读取。目标契约变化时按重新核实的scope布局验收；`index-status` 的 published/header-only 不是完整内容或语义召回证明。
-- 格式迁移成功不以模型增强为前提；需要恢复后台维护时另查服务、队列及已有真实结果。若有失败批次，先检查部分效果，再按授权显式恢复；不自动重试模型调用，不用清除失败记录冒充恢复。
-- 升级前已加载旧 Memory 模块的 Pi，须由用户完整退出并重启进程再恢复会话，仅 `/reload` 或后台重启不足。不要替用户关闭前台，不把新 Node 进程观察说成 Pi UI 完整端到端验证。
-- 保留原始旧源、备份与审计；Memory 升级不自动删除旧 Context/Lessons。后续清理或搬迁需单独纳入已批准范围，先检查来源路径与不可变证据依赖；无法合法修复路径绑定时保留原位并报告限制。
-- 对已完成显式Task根迁移的项目，Memory旧来源定位复用带摘要绑定的Task迁移清单：`memory legacy-sources --scope project --workspace <workspace>`返回原逻辑path、当前相对resolvedPath和hash，不写入。迁移后的文件必须与清单beforeHash/afterHash完全相同；缺失、漂移或冲突拒绝读取，冻结中不回退旧根。现有sources、导入ID及历史审计保持原逻辑路径，不改写；查证时使用该命令定位后再读原文。用户级来源不应用项目Task映射。
+旧段落正文可通过 `upgrade --input <JSON文件>` 提交人工整理的put数组，沿用`id/operation/expected.hash/content`结构。只允许当前scope中现存有效旧条目的替代内容；全部hash、正文日期和预算在首个写入前校验，未知ID、重复ID、非put、过期hash及当前格式条目均拒绝。调用方必须先核实日期和语义；升级器不自动补日期或合并。`--input`不与`--dry-run`组合，输入不得保留为历史或恢复资料。编程调用对应`migration.upgrade({...scopeOptions, prepared: puts})`，可仅在内存中构造输入。
 
-交付分开说明：已导入、已转换、原本 current、未覆盖旧源、保留材料、索引状态、后台状态和待用户激活步骤。部分成功不算全部完成，不把基础索引覆盖等同于语义召回改善。
+升级器仅清理指定Memory根的已知旧内部路径，不导入旧Context/Lessons，也不扫描Task附件或外部目录。若用户另行要求清理Memory历史副本，先列出具体Memory所属文件；不扩大删除无关Task记录、用户级或其他项目数据，不迁移被删除的副本。不得另存前后正文、来源清单、审查内容或恢复镜像。验证证据仅保留必要计数、当前内容身份和局限。
+
+## 失败与验收
+
+转换不是多文件事务，没有回滚或restore。失败后读取实际当前文件，确认哪些条目仍是旧格式；不根据未返回响应判断未写入，不用旧备份覆盖新知识。符合原授权时可重新检查并继续转换；未知冲突停止。当前索引过期使用reindex，从现存正文重建，无需历史恢复。
+
+验收核对：当前有效文件数量与title/summary/case语义保持；旧字段已消失；当前索引完整覆盖并与文件hash相符；指定旧目录已删除；未授权作用域文件hash未变。不要为了比较保存旧正文副本。预算、语法或结构通过不等于语义无遗漏，实际比较与未执行检查分别报告。
+
+运行时验证核对协议5及已移除历史/恢复接口，旧只读scope仍可检索。需要恢复后台时确认剩余队列与模型调用边界，不为验收额外调用模型。已加载旧模块的Pi由用户完整退出并重启，不替用户关闭前台；后台重启不等于前台已激活。
+
+交付说明已转换范围、永久删除范围、保留的未授权数据、当前索引与服务状态及必要激活步骤。没有恢复材料属于目标行为，不能套用通用目录迁移的“备份可恢复”验收项。

@@ -1,0 +1,31 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "rename-project-csl-agent-kit",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/rename-project-csl-agent-kit/evidence/rename-checks.json",
+      "sha256": "5e81ced7622f88d2398cc85798db2c2b44398bfe40a971fb60a4e338626b12f1",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "README.md",
+      "sha256": "49ce9a36e5ccd2d77bc8f50da3534f736cb3054a3d4cdd61e71b248e3c1165af",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "38b7b9bd4da375bdb3fa30d1f776bf2a9006007b"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "38b7b9bd4da375bdb3fa30d1f776bf2a9006007b",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const store = require("./store.js");
+const recent = require("./recent.js");
 const queue = require("./queue.js");
 
 function scan({ workspace, scope = "all" } = {}) {
@@ -24,9 +25,9 @@ function scan({ workspace, scope = "all" } = {}) {
     }
     const items = [];
     for (const entry of store.entries(root)) {
-      if (!entry.exists || entry.deleted) continue;
-      const { id, title, summary, type, revision, updated } = entry;
-      items.push({ id, title, summary, type, revision, updated, ...selected });
+      if (!entry.exists) continue;
+      const { id, title, summary, hash, updated } = entry;
+      items.push({ id, title, summary, hash, updated, ...selected, special: recent.kind(entry, selected.scope) });
     }
     items.sort((a, b) => b.updated.localeCompare(a.updated) || a.id.localeCompare(b.id));
     groups.push({ ...selected, total: items.length, items });

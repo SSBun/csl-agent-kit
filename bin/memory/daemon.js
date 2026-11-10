@@ -9,8 +9,8 @@ const store = require("./store.js");
 const agent = require("./agent.js");
 const models = require("./model-config.js");
 const maintenance = require("./maintenance.js");
+const migration = require("./migration.js");
 const endpoints = require("./endpoint.js");
-const commits = require("./commits.js");
 const library = require("./library.js");
 const webAssets = require("./web-assets.js");
 
@@ -35,18 +35,8 @@ async function body(request) {
 
 function optionsFrom(params) {
   const scope = params.scope || "project";
-  if (scope === "project" && (typeof params.workspace !== "string" || !params.workspace.trim())) store.fail("WORKSPACE_REQUIRED", "Project audit operations require an explicit workspace");
+  if (scope === "project" && (typeof params.workspace !== "string" || !params.workspace.trim())) store.fail("WORKSPACE_REQUIRED", "Project memory operations require an explicit workspace");
   return { scope, workspace: params.workspace || process.cwd() };
-}
-
-function proposals(options) {
-  const root = store.rootFor(options);
-  let names;
-  try { names = fs.readdirSync(store.safePath(root, ".proposals")); } catch (error) { if (error.code === "ENOENT") return []; throw error; }
-  return names.filter((name) => name.endsWith(".json")).map((name) => {
-    const proposal = store.proposalDetail(options, name.slice(0, -5));
-    return { id: proposal.id, status: proposal.status, created: proposal.created, reason: proposal.mutation.reason, entryId: proposal.mutation.id };
-  }).sort((a, b) => b.created.localeCompare(a.created));
 }
 
 async function main() {
@@ -92,7 +82,7 @@ async function main() {
           let model;
           try { model = await models.resolveModel(); } catch (error) { model = { error: error.message }; }
           const jobs = queue.all();
-          return json(response, 200, { running: true, protocol: store.STORE_VERSION, historyPolicy: "commits-only/v1", pid: process.pid, started, model, agents: agent.states(), active: [...active.keys()], schedulerError, maintenanceErrors, counts: jobs.reduce((counts, { state }) => { counts[state.status] = (counts[state.status] || 0) + 1; return counts; }, {}) });
+          return json(response, 200, { running: true, protocol: store.STORE_VERSION, storagePolicy: "current-files-only/v1", pid: process.pid, started, model, agents: agent.states(), active: [...active.keys()], schedulerError, maintenanceErrors, counts: jobs.reduce((counts, { state }) => { counts[state.status] = (counts[state.status] || 0) + 1; return counts; }, {}) });
         }
         if (url.pathname === "/api/index") return json(response, 200, store.inspectIndex(optionsFrom(params)));
         if (url.pathname === "/api/agent-live") {
@@ -102,24 +92,12 @@ async function main() {
         if (url.pathname === "/api/agents") return json(response, 200, { items: agent.states() });
         if (url.pathname === "/api/memory-groups") return json(response, 200, library.groups(params));
         if (url.pathname === "/api/memories") return json(response, 200, library.list({ ...params, offset: Number(params.offset || 0), limit: Number(params.limit || 20) }));
-        if (url.pathname === "/api/commits") return json(response, 200, commits.list({ ...params, offset: Number(params.offset || 0), limit: Number(params.limit || 20) }));
         if (url.pathname === "/api/jobs") return json(response, 200, queue.list({ ...params, newestFirst: params.newestFirst === "true", offset: Number(params.offset || 0), limit: Number(params.limit || 20) }));
         if (url.pathname === "/api/job") return json(response, 200, queue.get(params.id));
-        if (url.pathname === "/api/history") return json(response, 200, store.history(optionsFrom(params), { offset: Number(params.offset || 0), limit: Number(params.limit || 20) }));
-        if (url.pathname === "/api/change") return json(response, 200, store.changeDetail(optionsFrom(params), params.id));
         if (url.pathname === "/api/read") return json(response, 200, store.get(store.rootFor(optionsFrom(params)), params.id));
-        if (url.pathname === "/api/proposals") {
-          const items = proposals(optionsFrom(params));
-          const offset = Number(params.offset || 0), limit = Number(params.limit || 20);
-          if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > 100) store.fail("INVALID_PAGE", "Invalid proposal page");
-          return json(response, 200, { total: items.length, offset, limit, nextOffset: offset + limit < items.length ? offset + limit : null, items: items.slice(offset, offset + limit) });
-        }
-        if (url.pathname === "/api/proposal") return json(response, 200, store.proposalDetail(optionsFrom(params), params.id));
       }
       if (request.method === "POST") {
         const input = await body(request);
-        if (url.pathname === "/api/decision") return json(response, 200, store.decide(optionsFrom(input), input.id, input.digest, input.decision));
-        if (url.pathname === "/api/restore") return json(response, 200, store.restore(optionsFrom(input), input.id, input.expected, input.reason));
         if (url.pathname === "/api/retry") return json(response, 200, queue.retry(input.id));
         if (url.pathname === "/api/stop") {
           if (input.ifIdle && active.size) store.fail("SERVICE_BUSY", "Active maintenance batches must finish before an idle restart");
@@ -141,6 +119,12 @@ async function main() {
         queue.update(event.id, { status: "exhausted" });
         return;
       }
+      const writable = migration.ensureWorkspace(event.workspace).filter(scope => scope.writable).map(scope => scope.scope);
+      if (!writable.length || event.maintenance && !writable.includes(event.maintenance.scope)) {
+        const error = "UPGRADE_REQUIRED: 此作用域保持只读，显式升级后再处理；未消耗模型尝试次数。";
+        if (state.status !== "queued" || state.error !== error) queue.update(event.id, { status: "queued", error });
+        return;
+      }
       const effects = state.effects || [];
       queue.update(event.id, { status: "running", attempts: state.attempts + 1, error: null, started: new Date().toISOString() });
       const controller = active.get(event.workspace);
@@ -148,7 +132,7 @@ async function main() {
         signal: controller.signal,
         recordModel: (model) => queue.update(event.id, { model }),
         recordEffect: (effect) => {
-          if (!effects.some((previous) => previous.scope === effect.scope && (effect.transaction ? previous.transaction === effect.transaction : previous.proposal === effect.proposal))) effects.push(effect);
+          if (!effects.some(previous => previous.scope === effect.scope && previous.id === effect.id && previous.operation === effect.operation && previous.hash === effect.hash)) effects.push(effect);
           queue.update(event.id, { effects });
         },
       });
@@ -178,12 +162,20 @@ async function main() {
         maintenanceErrors = maintenance.schedule(queue.all());
       }
       const seen = new Set();
+      const dispatchErrors = [];
       // Conversation work takes precedence; each workspace runs independently.
       // Exhausted records remain inspectable without blocking later work.
       const ordered = [...items.filter(item => !item.event.maintenance), ...items.filter(item => item.event.maintenance)];
       for (const item of ordered) {
         const workspace = item.event.workspace;
         if (["completed", "exhausted"].includes(item.state.status)) continue;
+        // A read-only or inaccessible scope must not reserve another workspace's turn.
+        try {
+          if (item.event.maintenance && !migration.ensure({ scope: item.event.maintenance.scope, workspace }).writable) continue;
+        } catch (error) {
+          dispatchErrors.push(`${workspace}: ${error.code || "MEMORY_ERROR"}: ${error.message}`);
+          continue;
+        }
         if (seen.has(workspace)) continue;
         seen.add(workspace);
         // Retry once within the same workspace; other workspaces run in parallel.
@@ -191,7 +183,7 @@ async function main() {
         active.set(workspace, new AbortController());
         void processJob(item);
       }
-      schedulerError = null;
+      schedulerError = dispatchErrors.length ? dispatchErrors.join("\n") : null;
     } catch (error) { schedulerError = error.message; }
   }
 
