@@ -1,0 +1,57 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "commit-guard-only-commit",
+  "files": [
+    {
+      "path": "skills/dev/commit-guard/SKILL.md",
+      "sha256": "c54f2c98e7d15d3beacc8ec333deefbfe551638ba8d240eec23c599df12402bf",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "769197d632456af4dab8d1f8340cecf430d8fa0a"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "769197d632456af4dab8d1f8340cecf430d8fa0a",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/references/commit-guard.md",
+      "sha256": "3b0e865e1ed300e1c3a3e056d4a90b3cca72c1d694a77921f631b62b60981f69",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d533395512aa25354b569fdb2435e612c5cad2fa"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d533395512aa25354b569fdb2435e612c5cad2fa",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/commit-guard/scripts/check-commit.js",
+      "sha256": "26b7eb67669835547ea8dfdf3f0a8c0642058f907ca2401c77ca59181be0500c",
+      "git": {
+        "head": {
+          "mode": "100755",
+          "object": "f2dab23a6b0ae179a4b09f3848775e2c435bdf32"
+        },
+        "index": [
+          {
+            "mode": "100755",
+            "object": "f2dab23a6b0ae179a4b09f3848775e2c435bdf32",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

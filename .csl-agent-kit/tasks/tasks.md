@@ -1,5 +1,7 @@
 # 任务索引
 
+- [仅检查 git commit，放行其他 Git 子命令](tasks/commit-guard-only-commit.md) — Completed (2026-11-11 14:48)
+
 - [豁免测试证据审查标记并提交全部改动](tasks/exempt-test-evidence-commit.md) — Completed (2026-11-10 19:36)
 
 - [将当前项目重命名为 csl-agent-kit](tasks/rename-project-csl-agent-kit.md) — Completed (2026-11-10 18:08)

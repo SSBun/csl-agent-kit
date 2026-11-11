@@ -7,12 +7,6 @@ const { spawnSync } = require("node:child_process");
 
 // Match the reserved substring anywhere, even without comment syntax or a valid pair.
 const MARKER_PATTERN = "@code" + "-review";
-const NON_COMMIT_COMMANDS = new Set([
-  "add", "status", "diff", "log", "show", "restore", "reset", "checkout", "switch",
-  "branch", "tag", "fetch", "push", "remote", "config", "rev-parse", "rev-list",
-  "ls-files", "ls-tree", "cat-file", "grep", "check-ignore", "check-attr", "blame",
-  "reflog", "init", "clone", "rm", "mv", "clean", "worktree", "help",
-]);
 const SHELL_WRAPPERS = new Set(["env", "command", "sudo", "exec", "time", "nice", "nohup", "timeout", "setsid", "xargs", "builtin", "sh", "bash", "zsh", "eval"]);
 const VALUE_OPTIONS = new Set(["-m", "--message", "-F", "--file", "--author", "--date", "--cleanup", "--trailer"]);
 const FLAG_OPTIONS = new Set(["--amend", "--no-edit", "--allow-empty", "--allow-empty-message", "-s", "--signoff", "-v", "--verbose", "-q", "--quiet", "--no-gpg-sign", "--reset-author"]);
@@ -94,8 +88,68 @@ function inspectIndex(cwd, executable = "git") {
   return locations;
 }
 
+// Read a here-document word using quote removal only, without expansion.
+function hereDocument(command, start) {
+  let i = start + 2;
+  const tabs = command[i] === "-";
+  if (tabs) i += 1;
+  while (/[ \t]/.test(command[i] || "") && i < command.length) i += 1;
+  let delimiter = "";
+  let quote = null;
+  let quoted = false;
+  let ansi = false;
+  let ansiStart = 0;
+  let started = false;
+  for (; i < command.length; i += 1) {
+    const ch = command[i];
+    if (!quote && /[\s;&|<>()]/.test(ch)) break;
+    started = true;
+    if (!quote && ch === "$" && ["'", '"'].includes(command[i + 1])) {
+      quote = command[++i];
+      ansi = quote === "'";
+      ansiStart = delimiter.length;
+      quoted = true;
+    } else if (ansi && ch === "\\") {
+      const rest = command.slice(i + 1);
+      const simple = { a: "\x07", b: "\b", e: "\x1b", E: "\x1b", f: "\f", n: "\n", r: "\r", t: "\t", v: "\x0b", "\\": "\\", "'": "'", '"': '"', "?": "?" };
+      const numeric = rest.match(/^(?:x([0-9a-fA-F]{1,2})|u([0-9a-fA-F]{1,4})|U([0-9a-fA-F]{1,8})|([0-7]{1,3}))/);
+      if (numeric) {
+        const value = Number.parseInt(numeric[1] || numeric[2] || numeric[3] || numeric[4], numeric[4] ? 8 : 16);
+        if (value > 0x10ffff) return null;
+        delimiter += String.fromCodePoint(numeric[1] || numeric[4] ? value & 255 : value);
+        i += numeric[0].length;
+      } else if (rest[0] === "c" && rest.length > 1) {
+        let control = rest[1];
+        i += 2;
+        if (control === "\\" && command[i + 1] === "\\") i += 1;
+        delimiter += String.fromCharCode(control === "?" ? 127 : control.toUpperCase().charCodeAt(0) & 31);
+      } else if (Object.hasOwn(simple, rest[0])) { delimiter += simple[rest[0]]; i += 1; }
+      else if (rest[0] === "\n") i += 1;
+      else { delimiter += "\\"; }
+    } else if (ch === "\\" && quote !== "'") {
+      const next = command[++i];
+      if (next === undefined) return null;
+      if (next === "\n") continue;
+      quoted = true;
+      if (quote === '"' && !['"', "\\", "$", "`"].includes(next)) delimiter += "\\";
+      delimiter += next;
+    } else if (ch === quote) {
+      if (ansi) {
+        const nul = delimiter.indexOf("\0", ansiStart);
+        if (nul !== -1) delimiter = delimiter.slice(0, nul);
+      }
+      quote = null;
+      ansi = false;
+    }
+    else if (!quote && (ch === "'" || ch === '"')) { quote = ch; quoted = true; }
+    else delimiter += ch;
+  }
+  if (!started || quote) return null;
+  return { delimiter, tabs, expands: !quoted, end: i };
+}
+
 function visibleGitInvocation(command, depth = 0) {
-  if (depth > 32) return /\bgit\b/.test(command);
+  if (depth > 32) return /\bgit\b[^\n;&|]*\bcommit\b/.test(command);
   // Locate executable positions without executing shell syntax. Here-document
   // data is skipped through its delimiter; scanning resumes after the body.
   let token = "";
@@ -104,12 +158,24 @@ function visibleGitInvocation(command, depth = 0) {
   let wrapper = false;
   let found = false;
   let redirectTarget = false;
+  let gitArguments = false;
+  let tokenStarted = false;
+  let optionValue = false;
   const documents = [];
   const flush = () => {
-    if (!token) return;
+    if (!tokenStarted) return;
+    tokenStarted = false;
     if (redirectTarget) { redirectTarget = false; token = ""; return; }
     const name = path.basename(token);
-    if ((executable || wrapper) && name === "git" || wrapper && /\bgit\b/.test(token)) found = true;
+    if (gitArguments) {
+      if (optionValue) optionValue = false;
+      else if (["-C", "-c", "--git-dir", "--work-tree", "--namespace", "--config-env", "--super-prefix"].includes(token)) optionValue = true;
+      else if (!token.startsWith("-")) {
+        if (token === "commit") found = true;
+        gitArguments = false;
+      }
+    } else if ((executable || wrapper) && name === "git") gitArguments = true;
+    else if (wrapper && /\bgit\b/.test(token) && visibleGitInvocation(token, depth + 1)) found = true;
     if (["if", "then", "else", "elif", "do", "while", "until", "coproc", "!"].includes(token) || /^[A-Za-z_][A-Za-z_0-9]*=/.test(token) && executable) {
       executable = true;
     } else {
@@ -136,23 +202,24 @@ function visibleGitInvocation(command, depth = 0) {
       if (visibleGitInvocation(command.slice(i + (ch === "`" ? 1 : 2)), depth + 1)) return true;
     }
     if (ch === "$" && ["'", '"'].includes(command[i + 1])) continue;
-    if (ch === "'" || ch === '"') { quote = ch; continue; }
+    if (ch === "'" || ch === '"') { quote = ch; tokenStarted = true; continue; }
     if (ch === "\\") {
       const next = command[++i];
-      if (next !== "\n") token += next || "";
+      if (next !== "\n") { token += next || ""; tokenStarted = true; }
       continue;
     }
     if (ch === "#" && !token) {
       while (i + 1 < command.length && command[i + 1] !== "\n") i += 1;
       continue;
     }
-    if (ch === "<" && command[i + 1] === "<") {
+    if (ch === "<" && command[i + 1] === "<" && command[i + 2] !== "<") {
       flush();
-      const match = command.slice(i).match(/^<<(-?)[ \t]*(?:'([^'\n]+)'|"([^"\n]+)"|([A-Za-z_][A-Za-z_0-9]*))(?=[ \t\r\n;&|]|$)/);
-      if (!match) return found || /\bgit\b/.test(command);
-      documents.push({ delimiter: match[2] || match[3] || match[4], tabs: match[1] === "-", expands: Boolean(match[4]) });
-      i += match[0].length - 1;
-      continue;
+      const document = hereDocument(command, i);
+      if (document) {
+        documents.push(document);
+        i = document.end - 1;
+        continue;
+      }
     }
     if (ch === ">" || ch === "<") {
       if (executable && /^\d+$/.test(token)) token = "";
@@ -161,9 +228,9 @@ function visibleGitInvocation(command, depth = 0) {
       while ([">", "<", "&", "|"].includes(command[i + 1])) i += 1;
       continue;
     }
-    if (/[;&|\n(){}]/.test(ch)) { flush(); executable = true; wrapper = false; redirectTarget = false; }
+    if (/[;&|\n(){}]/.test(ch)) { flush(); executable = true; wrapper = false; redirectTarget = false; gitArguments = false; optionValue = false; }
     else if (/[ \t\r]/.test(ch)) flush();
-    else token += ch;
+    else { token += ch; tokenStarted = true; }
     if (ch === "\n" && documents.length) {
       for (const document of documents) {
         let closed = false;
@@ -174,9 +241,9 @@ function visibleGitInvocation(command, depth = 0) {
           const line = command.slice(start, end);
           i = end;
           if ((document.tabs ? line.replace(/^\t+/, "") : line) === document.delimiter) { closed = true; break; }
-          if (document.expands && /[$`]/.test(line) && /\bgit\b/.test(line)) found = true;
+          if (document.expands && /[$`]/.test(line) && visibleGitInvocation(line, depth + 1)) found = true;
         }
-        if (!closed) return found || /\bgit\b/.test(command);
+        if (!closed) return found;
       }
       documents.length = 0;
     }
@@ -187,6 +254,8 @@ function visibleGitInvocation(command, depth = 0) {
 
 function checkCommand(command, workspace) {
   if (typeof command !== "string") return denied("缺少 shell 命令，无法检查提交入口。");
+  // Only visible git commit invocations belong to this guard.
+  if (!visibleGitInvocation(command)) return { blocked: false };
   // This guard covers visible Git invocations, not arbitrary scripts that hide
   // Git calls. Do not evaluate shell text to discover what it would execute.
   let words;
@@ -213,8 +282,7 @@ function checkCommand(command, workspace) {
     else return denied(`暂不支持 Git 全局选项 ${option}；请使用直接的 git -C <仓库> commit。`);
   }
   const subcommand = words.shift();
-  if (!subcommand || NON_COMMIT_COMMANDS.has(subcommand)) return { blocked: false };
-  if (subcommand !== "commit") return denied(`无法确定 git ${subcommand} 是否产生提交；别名及 merge/rebase/cherry-pick/revert/am/stash 等入口不自动放行。请使用可检查的显式暂存与 git commit 流程。`);
+  if (subcommand !== "commit") return { blocked: false };
   for (let i = 0; i < words.length; i += 1) {
     const option = words[i];
     if (FLAG_OPTIONS.has(option) || option === "-S" || option.startsWith("--gpg-sign=")) continue;
