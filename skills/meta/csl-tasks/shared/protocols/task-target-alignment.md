@@ -34,6 +34,12 @@ Switching to `confirm` restores its graded confirmation procedure at the next re
 
 Task Target gives the user a second look at the Agent's understanding of their goal before substantive work that requires a checkpoint. Exploration-only work uses the exemption below. Outside that exemption, authorization self-checking establishes that a candidate is faithful enough to present; it does not establish that the user has checked that understanding. A detailed request, complete authorization coverage, or high model confidence never substitutes for the first non-trivial goal checkpoint.
 
+## Lifecycle-Only Stop Requests
+
+An explicit request only to pause or cancel an existing task is bounded lifecycle maintenance, not a request to start or continue its implementation. Resolve and read the original record, focus it without changing its current state, and follow `task-state-transitions.md` plus the owning Skill's stop procedure. Saving actual progress, the recovery checkpoint and necessary lifecycle records, then calling pause/cancel/sync/check/show, is the narrow bootstrap exception for that request. Do not create a replacement task, resume/reopen merely to stop it, perform new deliverable work, or form a new implementation Target. No generic Target checkpoint is required for this stop-only branch; it never supplies `accepted_target` evidence or clears an outstanding alignment, safety or authorization hold.
+
+A request to implement or fix something and then pause is still implementation work and retains its normal gate. A request merely to stop model execution or suspend a process does not by itself authorize task-state changes. Completed, Blocked, already Paused and Cancelled records follow their existing-state branches; a pause request never authorizes reopening a completed task.
+
 ## Exploration Without a Target Checkpoint
 
 In `confirm`, continue authorized exploration without displaying a confirmation block or waiting for a generic Target acceptance. Exploration means the current deliverable is information: source inspection, search, research, analysis, comparison, recommendations, or a plan for later implementation. Canonical task/plan records and an explicitly requested findings report are permitted outputs; product code, operational configuration, and other implementation deliverables remain read-only. Classify the authorized work and candidate commitments, not a task title or the word “explore”. A request to investigate **and fix** is an implementation request and retains its normal checkpoint.
@@ -157,7 +163,7 @@ L2 asks the user to recheck their goal as understood by the Agent; L4 requests a
 Resolve mode first: if `solo`, use the SOLO execution path and do not enter the grading procedure below. Otherwise apply this order:
 
 1. Determine whether the current session is the interaction owner or has a complete delegation packet. A delegated child applies the delegated gate and returns without entering L0-L4.
-2. If no task workflow applies, choose L0.
+2. If the request is solely lifecycle stopping, apply the narrow Lifecycle-Only Stop Requests branch and return without forming an implementation Target. Otherwise, if no task workflow applies, choose L0.
 3. If no honest Target can be formed because of user-owned ambiguity, choose L3.
 4. Form the minimum candidate Target from the Authorization Ledger.
 5. Run both material-equivalence counterfactuals across every commitment atom.
@@ -217,7 +223,7 @@ For `show_checkpoint` and `continue_unchanged`, `authorizedClauses` contains `{ 
 
 `continue_unchanged` requires complete authorized-clause coverage with `accepted_target` evidence for every clause, empty `confirmationItems`, and null `checkpointReason`. The owner must verify that the cited proposal and later acceptance cover the whole unchanged Target in the current scope; source-role or index checks alone cannot prove this. Other actions use empty lists and null reason.
 
-Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 在内部决策包中标明适用的安全规则或动作边界；这不要求向用户展示规则来源或阻断原因。
+Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 在内部决策包中标明适用的安全规则或动作边界；不得向用户附带内部规则来源或阻断原因。
 
 `continue_exploration` has null `level`, empty goal-check lists and null `checkpointReason`. It describes an authorized investigation, never accepted-target reuse or execution permission; an optional progress statement is not a displayed confirmation action.
 
@@ -254,8 +260,8 @@ Apply this presentation whenever the protocol calls for displaying a Task Target
 
 - 常规目标确认只输出完整目标和一句简短确认问题，然后结束本轮。不要复述目标、解释为何需要确认，或补充等待提示。
 - 不附带内部流程说明，包括确认依据、规则来源、协议原文、Skill 路径、L 级别、action/reason code、模式和任务记账信息。正文、脚注、括号、引用及结尾补充均遵守此限制；例如不得追加“此次确认依据 task 技能引用的目标对齐规则……”。
-- 只有影响用户决定的具体事实需要说明，例如范围新增、缺少权限或必要输入、配置错误、无法恢复此前确认或实际审批拒绝。直接说明事实及所需决定，不把内部触发原因逐项翻译成提示。安全确认可暂停执行并直接请求确认，无需附带阻断原因或规则来源；保留动作、对象和后果等决定所需信息。
-- 用户明确询问规则来源、模式或流程时，直接回答所问内容。更高优先级明确要求披露时，仅给出必需信息；这两种情况均不扩展为例行流程说明。
+- 只有影响用户决定的具体事实需要说明，例如范围新增、缺少权限或必要输入、配置错误、无法恢复此前确认或实际审批拒绝。直接说明事实及所需决定，不把内部触发原因逐项翻译成提示。安全确认可暂停执行并直接请求确认，不附带内部阻断原因或规则来源；保留动作、对象和后果等决定所需信息。
+- 不主动解释目标确认原因，不附带内部阻断原因、规则来源、协议原文或 Skill 路径。只有用户明确询问目标确认原因或相关依据时，才直接回答所问内容；该回答不扩展为后续确认的例行说明。
 - 发送前检查目标正文之外的内容：删除不帮助用户判断目标、范围或真实阻断的流程提示。不得因此隐瞒真实阻断或跳过必要确认。
 
 ### L2 Checkpoint
@@ -325,7 +331,7 @@ Compute safety independently from L0-L4:
 - `S0 NONE`: no separate governing safety or permission gate applies.
 - `S1 REQUIRED`: publication, payment, destructive action, credentials, permissions, privacy data, deployment, or another external side effect is governed by a separate workflow.
 
-L2 或 L4 的目标接受不解除 S1。SOLO 路径跳过范围内框架或 SOP 的确认性暂停，包括名为 Safety Confirmation 的步骤；实质保障、宿主限制和更高优先级门禁仍然保留。在 `confirm` 模式下，到达实际动作边界时，主会话暂停依赖确认的执行，单独展示本地化的 `**Safety Confirmation**`：说明动作、受影响对象和后果，并提出一句简短确认问题。不要求附带阻断原因、规则名称或来源；更高优先级明确要求披露时，遵循“用户可见文案边界”的最少披露要求。等待明确确认后才能继续该动作；确认不替代必要权限、输入或其他实质保障。委派子 Agent 到达此边界时返回主会话，不直接展示确认。不要把安全批准附在 L2 或 L4 的确认问题后；安全确认也不接受一个实质不同的目标。
+L2 或 L4 的目标接受不解除 S1。SOLO 路径跳过范围内框架或 SOP 的确认性暂停，包括名为 Safety Confirmation 的步骤；实质保障、宿主限制和更高优先级门禁仍然保留。在 `confirm` 模式下，到达实际动作边界时，主会话暂停依赖确认的执行，单独展示本地化的 `**Safety Confirmation**`：说明动作、受影响对象和后果，并提出一句简短确认问题。不附带内部阻断原因、规则名称或来源。等待明确确认后才能继续该动作；确认不替代必要权限、输入或其他实质保障。委派子 Agent 到达此边界时返回主会话，不直接展示确认。不要把安全批准附在 L2 或 L4 的确认问题后；安全确认也不接受一个实质不同的目标。
 
 ## Consumer Responsibilities
 

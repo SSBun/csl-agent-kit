@@ -1,0 +1,43 @@
+[
+  {
+    "phase": "conflict",
+    "status": "retry_required",
+    "code": "CONFLICT",
+    "pending": 1,
+    "otherUpdatePreserved": true,
+    "effects": 0
+  },
+  {
+    "phase": "reconcile",
+    "pending": 0,
+    "bothUpdatesPresent": true,
+    "effects": 1
+  },
+  {
+    "phase": "locked",
+    "status": "retry_required",
+    "code": "LOCKED",
+    "pending": 1
+  },
+  {
+    "phase": "unlocked",
+    "pending": 0,
+    "index": "published"
+  },
+  {
+    "phase": "dashboard",
+    "activeAgentMetric": 3,
+    "workspaceMetric": 2,
+    "processingRows": 3,
+    "workspaceCounts": [
+      "并行Agent：2 / 10",
+      "并行Agent：1 / 10"
+    ]
+  },
+  {
+    "phase": "select-agent",
+    "request": "/api/agent-live?workspace=%2Fworkspace-a&event=a2",
+    "liveState": "Agent 2 · running · 尝试 1/2",
+    "liveEvents": "now 探针\na2"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "phase": "dispatch",
+    "workspaceA": 10,
+    "workspaceB": 3,
+    "queued": 1,
+    "uniqueDispatches": 13,
+    "totalDispatches": 13,
+    "workspaceLimit": 10
+  },
+  {
+    "phase": "busy-stop",
+    "result": {
+      "code": 400,
+      "result": {
+        "error": {
+          "code": "SERVICE_BUSY",
+          "message": "Active maintenance batches must finish before an idle restart"
+        }
+      }
+    }
+  },
+  {
+    "phase": "fill-free-slot",
+    "workspaceA": 10,
+    "eleventhDispatched": true,
+    "uniqueDispatches": 14,
+    "totalDispatches": 14
+  },
+  {
+    "phase": "shutdown",
+    "closed": true,
+    "active": 0,
+    "interrupted": 13,
+    "completed": 1
+  }
+]

@@ -1,0 +1,40 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "restrict-target-confirmation-explanations",
+  "files": [
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "bbceaf25b37a11335ff35392a02d2c760ece6c3006a8130bc1d6800ea507ecba",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "1d5e94c052fa82dac3854bddee0f5ceb924b53fb"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "1d5e94c052fa82dac3854bddee0f5ceb924b53fb",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "fa635ef0bd1f01492058bb8f035e0d1bf39776df2d0682ab339c2def0f702090",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "62e329484fb84fadfa075a340da48edac4b58c3d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "62e329484fb84fadfa075a340da48edac4b58c3d",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1229 @@
+{
+  "captured": "2026-11-12T10:30:04.020Z",
+  "originalBatchCount": 120,
+  "normalizedAliases": 8,
+  "counts": {
+    "completed": 112,
+    "exhausted": 8
+  },
+  "errors": {
+    "MODEL_TIMEOUT": 7,
+    "TOOL_FAILED": 1
+  },
+  "integrityErrors": [],
+  "registryAliasPresent": false,
+  "service": {
+    "running": true,
+    "pid": 5175,
+    "maxAgentsPerWorkspace": 10,
+    "activeBatches": 0,
+    "schedulerError": null,
+    "maintenanceErrors": [],
+    "counts": {
+      "exhausted": 8,
+      "queued": 1
+    }
+  },
+  "rows": [
+    {
+      "originalId": "007c0921ebfffdf9f8768671c206ca317859529a2e480eb3578786f064194a16",
+      "id": "007c0921ebfffdf9f8768671c206ca317859529a2e480eb3578786f064194a16",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "266824e543d5e1adb0d283dc5e3bd52d09891348f586d5cce467495f7c0c4fb7"
+    },
+    {
+      "originalId": "0152102ba8a29ae8e967c66b2b81f86413a7805e8da4f24b45e70500cc548112",
+      "id": "0152102ba8a29ae8e967c66b2b81f86413a7805e8da4f24b45e70500cc548112",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "d3bc3e688db063aa2cb4f1b9d4baf52891b2117fe3935ad6eb2599cfe66dc477"
+    },
+    {
+      "originalId": "04205f99908219039fae8143d1844500fb19d29401fee489d5845cd0243fa2d3",
+      "id": "04205f99908219039fae8143d1844500fb19d29401fee489d5845cd0243fa2d3",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "0aacbc65ac110835abeb4e88bc77b5df9a15fb528071ef1cb640ae1a3cdce107"
+    },
+    {
+      "originalId": "05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c",
+      "id": "3897ce9dc31c5b89003355dfacc6a6317fffb2b47218390ed9a10c101ec8c0b1",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "541de5f00465722089f6211f54316276b80513014f355c9f5bd173523c2722a2"
+    },
+    {
+      "originalId": "068364bc2ec9c0bb390acc178f2df2a25d8c72e64539e167ce7474a4e0fc7582",
+      "id": "068364bc2ec9c0bb390acc178f2df2a25d8c72e64539e167ce7474a4e0fc7582",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "b4adabbf3b30ace4add5c547b95c1132e6090cbc717a9717c9b46e2908b5ea67"
+    },
+    {
+      "originalId": "08227bd655e79ef4b67306f48a4f9d5917612de5a61b27b3151ebd43ba197a6a",
+      "id": "08227bd655e79ef4b67306f48a4f9d5917612de5a61b27b3151ebd43ba197a6a",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "c0731748e91cafe4d0231aad364e4bbea77eed24e5201f63e3e185b1b298e96e"
+    },
+    {
+      "originalId": "08af1ab7fb1cc47879584fb9d4f88b23ee8b0839ed0d82b6978b182351d0e53f",
+      "id": "08af1ab7fb1cc47879584fb9d4f88b23ee8b0839ed0d82b6978b182351d0e53f",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "2a2dac92419908f5bb038e8c36744c304ad6b1af85d969cce96341d5945dc665"
+    },
+    {
+      "originalId": "08d4d13504865ecd872b2a35b6fba0f14850d04b2e091e4a719c9f86a23177f7",
+      "id": "08d4d13504865ecd872b2a35b6fba0f14850d04b2e091e4a719c9f86a23177f7",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "b4cae518f7358088e202ab42754683841d1cf04dd636da01539a948515add7a6"
+    },
+    {
+      "originalId": "090e7956652352490d6596f38eb122c4309978d2d804ba42a6f6a7c648d87c0e",
+      "id": "090e7956652352490d6596f38eb122c4309978d2d804ba42a6f6a7c648d87c0e",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "9816bffa873b471b96ed251751cd8a3f4743f1321445e25ef802b489c80c9c2d"
+    },
+    {
+      "originalId": "09a47b317817586a1162eec95ddc72981e2d48868c7769a4ae36bafb4c2b70f5",
+      "id": "09a47b317817586a1162eec95ddc72981e2d48868c7769a4ae36bafb4c2b70f5",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "26b8d7b5ad340a271b778920ce28ee8594f5932cea7eb7bbd6ef0d7670a5968c"
+    },
+    {
+      "originalId": "10b64fbf1e1900ab41713f94d096fd5fa70b7211eef9d53b9fdf6eef76b9e62f",
+      "id": "10b64fbf1e1900ab41713f94d096fd5fa70b7211eef9d53b9fdf6eef76b9e62f",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "3f67da9122470ddf0d27685c223c712452ff5ed8fe48ecdd5de7e40b94f8a6f8"
+    },
+    {
+      "originalId": "1139eb15793a021f4fbbb53091a699e75daed9cb707a37a544e8ce591c11a3c2",
+      "id": "1139eb15793a021f4fbbb53091a699e75daed9cb707a37a544e8ce591c11a3c2",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "95f5ba083ebbbf16db5b2999722c9d8115dbdf04a140b0ef7699a49880c66c29"
+    },
+    {
+      "originalId": "132ca222281c21246ca91e0246d4ba59228f9fb6c85f85df11ac5691486ff93e",
+      "id": "132ca222281c21246ca91e0246d4ba59228f9fb6c85f85df11ac5691486ff93e",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "bbc9bf1450f07ce63fa8b5dfba6281e91b47e5e9ff7aff56b55876b5b5a72ff4"
+    },
+    {
+      "originalId": "18a17a4a04ee6799a38b53a4afad70ee7d97192a8e8257ae8982ead8b4cf0d4d",
+      "id": "18a17a4a04ee6799a38b53a4afad70ee7d97192a8e8257ae8982ead8b4cf0d4d",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "d5e837b22b61441b7f8a9a4671857bc57e34a9622d96b54568344ed4fc7d46e2"
+    },
+    {
+      "originalId": "1b8cce749b90b777c759fbea7c48cbca7a285e32d812858ba18c595d5412178c",
+      "id": "1b8cce749b90b777c759fbea7c48cbca7a285e32d812858ba18c595d5412178c",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "302824268a54dd083de8463d13274b4fcd367371722c6a6e6705b33ae1ceca4d"
+    },
+    {
+      "originalId": "1bcb2a94f55b9b51eded09316eee72524cbc9306c09457d6302e9b31760e5847",
+      "id": "1bcb2a94f55b9b51eded09316eee72524cbc9306c09457d6302e9b31760e5847",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "83986b00badecb078c1b9e6a3c58683cdb03fb6c968093cf66519ccc7a1f2a5e"
+    },
+    {
+      "originalId": "1cfe42685057d5e3c91c56aaf18daf9f22ebe28bef47ca81f30b9011e6bb84a6",
+      "id": "1cfe42685057d5e3c91c56aaf18daf9f22ebe28bef47ca81f30b9011e6bb84a6",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "f2368e762da202eb1d8fa2bc01d63ed3064aea7595b412c3f00e8b1a51801b46"
+    },
+    {
+      "originalId": "1f5932bb7b6fb1f078801ad9ed63373a8330bd54206214810fa80b647d81a36a",
+      "id": "1f5932bb7b6fb1f078801ad9ed63373a8330bd54206214810fa80b647d81a36a",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "ea4000ca20d6cff39543e33ebb5aeab872081a90b1b8d3419f0def9889775a36"
+    },
+    {
+      "originalId": "1fce0491fdcf570ea0ba23bde223d254a423c5522dbf3852772236d8b36752ee",
+      "id": "1fce0491fdcf570ea0ba23bde223d254a423c5522dbf3852772236d8b36752ee",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "17c618041759be258cc38a1552cce8ef55e9f89acc8e9d998063867e7edcc2f1"
+    },
+    {
+      "originalId": "22c59cbf89b3b036cdcfc5b0cf2b6459887cbfe21b932ad8720522f8c73c99fe",
+      "id": "22c59cbf89b3b036cdcfc5b0cf2b6459887cbfe21b932ad8720522f8c73c99fe",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "bfab1b0ef80f7f5fe43c40a95f9dc5c421df3cc5eaf4448db66b8e5320003e81"
+    },
+    {
+      "originalId": "239d7042aa34c15bac370f94261c456602baa3ac9d89c3f7bf5515d260261e21",
+      "id": "239d7042aa34c15bac370f94261c456602baa3ac9d89c3f7bf5515d260261e21",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "4cdce2b425accd6e8f8a643a6f483f55093e42438ea8683433c90639286fbdef"
+    },
+    {
+      "originalId": "23e937e09c6d41a62c6ade495ce919149d775fef505efe5dbb0993c251d3b585",
+      "id": "23e937e09c6d41a62c6ade495ce919149d775fef505efe5dbb0993c251d3b585",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "119e305a38261f34f50d1ed103cf9cb202673619bfb25551667f1547d8441b6b"
+    },
+    {
+      "originalId": "2492760ed1328862683b8054e9ddf73dcf0c4530878f0512b46b6c56acffbb1a",
+      "id": "2492760ed1328862683b8054e9ddf73dcf0c4530878f0512b46b6c56acffbb1a",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "c6e6ec22b3d6ec2369b5f891c143915897ddbd577232df2507265d1131058b60"
+    },
+    {
+      "originalId": "2773ebfb8d0efc5748f3b4c02a733151d78fbf48df7cfda4094a28ad6a241fc6",
+      "id": "2773ebfb8d0efc5748f3b4c02a733151d78fbf48df7cfda4094a28ad6a241fc6",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "8bef5df9a59a9c68fac1661f94c785d1198549cbc3c008196b57629d60de0a04"
+    },
+    {
+      "originalId": "292f5de79b61ff4064bfe3ad5ef7dec0e0eb929f3ee3db09253c6d76b2fdfd34",
+      "id": "292f5de79b61ff4064bfe3ad5ef7dec0e0eb929f3ee3db09253c6d76b2fdfd34",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "020bc74757b5b4fb53c6004de124dc87cfd94ccafb24247d3dda2365be93cd53"
+    },
+    {
+      "originalId": "2b4fd7e24b7f5fb71fea363a8602bf34d38f9aae1df94cd86cfd6a7006e1a3de",
+      "id": "2b4fd7e24b7f5fb71fea363a8602bf34d38f9aae1df94cd86cfd6a7006e1a3de",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 0
+    },
+    {
+      "originalId": "32022fb4371e750b1675261799fb6abff917ebcdd58b203aae1ccb21f13f8d24",
+      "id": "32022fb4371e750b1675261799fb6abff917ebcdd58b203aae1ccb21f13f8d24",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "7b9fd4e32e7d6bb9e3c9d4a58af7be5627f5ae9e87c42357831136fcc6422221"
+    },
+    {
+      "originalId": "324e0f684a3dadd093e8ce0859899e35efd1f3feccf0dd1227c7aa82cb610d17",
+      "id": "324e0f684a3dadd093e8ce0859899e35efd1f3feccf0dd1227c7aa82cb610d17",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 0
+    },
+    {
+      "originalId": "33d8dda3a0be736bd84fbcf528ec38f957430d91114b6711363375ab8b2d9667",
+      "id": "33d8dda3a0be736bd84fbcf528ec38f957430d91114b6711363375ab8b2d9667",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "6aff65e64bf06c357af71303dc0fc7d28dbff32da525f8bac9ec883a8b499ae5"
+    },
+    {
+      "originalId": "33fa0d154254671539ae831ed1d1f7e33ca1c4af3e7e4fc5cb15dd652d1980ca",
+      "id": "33fa0d154254671539ae831ed1d1f7e33ca1c4af3e7e4fc5cb15dd652d1980ca",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "9fde8a3c5676081b5930986ded4153b23cf63fe34ce4dae23ead1da958871f92"
+    },
+    {
+      "originalId": "348d7386f6f74d6135b08572c938f4e097984e3c150375dd6ebce90effcc1988",
+      "id": "348d7386f6f74d6135b08572c938f4e097984e3c150375dd6ebce90effcc1988",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "5eb2f0befceed5731b307e52d1356262c04c1abebe0135cbb5f90e24c3ed56b4"
+    },
+    {
+      "originalId": "3519c1d49bad5f7a58a7912fb96d14ca91264217a5adc7462acb6587d5d71de6",
+      "id": "3519c1d49bad5f7a58a7912fb96d14ca91264217a5adc7462acb6587d5d71de6",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "5937c0e118917d735a10332a09747a91abf04261096d28606437ca96f2de3a94"
+    },
+    {
+      "originalId": "3628d84c30f0fefa33f4e9374f699c6398f7525ddae956f55a1e6a980f25c2d8",
+      "id": "3628d84c30f0fefa33f4e9374f699c6398f7525ddae956f55a1e6a980f25c2d8",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "fe8ae80d52cb7ffad6df09e8f231bd7cb012a1c7712bf1bbd8058c8aa260279e"
+    },
+    {
+      "originalId": "3a4ec37c6f713551cd1ddafc493729417850302c82ad62a0c6f18d533f6bc78b",
+      "id": "3a4ec37c6f713551cd1ddafc493729417850302c82ad62a0c6f18d533f6bc78b",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "1e33fb99cb88894796b20b4ca59e924bf2d51a8965886994b551984ef1af621f"
+    },
+    {
+      "originalId": "3ca48936dd1c36508172865a0d671ba8a7819decb520076356ec666721ecfbf9",
+      "id": "3ca48936dd1c36508172865a0d671ba8a7819decb520076356ec666721ecfbf9",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "33f5de2737384ebd05f38f986a5af33308d50401d8919cb2eeec1ac02c580725"
+    },
+    {
+      "originalId": "4308ea555c03fc35abf1ed3483e7a65877347b51baa8a85aafe5a89449d85ba5",
+      "id": "4308ea555c03fc35abf1ed3483e7a65877347b51baa8a85aafe5a89449d85ba5",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "46ad1afdb9920ec3de2fc3e847d8469cfade676a0d1acd6efc327535930641e1"
+    },
+    {
+      "originalId": "450601fc4650ff3da833abe84b6334ff50f70e9086e8a8de12b755f56ed19128",
+      "id": "450601fc4650ff3da833abe84b6334ff50f70e9086e8a8de12b755f56ed19128",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "a70d2cd55763d99c51d96e6aad2b18775aede93336c0bdc8e6cbcf8dd0a76404"
+    },
+    {
+      "originalId": "48a04940dd045b93d4c10efcf2ffb1a65f2af34fd6f4a290c0d80e606d77c4d3",
+      "id": "48a04940dd045b93d4c10efcf2ffb1a65f2af34fd6f4a290c0d80e606d77c4d3",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 0
+    },
+    {
+      "originalId": "4c92a9351d16d017331680397ea6252ecdb596a8fe63b3695640156422a52a7e",
+      "id": "4c92a9351d16d017331680397ea6252ecdb596a8fe63b3695640156422a52a7e",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "514c7b1284fe71b6c94a0b8e98bbda504b32bc491dbb14e6dbadbf0fd691140a"
+    },
+    {
+      "originalId": "4df98ccb45891604ac8c78a383e2613ecbe659644c9af97c072b7948f16f5e08",
+      "id": "4df98ccb45891604ac8c78a383e2613ecbe659644c9af97c072b7948f16f5e08",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "704a1c76eee7f86fd6a6add48c1f1b1832377caeb844a5fe001249b230a0351d"
+    },
+    {
+      "originalId": "4f780793b9828ad01adf4ad58c6b84e097c7e45415abdcfac344c1b43fcae7f2",
+      "id": "4f780793b9828ad01adf4ad58c6b84e097c7e45415abdcfac344c1b43fcae7f2",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "57fe82d1f5c6fa6b763cdeb1f623f4bbd1196fdd09ba39322f0ff062e99201f9"
+    },
+    {
+      "originalId": "537bac5e64a268acdf11bc7dda6055463a4cc65b9d9f2b20939d8f6f4f8854e0",
+      "id": "537bac5e64a268acdf11bc7dda6055463a4cc65b9d9f2b20939d8f6f4f8854e0",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "09b088ef28ec2e5b580de9c718b8ef63d39a138137e285fd7bcdc6deedd3b531"
+    },
+    {
+      "originalId": "5498ff770628711c1fd1a3c56dd799816aad6d0a7dcacfe900a83168af5ff230",
+      "id": "5498ff770628711c1fd1a3c56dd799816aad6d0a7dcacfe900a83168af5ff230",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "083bc7123ed4dfd25e27ec6934f69ab88d6ab8b818e5d21d4d9c80a3f40db667"
+    },
+    {
+      "originalId": "566d1265aa3ebe495993694992ebab1889fad270bd1be2992a3a62bce5d151c5",
+      "id": "566d1265aa3ebe495993694992ebab1889fad270bd1be2992a3a62bce5d151c5",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "75d18ed5b0d0eec641442c9f9b04ebae92ca721831f0a8cd4d97debf52464f93"
+    },
+    {
+      "originalId": "56e5692364695093d36e0ff622200b585cbb3ded2e7a6d5121ef055cf5321dac",
+      "id": "56e5692364695093d36e0ff622200b585cbb3ded2e7a6d5121ef055cf5321dac",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "71ae963da9782209a9cfc1081c870f8c4d06df9f9d7509ea6b54e0fe77d73234"
+    },
+    {
+      "originalId": "58bb48151cfe0ab3d108fda2e06867c6559c0a300656df2f7435a391a11d72fd",
+      "id": "58bb48151cfe0ab3d108fda2e06867c6559c0a300656df2f7435a391a11d72fd",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "05d9825a5542b6b7b74acc6d4a95d68be8fdce567a0e7edf592e440a168af044"
+    },
+    {
+      "originalId": "59679aae407a20be0ba14dc0969beccfef8750ebb2939abce7bc85e83376b768",
+      "id": "59679aae407a20be0ba14dc0969beccfef8750ebb2939abce7bc85e83376b768",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "ae2f19cd75a6e9405f3d94c1c98adbff6d13a4faecaf42ae9ea9b9ac341a0a13"
+    },
+    {
+      "originalId": "59f37622696967a91ba3296622f88b2cf422ccd4bf4ed80d61cdb5c99549e669",
+      "id": "59f37622696967a91ba3296622f88b2cf422ccd4bf4ed80d61cdb5c99549e669",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "e8a3bfeed94e5e501298d04372c967d780e5638c9bfc3cf027bf68a609bda4bb"
+    },
+    {
+      "originalId": "5bd27cd86f967fccb06fde90d55d8e130265a56bb8b6ac1ed6a49d7262d50a59",
+      "id": "5bd27cd86f967fccb06fde90d55d8e130265a56bb8b6ac1ed6a49d7262d50a59",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "8c54ef1fd013ba90766f3777fb993bde1ce476ad3aa87c9b71b2ff52a5b22bca"
+    },
+    {
+      "originalId": "5cc06e2c8b9a6a0bc506cf75b7a41ba00745e384f099e35bb7a46e8605dbb2dc",
+      "id": "5cc06e2c8b9a6a0bc506cf75b7a41ba00745e384f099e35bb7a46e8605dbb2dc",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "38acd3fc345cace7bf8beae6f517894ffca9cc71a1ee48bbab8e484bd6fc6fdc"
+    },
+    {
+      "originalId": "60212f08f236dd1427c58820c0116a730c633cd1328730bf44d5c7681d444513",
+      "id": "60212f08f236dd1427c58820c0116a730c633cd1328730bf44d5c7681d444513",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "4b53619531c224602798856e7a1bccd8acf5dd008f313c17564b4d8dfba1c1ac"
+    },
+    {
+      "originalId": "6054cda090b7c0cc223e8d33ca220653a1255a197182faf46685a7b7aa22e52c",
+      "id": "6054cda090b7c0cc223e8d33ca220653a1255a197182faf46685a7b7aa22e52c",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "38ecaff945610ea47f854cdededaf9c82fc836d093f7f3e7fe04c5a5648883f3"
+    },
+    {
+      "originalId": "612ffdd55ea846c63c6a4b03b3ab860de93c3d28e9a5deccf92eb3fec1fcb020",
+      "id": "612ffdd55ea846c63c6a4b03b3ab860de93c3d28e9a5deccf92eb3fec1fcb020",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "eeea93be5807e727a30e46d68f2f799ddc652164056ce039989c37e04d7282a7"
+    },
+    {
+      "originalId": "62de3974dc39fb91388784a2b36d97fa1a5c2c6779b303410a2ff3dbb700af46",
+      "id": "62de3974dc39fb91388784a2b36d97fa1a5c2c6779b303410a2ff3dbb700af46",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "88497a180c1a35b8e4d94d07775d12134c4e3a7e59a1ef536215cf76a7704816"
+    },
+    {
+      "originalId": "647fdc9b63ad04806a51ae9d52e6b1c485caa88b671411e3b3dbbe4de1fe4735",
+      "id": "f9aa171a9079a9208090f7d613c4499902c82f10291d46c32ba9380902345ce3",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "100254cdf526c6738c1497c06bcd6a4895b8a74516e1cf2ace7762b969c782d4"
+    },
+    {
+      "originalId": "64ca64dd0d02ce3c9cf232845facc6cbaa897c548477015e907687f5e5d2088d",
+      "id": "49ff5bac5bd2c3b154205b79d97377dc5c506c46456e9f010b2e6be6eef748b4",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "9e2bb7ccfdcb0eab8e5f905508b65fe3ed88ee99582214b32c11fd47e76b83ab"
+    },
+    {
+      "originalId": "653fcecf51772ec3f2866b68845e5828444e0e7de3eb3d59a01214105d331f23",
+      "id": "653fcecf51772ec3f2866b68845e5828444e0e7de3eb3d59a01214105d331f23",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "fb445c160b50875fee30998ce7043186265fcde40aab242807e91b71d2c0e72e"
+    },
+    {
+      "originalId": "67c5f97d69a7da14f4a6c16bafb8667be02111e47fd2939496c69030772cdcc0",
+      "id": "67c5f97d69a7da14f4a6c16bafb8667be02111e47fd2939496c69030772cdcc0",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "4f58afa15cd4bf1ab78313e35bbed8c639511d7c38838fff4b33bfdd845e1f81"
+    },
+    {
+      "originalId": "6d55f3113027ed036b3457100b9ff05e05f40f9445bdd685e946ecffcf7cf2b4",
+      "id": "6d55f3113027ed036b3457100b9ff05e05f40f9445bdd685e946ecffcf7cf2b4",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "0f908178a1705fa513655ed60910a36f81699ae755515cb889c078c6d562c688"
+    },
+    {
+      "originalId": "6d80f9bd963c6f8ab786796fb52629d85df93c051278d56af7de246dfa7bc8f2",
+      "id": "6d80f9bd963c6f8ab786796fb52629d85df93c051278d56af7de246dfa7bc8f2",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "41f751fa79c30c577d5385a57b7a1adb85e9ee58aa2bf7ecb85c2aa2e486fb26"
+    },
+    {
+      "originalId": "755fb6943466fe0df94d227478add733afabcb63ce6091de03662bb662f6690e",
+      "id": "755fb6943466fe0df94d227478add733afabcb63ce6091de03662bb662f6690e",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "e7dffb5ed39bff63924a6823d3c3715089cc9fc00ecff27cacf12a7f93415379"
+    },
+    {
+      "originalId": "76dfefa172d4b9f5ae6f0840d3ac94332544d812ba50a8566c19117a94adb706",
+      "id": "76dfefa172d4b9f5ae6f0840d3ac94332544d812ba50a8566c19117a94adb706",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "44be2ad1c5afe6c3d335570c312e6b1585e2b3b7e71af8399a25ca8e4f4f6b93"
+    },
+    {
+      "originalId": "7a3ca0c340fefd5606c99e8332dfbf525094452ab69582d4136b4aa73617ae71",
+      "id": "7a3ca0c340fefd5606c99e8332dfbf525094452ab69582d4136b4aa73617ae71",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 1
+    },
+    {
+      "originalId": "7b44314a0de63745153a589b7ae5fe3db833a4ceb4c610ab9e16e740ac950a88",
+      "id": "7b44314a0de63745153a589b7ae5fe3db833a4ceb4c610ab9e16e740ac950a88",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "0d0b7cc183c3acf72c04cd175d02ad981ae97189249b150417afa17ebf95e5bf"
+    },
+    {
+      "originalId": "7bb4640a08ec3e31603e4bf398ce18891a8475c161cdd2cd025f7bf51f879a8c",
+      "id": "7bb4640a08ec3e31603e4bf398ce18891a8475c161cdd2cd025f7bf51f879a8c",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "cfe06229f3ae2be527e67817cb290e23ee1a53239f83f6b89be2a667bc5ec85c"
+    },
+    {
+      "originalId": "7d3425ef51d1ea200c30b53e5fc886043505bf0b5adce15774032864daee072f",
+      "id": "7d3425ef51d1ea200c30b53e5fc886043505bf0b5adce15774032864daee072f",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "8675a442c510d0869a8ffcee43b2080413f5470b6cad2910fd173a5b3f7ca0cb"
+    },
+    {
+      "originalId": "7f4d4aa010aa702da5118dd25901b0ac8091f8641f5f5598d6e0a5ee7c47a580",
+      "id": "7f4d4aa010aa702da5118dd25901b0ac8091f8641f5f5598d6e0a5ee7c47a580",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "cd0d04cb5402fc10545865b9dd4c353ecd62bca9dc33252965441d7901fa15f1"
+    },
+    {
+      "originalId": "817910f437ca8064e2a50960c6a674a53b0bde09b499577e0440734a55bd5da0",
+      "id": "817910f437ca8064e2a50960c6a674a53b0bde09b499577e0440734a55bd5da0",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "2ad32cb5d0cd6684720a7b7bab5a61d8ea11fbcd03433539a046e1edd41b2d30"
+    },
+    {
+      "originalId": "83dd16f9f4665037b59ed4c8bfe08ddc2a5e2c0c61c13753081ffe7f18382feb",
+      "id": "83dd16f9f4665037b59ed4c8bfe08ddc2a5e2c0c61c13753081ffe7f18382feb",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "78fb492c1bbe0ee39537b476a673a43739bf53461e1281e68c248a5df540d1de"
+    },
+    {
+      "originalId": "8518ff3fa49622aa961b33b38f94bb65138fd7c783c3f3ccc6208396fa931d22",
+      "id": "8518ff3fa49622aa961b33b38f94bb65138fd7c783c3f3ccc6208396fa931d22",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 0
+    },
+    {
+      "originalId": "85b9e385e65f4eedab0cc8c30533816e392c811aa90130c436b4f0c7bc801200",
+      "id": "85b9e385e65f4eedab0cc8c30533816e392c811aa90130c436b4f0c7bc801200",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "c1543221633dc3192ecc6f07f61125a09a48db3d5879ef417cbff2cb25860fb4"
+    },
+    {
+      "originalId": "89db77bc3aca294fc7e426bebf06cd9a6a7de4a831b1ce306fbe325e4b57ac79",
+      "id": "89db77bc3aca294fc7e426bebf06cd9a6a7de4a831b1ce306fbe325e4b57ac79",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "7c4381c1c0eae29b7cc841bbad253ad5b9fbce31c6beedd9f842110ea1fbc7db"
+    },
+    {
+      "originalId": "91de106818b9eefae5cb64f30cc979fe275d088c56caf40d798334558c8a1268",
+      "id": "91de106818b9eefae5cb64f30cc979fe275d088c56caf40d798334558c8a1268",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "d54d9fb59028c1efcefe370e84db81eff585c567c1ebf221cff11173bb592092"
+    },
+    {
+      "originalId": "95bb09d6fd1ad2a966c747c279fa66809a396c40060349dcbb2adeb4f08ae3a0",
+      "id": "95bb09d6fd1ad2a966c747c279fa66809a396c40060349dcbb2adeb4f08ae3a0",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "f908ad58b92ae9706aafbfc0da3f4034f52b88595b0b251fcd08a58108fa61d6"
+    },
+    {
+      "originalId": "965e9403c39be4392b4a0cda28fabe13f47d60a058c39b32eccb32a694897c12",
+      "id": "965e9403c39be4392b4a0cda28fabe13f47d60a058c39b32eccb32a694897c12",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "2b45259ab477bd46897f84960c828f77cddb58605c4cc03922d55f2a36269e06"
+    },
+    {
+      "originalId": "969d51655404d1c8cde46d45334bc72f6ad01d9a78582faf46a03dd0bcf3e813",
+      "id": "969d51655404d1c8cde46d45334bc72f6ad01d9a78582faf46a03dd0bcf3e813",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "942e5fdf84eaeb23d4eb7cf05562129de31010a8485f3ecbdb04376ecc4bfe46"
+    },
+    {
+      "originalId": "99f9abfd9799d11dc8e581842875a31dc4ef03d7b122ee9dc3c03fa901804157",
+      "id": "99f9abfd9799d11dc8e581842875a31dc4ef03d7b122ee9dc3c03fa901804157",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "7956c16427b0d424c0f4d14acc85e4b6de8e9cf3cfdf76b90ce30d95f089c7ea"
+    },
+    {
+      "originalId": "9b08d98941ec86039249740c8adf65045912f89fd0f0c724913c5a1927487210",
+      "id": "9b08d98941ec86039249740c8adf65045912f89fd0f0c724913c5a1927487210",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "507ec5272f60f3ebb2930e163b1fd506b525d1c9ad85048f88f2750585b5e6ac"
+    },
+    {
+      "originalId": "9b9d48556da641e2e5d225b0f27e2c2de3c8ee42333b7c7bf5b3cc59fc02c17b",
+      "id": "9b9d48556da641e2e5d225b0f27e2c2de3c8ee42333b7c7bf5b3cc59fc02c17b",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "338753f04552b027163988743eff906a8cbfcb18263b13a143cd5cbcdfc467d0"
+    },
+    {
+      "originalId": "a9024e2c41f4420a9b8a29708dab62da0e1e23945d7f6a1e5d54aa674458c919",
+      "id": "a9024e2c41f4420a9b8a29708dab62da0e1e23945d7f6a1e5d54aa674458c919",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "0eb9ad6c416dcf0ed545a180d3cd6ad848a8011b2306d13e337720e50cce15af"
+    },
+    {
+      "originalId": "af17c0781e356d297cec8076a99e47f5aaf1fed33f7e455193a4a22d0058fbf5",
+      "id": "af17c0781e356d297cec8076a99e47f5aaf1fed33f7e455193a4a22d0058fbf5",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "7333fefe24fc0cf2f4f4a43955356df33b15173bad2af2edd001da2cd930cf14"
+    },
+    {
+      "originalId": "af892ec03eb4b3ab812b5b2f2fd7769077a9a154b79448cc5926fd8cad387968",
+      "id": "af892ec03eb4b3ab812b5b2f2fd7769077a9a154b79448cc5926fd8cad387968",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "49fc8b468fdb8f21769d3c10ec47c1904eea095b74fd9f16ac5bbef87dd886bb"
+    },
+    {
+      "originalId": "af98a97563b8a81461a0371cb8b65864a75baf4d76927c5a70e9d6d386279555",
+      "id": "af98a97563b8a81461a0371cb8b65864a75baf4d76927c5a70e9d6d386279555",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "de65c658981e780e5ddf48a3f17253cac7f6754f52139f6a579fca9227a32887"
+    },
+    {
+      "originalId": "afd475c79fb1cd1b04cd4aa9125ffcc86a36f806f18e9b3054ebf2610d7ca83b",
+      "id": "072d656453a47c7ecd0715211d17c0e86a83d6070dd3b129d79f9cdad66eb27c",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "56cc372c70a77c81c48120c760ecc61448c9d5b7e939e86dff62a0f95cc24a19"
+    },
+    {
+      "originalId": "b1072e4027b46c1857eefd7c6f70d1355ad339dda05b7b9d5a4775842485bd15",
+      "id": "b1072e4027b46c1857eefd7c6f70d1355ad339dda05b7b9d5a4775842485bd15",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "TOOL_FAILED: Tool failures: memory_apply: New temporary cases require a dated message from this batch; do not renew old context; inspect current files",
+      "effects": 0
+    },
+    {
+      "originalId": "b4606a92cf91871f54c3251159b8bffd3151316ecb8aa3e4c392227aa3664c9e",
+      "id": "b4606a92cf91871f54c3251159b8bffd3151316ecb8aa3e4c392227aa3664c9e",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 0
+    },
+    {
+      "originalId": "b48dc2f2c924480b9f43e555d63befff14c07fa082cd28e7d7ac484b86ad5c1d",
+      "id": "b48dc2f2c924480b9f43e555d63befff14c07fa082cd28e7d7ac484b86ad5c1d",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "24e7ab7e2ebdb85157c1982ea42ff1a97ca58db1199e7ebeafdce01b4fc69fc1"
+    },
+    {
+      "originalId": "b5b9715b8f0e95b63f55a2d41ff2a1450ed2d28c31686284a080fca73663d7d6",
+      "id": "b5b9715b8f0e95b63f55a2d41ff2a1450ed2d28c31686284a080fca73663d7d6",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "df3089390474dd8f550bab6ac1d34e6a669bf62c013283318118dda905cb6a60"
+    },
+    {
+      "originalId": "b72a5905118aff095073e78c613e58d96fd0427e23429b96d49967dfb8249405",
+      "id": "b72a5905118aff095073e78c613e58d96fd0427e23429b96d49967dfb8249405",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "26df9c81b2d8a372d4a131100a2b6ef26b0c199cd52b62053012b27bca9f9a08"
+    },
+    {
+      "originalId": "b92adaf6816a3c6215db753bb370209e40711d2441ff7e70390821b05b343473",
+      "id": "b92adaf6816a3c6215db753bb370209e40711d2441ff7e70390821b05b343473",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "b36f642896b1927646de399622ad36328592a363cf4fc5e066b57484542b8b4d"
+    },
+    {
+      "originalId": "ba6fa66f48fa57002b071c86773676fad572b5d30f4654244d9ee0c875fe31c6",
+      "id": "ba6fa66f48fa57002b071c86773676fad572b5d30f4654244d9ee0c875fe31c6",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "eb9da28db87920b0f5349d6de362ed7066db9624e9ed6ca83437e848bdeac0eb"
+    },
+    {
+      "originalId": "bbf622d1b0477f746d5bf87f06bcad581ce61559bc861d46d6186d099f21fd46",
+      "id": "0ee05c1dc3525d6f6400db4d2bd91848627ae71fb52f0668a1e6ecf92160551e",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "a5a0f7d4d11d383b02453821e92bb72b863d035f5cd331bec1862265946ff814"
+    },
+    {
+      "originalId": "bc4f6b2d796da9cf8d317ed32cb4715a22be7f5d7e654122e9b53f1ed7bd7b46",
+      "id": "bc4f6b2d796da9cf8d317ed32cb4715a22be7f5d7e654122e9b53f1ed7bd7b46",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "374f8f44cbde2c7fed56b2d2a3344f778527e1c8c247f9b8a9a8e5c76e3bb3e0"
+    },
+    {
+      "originalId": "bf796da42d3ce63ccdd5f2fea646549810e44d79b8bd85131b9a84ad931cfd6c",
+      "id": "bf796da42d3ce63ccdd5f2fea646549810e44d79b8bd85131b9a84ad931cfd6c",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "a2940dc6527e483f0793aeeeb5c3c3f3dc9047ea0b16bfea72d6d4e200fe1f03"
+    },
+    {
+      "originalId": "c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de",
+      "id": "556a429839625706f3fde25e0b7ab486f6c9b32c9404b33c7e17e5f95985fd9f",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "90017e3e01102208209c20f9bc6e480f66073740538bd47886aed89bab01cc70"
+    },
+    {
+      "originalId": "c7c6bef4544b7b7ecb4246d8a71a59f7002902026c67068df255f5c8d3b100c9",
+      "id": "c7c6bef4544b7b7ecb4246d8a71a59f7002902026c67068df255f5c8d3b100c9",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "5e69998803d8c84ef9e3620b0d636caf37cc436ca72fef8e82b91e9f016e402f"
+    },
+    {
+      "originalId": "c86714939ffb323fc347226beaa425a7a902a70e1a4ada48bc5d97109c8a1e04",
+      "id": "c86714939ffb323fc347226beaa425a7a902a70e1a4ada48bc5d97109c8a1e04",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "bc082fbf77b3641325d03a2716a9ab715d940b9ea3d2e8f3d17d791f2b53b380"
+    },
+    {
+      "originalId": "c92397520f0c44cd2395823dc778e8a154f40a233d2f528cea6c2c99cb581a03",
+      "id": "c92397520f0c44cd2395823dc778e8a154f40a233d2f528cea6c2c99cb581a03",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "8362c7052ba39819133f60a386bf4ad2e868978d3dfab0c29a0335a08bd1d6b6"
+    },
+    {
+      "originalId": "d2188173ac4dad213db16daa78c68f2a01bfb74da6be85d650824776df34ab4f",
+      "id": "d2188173ac4dad213db16daa78c68f2a01bfb74da6be85d650824776df34ab4f",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "9d0495320fa0dd903e004e8fa720e15460615f0c435bb1c89bece0f0baeaf535"
+    },
+    {
+      "originalId": "d5b78eeebeb34714348b6b0f707f671c43a2e9eff566005f4afdf6bc1d41fcd8",
+      "id": "d5b78eeebeb34714348b6b0f707f671c43a2e9eff566005f4afdf6bc1d41fcd8",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "c10787ed717f62fb6a3a0609037d7fad8c2d61b9258bc23312730a7c8a58c286"
+    },
+    {
+      "originalId": "d7a71cbf611ecd46b4f3d95276715d41652adcb60bd5ec1a98d535714b30b582",
+      "id": "d7a71cbf611ecd46b4f3d95276715d41652adcb60bd5ec1a98d535714b30b582",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "63a8217e1d8f86f6661e00a88957e390c40fcfff1f080134030d53dccf26722d"
+    },
+    {
+      "originalId": "da58ebce0138dc17319d28b445330c532444807780792b5c9dec5fa46b66727a",
+      "id": "da58ebce0138dc17319d28b445330c532444807780792b5c9dec5fa46b66727a",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "4e2ab7a11e266096d3914826c49edbdb7035d36852a6d3dd7f880fd9652640ef"
+    },
+    {
+      "originalId": "da83bfb4526f4e59a0a1584a0262a6c980f26348965abec2bdc8a6057d290692",
+      "id": "da83bfb4526f4e59a0a1584a0262a6c980f26348965abec2bdc8a6057d290692",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "ec0df0bfb0cde687a64caf1fdcfddf39c749092ca6736dc054723d7477e499ed"
+    },
+    {
+      "originalId": "da8c5714c9ce92150cb3723b54cb9f86c5fe6bf4b3355099a509ea6400d208b5",
+      "id": "da8c5714c9ce92150cb3723b54cb9f86c5fe6bf4b3355099a509ea6400d208b5",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "4f485215222c10513f555f70cd5175cb66aedcedab644ea7556aed6b5299fbcb"
+    },
+    {
+      "originalId": "dbc098d1485e29aa0576622814f0071ea629d7ab8dbc927ea6240adbfac2db75",
+      "id": "dbc098d1485e29aa0576622814f0071ea629d7ab8dbc927ea6240adbfac2db75",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "ced6ccae50792153affcf00b94e9f217c8efb8d0304c97be46eb418cf6f76e94"
+    },
+    {
+      "originalId": "dcadc1a35f2bb29b49d34e3ae985e83398c63cc766b29f1b7c48fb7723471ded",
+      "id": "dcadc1a35f2bb29b49d34e3ae985e83398c63cc766b29f1b7c48fb7723471ded",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "b2292698f692f332c4a1ad009d2d2811970f8ba092e4e46f19a5d6e9a77cd498"
+    },
+    {
+      "originalId": "dcd58c93b9b49e85c888015dcd98bf9440d835c806511af9e4f8a50704e2a99a",
+      "id": "dcd58c93b9b49e85c888015dcd98bf9440d835c806511af9e4f8a50704e2a99a",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "593873cbac0f7f5666a61e050bdae8a7069d5e571953379a511f2fed59c2d4c8"
+    },
+    {
+      "originalId": "df5c4ab63fa790c34215bef97fa6690622aa180455b9b90fa01448b0724cebc3",
+      "id": "df5c4ab63fa790c34215bef97fa6690622aa180455b9b90fa01448b0724cebc3",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "e8b1e14ed3e792a7cf89ed8555585671b54977d3e03375679cf291f5d30c632e"
+    },
+    {
+      "originalId": "e1bd94e18d5185284839fd2f8cc44b2d0abf9134c32e86ea1ab578e363f18bae",
+      "id": "9487a340047b4612b8c1be5061bb264bf3d7c9ab30e63c299503b3a5ab765186",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "556f3031d192070be435742e5491fc511f53a9b4509a41271216dc98acc29870"
+    },
+    {
+      "originalId": "e2be824e93a4e0fd53c1a14cc6c8d3f5949604fa07627058ae32125c58618633",
+      "id": "ac0c36604caaf10a0f70f2bdc59e4e1818e854c8b27a1b55a7b31f5dc405cb86",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "f612909014c0d5e5d1e53494785dfa2a364caf425eea156c177cfb404205dda7"
+    },
+    {
+      "originalId": "e8061cbdb2be313a1fc8004888e243fb2b31a68495d6f8db751ea588dd82a5a3",
+      "id": "e8061cbdb2be313a1fc8004888e243fb2b31a68495d6f8db751ea588dd82a5a3",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "5e573f9fd3298077b4e106f14dfb36fdbcd0129e6c64751038d94dd6bbdab28e"
+    },
+    {
+      "originalId": "e8e832b95f9176e22b554551e2dde4de9a9b2fcd55f2a0ab9360e18056937be3",
+      "id": "e8e832b95f9176e22b554551e2dde4de9a9b2fcd55f2a0ab9360e18056937be3",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "a0581a8c80c62bb862cabdc53575f57113b5daacfdc0bd3fb64fca807896b11c"
+    },
+    {
+      "originalId": "ead73cdb4ffb079f9739dc93adaceff4b8ecd2871e1d1de4cb8de615a74d17c9",
+      "id": "ead73cdb4ffb079f9739dc93adaceff4b8ecd2871e1d1de4cb8de615a74d17c9",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "13acf1acf3cb7ff5611ea6b1cbe785eec9905cf90118ed9af8ee75e19aa6b2be"
+    },
+    {
+      "originalId": "eb39fb1e103be1c632cc81b7c6631eb9b4c6e9799e6d171e95bbdbc835594d72",
+      "id": "eb39fb1e103be1c632cc81b7c6631eb9b4c6e9799e6d171e95bbdbc835594d72",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/LongManuscript",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "b0cdc311069cc149af1266680a8346f0c0df559cec8f7b019a3d3f0afa947bf1"
+    },
+    {
+      "originalId": "f57250919d81d23b0b5446f3ee7d0ed86b9712279cee5db552462b366e51277d",
+      "id": "f57250919d81d23b0b5446f3ee7d0ed86b9712279cee5db552462b366e51277d",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "b8ae9789116c70e4bb8908b166ab79425c3e28f700cc5420cec59ca922af5c11"
+    },
+    {
+      "originalId": "f7be0916a106474f5c469d5f8818231c1844661b9266c0ad8ee67800c21c2a77",
+      "id": "f7be0916a106474f5c469d5f8818231c1844661b9266c0ad8ee67800c21c2a77",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "status": "exhausted",
+      "attempts": 2,
+      "retired": false,
+      "error": "MODEL_TIMEOUT: Five-minute deadline exceeded; inspect current files before retry",
+      "effects": 0
+    },
+    {
+      "originalId": "f8a48790db358fdd77a9a94734e46c2f1acb3a428456e0ab74ea6ed59f6c2f94",
+      "id": "f8a48790db358fdd77a9a94734e46c2f1acb3a428456e0ab74ea6ed59f6c2f94",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "2b8da2476d9a6bb5afb839a5e575c46e45a08cbff77847937c04f16f847d9f03"
+    },
+    {
+      "originalId": "f8c74bacaa57fc8a4ce2cbf89fbd26abb58fe3de8eeef45c6ff0e90226f450b4",
+      "id": "f8c74bacaa57fc8a4ce2cbf89fbd26abb58fe3de8eeef45c6ff0e90226f450b4",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "150d51fe54314c3807fe13a54e939ce0cc6dbe8fec1d01b2328281d9bf432e72"
+    },
+    {
+      "originalId": "f937fc5773e4d601f237b58ea792eec7731f1163235a014d7db6b40b162ef4a7",
+      "id": "f937fc5773e4d601f237b58ea792eec7731f1163235a014d7db6b40b162ef4a7",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "d474fd4b978b5001b74b86b2a0467652133e129d7896c704252b88efa2fcdbe4"
+    },
+    {
+      "originalId": "f96f98341cde2ff6672739bf3e9da0b13c241d01e417de16c3d83562a45a12d5",
+      "id": "f96f98341cde2ff6672739bf3e9da0b13c241d01e417de16c3d83562a45a12d5",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "status": "completed",
+      "retired": true,
+      "error": null,
+      "effects": 0,
+      "completionReceipt": "13b9bf1f732ae163ac89ce9cfbe02bbfc9d24f644144091cfa12888296e5e15d"
+    }
+  ]
+}

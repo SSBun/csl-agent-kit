@@ -42,6 +42,65 @@ test("panel and session focus follow an explicit Task root cutover", { concurren
   }
 });
 
+test("storage drift cannot escape widget rendering or timer refresh", { concurrency: false }, async () => {
+  const cwd = mkdtempSync(path.join(os.tmpdir(), "csl-panel-errors-"));
+  const originalSetInterval = globalThis.setInterval;
+  const originalClearInterval = globalThis.clearInterval;
+  let tick;
+  globalThis.setInterval = (callback) => {
+    tick = callback;
+    return { unref() {} };
+  };
+  globalThis.clearInterval = () => {};
+  let widget;
+  const ctx = { cwd, hasUI: true, mode: "tui", sessionManager: { getBranch: () => [] }, ui: {
+    setWidget(_key, value) {
+      widget = typeof value === "function"
+        ? value({ requestRender() {} }, { bold: s => s, fg: (_c, s) => s }) : value;
+    },
+    notify() {},
+  } };
+  const { handlers } = installFakeExtension();
+  const storage = require("../skills/meta/csl-tasks/shared/lib/task-storage.js");
+  const originalLayout = storage.layout;
+  setCapabilities({ images: null, trueColor: true, hyperlinks: true });
+  try {
+    topics.createTopic(cwd, "demo", "Visible topic", { scope: "Shared", spec: "FR-1: Example", decisions: "None", dependencies: [] });
+    await handlers.get("session_start")({}, ctx);
+    assert.match(widget.render(120).join("\n"), /Visible topic/);
+    mkdirSync(path.join(cwd, ".csl-agent-kit/tasks"), { recursive: true });
+    for (const width of [0, 1, 2, 8, 40, 120, 240]) {
+      const lines = widget.render(width);
+      assert.ok(lines.every(line => visibleWidth(line) <= width));
+      if (width === 240) assert.match(lines.join("\n"), /Task panel unavailable:.*completed storage migration/);
+    }
+    assert.throws(() => storage.layout(cwd), /completed storage migration/);
+    assert.doesNotThrow(() => tick());
+    assert.match(widget.join("\n"), /Task panel unavailable/);
+    rmSync(path.join(cwd, ".csl-agent-kit/tasks"), { recursive: true });
+    tick();
+    assert.match(widget.render(120).join("\n"), /Visible topic/);
+    let calls = 0;
+    storage.layout = (workspace) => {
+      if (++calls === 2) throw new Error("late refresh failure\n\x1b[31m");
+      return originalLayout(workspace);
+    };
+    assert.doesNotThrow(() => tick());
+    assert.match(widget.join("\n"), /late refresh failure/);
+    assert.doesNotMatch(widget.join(""), /[\x00-\x1f\x7f-\x9f]/);
+    storage.layout = originalLayout;
+    tick();
+    assert.match(widget.render(120).join("\n"), /Visible topic/);
+  } finally {
+    storage.layout = originalLayout;
+    await handlers.get("session_shutdown")?.({}, ctx);
+    globalThis.setInterval = originalSetInterval;
+    globalThis.clearInterval = originalClearInterval;
+    resetCapabilitiesCache();
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
 function installFakeExtension() {
   const handlers = new Map();
   const commands = new Map();

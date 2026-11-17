@@ -16,7 +16,7 @@
  * Format parsed (per `task`):
  *   `- [Title](tasks/slug.md) — Status (YYYY-MM-DD HH:MM)`
  * Status words (English canonical + legacy Chinese):
- *   Pending / In Progress / In Review / Completed / Blocked / Cancelled
+ *   Pending / In Progress / In Review / Paused / Completed / Blocked / Cancelled
  *   待办 / 进行中 / 审查中 / 已完成 / 未标注
  */
 import { readFileSync } from "node:fs";
@@ -116,13 +116,14 @@ interface TaskRow {
 	progress?: string;
 }
 
-type Status = "pending" | "in_progress" | "in_review" | "completed" | "blocked" | "cancelled" | "aborted" | "unknown";
+type Status = "pending" | "in_progress" | "in_review" | "paused" | "completed" | "blocked" | "cancelled" | "aborted" | "unknown";
 
 const STATUS_WORDS: Record<string, Status> = {
 	// English canonical
 	pending: "pending",
 	"in progress": "in_progress",
 	"in review": "in_review",
+	paused: "paused",
 	completed: "completed",
 	blocked: "blocked",
 	cancelled: "cancelled",
@@ -132,6 +133,7 @@ const STATUS_WORDS: Record<string, Status> = {
 	待办: "pending",
 	进行中: "in_progress",
 	审查中: "in_review",
+	已暂停: "paused",
 	已完成: "completed",
 	未标注: "unknown",
 };
@@ -140,6 +142,7 @@ const GLYPH: Record<Status, string> = {
 	pending: "⏳",
 	in_progress: "🔄",
 	in_review: "🔍",
+	paused: "⏸️",
 	completed: "✅",
 	blocked: "🚫",
 	cancelled: "⏹️",
@@ -252,13 +255,13 @@ function isEmpty(rows: TaskRow[]): boolean {
 }
 
 /**
- * Count active tasks for the heading ratio. Completed, Cancelled, aborted, and
+ * Count active tasks for the heading ratio. Completed, Paused, Cancelled, aborted, and
  * unknown records are excluded so paused or abandoned history does not inflate
  * the "active" number.
  */
 function countActive(rows: TaskRow[]): number {
 	return rows.filter(
-		(row) => !["completed", "cancelled", "unknown", "aborted"].includes(row.status),
+		(row) => !["completed", "paused", "cancelled", "unknown", "aborted"].includes(row.status),
 	).length;
 }
 
@@ -267,10 +270,11 @@ const STATUS_RANK: Record<Status, number> = {
 	in_review: 1,
 	pending: 2,
 	blocked: 3,
-	cancelled: 4,
-	aborted: 5,
-	completed: 6,
-	unknown: 7,
+	paused: 4,
+	cancelled: 5,
+	aborted: 6,
+	completed: 7,
+	unknown: 8,
 };
 
 function taskIdForRow(row: TaskRow): string | undefined {
@@ -322,6 +326,11 @@ function renderRows(rows: TaskRow[], cwd: string, linkTitles = false, focusedTas
 	return out;
 }
 
+function panelError(error: unknown): string {
+	const detail = String(error).replace(/[\x00-\x1f\x7f-\x9f]/g, " ").slice(0, 500);
+	return `⚠ Task panel unavailable: ${detail}`;
+}
+
 class TaskWidget extends Container {
 	private readonly requestRender: () => void;
 
@@ -346,6 +355,17 @@ class TaskWidget extends Container {
 	}
 
 	render(width: number): string[] {
+		try {
+			// Storage may change after refresh and before the TUI paints this widget.
+			storage.layout(this.cwd);
+			return this.renderContents(width);
+		} catch (error) {
+			// Do not mutate the UI or request another render from this error boundary.
+			return [truncateToWidth(panelError(error), Math.max(0, width), "")];
+		}
+	}
+
+	private renderContents(width: number): string[] {
 		if (this.topicRows.length === 0) return width > 2 ? super.render(width).map((line) => truncateToWidth(line, width, "")) : [""];
 		const topicLines = renderTopicLines(this.topicRows, getCapabilities().hyperlinks, this.theme, this.cwd);
 		// No vertical breakpoint: even tiny terminals keep separate column budgets.
@@ -373,12 +393,23 @@ interface RefreshState {
  */
 function refresh(ctx: RefreshCtx, state: RefreshState): void {
 	if (!ctx.hasUI) return;
-	try { storage.layout(ctx.cwd); } catch (error) {
+	try {
+		refreshWidget(ctx, state);
+	} catch (error) {
 		progressCache.clear();
 		state.widget = undefined;
-		ctx.ui.setWidget(WIDGET_KEY, [`⚠ Task storage unavailable: ${String(error)}`], { placement: "aboveEditor" });
-		return;
+		const message = panelError(error);
+		try {
+			ctx.ui.setWidget(WIDGET_KEY, [message], { placement: "aboveEditor" });
+		} catch {
+			// A failed UI update must not escape the standalone interval callback.
+			console.error(message);
+		}
 	}
+}
+
+function refreshWidget(ctx: RefreshCtx, state: RefreshState): void {
+	storage.layout(ctx.cwd);
 	invalidateProgressCache(ctx.cwd);
 	const rows = renderRows(
 		loadTasks(ctx.cwd),
@@ -567,6 +598,7 @@ function formatGrouped(rows: TaskRow[], cwd: string, linkTitles = false): string
 		in_review: [],
 		pending: [],
 		blocked: [],
+		paused: [],
 		cancelled: [],
 		aborted: [],
 		completed: [],
@@ -583,12 +615,13 @@ function formatGrouped(rows: TaskRow[], cwd: string, linkTitles = false): string
 		in_review: "In Review",
 		pending: "Pending",
 		blocked: "Blocked",
+		paused: "Paused",
 		cancelled: "Cancelled",
 		aborted: "Aborted",
 		completed: "Completed",
 		unknown: "Untriaged",
 	};
-	const order: Status[] = ["in_progress", "in_review", "pending", "blocked", "cancelled", "aborted", "completed", "unknown"];
+	const order: Status[] = ["in_progress", "in_review", "pending", "blocked", "paused", "cancelled", "aborted", "completed", "unknown"];
 	for (const status of order) {
 		const group = groups[status];
 		if (group.length === 0) continue;

@@ -15,7 +15,7 @@ Coordinate multiple canonical tasks through the current host Agent. This is host
 
 Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
 
-This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
+This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. Read [任务状态转换](../csl-tasks/shared/protocols/task-state-transitions.md) before lifecycle operations; pause-only requests use its existing-record stop branch, not Queue startup or automatic child resume. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
 
 ## Build the Task Graph
 
@@ -42,12 +42,12 @@ Apply `task`'s optional Topic contract independently to an associated parent and
 ## Sequential Execution
 
 1. Confirm the parent is In Progress.
-2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
+2. Run `next <parent-id>` to select the first child not Completed. If it is Paused, Blocked, or Cancelled, stop before automatic resume; continue only after the user explicitly resumes that work and any actual unblock condition is met. The ordered child list is the resume cursor; do not create another cursor file or field.
 3. Resume and execute that child under the full `task` lifecycle, including R0/R1/R2 classification, the mandatory `task-review` loop for R2 or explicit ordinary review, Result, mandatory Self Assessment, final verification, completion, and index check. Each child records its own Simplicity, Stability and Completeness grades using S/A/B/C under `task`'s Self Assessment contract; delegated handoff returns to the owner without another user checkpoint. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
 4. Run `next` again only after the current child completes.
-5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
+5. Stop and return to the main session when the current child is Blocked, Paused, or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
 
-On resume, inspect the current Plan, Execution Log and applicable evidence/Block of the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Log order does not select a child or permit skipping a blocked one. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's assessment, terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
+On resume, inspect the current Plan, Execution Log and applicable evidence/Block of the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Log order does not select a child or permit skipping a blocked one. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's assessment, terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent records an explicit cancellation and does not implicitly cancel or delete children; use Paused for an intentional temporary interruption. Resume explicitly when the user continues.
 
 ## Parent Final Gate
 
@@ -63,4 +63,4 @@ Apply `task`'s Review Reports persistence contract to every parent or child `tas
 
 Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
 
-Keep the workflow interactive. If the session must pause, leave canonical status and evidence sufficient for a later Codex or Pi Agent to resume deterministically. Routing fixtures are in `evals/`.
+Keep the workflow interactive. 暂时搁置时执行 [暂停与恢复](../task/references/pause-resume.md)：分别保存实际暂停的活动子任务和父任务的恢复摘要，父任务暂停不自动改变子任务状态或停止运行中的 Agent。恢复时检查摘要和实际产物，不跳过 Paused 子任务；跨电脑明确携带记录、依赖及部分成果。Routing fixtures are in `evals/`.

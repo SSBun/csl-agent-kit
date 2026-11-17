@@ -1,6 +1,40 @@
 # 任务索引
 
+- [编写基于领域与架构的 Agent 开发 SOP](tasks/ddd-agent-development-sop.md) — Completed (2026-11-13 16:06)
+
+- [统一任务系统状态转换与暂停语义](tasks/align-task-state-transitions.md) — Completed (2026-11-13 12:02)
+
+- [绘制当前任务系统状态转换图](tasks/task-state-transition-diagram.md) — Completed (2026-11-13 11:42)
+
+- [恢复失败Memory批次并清理非法旧记录](tasks/recover-failed-memory-batches.md) — Completed (2026-11-12 18:55)
+
+- [支持按任务名称暂停与恢复](tasks/task-name-resolution.md) — Completed (2026-11-12 17:42)
+
+- [支持任务暂停及跨会话跨电脑恢复](tasks/task-paused-portable-resume.md) — Completed (2026-11-12 17:31)
+
+- [调整 Memory 工作区并发上限为10](tasks/expand-memory-workspace-concurrency.md) — Completed (2026-11-12 17:48)
+
+- [记忆超限时先压缩再更新](tasks/compact-memory-before-budget-rejection.md) — Blocked (2026-11-12 17:07)
+
+- [迁移 native-short-reader 全部任务存储](tasks/migrate-native-short-reader-tasks.md) — Completed (2026-11-12 16:39)
+
+- [调整普通与临时记忆内容限制](tasks/adjust-memory-content-limits.md) — Blocked (2026-11-12 16:24)
+
+- [调查 Memory Agent 大量失败记录的原因](tasks/diagnose-memory-agent-failures.md) — In Progress (2026-11-12 15:04)
+
+- [修复任务面板异常导致 Pi 退出](tasks/fix-task-overlay-crash.md) — Completed (2026-11-12 14:59)
+
+- [模拟会话验证目标确认说明边界](tasks/test-target-confirmation-sessions.md) — Completed (2026-11-11 17:27)
+
+- [统一目标确认原因说明边界](tasks/restrict-target-confirmation-explanations.md) — Completed (2026-11-11 17:22)
+
+- [检查技能中的内部提示披露要求](tasks/inspect-skill-guard-prompts.md) — Completed (2026-11-11 17:18)
+
+- [移除内部阻断原因披露例外](tasks/remove-guard-reason-disclosure.md) — Completed (2026-11-11 14:56)
+
 - [仅检查 git commit，放行其他 Git 子命令](tasks/commit-guard-only-commit.md) — Completed (2026-11-11 14:48)
+
+- [统一聊天回复与 Markdown 文档的本地链接规则](tasks/response-local-path-format.md) — Completed (2026-11-10 20:24)
 
 - [豁免测试证据审查标记并提交全部改动](tasks/exempt-test-evidence-commit.md) — Completed (2026-11-10 19:36)
 

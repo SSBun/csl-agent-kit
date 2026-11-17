@@ -1,0 +1,552 @@
+diff --git a/bin/memory/agent.js b/bin/memory/agent.js
+index d125792..b557393 100644
+--- a/bin/memory/agent.js
++++ b/bin/memory/agent.js
+@@ -9,6 +9,7 @@ const modelConfig = require("./model-config.js");
+ const migration = require("./migration.js");
+ const runtime = require("./runtime-files.js");
+ const live = require("./live.js");
++const MAX_AGENTS_PER_WORKSPACE = 10;
+ const SKILL = path.resolve(__dirname, "../../skills/meta/agent-memory/SKILL.md");
+ const SYSTEM_PROMPT = fs.readFileSync(path.join(path.dirname(SKILL), "references/recording-prompt.md"), "utf8");
+ 
+@@ -25,7 +26,7 @@ function tools(context) {
+       return { content: [{ type: "text", text: JSON.stringify(store.get(store.rootFor(optionsFor(context.event, scope)), id)) }] };
+     },
+   }, {
+-    name: "memory_apply", label: "Memory mutation", description: "当前内容条件写入。mutation JSON只含id、operation、expected:{hash}，put另含content:{title,summary,body}。正文为带日期case，不含来源、类型或历史字段；删除永久移除文件。",
++    name: "memory_apply", label: "Memory mutation", description: "当前内容条件写入。mutation JSON只含id、operation、expected:{hash}，put另含content:{title,summary,body}。正文为带日期case，不含来源、类型或历史字段；删除永久移除文件。普通正文超过5000词仍保存完整更新，返回compaction.required；随后重新读取并压缩合并，保留知识、条件和未变日期。",
+     parameters: { type: "object", properties: { scope: { type: "string", enum: ["user", "project"] }, mutation: { type: "string" } }, required: ["scope", "mutation"], additionalProperties: false },
+     execute: async (_id, { scope, mutation }) => {
+       if (!context.event || context.signal?.aborted) store.fail("INTERRUPTED", "No active maintenance batch");
+@@ -39,7 +40,14 @@ function tools(context) {
+           if (!existing.has(line) && !dates.has(/^- \[(\d{4}-\d{2}-\d{2})\]/.exec(line)?.[1])) store.fail("TEMP_SOURCE_DATE", "New temporary cases require a dated message from this batch; do not renew old context");
+         }
+       }
+-      const applied = store.mutate(optionsFor(context.event, scope), input);
++      let applied;
++      try { applied = store.mutate(optionsFor(context.event, scope), input); }
++      catch (error) {
++        if (!["CONFLICT", "LOCKED"].includes(error.code)) throw error;
++        context.pendingWrites.set(`${scope}:${input.id}`, { scope, id: input.id, code: error.code });
++        return { content: [{ type: "text", text: JSON.stringify({ status: "retry_required", code: error.code, scope, id: input.id, instruction: "其他Agent或写入方可能已改变内容。重新读取完整文件和最新hash，合并本批更新后重写；不能重放旧正文或删除未知活动锁。" }) }] };
++      }
++      context.pendingWrites.delete(`${scope}:${input.id}`);
+       context.recordEffect({ scope, id: input.id, operation: input.operation, hash: applied.entry.hash });
+       return { content: [{ type: "text", text: JSON.stringify(applied) }] };
+     },
+@@ -62,7 +70,7 @@ async function createMemorySession(event, recordEffect = () => {}) {
+     getSystemPromptSource: () => undefined, getAppendSystemPrompt: () => [], getAppendSystemPromptSources: () => [],
+     extendResources: () => {}, reload: async () => {},
+   };
+-  const context = { event: null, recordEffect, signal: null, writableScopes: [] };
++  const context = { event: null, recordEffect, signal: null, writableScopes: [], pendingWrites: new Map() };
+   const created = await sdk.createAgentSession({
+     cwd: event.workspace, model, modelRuntime, resourceLoader,
+     sessionManager: sdk.SessionManager.inMemory(event.workspace),
+@@ -75,30 +83,39 @@ async function createMemorySession(event, recordEffect = () => {}) {
+   return { session: created.session, selection, context, roots, batches: 0, id: crypto.randomUUID(), created: new Date().toISOString(), utcDay: recent.window().today };
+ }
+ function createManager() {
+-  const workers = new Map(), busy = new Set();
+-  const statePath = workspace => `agents/${store.hash(workspace)}.json`;
+-  const persist = (workspace, changes) => runtime.write(statePath(workspace), { ...(runtime.read(statePath(workspace)) || {}), schema: "csl-memory-agent/v1", workspace, ...changes, updated: new Date().toISOString() });
+-  function discard(workspace) { workers.get(workspace)?.session.dispose(); workers.delete(workspace); }
++  const workers = new Map(), runningEvents = new Set();
++  const statePath = (workspace, slot) => `agents/${store.hash(workspace)}${slot ? `-${slot}` : ""}.json`;
++  const persist = (workspace, slot, changes) => runtime.write(statePath(workspace, slot), { ...(runtime.read(statePath(workspace, slot)) || {}), schema: "csl-memory-agent/v1", workspace, agent: slot + 1, ...changes, updated: new Date().toISOString() });
++  function discard(slot) { slot.worker?.session.dispose(); slot.worker = null; }
+   async function run(event, { recordEffect = () => {}, recordModel = () => {}, signal } = {}) {
+-    const workspace = fs.realpathSync(event.workspace);
+-    let worker = workers.get(workspace), timer, unsubscribe, timedOut = false;
+-    if (busy.has(workspace)) store.fail("AGENT_BUSY", "Workspace already has an active batch");
+-    busy.add(workspace);
++    const workspace = fs.realpathSync(event.workspace), eventKey = `${workspace}:${event.id}`;
++    if (runningEvents.has(eventKey)) store.fail("AGENT_BUSY", "This batch is already running");
++    const pool = workers.get(workspace) || [];
++    let slot = pool.find(item => !item.busy);
++    if (!slot) {
++      if (pool.length >= MAX_AGENTS_PER_WORKSPACE) store.fail("AGENT_BUSY", "Workspace already has ten active Memory Agents");
++      slot = { index: pool.length, busy: false, worker: null };
++      pool.push(slot); workers.set(workspace, pool);
++    }
++    slot.busy = true; runningEvents.add(eventKey);
++    let worker = slot.worker, timer, unsubscribe, timedOut = false;
+     const failures = [], abort = () => { if (worker) void worker.session.abort(); };
+     try {
+-      live.start({ ...event, workspace }, runtime.read(`jobs/${runtime.jobId(event.id)}.json`)?.attempts || 0);
++      live.start({ ...event, workspace }, runtime.read(`jobs/${runtime.jobId(event.id)}.json`)?.attempts || 0, slot.index + 1);
++      persist(workspace, slot.index, { state: "starting", event: event.id, error: null, compaction: [] });
+       const writableScopes = migration.ensureWorkspace(workspace).filter(s => s.writable).map(s => s.scope);
+       if (!writableScopes.length || event.maintenance && !writableScopes.includes(event.maintenance.scope)) store.fail("UPGRADE_REQUIRED", "This memory scope requires an explicitly authorized upgrade");
+       if (signal?.aborted) store.fail("INTERRUPTED", "Batch cancelled before dispatch");
+       const selection = await modelConfig.resolveModel();
+-      if (worker && (worker.selection.provider !== selection.provider || worker.selection.model !== selection.model || worker.batches >= 32 || worker.utcDay !== recent.window().today || Buffer.byteLength(JSON.stringify(worker.session.messages)) > 256 * 1024)) { discard(workspace); worker = null; }
+-      if (!worker) { worker = await createMemorySession({ ...event, workspace }); workers.set(workspace, worker); }
++      if (worker && (worker.selection.provider !== selection.provider || worker.selection.model !== selection.model || worker.batches >= 32 || worker.utcDay !== recent.window().today || Buffer.byteLength(JSON.stringify(worker.session.messages)) > 256 * 1024)) { discard(slot); worker = null; }
++      if (!worker) { worker = await createMemorySession({ ...event, workspace }); slot.worker = worker; }
+       if (signal?.aborted) store.fail("INTERRUPTED", "Batch cancelled during session creation");
+-      Object.assign(worker.context, { event: { ...event, workspace }, signal, writableScopes, recordEffect: effect => { recordEffect(effect); live.record(workspace, "记忆写入", effect); } });
+-      recordModel(worker.selection); live.record(workspace, "模型", { provider: worker.selection.provider, model: worker.selection.model });
+-      persist(workspace, { state: "running", sessionId: worker.id, model: worker.selection, created: worker.created, event: event.id, batches: worker.batches, error: null });
++      Object.assign(worker.context, { event: { ...event, workspace }, signal, writableScopes, recordEffect: effect => { recordEffect(effect); live.record(workspace, "记忆写入", effect, event.id); } });
++      worker.context.pendingWrites.clear();
++      recordModel(worker.selection); live.record(workspace, "模型", { provider: worker.selection.provider, model: worker.selection.model }, event.id);
++      persist(workspace, slot.index, { state: "running", sessionId: worker.id, model: worker.selection, created: worker.created, event: event.id, batches: worker.batches, error: null });
+       unsubscribe = worker.session.subscribe(item => {
+-        live.observe(workspace, item);
++        live.observe(workspace, item, event.id);
+         if (item.type === "tool_execution_end" && item.isError) {
+           const text = (item.result?.content || []).filter(b => b.type === "text").map(b => b.text).join(" ");
+           failures.push(`${item.toolName}: ${text.replace(/\bBearer\s+\S+/gi, "Bearer [redacted]").replace(/\bsk-[A-Za-z0-9_-]+/g, "[redacted-key]").slice(0, 500)}`);
+@@ -106,35 +123,63 @@ function createManager() {
+       });
+       signal?.addEventListener("abort", abort, { once: true });
+       timer = setTimeout(() => { timedOut = true; void worker.session.abort(); }, 5 * 60 * 1000);
++      const pendingCompaction = () => writableScopes.filter(scope => !event.maintenance || scope === event.maintenance.scope)
++        .flatMap(scope => store.compactionStatus(worker.roots[scope], scope).map(entry => ({ scope, ...entry })));
++      const prompt = async text => {
++        await worker.session.prompt(text, { expandPromptTemplates: false });
++        if (timedOut) store.fail("MODEL_TIMEOUT", "Five-minute deadline exceeded; inspect current files before retry");
++        if (signal?.aborted) store.fail("INTERRUPTED", "Memory processing cancelled");
++        const last = [...worker.session.messages].reverse().find(message => message.role === "assistant");
++        if (!last || last.stopReason !== "stop") {
++          const detail = String(last?.errorMessage || "provider returned no diagnostic").replace(/\bBearer\s+\S+/gi, "Bearer [redacted]").replace(/\bsk-[A-Za-z0-9_-]+/g, "[redacted-key]").slice(0, 2000);
++          store.fail("MODEL_FAILED", `Memory run did not finish: ${detail}`);
++        }
++      };
+       const instruction = event.maintenance ? "执行指定scope周期复查，不是用户发言；候选仅为起点，超项目容量需检查完整索引。" : "处理会话增量，同时核对相关旧记忆，不仅新增。";
+-      await worker.session.prompt(`${instruction}旧格式scope只读，不要升级；修改前重新读取当前内容。此前效果仅作提示，无历史恢复。\n${JSON.stringify({ utcWindow: recent.window(), writableScopes, projectBudget: store.budgetStatus(worker.roots.project), maintenance: event.maintenance || null, previousEffects: runtime.read(`jobs/${runtime.jobId(event.id)}.json`)?.effects || [], messages: event.messages })}`, { expandPromptTemplates: false });
+-      if (timedOut) store.fail("MODEL_TIMEOUT", "Five-minute deadline exceeded; inspect current files before retry");
+-      if (signal?.aborted) store.fail("INTERRUPTED", "Memory processing cancelled");
+-      const last = [...worker.session.messages].reverse().find(message => message.role === "assistant");
+-      if (!last || last.stopReason !== "stop") {
+-        const detail = String(last?.errorMessage || "provider returned no diagnostic").replace(/\bBearer\s+\S+/gi, "Bearer [redacted]").replace(/\bsk-[A-Za-z0-9_-]+/g, "[redacted-key]").slice(0, 2000);
+-        store.fail("MODEL_FAILED", `Memory run did not finish: ${detail}`);
++      await prompt(`${instruction}旧格式scope只读，不要升级；修改前重新读取当前内容。此前效果仅作提示，无历史恢复。普通正文5000词是压缩触发阈值，不是拒绝更新的条件；先保存完整更新，再读取最新hash压缩合并，不截断或丢失有效知识、条件和未变日期。\n${JSON.stringify({ utcWindow: recent.window(), writableScopes, projectBudget: store.budgetStatus(worker.roots.project), compaction: pendingCompaction(), maintenance: event.maintenance || null, previousEffects: runtime.read(`jobs/${runtime.jobId(event.id)}.json`)?.effects || [], messages: event.messages })}`);
++      if (worker.context.pendingWrites.size) {
++        await prompt(`以下并发写入尚未完成。重新读取当前完整文件和最新hash，重新判断并合并本批知识后写入；不要覆盖其他Agent的更新，不删除未知活动锁。即使确认无需新增，也以最新hash保存核对后的完整内容以完成本次写入。\n${JSON.stringify([...worker.context.pendingWrites.values()])}`);
+       }
++      let compaction = pendingCompaction();
++      if (compaction.length) {
++        await prompt(`以下普通记忆已保存但仍超过${store.BUDGETS.bodyWords}词。现在重新读取完整内容和最新hash，合并重复内容、精炼表达并写回；保留有效知识、独有条件、否定、例外及未变case日期。项目temp不参与词数压缩。不要删除待压缩文件、截断正文或跨scope转移以绕限。无法保真压缩时保留完整已保存更新，明确报告待压缩，不宣称已达标。\n${JSON.stringify({ compaction, utcWindow: recent.window() })}`);
++        compaction = pendingCompaction();
++      }
++      if (worker.context.pendingWrites.size) store.fail("MEMORY_WRITE_UNRESOLVED", "Concurrent memory updates still need rereading and reconciliation", [...worker.context.pendingWrites.values()]);
+       if (failures.length) store.fail("TOOL_FAILED", `Tool failures: ${[...new Set(failures)].join("; ")}; inspect current files`);
+       if (writableScopes.includes("project") && (!event.maintenance || event.maintenance.scope === "project")) {
+         const budget = store.budgetStatus(worker.roots.project);
+-        if (budget.overCapacity || budget.oversized.length) store.fail("MEMORY_BUDGET_UNRESOLVED", "Project still exceeds budget", budget);
++        if (budget.overCapacity) store.fail("MEMORY_BUDGET_UNRESOLVED", "Project still exceeds file capacity", budget);
+       }
+-      worker.batches++; persist(workspace, { state: "idle", event: null, batches: worker.batches, lastEvent: event.id });
+-      live.finish(workspace, "completed", "本批处理完成。");
+-      return { model: worker.selection, summary: worker.session.getLastAssistantText() || "请读取当前记忆。" };
++      worker.batches++; persist(workspace, slot.index, { state: "idle", event: null, batches: worker.batches, lastEvent: event.id, compaction });
++      live.finish(workspace, "completed", compaction.length ? "更新已保存；仍有正文待压缩。" : "本批处理完成。", event.id);
++      return { model: worker.selection, compaction, summary: worker.session.getLastAssistantText() || "请读取当前记忆。" };
+     } catch (error) {
+-      live.finish(workspace, signal?.aborted ? "interrupted" : "failed", error.message);
+-      persist(workspace, { state: signal?.aborted ? "interrupted" : "failed", event: event.id, error: `${error.code || "MEMORY_ERROR"}: ${error.message}` });
+-      discard(workspace); throw error;
++      live.finish(workspace, signal?.aborted ? "interrupted" : "failed", error.message, event.id);
++      persist(workspace, slot.index, { state: signal?.aborted ? "interrupted" : "failed", event: event.id, error: `${error.code || "MEMORY_ERROR"}: ${error.message}` });
++      discard(slot); throw error;
+     } finally {
+-      busy.delete(workspace); clearTimeout(timer); unsubscribe?.(); signal?.removeEventListener("abort", abort);
+-      if (worker) Object.assign(worker.context, { event: null, signal: null, recordEffect: () => {}, writableScopes: [] });
++      slot.busy = false; runningEvents.delete(eventKey); clearTimeout(timer); unsubscribe?.(); signal?.removeEventListener("abort", abort);
++      if (worker) {
++        Object.assign(worker.context, { event: null, signal: null, recordEffect: () => {}, writableScopes: [] });
++        worker.context.pendingWrites.clear();
++      }
+     }
+   }
+-  function close() { live.clear(); for (const workspace of workers.keys()) { discard(workspace); persist(workspace, { state: "stopped", event: null }); } }
++  function close() {
++    live.clear();
++    for (const [workspace, pool] of workers) for (const slot of pool) {
++      discard(slot); persist(workspace, slot.index, { state: "stopped", event: null });
++    }
++    workers.clear();
++  }
+   return { run, close, inspect: live.get };
+ }
+ function states() { return runtime.names("agents").map(name => runtime.read(`agents/${name}`)); }
+-function reconcile() { for (const state of states()) runtime.write(`agents/${store.hash(state.workspace)}.json`, { ...state, state: state.state === "running" ? "interrupted" : "stopped", updated: new Date().toISOString() }); }
+-module.exports = { createMemorySession, createManager, states, reconcile };
++function reconcile() {
++  for (const name of runtime.names("agents")) {
++    const state = runtime.read(`agents/${name}`);
++    runtime.write(`agents/${name}`, { ...state, state: ["running", "starting"].includes(state.state) ? "interrupted" : "stopped", updated: new Date().toISOString() });
++  }
++}
++module.exports = { MAX_AGENTS_PER_WORKSPACE, createMemorySession, createManager, states, reconcile };
+diff --git a/bin/memory/daemon.js b/bin/memory/daemon.js
+index b3ef4a5..33ad878 100644
+--- a/bin/memory/daemon.js
++++ b/bin/memory/daemon.js
+@@ -82,12 +82,12 @@ async function main() {
+           let model;
+           try { model = await models.resolveModel(); } catch (error) { model = { error: error.message }; }
+           const jobs = queue.all();
+-          return json(response, 200, { running: true, protocol: store.STORE_VERSION, storagePolicy: "current-files-only/v1", pid: process.pid, started, model, agents: agent.states(), active: [...active.keys()], schedulerError, maintenanceErrors, counts: jobs.reduce((counts, { state }) => { counts[state.status] = (counts[state.status] || 0) + 1; return counts; }, {}) });
++          return json(response, 200, { running: true, protocol: store.STORE_VERSION, storagePolicy: "current-files-only/v1", pid: process.pid, started, model, agents: agent.states(), active: [...new Set([...active.values()].map(item => item.workspace))], activeBatches: [...active].map(([id, item]) => ({ id, workspace: item.workspace })), maxAgentsPerWorkspace: agent.MAX_AGENTS_PER_WORKSPACE, schedulerError, maintenanceErrors, counts: jobs.reduce((counts, { state }) => { counts[state.status] = (counts[state.status] || 0) + 1; return counts; }, {}) });
+         }
+         if (url.pathname === "/api/index") return json(response, 200, store.inspectIndex(optionsFrom(params)));
+         if (url.pathname === "/api/agent-live") {
+           if (typeof params.workspace !== "string" || !params.workspace.trim()) store.fail("WORKSPACE_REQUIRED", "Select a workspace to inspect its Memory Agent");
+-          return json(response, 200, manager.inspect(params.workspace));
++          return json(response, 200, manager.inspect(params.workspace, params.event ? runtime.jobId(params.event) : undefined));
+         }
+         if (url.pathname === "/api/agents") return json(response, 200, { items: agent.states() });
+         if (url.pathname === "/api/memory-groups") return json(response, 200, library.groups(params));
+@@ -127,7 +127,7 @@ async function main() {
+       }
+       const effects = state.effects || [];
+       queue.update(event.id, { status: "running", attempts: state.attempts + 1, error: null, started: new Date().toISOString() });
+-      const controller = active.get(event.workspace);
++      const controller = active.get(event.id).controller;
+       await manager.run(event, {
+         signal: controller.signal,
+         recordModel: (model) => queue.update(event.id, { model }),
+@@ -148,7 +148,7 @@ async function main() {
+       } catch (persistError) { console.error("Cannot persist job failure", event.id, persistError.message); }
+     } finally {
+       unlock?.();
+-      active.delete(event.workspace);
++      active.delete(event.id);
+     }
+   }
+ 
+@@ -161,7 +161,6 @@ async function main() {
+         queue.compactCompleted();
+         maintenanceErrors = maintenance.schedule(queue.all());
+       }
+-      const seen = new Set();
+       const dispatchErrors = [];
+       // Conversation work takes precedence; each workspace runs independently.
+       // Exhausted records remain inspectable without blocking later work.
+@@ -176,11 +175,10 @@ async function main() {
+           dispatchErrors.push(`${workspace}: ${error.code || "MEMORY_ERROR"}: ${error.message}`);
+           continue;
+         }
+-        if (seen.has(workspace)) continue;
+-        seen.add(workspace);
+-        // Retry once within the same workspace; other workspaces run in parallel.
+-        if (!["queued", "failed", "interrupted"].includes(item.state.status) || active.has(workspace)) continue;
+-        active.set(workspace, new AbortController());
++        // Reserve each batch before dispatch, including while its session starts.
++        if (!["queued", "failed", "interrupted"].includes(item.state.status) || active.has(item.event.id)) continue;
++        if ([...active.values()].filter(item => item.workspace === workspace).length >= agent.MAX_AGENTS_PER_WORKSPACE) continue;
++        active.set(item.event.id, { workspace, controller: new AbortController() });
+         void processJob(item);
+       }
+       schedulerError = dispatchErrors.length ? dispatchErrors.join("\n") : null;
+@@ -191,7 +189,7 @@ async function main() {
+     if (stopping) return;
+     stopping = true;
+     clearInterval(interval);
+-    for (const controller of active.values()) controller.abort();
++    for (const { controller } of active.values()) controller.abort();
+     server.close();
+     const wait = setInterval(() => {
+       if (active.size) return;
+diff --git a/bin/memory/live.js b/bin/memory/live.js
+index 41b8825..38aab7a 100644
+--- a/bin/memory/live.js
++++ b/bin/memory/live.js
+@@ -15,19 +15,24 @@ function text(value, limit = 16 * 1024) {
+   return `${result}\n…[内容已截断]`;
+ }
+ 
+-function start(event, attempt) {
+-  const previous = traces.get(event.workspace);
++function traceFor(workspace, event) {
++  return [...traces.values()].filter(trace => trace.workspace === workspace && (!event || trace.event === event)).at(-1);
++}
++
++function start(event, attempt, agent = 1) {
++  const key = `${event.workspace}\0${agent}`;
++  const previous = traces.get(key);
+   clearTimeout(previous?.timer);
+-  traces.set(event.workspace, {
+-    workspace: event.workspace, event: event.id, session: text(event.session, 4096), task: event.task,
++  traces.set(key, {
++    workspace: event.workspace, agent, event: event.id, session: text(event.session, 4096), task: event.task,
+     attempt, status: "running", started: new Date().toISOString(),
+     input: text(event.maintenance || event.messages, 32 * 1024),
+     events: [], dropped: 0, bytes: 0, timer: null,
+   });
+ }
+ 
+-function record(workspace, kind, value) {
+-  const trace = traces.get(workspace);
++function record(workspace, kind, value, event) {
++  const trace = traceFor(workspace, event);
+   if (!trace || trace.status !== "running") return;
+   const item = { at: new Date().toISOString(), kind, text: text(value) };
+   trace.events.push(item);
+@@ -38,30 +43,31 @@ function record(workspace, kind, value) {
+   }
+ }
+ 
+-function observe(workspace, item) {
+-  if (item.type === "tool_execution_start") record(workspace, "工具调用", { tool: item.toolName, id: item.toolCallId, arguments: item.args });
++function observe(workspace, item, event) {
++  if (item.type === "tool_execution_start") record(workspace, "工具调用", { tool: item.toolName, id: item.toolCallId, arguments: item.args }, event);
+   if (item.type === "tool_execution_end") record(workspace, item.isError ? "工具错误" : "工具结果", {
+     tool: item.toolName, id: item.toolCallId,
+     text: (item.result?.content || []).filter(block => block.type === "text").map(block => block.text).join("\n"),
+-  });
++  }, event);
+   if (item.type === "message_end" && item.message?.role === "assistant") {
+     const visible = (item.message.content || []).filter(block => block.type === "text").map(block => block.text).join("\n");
+-    if (visible) record(workspace, "公开回复", visible);
++    if (visible) record(workspace, "公开回复", visible, event);
+   }
+ }
+ 
+-function finish(workspace, status, message) {
+-  const trace = traces.get(workspace);
++function finish(workspace, status, message, event) {
++  const trace = traceFor(workspace, event);
+   if (!trace) return;
+-  record(workspace, "结束", message || status);
++  record(workspace, "结束", message || status, event);
+   trace.status = status;
+   trace.finished = new Date().toISOString();
+-  trace.timer = setTimeout(() => { if (traces.get(workspace) === trace) traces.delete(workspace); }, RETENTION_MS);
++  const key = `${workspace}\0${trace.agent}`;
++  trace.timer = setTimeout(() => { if (traces.get(key) === trace) traces.delete(key); }, RETENTION_MS);
+   trace.timer.unref();
+ }
+ 
+-function get(workspace) {
+-  const trace = traces.get(workspace);
++function get(workspace, event) {
++  const trace = traceFor(workspace, event);
+   if (!trace) return { available: false, workspace };
+   const { bytes, timer, ...visible } = trace;
+   return { available: true, ...visible, retentionSeconds: RETENTION_MS / 1000 };
+diff --git a/bin/memory/web/dashboard.html b/bin/memory/web/dashboard.html
+index a0c82d9..234a325 100644
+--- a/bin/memory/web/dashboard.html
++++ b/bin/memory/web/dashboard.html
+@@ -39,7 +39,7 @@
+   </div>
+   <div class="overview-grid">
+     <section class="scope-panel"><h2>运行环境</h2><dl class="system-facts"><div><dt>工作区</dt><dd id="overview-workspaces">—</dd></div><div><dt>提供商</dt><dd id="overview-provider">—</dd></div><div><dt>当前模型</dt><dd id="overview-model">—</dd></div><div><dt>启动时间</dt><dd id="overview-started">—</dd></div></dl></section>
+-    <section class="scope-panel"><h2>处理规则</h2><p class="policy-number">2 <span>次 / 每批最多尝试</span></p><p class="help">工作区之间独立并行；耗尽后标记并继续。记忆只保存当前有效内容。</p><a class="text-link" href="?page=processing" data-route="processing">查看处理状态 →</a></section>
++    <section class="scope-panel"><h2>处理规则</h2><p class="policy-number">2 <span>次 / 每批最多尝试</span></p><p class="help">工作区独立并行；每工作区最多10个Agent，其余批次排队。耗尽后标记并继续。记忆只保存当前有效内容。</p><a class="text-link" href="?page=processing" data-route="processing">查看处理状态 →</a></section>
+   </div>
+   <section class="scope-panel"><h2>工作区状态</h2><p class="help">当前是否执行以后台活动列表为准；空闲工作区同时展示上次运行结果。</p><div id="overview-agents" class="workspace-grid"></div></section>
+   <details aria-labelledby="status-title"><summary><h2 id="status-title">服务诊断</h2></summary><pre id="status">加载中…</pre></details>
+@@ -64,7 +64,7 @@
+   <section id="page-processing" data-page-panel="processing" aria-label="记忆处理" hidden>
+   <section class="scope-panel" aria-labelledby="agents-title">
+     <h2 id="agents-title">Memory Agent · 实时处理</h2>
+-    <p class="help">按工作区查看正在处理的内容。过程仅在内存暂存，结束后最多保留两分钟。</p>
++    <p class="help">按工作区与Agent查看正在处理的批次。过程仅在内存暂存，结束后最多保留两分钟。</p>
+     <p id="agents-error" role="status"></p><div id="processing-agents">正在读取运行状态…</div>
+   </section>
+   <section class="scope-panel" aria-labelledby="jobs-title"><h2 id="jobs-title">处理队列与异常</h2><p class="help">每批最多尝试两次；已耗尽记录保留供查看，不阻塞后续批次。</p>
+diff --git a/bin/memory/web/dashboard.js b/bin/memory/web/dashboard.js
+index 2e68355..f740e5f 100644
+--- a/bin/memory/web/dashboard.js
++++ b/bin/memory/web/dashboard.js
+@@ -9,7 +9,7 @@ const routeInfo = {
+   processing: ["记忆处理", "PROCESSING", "查看工作区 Agent 的实时过程、队列与异常。"],
+ };
+ const pageFromURL = () => { const page = new URLSearchParams(location.search).get("page"); return Object.hasOwn(routeInfo, page) ? page : "overview"; };
+-let currentPage = pageFromURL(), generation = 0, detailOpener = null, liveWorkspace = null, liveGeneration = 0, liveBusy = false, activityBusy = false;
++let currentPage = pageFromURL(), generation = 0, detailOpener = null, liveWorkspace = null, liveEvent = null, liveGeneration = 0, liveBusy = false, activityBusy = false;
+ let jobs = { offset: 0, nextOffset: null };
+ history.replaceState(null, "", `?page=${currentPage}`);
+ const query = value => new URLSearchParams(Object.entries(value).filter(([, v]) => v !== "" && v != null)).toString();
+@@ -48,7 +48,7 @@ function memoryBadge(kind) {
+   return item;
+ }
+ function detail(title, text, meta, reason) {
+-  liveWorkspace = null; liveGeneration++;
++  liveWorkspace = null; liveEvent = null; liveGeneration++;
+   $("detail-title").textContent = title; $("detail-reason").textContent = reason; $("detail-error").textContent = "";
+   $("agent-live").hidden = true; $("actions").replaceChildren(); $("detail-metadata").open = false;
+   render($("memory-content"), text); render($("detail-meta"), meta);
+@@ -73,9 +73,9 @@ async function showJob(id) {
+   detail("当前处理批次", messages || "此批次无可读取的会话输入。", { ...meta, state }, state.error || (state.retired ? "已完成，输入已释放。" : "队列信息仅用于处理；实际知识请查看当前文件。"));
+   if (["failed", "interrupted"].includes(state.status) && state.attempts < 2) $("actions").append(button("重试本批", async () => { await api("/api/retry", { id }); await showJob(id); await refresh(); }));
+ }
+-async function showAgent(workspace) {
+-  detail("Memory Agent · 实时处理", "", { workspace }, "公开过程只在内存暂存，结束后两分钟释放。");
+-  liveWorkspace = workspace; $("agent-live").hidden = false; $("agent-live-events").textContent = "";
++async function showAgent(workspace, event) {
++  detail("Memory Agent · 实时处理", "", { workspace, event }, "公开过程只在内存暂存，结束后两分钟释放。");
++  liveWorkspace = workspace; liveEvent = event; $("agent-live").hidden = false; $("agent-live-events").textContent = "";
+   await refreshLive();
+ }
+ async function refreshLive() {
+@@ -83,9 +83,9 @@ async function refreshLive() {
+   liveBusy = true;
+   const request = liveGeneration, workspace = liveWorkspace;
+   try {
+-    const trace = await api(`/api/agent-live?${query({ workspace })}`);
++    const trace = await api(`/api/agent-live?${query({ workspace, event: liveEvent })}`);
+     if (request !== liveGeneration) return;
+-    $("agent-live-state").textContent = trace.available ? `${trace.status} · 尝试 ${trace.attempt}/2${trace.dropped ? " · 早期缓存已释放" : ""}` : "实时缓存不可用或已释放。";
++    $("agent-live-state").textContent = trace.available ? `${trace.agent ? `Agent ${trace.agent} · ` : ""}${trace.status} · 尝试 ${trace.attempt}/2${trace.dropped ? " · 早期缓存已释放" : ""}` : "实时缓存不可用或已释放。";
+     $("agent-live-events").textContent = trace.available ? (trace.events || []).map(e => `${e.at} ${e.kind}\n${e.text}`).join("\n\n") : "";
+   } catch (cause) { if (request === liveGeneration) $("detail-error").textContent = cause.message; }
+   finally { liveBusy = false; }
+@@ -140,26 +140,30 @@ function renderJobs(page) {
+ }
+ function renderStatus(status) {
+   const agents = status.agents || [], active = new Set(status.active || []), workspaces = new Set([...agents.map(a => a.workspace), ...active]);
++  const activeBatches = status.activeBatches || [...active].map(workspace => ({ workspace }));
++  const limit = status.maxAgentsPerWorkspace || 1;
+   const attention = (status.counts?.failed || 0) + (status.counts?.interrupted || 0) + (status.counts?.exhausted || 0);
+   const problems = [status.schedulerError, status.model?.error, ...(status.maintenanceErrors || []).map(e => e.error)].filter(Boolean);
+   const tone = attention || problems.length ? "warning" : "success";
+   $("connection").textContent = tone === "warning" ? "[!] 服务需关注" : "[0] 服务已连接"; $("connection").dataset.tone = tone;
+   $("health-panel").dataset.tone = tone; $("system-health").textContent = tone === "warning" ? "服务在线，有记录需要关注" : active.size ? "记忆系统正在运行" : "记忆系统已就绪";
+-  $("system-description").textContent = problems.join("；") || `${active.size} 个工作区正在处理 · ${status.counts?.queued || 0} 批等待`;
+-  $("metric-pid").textContent = status.pid; $("metric-active").textContent = active.size; $("metric-queued").textContent = status.counts?.queued || 0; $("metric-failed").textContent = attention;
++  $("system-description").textContent = problems.join("；") || `${active.size} 个工作区 · ${activeBatches.length} 个Agent正在处理 · ${status.counts?.queued || 0} 批等待`;
++  $("metric-pid").textContent = status.pid; $("metric-active").textContent = activeBatches.length; $("metric-queued").textContent = status.counts?.queued || 0; $("metric-failed").textContent = attention;
+   $("overview-workspaces").textContent = workspaces.size;
+   $("overview-provider").textContent = status.model?.error ? "不可用" : status.model?.provider || "未配置";
+   $("overview-model").textContent = status.model?.error || status.model?.model || "未配置";
+   $("overview-started").textContent = new Date(status.started).toLocaleString("zh-CN"); $("status").textContent = JSON.stringify(status, null, 2); workspaceOptions(workspaces);
+   const grid = $("overview-agents"); grid.replaceChildren();
+   for (const workspace of [...workspaces].sort()) {
+-    const card = node("article", "", "workspace-card"); card.append(node("h3", workspace.split("/").filter(Boolean).at(-1)), badge(active.has(workspace) ? "running" : agents.find(a => a.workspace === workspace)?.state || "idle"), node("p", workspace)); grid.append(card);
++    const running = activeBatches.filter(item => item.workspace === workspace).length;
++    const card = node("article", "", "workspace-card"); card.append(node("h3", workspace.split("/").filter(Boolean).at(-1)), badge(active.has(workspace) ? "running" : agents.find(a => a.workspace === workspace)?.state || "idle"), node("p", `并行Agent：${running} / ${limit}`), node("p", workspace)); grid.append(card);
+   }
+-  const container = $("processing-agents"), signature = JSON.stringify([...active].sort());
++  const runningAgents = activeBatches.map(item => ({ ...item, agent: agents.find(a => a.workspace === item.workspace && a.event === item.id)?.agent }));
++  const container = $("processing-agents"), signature = JSON.stringify(runningAgents);
+   if (container.dataset.workspaces !== signature) {
+     container.dataset.workspaces = signature; container.replaceChildren();
+     if (!active.size) container.textContent = "当前没有正在处理的 Agent。";
+-    for (const workspace of active) { const row = node("p", `${workspace} · `); row.append(button("查看实时处理", () => showAgent(workspace))); container.append(row); }
++    for (const item of runningAgents) { const row = node("p", `${item.workspace} · Agent ${item.agent || "启动中"} · `); row.append(button("查看实时处理", () => showAgent(item.workspace, item.id))); container.append(row); }
+   }
+ }
+ async function refreshActivity() {
+@@ -191,7 +195,7 @@ async function refresh() {
+   } catch (cause) { if (request === generation) { error(cause.message); if (currentPage === "storage") $("memories").textContent = "无法读取当前记忆，请重试。"; } }
+ }
+ function selectPage(page, push = false) {
+-  currentPage = Object.hasOwn(routeInfo, page) ? page : "overview"; $("detail-section").close(); liveWorkspace = null; liveGeneration++;
++  currentPage = Object.hasOwn(routeInfo, page) ? page : "overview"; $("detail-section").close(); liveWorkspace = null; liveEvent = null; liveGeneration++;
+   if (push) history.pushState(null, "", `?page=${currentPage}`);
+   document.querySelectorAll("[data-page-panel]").forEach(n => { n.hidden = n.dataset.pagePanel !== currentPage; });
+   document.querySelectorAll("[data-route]").forEach(n => { if (n.dataset.route === currentPage) n.setAttribute("aria-current", "page"); else n.removeAttribute("aria-current"); });
+@@ -201,7 +205,7 @@ function selectPage(page, push = false) {
+ document.querySelectorAll("[data-route]").forEach(n => n.addEventListener("click", e => { if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); selectPage(n.dataset.route, n.dataset.route !== currentPage); }));
+ window.addEventListener("popstate", () => selectPage(pageFromURL()));
+ $("detail-close").addEventListener("click", () => $("detail-section").close());
+-$("detail-section").addEventListener("close", () => { liveWorkspace = null; liveGeneration++; if (detailOpener?.isConnected) detailOpener.focus(); });
++$("detail-section").addEventListener("close", () => { liveWorkspace = null; liveEvent = null; liveGeneration++; if (detailOpener?.isConnected) detailOpener.focus(); });
+ $("refresh").addEventListener("click", () => { $("detail-section").close(); void refresh(); });
+ $("filters").addEventListener("submit", e => { e.preventDefault(); $("detail-section").close(); void refresh(); });
+ $("filters").addEventListener("reset", () => queueMicrotask(() => $("filters").requestSubmit()));
+diff --git a/docs/memory.md b/docs/memory.md
+index 0414bcb..4e10c07 100644
+--- a/docs/memory.md
++++ b/docs/memory.md
+@@ -16,7 +16,7 @@ memory/
+     wide-topic.md   # 必要专题
+ ```
+ 
+-两个基础文件属于项目作用域，用户级仍按实际知识组织。它们沿用相同的title、summary和case格式，共占20个文件额度中的两个，各自遵守1000词限制，不增加type或其他元数据。首次维护可写项目时用已有可核实知识补齐；缺知识或容量则报告，不编造经验或写占位case。日常维护保留其文件身份；专题可保留，重叠内容先保存回读再移除重复case。明确遗忘仍删除指定知识，不为入口保留已要求遗忘的内容。这不恢复旧Task的Context/Lessons文件、Skill或自动导入流程。
++两个基础文件属于项目作用域，用户级仍按实际知识组织。它们沿用相同的title、summary和case格式，共占20个文件额度中的两个，各自在超过5000词时触发压缩，不增加type或其他元数据。首次维护可写项目时用已有可核实知识补齐；缺知识或容量则报告，不编造经验或写占位case。日常维护保留其文件身份；专题可保留，重叠内容先保存回读再移除重复case。明确遗忘仍删除指定知识，不为入口保留已要求遗忘的内容。这不恢复旧Task的Context/Lessons文件、Skill或自动导入流程。
+ 
+ `entries`是权威正文；`index.md`只描述当前集合，列出标题、摘要、相对链接及完整文件SHA256。索引头使用 `csl-memory-index/v4`、`formatVersion: 5`、scope、generation与当前count。generation由当前文件身份计算，不生成代际目录、卡片、manifest或备份。格式版本属于当前索引，不写入知识文件。
+ 
+@@ -34,7 +34,7 @@ summary: 主题边界、知识准入与当前正文检索。
+ 
+ 不保存sources、type、retrieval、schema、id、revision、updated、deleted等文件元数据，不保存来源审计、前后版本、提案、审查、墓碑或恢复副本，也不转存到任务附件或别的目录。技术概念、必要API名称与知识性链接可以留正文，但不能把历史来源记录改名后塞回case。
+ 
+-项目最多20个当前文件，每片正文1000词，使用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike计数；用户正文最多8000个Unicode字符。title最多60字符、summary最多200字符，均为单行。每个正文非空行必须为有效UTC日历日的 `- [YYYY-MM-DD] case`。实质新增或纠正才更新该case日期，格式调整、重排和其他case变化不刷新日期。旧知识缺少可信日期时不编造转换日。
++项目最多20个当前文件。项目与用户级普通文件每份正文超过5000词时触发压缩，使用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike计数。writer先保存完整更新并返回compaction提示，不因词数拒绝写入；Memory Agent重新读取内容和最新hash，合并重复内容并精炼表达，保留有效知识、必要条件、例外及未变case日期。无法保真收敛时保留完整更新并标记待压缩，后续批次继续处理，不因词数将整批判失败。直接CLI写入也返回compaction.required，由调用者继续压缩或明确报告待处理。项目temp不设正文词数预算，底层单次读写安全限制仍适用。title最多60字符、summary最多200字符，均为单行。每个正文非空行必须为有效UTC日历日的 `- [YYYY-MM-DD] case`。实质新增或纠正才更新该case日期，格式调整、重排和其他case变化不刷新日期。旧知识缺少可信日期时不编造转换日。
+ 
+ ## 最近七天上下文与特殊徽标
+ 
+@@ -42,7 +42,7 @@ summary: 主题边界、知识准入与当前正文检索。
+ 
+ 窗口按UTC自然日计算，包含当天及前6天。消息入队保留真实时间，后台从该批有时间的消息提炼临时case；没有可靠时间的旧队列输入不用于新建temp条目。整理、周期复查和重试不续期，未来或过期日期拒绝写入。后台跨UTC日期重建模型会话，避免沿用过时上下文。
+ 
+-temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文沿用日期列表，可以为空。它计入项目20个文件及1000词预算。固定摘要避免条目过期后，旧意图仍泄漏在标题或索引中。同名非临时文件不自动转换或覆盖，用户级同名文件不受此规则影响。
++temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文沿用日期列表，可以为空。它计入项目20个文件，但不设正文词数预算，不因词数进入超限整理；内容按最近7个UTC自然日的窗口保留。固定摘要避免条目过期后，旧意图仍泄漏在标题或索引中。同名非临时文件不自动转换或覆盖，用户级同名文件不受此规则影响。
+ 
+ 初始化和后台每分钟调度检查清理过期条目，即使当天没有模型任务也执行；停机期间不运行，下次启动补清。API、宿主提示再次过滤过期内容；普通文件读取须同样检查日期。读响应中的hash始终指向完整磁盘文件，不能用过滤后的正文重算写入条件。空文件继续作为临时入口，过期条目不归档、不自动转入长期知识。
+ 
+@@ -99,7 +99,7 @@ mutation为 `id`、`operation`、`expected:{hash}`，put另含 `content:{title,s
+ 
+ ## 后台与界面
+ 
+-服务协议为5。后台每工作区使用隔离的Pi SDK内存会话，同工作区串行、不同工作区并行。模型优先取Memory配置，否则取Pi保存的默认模型，不跟随前台临时切换或静默降级。只提供读取和当前内容写入工具，无shell及历史接口。
++服务协议为5。后台每工作区最多10个隔离的Pi SDK内存会话，按需创建并复用，最多同时处理10个不同批次，其余排队；各工作区独立计数，不重复运行同一批次。槽位预留包含会话创建阶段，失败或取消只影响所属Agent，不释放其他Agent的状态。实时过程按批次查询，状态按Agent槽位保存；Dashboard分别显示活动工作区、活动Agent及每工作区的并行数量。并发写入保留文件锁和最新hash校验，CONFLICT/LOCKED要求重新读取并合并；已解决的冲突不作为永久工具失败，尚未解决的写入不得标记批次成功，不删除未知活动锁。模型优先取Memory配置，否则取Pi保存的默认模型，不跟随前台临时切换或静默降级。只提供读取和当前内容写入工具，无shell及历史接口。
+ 
+ 每批最多两次模型尝试、五分钟期限，最多32批或上下文超限时换内存会话；失败后重新检查当前文件，工具响应缺失不等于未写入。effects只含scope、文件ID、操作和当前hash，不保存前后正文。成功后释放输入与处理状态，仅保留运行去重hash与最新周期游标；失败/中断队列继续服务剩余尝试，不提供知识恢复。共享 `.service` 是运行状态，不是知识存储或历史副本；显式单项目清理不删除其他项目的共享数据。
+ 
+diff --git a/skills/meta/agent-memory/SKILL.md b/skills/meta/agent-memory/SKILL.md
+index 8487e07..c9f7fc5 100644
+--- a/skills/meta/agent-memory/SKILL.md
++++ b/skills/meta/agent-memory/SKILL.md
+@@ -38,7 +38,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ 
+ ## 内容与容量
+ 
+-项目基础文件固定为 `entries/context.md`（项目基础信息：定位、职责、结构及稳定约定）与 `entries/lessons.md`（通用经验：可复用的触发条件、防护动作及检查）。这是新 Memory 的两个普通知识文件，不恢复旧 Task 的Context/Lessons路径、Skill或写入流程，也不增加类型字段。两文件计入20个文件上限，各自遵守1000词限制；“通用”指项目内跨任务复用，不自动提升为用户级。
++项目基础文件固定为 `entries/context.md`（项目基础信息：定位、职责、结构及稳定约定）与 `entries/lessons.md`（通用经验：可复用的触发条件、防护动作及检查）。这是新 Memory 的两个普通知识文件，不恢复旧 Task 的Context/Lessons路径、Skill或写入流程，也不增加类型字段。两文件计入20个文件上限，各自在超过5000词时触发压缩；“通用”指项目内跨任务复用，不自动提升为用户级。
+ 
+ 首次维护可写项目时，核对并补齐两个基础文件；只用可核实知识，不写空壳、占位case或编造经验。缺少必要知识或容量时报告缺项；旧格式作用域仍只读。已有重叠专题按下述先保存、回读、再移除重复case的顺序归并，保留独有内容和日期。日常维护 MUST 保留两个基础入口，不因拆分、合并或腾配额而删除或改名；用户明确要求遗忘时仍移除指定知识，不为保留入口而保留已要求遗忘的内容。
+ 
+@@ -47,7 +47,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ - title最多60个Unicode字符，summary最多200个，均为单行；summary说明收录范围。
+ - 正文每个非空行固定为 `- [YYYY-MM-DD] 知识及必要条件`。不用独立标题、段落、嵌套列表、表格或围栏；行内代码、知识链接可用。一个case完整保留条件、否定、例外、单位和关键数值。
+ - 日期用有效UTC日历日。新增或实质纠正case才更新其日期，未变case保留原日期，排版或重排不刷新。不凭空编造旧知识日期；无可靠日期时报告转换阻塞。
+-- 每项目最多20个当前文件，每片1000词；用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike段计数。用户正文最多8000个Unicode字符。索引不占知识文件配额，无最低正文长度。
++- 每项目最多20个当前文件；项目与用户级普通文件每份正文超过5000词时触发压缩，用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike段计数。5000词是整理阈值，不是拒绝更新的硬上限：writer先保存完整更新并返回compaction提示，Memory Agent MUST 重新读取最新内容与hash，压缩合并后写回。无法保真收敛时 MUST 保留已保存更新并明确报告待压缩；后续批次继续处理，不因词数将整批判失败。项目temp不设正文词数预算，仅按下节时间窗口保留。底层单次读写安全限制仍适用。索引不占知识文件配额，无最低正文长度。
+ - 长期主题只留影响未来判断的稳定偏好、事实、条件经验；temp仅按下节短期例外维护。允许零修改；不收临时进度、确认经过、流水、凭据、隐藏推理、无依据推测或可直接从权威资料重建的大段重复文本。
+ - 短句提炼但不丢独有信息，不保存会话、事件、任务、事务编号和来源审查过程。规则已有载体时只留必要提示，不复制规范。
+ 
+@@ -55,7 +55,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ 
+ 项目额外保留特殊文件 `entries/temp.md`，供新Agent了解用户近期意图、关注点、未决问题及必要背景。它是短期内容的明确例外，不替代Task权威状态，不授予继续执行权限，不复制完整对话或任务日志。context、lessons仍为长期知识，不适用临时期满删除。
+ 
+-- temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文仍用带日期case，可以为空。它计入20个项目文件与每份1000词上限；不创建占位case。
++- temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文仍用带日期case，可以为空。它计入20个项目文件，但不受普通文件5000词预算约束，也不因正文词数进入超限整理；不创建占位case。
+ - 保留窗口为UTC当天及前6个自然日。临时case的日期 MUST 来自该批消息的真实UTC时间；缺少时间的消息 MUST NOT 猜日期写入temp。旧内容 MUST NOT 因重排、复查或重试刷新日期，未来日期和窗口外日期不可写入。
+ - 会话批次 SHOULD 合并有效近期背景，移除被新意图替代的内容；周期批次 MUST NOT 新增临时条目或续期。过期内容 MUST NOT 自动转存到长期主题；长期知识的提炼仍须满足独立的知识准入要求。
+ - 系统在初始化和后台每分钟调度检查时确定性清理过期正文，保留空文件；停机期间不执行清理，下次初始化补清。API与新Agent提示再次按当前日期过滤。普通文件读取者 MUST 忽略窗口外条目，不能因正文尚待清理就采信。索引及完整文件hash仍对应磁盘实际内容。
+@@ -86,11 +86,11 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ 
+ CONFLICT后重读并重新判断，不强制覆盖；LOCKED时查明所有者，不删未知活动锁。INDEX_STALE表示当前文件已经改变但索引未成功刷新，应回读entries后执行reindex，不假定回滚。中断不会提供历史还原；不根据工具响应缺失认定未写入。
+ 
+-合并先保存、回读完整替代知识，再检查当前正文引用并删除冗余文件。容量已满时合并到既有主题腾出空间，不能先删再存、截断正文或移入user绕限。仅在明确失效、完整替代或明确遗忘请求时删除；久未使用不构成依据。无法保真收敛或引用属于未授权项目时保留文件并报告阻塞。
++合并先保存、回读完整替代知识，再检查当前正文引用并删除冗余文件。正文超出5000词时 MUST 合并重复表达、精炼措辞，保留独有条件、否定、例外、关键数值和未变case日期；MUST NOT 截断、静默丢弃有效知识、删除待压缩文件或跨scope转移以绕过阈值。直接CLI写入同样保存超阈值正文并返回compaction.required，调用者 MUST 继续压缩或明确保留为待压缩，不能把提示当作更新失败。容量已满时合并到既有主题腾出空间，不能先删再存、截断正文或移入user绕限。仅在明确失效、完整替代或明确遗忘请求时删除；久未使用不构成依据。无法保真收敛或引用属于未授权项目时保留文件并报告阻塞。
+ 
+ ## 后台维护与升级
+ 
+-每批会话检索相关旧知识并纠错、合并或保留。周期复查按scope每24小时、每批最多8个ID轮转，候选只是起点；项目超限时需检查完整索引。不同工作区并行，同工作区串行；周期批次只写指定scope。旧格式scope不自动升级，也不安排写入维护。
++每批会话检索相关旧知识并纠错、合并或保留。周期复查按scope每24小时、每批最多8个ID轮转，候选只是起点；项目超限时需检查完整索引。不同工作区独立并行；每工作区最多10个Memory Agent独立内存会话，槽位按需创建并复用，最多同时处理10个不同批次，上限外批次排队。相同批次不得重复执行，状态与实时过程按Agent槽位及批次隔离；周期批次只写指定scope。并发写入仍校验文件锁和最新hash；CONFLICT/LOCKED返回重读合并提示，本批继续处理，未解决写入不得标记成功或覆盖其他Agent内容，不删除未知活动锁。旧格式scope不自动升级，也不安排写入维护。
+ 
+ 每批最多两次模型尝试、五分钟期限。失败后核对当前文件，effects只是短期操作结果，不是来源或历史。成功后释放输入和处理状态，仅保留调度所需去重hash与最新游标；待处理/失败队列属于运行状态，不提供正文恢复。模型会话和公开过程只在内存中，实时缓存结束两分钟后释放。不创建长期处理报告。
+ 
+diff --git a/tests/memory-runtime.test.js b/tests/memory-runtime.test.js
+index 99f1dc0..982a83f 100644
+--- a/tests/memory-runtime.test.js
++++ b/tests/memory-runtime.test.js
+@@ -71,7 +71,7 @@ test("daemon dispatch isolates inaccessible and read-only maintenance scopes", a
+       },
+       ensureWorkspace: () => [{ scope: "project", writable: true }],
+     },
+-    "./agent.js": { reconcile() {}, states: () => [], createManager: () => ({ async run(event) { dispatched.push(event.id); }, close() {} }) },
++    "./agent.js": { MAX_AGENTS_PER_WORKSPACE: 10, reconcile() {}, states: () => [], createManager: () => ({ async run(event) { dispatched.push(event.id); }, close() {} }) },
+     "./maintenance.js": { schedule: () => [] },
+     "./model-config.js": { resolveModel: async () => ({}) },
+     "./endpoint.js": { resolve: () => ({ port: 1, token: "test-only" }) },

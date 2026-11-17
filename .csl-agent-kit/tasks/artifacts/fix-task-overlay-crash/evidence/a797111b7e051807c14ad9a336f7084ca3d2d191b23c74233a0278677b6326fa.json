@@ -1,0 +1,40 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "fix-task-overlay-crash",
+  "files": [
+    {
+      "path": "pi/extensions/csl-task-overlay.ts",
+      "sha256": "f19b68a2d28e24603c9c61f768fbe16b6bd25cb38ab945394698ddd93041bfc1",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "bedf104e8973847e2ca0623bf39a1b20de2931ba"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "bedf104e8973847e2ca0623bf39a1b20de2931ba",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/pi-task-overlay.test.mjs",
+      "sha256": "f594ee60c47b25b8702ba6ba2e03ede064b4746e60c6a6e75b297a9a49f62d7f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "cdf0e1bde1a50e61c0ef49142733a8de7630683e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "cdf0e1bde1a50e61c0ef49142733a8de7630683e",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

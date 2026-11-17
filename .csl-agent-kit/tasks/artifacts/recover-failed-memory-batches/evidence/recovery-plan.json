@@ -1,0 +1,1523 @@
+{
+  "mode": "inspection",
+  "inventoryCaptured": "2026-11-12T09:58:26.527Z",
+  "completed": "2026-11-12T10:02:28.013Z",
+  "counts": {
+    "eligible": 112,
+    "blocked-preserved": 8
+  },
+  "rows": [
+    {
+      "id": "007c0921ebfffdf9f8768671c206ca317859529a2e480eb3578786f064194a16",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 6,
+        "legacyUnlocatable": 6,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.931Z"
+    },
+    {
+      "id": "0152102ba8a29ae8e967c66b2b81f86413a7805e8da4f24b45e70500cc548112",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.936Z"
+    },
+    {
+      "id": "04205f99908219039fae8143d1844500fb19d29401fee489d5845cd0243fa2d3",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 13,
+        "legacyUnlocatable": 13,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.937Z"
+    },
+    {
+      "id": "05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:27.937Z"
+    },
+    {
+      "id": "068364bc2ec9c0bb390acc178f2df2a25d8c72e64539e167ce7474a4e0fc7582",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.940Z"
+    },
+    {
+      "id": "08227bd655e79ef4b67306f48a4f9d5917612de5a61b27b3151ebd43ba197a6a",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.941Z"
+    },
+    {
+      "id": "08af1ab7fb1cc47879584fb9d4f88b23ee8b0839ed0d82b6978b182351d0e53f",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 16,
+        "legacyUnlocatable": 16,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.941Z"
+    },
+    {
+      "id": "08d4d13504865ecd872b2a35b6fba0f14850d04b2e091e4a719c9f86a23177f7",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.944Z"
+    },
+    {
+      "id": "090e7956652352490d6596f38eb122c4309978d2d804ba42a6f6a7c648d87c0e",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.944Z"
+    },
+    {
+      "id": "09a47b317817586a1162eec95ddc72981e2d48868c7769a4ae36bafb4c2b70f5",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.945Z"
+    },
+    {
+      "id": "10b64fbf1e1900ab41713f94d096fd5fa70b7211eef9d53b9fdf6eef76b9e62f",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.947Z"
+    },
+    {
+      "id": "1139eb15793a021f4fbbb53091a699e75daed9cb707a37a544e8ce591c11a3c2",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.947Z"
+    },
+    {
+      "id": "132ca222281c21246ca91e0246d4ba59228f9fb6c85f85df11ac5691486ff93e",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 5,
+        "legacyUnlocatable": 5,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.948Z"
+    },
+    {
+      "id": "18a17a4a04ee6799a38b53a4afad70ee7d97192a8e8257ae8982ead8b4cf0d4d",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.949Z"
+    },
+    {
+      "id": "1b8cce749b90b777c759fbea7c48cbca7a285e32d812858ba18c595d5412178c",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.950Z"
+    },
+    {
+      "id": "1bcb2a94f55b9b51eded09316eee72524cbc9306c09457d6302e9b31760e5847",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 17,
+        "legacyUnlocatable": 17,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.951Z"
+    },
+    {
+      "id": "1cfe42685057d5e3c91c56aaf18daf9f22ebe28bef47ca81f30b9011e6bb84a6",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.952Z"
+    },
+    {
+      "id": "1f5932bb7b6fb1f078801ad9ed63373a8330bd54206214810fa80b647d81a36a",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.953Z"
+    },
+    {
+      "id": "1fce0491fdcf570ea0ba23bde223d254a423c5522dbf3852772236d8b36752ee",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.954Z"
+    },
+    {
+      "id": "22c59cbf89b3b036cdcfc5b0cf2b6459887cbfe21b932ad8720522f8c73c99fe",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 16,
+        "legacyUnlocatable": 16,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.955Z"
+    },
+    {
+      "id": "239d7042aa34c15bac370f94261c456602baa3ac9d89c3f7bf5515d260261e21",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.955Z"
+    },
+    {
+      "id": "23e937e09c6d41a62c6ade495ce919149d775fef505efe5dbb0993c251d3b585",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.955Z"
+    },
+    {
+      "id": "2492760ed1328862683b8054e9ddf73dcf0c4530878f0512b46b6c56acffbb1a",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.956Z"
+    },
+    {
+      "id": "2773ebfb8d0efc5748f3b4c02a733151d78fbf48df7cfda4094a28ad6a241fc6",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.957Z"
+    },
+    {
+      "id": "292f5de79b61ff4064bfe3ad5ef7dec0e0eb929f3ee3db09253c6d76b2fdfd34",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.957Z"
+    },
+    {
+      "id": "2b4fd7e24b7f5fb71fea363a8602bf34d38f9aae1df94cd86cfd6a7006e1a3de",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.958Z"
+    },
+    {
+      "id": "32022fb4371e750b1675261799fb6abff917ebcdd58b203aae1ccb21f13f8d24",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.958Z"
+    },
+    {
+      "id": "324e0f684a3dadd093e8ce0859899e35efd1f3feccf0dd1227c7aa82cb610d17",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.959Z"
+    },
+    {
+      "id": "33d8dda3a0be736bd84fbcf528ec38f957430d91114b6711363375ab8b2d9667",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.959Z"
+    },
+    {
+      "id": "33fa0d154254671539ae831ed1d1f7e33ca1c4af3e7e4fc5cb15dd652d1980ca",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.960Z"
+    },
+    {
+      "id": "348d7386f6f74d6135b08572c938f4e097984e3c150375dd6ebce90effcc1988",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.960Z"
+    },
+    {
+      "id": "3519c1d49bad5f7a58a7912fb96d14ca91264217a5adc7462acb6587d5d71de6",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.960Z"
+    },
+    {
+      "id": "3628d84c30f0fefa33f4e9374f699c6398f7525ddae956f55a1e6a980f25c2d8",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.961Z"
+    },
+    {
+      "id": "3a4ec37c6f713551cd1ddafc493729417850302c82ad62a0c6f18d533f6bc78b",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.961Z"
+    },
+    {
+      "id": "3ca48936dd1c36508172865a0d671ba8a7819decb520076356ec666721ecfbf9",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.962Z"
+    },
+    {
+      "id": "4308ea555c03fc35abf1ed3483e7a65877347b51baa8a85aafe5a89449d85ba5",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.962Z"
+    },
+    {
+      "id": "450601fc4650ff3da833abe84b6334ff50f70e9086e8a8de12b755f56ed19128",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.962Z"
+    },
+    {
+      "id": "48a04940dd045b93d4c10efcf2ffb1a65f2af34fd6f4a290c0d80e606d77c4d3",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.963Z"
+    },
+    {
+      "id": "4c92a9351d16d017331680397ea6252ecdb596a8fe63b3695640156422a52a7e",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 4,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 2,
+        "changedOrRemoved": 2
+      },
+      "at": "2026-11-12T10:02:27.964Z"
+    },
+    {
+      "id": "4df98ccb45891604ac8c78a383e2613ecbe659644c9af97c072b7948f16f5e08",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 3,
+        "legacyUnlocatable": 3,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.964Z"
+    },
+    {
+      "id": "4f780793b9828ad01adf4ad58c6b84e097c7e45415abdcfac344c1b43fcae7f2",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.965Z"
+    },
+    {
+      "id": "537bac5e64a268acdf11bc7dda6055463a4cc65b9d9f2b20939d8f6f4f8854e0",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.965Z"
+    },
+    {
+      "id": "5498ff770628711c1fd1a3c56dd799816aad6d0a7dcacfe900a83168af5ff230",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.966Z"
+    },
+    {
+      "id": "566d1265aa3ebe495993694992ebab1889fad270bd1be2992a3a62bce5d151c5",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.966Z"
+    },
+    {
+      "id": "56e5692364695093d36e0ff622200b585cbb3ded2e7a6d5121ef055cf5321dac",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.966Z"
+    },
+    {
+      "id": "58bb48151cfe0ab3d108fda2e06867c6559c0a300656df2f7435a391a11d72fd",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.967Z"
+    },
+    {
+      "id": "59679aae407a20be0ba14dc0969beccfef8750ebb2939abce7bc85e83376b768",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.968Z"
+    },
+    {
+      "id": "59f37622696967a91ba3296622f88b2cf422ccd4bf4ed80d61cdb5c99549e669",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.968Z"
+    },
+    {
+      "id": "5bd27cd86f967fccb06fde90d55d8e130265a56bb8b6ac1ed6a49d7262d50a59",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 27,
+        "legacyUnlocatable": 27,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.973Z"
+    },
+    {
+      "id": "5cc06e2c8b9a6a0bc506cf75b7a41ba00745e384f099e35bb7a46e8605dbb2dc",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.974Z"
+    },
+    {
+      "id": "60212f08f236dd1427c58820c0116a730c633cd1328730bf44d5c7681d444513",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.974Z"
+    },
+    {
+      "id": "6054cda090b7c0cc223e8d33ca220653a1255a197182faf46685a7b7aa22e52c",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 1,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.975Z"
+    },
+    {
+      "id": "612ffdd55ea846c63c6a4b03b3ab860de93c3d28e9a5deccf92eb3fec1fcb020",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 4,
+        "legacyUnlocatable": 4,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.975Z"
+    },
+    {
+      "id": "62de3974dc39fb91388784a2b36d97fa1a5c2c6779b303410a2ff3dbb700af46",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.976Z"
+    },
+    {
+      "id": "647fdc9b63ad04806a51ae9d52e6b1c485caa88b671411e3b3dbbe4de1fe4735",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:27.977Z"
+    },
+    {
+      "id": "64ca64dd0d02ce3c9cf232845facc6cbaa897c548477015e907687f5e5d2088d",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:27.977Z"
+    },
+    {
+      "id": "653fcecf51772ec3f2866b68845e5828444e0e7de3eb3d59a01214105d331f23",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.977Z"
+    },
+    {
+      "id": "67c5f97d69a7da14f4a6c16bafb8667be02111e47fd2939496c69030772cdcc0",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.978Z"
+    },
+    {
+      "id": "6d55f3113027ed036b3457100b9ff05e05f40f9445bdd685e946ecffcf7cf2b4",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.978Z"
+    },
+    {
+      "id": "6d80f9bd963c6f8ab786796fb52629d85df93c051278d56af7de246dfa7bc8f2",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.978Z"
+    },
+    {
+      "id": "755fb6943466fe0df94d227478add733afabcb63ce6091de03662bb662f6690e",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.979Z"
+    },
+    {
+      "id": "76dfefa172d4b9f5ae6f0840d3ac94332544d812ba50a8566c19117a94adb706",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 24,
+        "legacyUnlocatable": 24,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.979Z"
+    },
+    {
+      "id": "7a3ca0c340fefd5606c99e8332dfbf525094452ab69582d4136b4aa73617ae71",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.980Z"
+    },
+    {
+      "id": "7b44314a0de63745153a589b7ae5fe3db833a4ceb4c610ab9e16e740ac950a88",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.980Z"
+    },
+    {
+      "id": "7bb4640a08ec3e31603e4bf398ce18891a8475c161cdd2cd025f7bf51f879a8c",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.981Z"
+    },
+    {
+      "id": "7d3425ef51d1ea200c30b53e5fc886043505bf0b5adce15774032864daee072f",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.981Z"
+    },
+    {
+      "id": "7f4d4aa010aa702da5118dd25901b0ac8091f8641f5f5598d6e0a5ee7c47a580",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.982Z"
+    },
+    {
+      "id": "817910f437ca8064e2a50960c6a674a53b0bde09b499577e0440734a55bd5da0",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.982Z"
+    },
+    {
+      "id": "83dd16f9f4665037b59ed4c8bfe08ddc2a5e2c0c61c13753081ffe7f18382feb",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.983Z"
+    },
+    {
+      "id": "8518ff3fa49622aa961b33b38f94bb65138fd7c783c3f3ccc6208396fa931d22",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.983Z"
+    },
+    {
+      "id": "85b9e385e65f4eedab0cc8c30533816e392c811aa90130c436b4f0c7bc801200",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 12,
+        "legacyUnlocatable": 12,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.983Z"
+    },
+    {
+      "id": "89db77bc3aca294fc7e426bebf06cd9a6a7de4a831b1ce306fbe325e4b57ac79",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.984Z"
+    },
+    {
+      "id": "91de106818b9eefae5cb64f30cc979fe275d088c56caf40d798334558c8a1268",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.984Z"
+    },
+    {
+      "id": "95bb09d6fd1ad2a966c747c279fa66809a396c40060349dcbb2adeb4f08ae3a0",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.985Z"
+    },
+    {
+      "id": "965e9403c39be4392b4a0cda28fabe13f47d60a058c39b32eccb32a694897c12",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.986Z"
+    },
+    {
+      "id": "969d51655404d1c8cde46d45334bc72f6ad01d9a78582faf46a03dd0bcf3e813",
+      "workspace": "/Users/caishilin/Library/Mobile Documents/com~apple~CloudDocs/MyWiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.987Z"
+    },
+    {
+      "id": "99f9abfd9799d11dc8e581842875a31dc4ef03d7b122ee9dc3c03fa901804157",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.987Z"
+    },
+    {
+      "id": "9b08d98941ec86039249740c8adf65045912f89fd0f0c724913c5a1927487210",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 2,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 1,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.988Z"
+    },
+    {
+      "id": "9b9d48556da641e2e5d225b0f27e2c2de3c8ee42333b7c7bf5b3cc59fc02c17b",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 1,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.988Z"
+    },
+    {
+      "id": "a9024e2c41f4420a9b8a29708dab62da0e1e23945d7f6a1e5d54aa674458c919",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.989Z"
+    },
+    {
+      "id": "af17c0781e356d297cec8076a99e47f5aaf1fed33f7e455193a4a22d0058fbf5",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.989Z"
+    },
+    {
+      "id": "af892ec03eb4b3ab812b5b2f2fd7769077a9a154b79448cc5926fd8cad387968",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.990Z"
+    },
+    {
+      "id": "af98a97563b8a81461a0371cb8b65864a75baf4d76927c5a70e9d6d386279555",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 4,
+        "legacyUnlocatable": 4,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.990Z"
+    },
+    {
+      "id": "afd475c79fb1cd1b04cd4aa9125ffcc86a36f806f18e9b3054ebf2610d7ca83b",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:27.990Z"
+    },
+    {
+      "id": "b1072e4027b46c1857eefd7c6f70d1355ad339dda05b7b9d5a4775842485bd15",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.990Z"
+    },
+    {
+      "id": "b4606a92cf91871f54c3251159b8bffd3151316ecb8aa3e4c392227aa3664c9e",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.991Z"
+    },
+    {
+      "id": "b48dc2f2c924480b9f43e555d63befff14c07fa082cd28e7d7ac484b86ad5c1d",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.991Z"
+    },
+    {
+      "id": "b5b9715b8f0e95b63f55a2d41ff2a1450ed2d28c31686284a080fca73663d7d6",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 2,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 2
+      },
+      "at": "2026-11-12T10:02:27.992Z"
+    },
+    {
+      "id": "b72a5905118aff095073e78c613e58d96fd0427e23429b96d49967dfb8249405",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:27.992Z"
+    },
+    {
+      "id": "b92adaf6816a3c6215db753bb370209e40711d2441ff7e70390821b05b343473",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.993Z"
+    },
+    {
+      "id": "ba6fa66f48fa57002b071c86773676fad572b5d30f4654244d9ee0c875fe31c6",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.993Z"
+    },
+    {
+      "id": "bbf622d1b0477f746d5bf87f06bcad581ce61559bc861d46d6186d099f21fd46",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:27.993Z"
+    },
+    {
+      "id": "bc4f6b2d796da9cf8d317ed32cb4715a22be7f5d7e654122e9b53f1ed7bd7b46",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 1,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.994Z"
+    },
+    {
+      "id": "bf796da42d3ce63ccdd5f2fea646549810e44d79b8bd85131b9a84ad931cfd6c",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.995Z"
+    },
+    {
+      "id": "c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:27.995Z"
+    },
+    {
+      "id": "c7c6bef4544b7b7ecb4246d8a71a59f7002902026c67068df255f5c8d3b100c9",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.995Z"
+    },
+    {
+      "id": "c86714939ffb323fc347226beaa425a7a902a70e1a4ada48bc5d97109c8a1e04",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 4,
+        "legacyUnlocatable": 4,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.996Z"
+    },
+    {
+      "id": "c92397520f0c44cd2395823dc778e8a154f40a233d2f528cea6c2c99cb581a03",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.996Z"
+    },
+    {
+      "id": "d2188173ac4dad213db16daa78c68f2a01bfb74da6be85d650824776df34ab4f",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 2,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 2
+      },
+      "at": "2026-11-12T10:02:27.997Z"
+    },
+    {
+      "id": "d5b78eeebeb34714348b6b0f707f671c43a2e9eff566005f4afdf6bc1d41fcd8",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 15,
+        "legacyUnlocatable": 15,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.997Z"
+    },
+    {
+      "id": "d7a71cbf611ecd46b4f3d95276715d41652adcb60bd5ec1a98d535714b30b582",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 10,
+        "legacyUnlocatable": 10,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.997Z"
+    },
+    {
+      "id": "da58ebce0138dc17319d28b445330c532444807780792b5c9dec5fa46b66727a",
+      "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 15,
+        "legacyUnlocatable": 15,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.998Z"
+    },
+    {
+      "id": "da83bfb4526f4e59a0a1584a0262a6c980f26348965abec2bdc8a6057d290692",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 8,
+        "legacyUnlocatable": 8,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.998Z"
+    },
+    {
+      "id": "da8c5714c9ce92150cb3723b54cb9f86c5fe6bf4b3355099a509ea6400d208b5",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.998Z"
+    },
+    {
+      "id": "dbc098d1485e29aa0576622814f0071ea629d7ab8dbc927ea6240adbfac2db75",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 16,
+        "legacyUnlocatable": 16,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.999Z"
+    },
+    {
+      "id": "dcadc1a35f2bb29b49d34e3ae985e83398c63cc766b29f1b7c48fb7723471ded",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 1,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.999Z"
+    },
+    {
+      "id": "dcd58c93b9b49e85c888015dcd98bf9440d835c806511af9e4f8a50704e2a99a",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 6,
+        "legacyUnlocatable": 6,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:27.999Z"
+    },
+    {
+      "id": "df5c4ab63fa790c34215bef97fa6690622aa180455b9b90fa01448b0724cebc3",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.001Z"
+    },
+    {
+      "id": "e1bd94e18d5185284839fd2f8cc44b2d0abf9134c32e86ea1ab578e363f18bae",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:28.001Z"
+    },
+    {
+      "id": "e2be824e93a4e0fd53c1a14cc6c8d3f5949604fa07627058ae32125c58618633",
+      "action": "blocked-preserved",
+      "code": "RECOVERY_CHECK",
+      "error": "Workspace canonical identity changed",
+      "at": "2026-11-12T10:02:28.002Z"
+    },
+    {
+      "id": "e8061cbdb2be313a1fc8004888e243fb2b31a68495d6f8db751ea588dd82a5a3",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 8,
+        "legacyUnlocatable": 8,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.003Z"
+    },
+    {
+      "id": "e8e832b95f9176e22b554551e2dde4de9a9b2fcd55f2a0ab9360e18056937be3",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.004Z"
+    },
+    {
+      "id": "ead73cdb4ffb079f9739dc93adaceff4b8ecd2871e1d1de4cb8de615a74d17c9",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.005Z"
+    },
+    {
+      "id": "eb39fb1e103be1c632cc81b7c6631eb9b4c6e9799e6d171e95bbdbc835594d72",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/LongManuscript",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 1,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 1
+      },
+      "at": "2026-11-12T10:02:28.010Z"
+    },
+    {
+      "id": "f57250919d81d23b0b5446f3ee7d0ed86b9712279cee5db552462b366e51277d",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.011Z"
+    },
+    {
+      "id": "f7be0916a106474f5c469d5f8818231c1844661b9266c0ad8ee67800c21c2a77",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.011Z"
+    },
+    {
+      "id": "f8a48790db358fdd77a9a94734e46c2f1acb3a428456e0ab74ea6ed59f6c2f94",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.012Z"
+    },
+    {
+      "id": "f8c74bacaa57fc8a4ce2cbf89fbd26abb58fe3de8eeef45c6ff0e90226f450b4",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.012Z"
+    },
+    {
+      "id": "f937fc5773e4d601f237b58ea792eec7731f1163235a014d7db6b40b162ef4a7",
+      "workspace": "/Users/caishilin/Desktop/personal/SAG-Wiki",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.013Z"
+    },
+    {
+      "id": "f96f98341cde2ff6672739bf3e9da0b13c241d01e417de16c3d83562a45a12d5",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "action": "eligible",
+      "previousAttempts": 2,
+      "effects": {
+        "reported": 0,
+        "legacyUnlocatable": 0,
+        "currentHashMatches": 0,
+        "changedOrRemoved": 0
+      },
+      "at": "2026-11-12T10:02:28.013Z"
+    }
+  ]
+}

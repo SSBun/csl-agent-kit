@@ -71,7 +71,7 @@ test("daemon dispatch isolates inaccessible and read-only maintenance scopes", a
       },
       ensureWorkspace: () => [{ scope: "project", writable: true }],
     },
-    "./agent.js": { reconcile() {}, states: () => [], createManager: () => ({ async run(event) { dispatched.push(event.id); }, close() {} }) },
+    "./agent.js": { MAX_AGENTS_PER_WORKSPACE: 10, reconcile() {}, states: () => [], createManager: () => ({ async run(event) { dispatched.push(event.id); }, close() {} }) },
     "./maintenance.js": { schedule: () => [] },
     "./model-config.js": { resolveModel: async () => ({}) },
     "./endpoint.js": { resolve: () => ({ port: 1, token: "test-only" }) },

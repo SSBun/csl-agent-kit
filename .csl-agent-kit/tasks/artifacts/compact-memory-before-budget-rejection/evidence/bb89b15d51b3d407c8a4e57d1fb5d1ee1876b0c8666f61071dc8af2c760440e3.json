@@ -1,0 +1,133 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "compact-memory-before-budget-rejection",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/compact-memory-before-budget-rejection/evidence/source.diff",
+      "sha256": "2da790a6c371a73d8b80cc655f23795736d0d43ea2530b43417ce2cb39cd2e04",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "aa30b53fbc087348479849998a7ace5234b85b9f64f4f848894ede60b9572cf3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d125792f21f1ef3ad38dc533d08234af4fbfe278"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d125792f21f1ef3ad38dc533d08234af4fbfe278",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/cli.js",
+      "sha256": "66a2b307482dfea7a28aa157f2963d05048023f263ea6178878b329f79071c0a",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "1b371445aa67a85bb9a3c987377b01fb18a1b4b0"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "1b371445aa67a85bb9a3c987377b01fb18a1b4b0",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "16668a0e5ebff05eccdd916d5e68ae87b0b83b7e1c8c0dad690170d7ac5a44ef",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "e96f805a4e670985f0c8f82498218fb6a411004e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "e96f805a4e670985f0c8f82498218fb6a411004e",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "docs/memory.md",
+      "sha256": "8b337e6a3f9a02f9c9ee64322bd3a0205aebe808796efe9992fa4c5bde09690d",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0414bcbe0a07e9f58ac55c5859dc11fe42b553e2"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0414bcbe0a07e9f58ac55c5859dc11fe42b553e2",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "7ba7bde757874f4376fe6eccef87002f886e7d66d7f02bfc8311d48cbdea8bde",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8487e07fbef63e91b96901ce93846981e77e7dc0"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8487e07fbef63e91b96901ce93846981e77e7dc0",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/references/recording-prompt.md",
+      "sha256": "f7aa0b9bb7b34b41c2888524e5b0556d31b643ced3513429269b65b2aa1508f3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "6bd0864dc5a6d62e6cfd95c8f4180fab85c902d3"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "6bd0864dc5a6d62e6cfd95c8f4180fab85c902d3",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/memory-store.test.js",
+      "sha256": "1022206a67abf9ffa7aa273686c166e23d183cf5a7155e997866f9b7533a1017",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "92f8348dd23a617964b29a3da1f795089f5fe3bd"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "92f8348dd23a617964b29a3da1f795089f5fe3bd",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

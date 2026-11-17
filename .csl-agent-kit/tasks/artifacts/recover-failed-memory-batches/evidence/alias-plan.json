@@ -1,0 +1,81 @@
+{
+  "mode": "inspection",
+  "completed": "2026-11-12T10:08:49.038Z",
+  "counts": {
+    "eligible": 8
+  },
+  "rows": [
+    {
+      "oldId": "05845b4540440024948d01056ec42aed7d45d3c9d4bdc6c7de8db33b7ed4c81c",
+      "targetId": "3897ce9dc31c5b89003355dfacc6a6317fffb2b47218390ed9a10c101ec8c0b1",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "541de5f00465722089f6211f54316276b80513014f355c9f5bd173523c2722a2",
+      "effectsHash": "f294e22e068dc8e68a62949f7d2553f223188ef4f212462431d267454aaec0e4",
+      "at": "2026-11-12T10:08:49.034Z"
+    },
+    {
+      "oldId": "647fdc9b63ad04806a51ae9d52e6b1c485caa88b671411e3b3dbbe4de1fe4735",
+      "targetId": "f9aa171a9079a9208090f7d613c4499902c82f10291d46c32ba9380902345ce3",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "100254cdf526c6738c1497c06bcd6a4895b8a74516e1cf2ace7762b969c782d4",
+      "effectsHash": "f37d3591ca27b99b85cebe83424abaa27702d8b36e8e363c77a581ceffa64b84",
+      "at": "2026-11-12T10:08:49.035Z"
+    },
+    {
+      "oldId": "64ca64dd0d02ce3c9cf232845facc6cbaa897c548477015e907687f5e5d2088d",
+      "targetId": "49ff5bac5bd2c3b154205b79d97377dc5c506c46456e9f010b2e6be6eef748b4",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "9e2bb7ccfdcb0eab8e5f905508b65fe3ed88ee99582214b32c11fd47e76b83ab",
+      "effectsHash": "84f42cbbf2f2f1c0e9c40793dbfd5c90c74999f01f3e1d6b3ee5878e8a9a6f5d",
+      "at": "2026-11-12T10:08:49.036Z"
+    },
+    {
+      "oldId": "afd475c79fb1cd1b04cd4aa9125ffcc86a36f806f18e9b3054ebf2610d7ca83b",
+      "targetId": "072d656453a47c7ecd0715211d17c0e86a83d6070dd3b129d79f9cdad66eb27c",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "56cc372c70a77c81c48120c760ecc61448c9d5b7e939e86dff62a0f95cc24a19",
+      "effectsHash": "341c193df930336f187bb7a32c921653d7fcff83234f4d9cacf7eab0b204c026",
+      "at": "2026-11-12T10:08:49.036Z"
+    },
+    {
+      "oldId": "bbf622d1b0477f746d5bf87f06bcad581ce61559bc861d46d6186d099f21fd46",
+      "targetId": "0ee05c1dc3525d6f6400db4d2bd91848627ae71fb52f0668a1e6ecf92160551e",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "a5a0f7d4d11d383b02453821e92bb72b863d035f5cd331bec1862265946ff814",
+      "effectsHash": "e1fbbb2851c4cf168abfdf19d7b0024b24fccdd2097e919ac0a508c8d8528cf6",
+      "at": "2026-11-12T10:08:49.037Z"
+    },
+    {
+      "oldId": "c1bae1a28c725d1e4ee345ac6620762f4baaa951366050fdaf0640f02010c8de",
+      "targetId": "556a429839625706f3fde25e0b7ab486f6c9b32c9404b33c7e17e5f95985fd9f",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "90017e3e01102208209c20f9bc6e480f66073740538bd47886aed89bab01cc70",
+      "effectsHash": "2b50d463206848b9496a5843a56b75933f765e5f01d9aa07a3278af05da11b06",
+      "at": "2026-11-12T10:08:49.037Z"
+    },
+    {
+      "oldId": "e1bd94e18d5185284839fd2f8cc44b2d0abf9134c32e86ea1ab578e363f18bae",
+      "targetId": "9487a340047b4612b8c1be5061bb264bf3d7c9ab30e63c299503b3a5ab765186",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "556f3031d192070be435742e5491fc511f53a9b4509a41271216dc98acc29870",
+      "effectsHash": "76ee1aa8437e4dbfdffc0621237e84b8cd36583a521ee3fd1646307862842b7b",
+      "at": "2026-11-12T10:08:49.038Z"
+    },
+    {
+      "oldId": "e2be824e93a4e0fd53c1a14cc6c8d3f5949604fa07627058ae32125c58618633",
+      "targetId": "ac0c36604caaf10a0f70f2bdc59e4e1818e854c8b27a1b55a7b31f5dc405cb86",
+      "action": "eligible",
+      "canonical": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "payloadHash": "f612909014c0d5e5d1e53494785dfa2a364caf425eea156c177cfb404205dda7",
+      "effectsHash": "ca02b875b47a0cfc8aa6673fbdb1a291d25d56bafd97ddf1844d0a8c68dc45b5",
+      "at": "2026-11-12T10:08:49.038Z"
+    }
+  ]
+}

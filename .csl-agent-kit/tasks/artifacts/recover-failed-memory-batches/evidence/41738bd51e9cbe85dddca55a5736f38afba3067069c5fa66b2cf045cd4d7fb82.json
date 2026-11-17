@@ -1,0 +1,425 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "recover-failed-memory-batches",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/alias-actions.ndjson",
+      "sha256": "7c9bd46673e6ef848bded5cccb28fe99f3150aa1fe527f44b326b6327f4ad4cf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/alias-plan.json",
+      "sha256": "2873efaa06a6111910b6940eefa9fff86fea0f0d9931b54134ffddf9e1987333",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/alias-result.json",
+      "sha256": "0f56757984d403c0ca0d9917b28deb5aa04aee63f1e9623a5b9ac8d317968a2c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/audit-recovery.cjs",
+      "sha256": "4224a896dc393202c62a7140e90994b6e4bce162e4354dabec9352eef26d7e98",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-enqueue-result.json",
+      "sha256": "83938c101fc69817018cf21b7aba9be67b64650cfd4a432a13b055a3f2c752a0",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-extension-2026-11-12T10-23-17-992Z.json",
+      "sha256": "0c761709b7e2dc8f0ef25330db7f3e302a16e0a19b44f9100669365adb76a2d6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-extension-2026-11-12T10-30-45-174Z.json",
+      "sha256": "ffb8c2d8f13c4e762e4ecac240fe92b74a83dd979a2a52a4a693def395822466",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-finalize-result.json",
+      "sha256": "a5f9a3f3b3872cf1d0b69c092cf07190817891f35348de4af236907f1e7610cf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-next-result.json",
+      "sha256": "da748c47f9331b2c6ff5bc79a7bd55764c16f34acf5f6f829fc56532098109d6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-recovery-actions.ndjson",
+      "sha256": "574ac4881591f6d86b378ad84261f70daa4bd0ab52115aea1d25c4cb2438d903",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/context-recovery-plan.json",
+      "sha256": "d3c790946e6c17e9e0e11a33e124e33db4f3d77e72402dadddb77b5dfcb12cef",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/extend-context-recovery-plan.cjs",
+      "sha256": "56dcefe0c61367f606ed5200d97c54f5a796b8d9479cf96bb8d938123f00aebf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/final-audit.json",
+      "sha256": "f1738a6645b0c1dcd885b32660f65a71ce667ee69dbba8bc8416cbdc17f2d383",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/inspect-recovery-outcomes.cjs",
+      "sha256": "48044eaf7b441e7ca2d0c5b88d2143b0287420eec1a6eeb8f0cc766cbca8fcd5",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/inventory.json",
+      "sha256": "f74d4aca058d71826fa7f3ce91aec0bcef4e36742ce55a62346370ed5268e025",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/normalize-alias-queue.cjs",
+      "sha256": "9bc48b110aa0ac6bb88d140454fdceb3e018997db8da7bcfc47e8cc8a2723b1e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-10-56-860Z.json",
+      "sha256": "087a5fab3d522ad2e15468033f79d39e21de8387a68c449439658e37c191c583",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-14-09-439Z.json",
+      "sha256": "4c2a6176aa36c1b3cbd612b3788fd1a00feb3d051b5362da06b8a30babc0b891",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-17-35-277Z.json",
+      "sha256": "0280a9e97092c0e6ae50f3347d04102ba944bc99a5722d88deeab3f332de03f7",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-19-19-849Z.json",
+      "sha256": "d87a337321cc142ed842c658cf25c4f869c029fa7f0094d68314047c77ce12c5",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-23-18-079Z.json",
+      "sha256": "879bff01ec22aa5c16b0e0086cc09b5a9c86efbb54e0d7fb7aa20a6d59c50c68",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-30-04-021Z.json",
+      "sha256": "8f276bb3f11a5f335cc2d96ea0eae655f0f8117f56beac47a47c8504da659e3a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/outcomes-2026-11-12T10-42-45-385Z.json",
+      "sha256": "66a02dec9e55d2d62425ba408f336951156499daee9f470d6f5cbef3730ac66d",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/recover-fixed-inventory.cjs",
+      "sha256": "1ccba05349bb249ad2bad9825d2bb161562077052c5af6a36dccbc2f14fd23c2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/recover-with-verified-context.cjs",
+      "sha256": "cbad71d6ad755dd4fca2c291bab89c72697cb4f5bd408ca6d74404bd79fab46f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/recovery-actions.ndjson",
+      "sha256": "4aebe766587830cc0ef05cace0ce27f2e4df6766766ec17df8d0fc824b7e22b2",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/recovery-plan.json",
+      "sha256": "781c64f3ce2a035879bf67aa9ba88ecea040c8af5c44531a691a9780467d33b6",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/recovery-result.json",
+      "sha256": "0d7801eeacdf17da67b9f95de649efb6adaba875c93c1a3ba6c3a72d839a628a",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/recover-failed-memory-batches/evidence/runtime-final-check.json",
+      "sha256": "509b22ddaab490b53d72254536ca031f5c2a4f5359a1aef6638b9f1d79c56bcf",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "bin/memory/agent.js",
+      "sha256": "40b97ea288425b07ddc33e3e066122113f0426f0a14a36b2c2b1cf56bbf32f6c",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d125792f21f1ef3ad38dc533d08234af4fbfe278"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d125792f21f1ef3ad38dc533d08234af4fbfe278",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "sha256": "8f79b8385b2b443abee87ba1a708f3444568ca247820c88d417ac571e59522d6",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "b3ef4a50c2b07b49e28e1d513edd93ba996fc494"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "b3ef4a50c2b07b49e28e1d513edd93ba996fc494",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/maintenance.js",
+      "sha256": "efbf497acb89518977dfe075e72fd2f82f9f42b7a3fd3edbac8c913e17c9e605",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "f2851dcd41af21c6e73f3a2db26bd81a919559db"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "f2851dcd41af21c6e73f3a2db26bd81a919559db",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/migration.js",
+      "sha256": "7aaafddc4197cfaf5e7d977722a6e591029826fe7bae38bcac22f7f5c719ac7e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "43e9460ec45d1f35df1d70a4b205791123a3df81"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "43e9460ec45d1f35df1d70a4b205791123a3df81",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/queue.js",
+      "sha256": "a16d17ca82a1162f01720726495245e5a5df734cd552018ccd731a6b05711695",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "c5623abc08a71193fa8ed89e301d1e84dbdf1451"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "c5623abc08a71193fa8ed89e301d1e84dbdf1451",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/recent.js",
+      "sha256": "17f0ca4e8982d2ff50ecf625bce30b258ef3e28686f3cef65011b39f494cfab7",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "de320e0651bc48c8ebddcc57413333f6378f6da7"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "de320e0651bc48c8ebddcc57413333f6378f6da7",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/runtime-files.js",
+      "sha256": "1585900f343cc8e6909289c06915da43edd603503dac05e40b0b864ca1b0af59",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "a39cf80b96fce0772a7ae4e3a0c8ed8388d37dae"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "a39cf80b96fce0772a7ae4e3a0c8ed8388d37dae",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/service.js",
+      "sha256": "01245ed359c5581dd6a8dd38fc75e1f9e78a6d3d01e52cc0e8884de0887e6ce4",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "b5af9a5e65d3136e28ca755ed7955577e772f581"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "b5af9a5e65d3136e28ca755ed7955577e772f581",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "bin/memory/store.js",
+      "sha256": "16668a0e5ebff05eccdd916d5e68ae87b0b83b7e1c8c0dad690170d7ac5a44ef",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "e96f805a4e670985f0c8f82498218fb6a411004e"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "e96f805a4e670985f0c8f82498218fb6a411004e",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "sha256": "26f610de82807932b321acfa30e86d7d38c97636ba980af1ceb35ba964f6619f",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "8487e07fbef63e91b96901ce93846981e77e7dc0"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "8487e07fbef63e91b96901ce93846981e77e7dc0",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-memory/references/recording-prompt.md",
+      "sha256": "f7aa0b9bb7b34b41c2888524e5b0556d31b643ced3513429269b65b2aa1508f3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "6bd0864dc5a6d62e6cfd95c8f4180fab85c902d3"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "6bd0864dc5a6d62e6cfd95c8f4180fab85c902d3",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

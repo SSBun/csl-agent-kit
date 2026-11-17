@@ -9,7 +9,7 @@ const routeInfo = {
   processing: ["记忆处理", "PROCESSING", "查看工作区 Agent 的实时过程、队列与异常。"],
 };
 const pageFromURL = () => { const page = new URLSearchParams(location.search).get("page"); return Object.hasOwn(routeInfo, page) ? page : "overview"; };
-let currentPage = pageFromURL(), generation = 0, detailOpener = null, liveWorkspace = null, liveGeneration = 0, liveBusy = false, activityBusy = false;
+let currentPage = pageFromURL(), generation = 0, detailOpener = null, liveWorkspace = null, liveEvent = null, liveGeneration = 0, liveBusy = false, activityBusy = false;
 let jobs = { offset: 0, nextOffset: null };
 history.replaceState(null, "", `?page=${currentPage}`);
 const query = value => new URLSearchParams(Object.entries(value).filter(([, v]) => v !== "" && v != null)).toString();
@@ -48,7 +48,7 @@ function memoryBadge(kind) {
   return item;
 }
 function detail(title, text, meta, reason) {
-  liveWorkspace = null; liveGeneration++;
+  liveWorkspace = null; liveEvent = null; liveGeneration++;
   $("detail-title").textContent = title; $("detail-reason").textContent = reason; $("detail-error").textContent = "";
   $("agent-live").hidden = true; $("actions").replaceChildren(); $("detail-metadata").open = false;
   render($("memory-content"), text); render($("detail-meta"), meta);
@@ -73,9 +73,9 @@ async function showJob(id) {
   detail("当前处理批次", messages || "此批次无可读取的会话输入。", { ...meta, state }, state.error || (state.retired ? "已完成，输入已释放。" : "队列信息仅用于处理；实际知识请查看当前文件。"));
   if (["failed", "interrupted"].includes(state.status) && state.attempts < 2) $("actions").append(button("重试本批", async () => { await api("/api/retry", { id }); await showJob(id); await refresh(); }));
 }
-async function showAgent(workspace) {
-  detail("Memory Agent · 实时处理", "", { workspace }, "公开过程只在内存暂存，结束后两分钟释放。");
-  liveWorkspace = workspace; $("agent-live").hidden = false; $("agent-live-events").textContent = "";
+async function showAgent(workspace, event) {
+  detail("Memory Agent · 实时处理", "", { workspace, event }, "公开过程只在内存暂存，结束后两分钟释放。");
+  liveWorkspace = workspace; liveEvent = event; $("agent-live").hidden = false; $("agent-live-events").textContent = "";
   await refreshLive();
 }
 async function refreshLive() {
@@ -83,9 +83,9 @@ async function refreshLive() {
   liveBusy = true;
   const request = liveGeneration, workspace = liveWorkspace;
   try {
-    const trace = await api(`/api/agent-live?${query({ workspace })}`);
+    const trace = await api(`/api/agent-live?${query({ workspace, event: liveEvent })}`);
     if (request !== liveGeneration) return;
-    $("agent-live-state").textContent = trace.available ? `${trace.status} · 尝试 ${trace.attempt}/2${trace.dropped ? " · 早期缓存已释放" : ""}` : "实时缓存不可用或已释放。";
+    $("agent-live-state").textContent = trace.available ? `${trace.agent ? `Agent ${trace.agent} · ` : ""}${trace.status} · 尝试 ${trace.attempt}/2${trace.dropped ? " · 早期缓存已释放" : ""}` : "实时缓存不可用或已释放。";
     $("agent-live-events").textContent = trace.available ? (trace.events || []).map(e => `${e.at} ${e.kind}\n${e.text}`).join("\n\n") : "";
   } catch (cause) { if (request === liveGeneration) $("detail-error").textContent = cause.message; }
   finally { liveBusy = false; }
@@ -140,26 +140,30 @@ function renderJobs(page) {
 }
 function renderStatus(status) {
   const agents = status.agents || [], active = new Set(status.active || []), workspaces = new Set([...agents.map(a => a.workspace), ...active]);
+  const activeBatches = status.activeBatches || [...active].map(workspace => ({ workspace }));
+  const limit = status.maxAgentsPerWorkspace || 1;
   const attention = (status.counts?.failed || 0) + (status.counts?.interrupted || 0) + (status.counts?.exhausted || 0);
   const problems = [status.schedulerError, status.model?.error, ...(status.maintenanceErrors || []).map(e => e.error)].filter(Boolean);
   const tone = attention || problems.length ? "warning" : "success";
   $("connection").textContent = tone === "warning" ? "[!] 服务需关注" : "[0] 服务已连接"; $("connection").dataset.tone = tone;
   $("health-panel").dataset.tone = tone; $("system-health").textContent = tone === "warning" ? "服务在线，有记录需要关注" : active.size ? "记忆系统正在运行" : "记忆系统已就绪";
-  $("system-description").textContent = problems.join("；") || `${active.size} 个工作区正在处理 · ${status.counts?.queued || 0} 批等待`;
-  $("metric-pid").textContent = status.pid; $("metric-active").textContent = active.size; $("metric-queued").textContent = status.counts?.queued || 0; $("metric-failed").textContent = attention;
+  $("system-description").textContent = problems.join("；") || `${active.size} 个工作区 · ${activeBatches.length} 个Agent正在处理 · ${status.counts?.queued || 0} 批等待`;
+  $("metric-pid").textContent = status.pid; $("metric-active").textContent = activeBatches.length; $("metric-queued").textContent = status.counts?.queued || 0; $("metric-failed").textContent = attention;
   $("overview-workspaces").textContent = workspaces.size;
   $("overview-provider").textContent = status.model?.error ? "不可用" : status.model?.provider || "未配置";
   $("overview-model").textContent = status.model?.error || status.model?.model || "未配置";
   $("overview-started").textContent = new Date(status.started).toLocaleString("zh-CN"); $("status").textContent = JSON.stringify(status, null, 2); workspaceOptions(workspaces);
   const grid = $("overview-agents"); grid.replaceChildren();
   for (const workspace of [...workspaces].sort()) {
-    const card = node("article", "", "workspace-card"); card.append(node("h3", workspace.split("/").filter(Boolean).at(-1)), badge(active.has(workspace) ? "running" : agents.find(a => a.workspace === workspace)?.state || "idle"), node("p", workspace)); grid.append(card);
+    const running = activeBatches.filter(item => item.workspace === workspace).length;
+    const card = node("article", "", "workspace-card"); card.append(node("h3", workspace.split("/").filter(Boolean).at(-1)), badge(active.has(workspace) ? "running" : agents.find(a => a.workspace === workspace)?.state || "idle"), node("p", `并行Agent：${running} / ${limit}`), node("p", workspace)); grid.append(card);
   }
-  const container = $("processing-agents"), signature = JSON.stringify([...active].sort());
+  const runningAgents = activeBatches.map(item => ({ ...item, agent: agents.find(a => a.workspace === item.workspace && a.event === item.id)?.agent }));
+  const container = $("processing-agents"), signature = JSON.stringify(runningAgents);
   if (container.dataset.workspaces !== signature) {
     container.dataset.workspaces = signature; container.replaceChildren();
     if (!active.size) container.textContent = "当前没有正在处理的 Agent。";
-    for (const workspace of active) { const row = node("p", `${workspace} · `); row.append(button("查看实时处理", () => showAgent(workspace))); container.append(row); }
+    for (const item of runningAgents) { const row = node("p", `${item.workspace} · Agent ${item.agent || "启动中"} · `); row.append(button("查看实时处理", () => showAgent(item.workspace, item.id))); container.append(row); }
   }
 }
 async function refreshActivity() {
@@ -191,7 +195,7 @@ async function refresh() {
   } catch (cause) { if (request === generation) { error(cause.message); if (currentPage === "storage") $("memories").textContent = "无法读取当前记忆，请重试。"; } }
 }
 function selectPage(page, push = false) {
-  currentPage = Object.hasOwn(routeInfo, page) ? page : "overview"; $("detail-section").close(); liveWorkspace = null; liveGeneration++;
+  currentPage = Object.hasOwn(routeInfo, page) ? page : "overview"; $("detail-section").close(); liveWorkspace = null; liveEvent = null; liveGeneration++;
   if (push) history.pushState(null, "", `?page=${currentPage}`);
   document.querySelectorAll("[data-page-panel]").forEach(n => { n.hidden = n.dataset.pagePanel !== currentPage; });
   document.querySelectorAll("[data-route]").forEach(n => { if (n.dataset.route === currentPage) n.setAttribute("aria-current", "page"); else n.removeAttribute("aria-current"); });
@@ -201,7 +205,7 @@ function selectPage(page, push = false) {
 document.querySelectorAll("[data-route]").forEach(n => n.addEventListener("click", e => { if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); selectPage(n.dataset.route, n.dataset.route !== currentPage); }));
 window.addEventListener("popstate", () => selectPage(pageFromURL()));
 $("detail-close").addEventListener("click", () => $("detail-section").close());
-$("detail-section").addEventListener("close", () => { liveWorkspace = null; liveGeneration++; if (detailOpener?.isConnected) detailOpener.focus(); });
+$("detail-section").addEventListener("close", () => { liveWorkspace = null; liveEvent = null; liveGeneration++; if (detailOpener?.isConnected) detailOpener.focus(); });
 $("refresh").addEventListener("click", () => { $("detail-section").close(); void refresh(); });
 $("filters").addEventListener("submit", e => { e.preventDefault(); $("detail-section").close(); void refresh(); });
 $("filters").addEventListener("reset", () => queueMicrotask(() => $("filters").requestSubmit()));

@@ -1,0 +1,22 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "migrate-native-short-reader-tasks",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/migrate-native-short-reader-tasks/evidence/external-snapshot.json",
+      "sha256": "916c8b335e0e6e5f8026f8e66ef7dfc9c193ceb99bc820bdb20c8c8be4872af0",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/migrate-native-short-reader-tasks/reports/migration-check.md",
+      "sha256": "e2bc18454ddbeae587dc1ac0fb0a5ed26b60a3851219ef1fe0ebd9161ea868b4",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

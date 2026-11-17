@@ -1,0 +1,65 @@
+{
+  "captured": "2026-11-12T10:45:24.682Z",
+  "jsonFilesParsed": 19,
+  "journalRowsParsed": 491,
+  "policyFiles": [
+    {
+      "path": "bin/memory/agent.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/daemon.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/live.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/maintenance.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/queue.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/recent.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/service.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/store.js",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/web/dashboard.html",
+      "unchanged": true
+    },
+    {
+      "path": "bin/memory/web/dashboard.js",
+      "unchanged": true
+    },
+    {
+      "path": "skills/meta/agent-memory/SKILL.md",
+      "unchanged": true
+    }
+  ],
+  "allPolicyFilesUnchanged": true,
+  "runtimeCounts": {
+    "events": 0,
+    "jobs": 0
+  },
+  "service": {
+    "running": true,
+    "pid": 5175,
+    "maxAgentsPerWorkspace": 10,
+    "activeBatches": 0,
+    "counts": {},
+    "schedulerError": null,
+    "maintenanceErrors": []
+  }
+}

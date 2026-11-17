@@ -12,13 +12,17 @@ const HELP = `Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]
 Commands:
   create <id> --title <title> --kind task|plan|queue --target "T1: ..." [--target ...]
   list [--json]
-  show <id> [--json]
+  show <id-or-title> [--json]
+  find <name-or-keyword> [--json]
   validate [id]
   check <id|task-file>
   sync <id>
   status <id> <pending|in-progress|in-review|blocked|cancelled>
   cancel <id>
-  resume <id>
+  pause <id-or-title> --input <checkpoint.json>
+    suspend and stash are aliases for pause; both require the same checkpoint
+    checkpoint fields: progress, results, verification, remaining, decisions, nextAction, dependencies, transfer
+  resume <id-or-title>
   reopen <id>
   link <parent-id> <child-id>
   next <queue-id> [--json]
@@ -36,6 +40,10 @@ Commands:
   finalize <id> <R0|R1> --result "T1: observation" [--result ...] --reason <text> --snapshot <identity> --evidence <text> --final-verification <text>
     R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>
   topic <command> [arguments]
+
+Task states: Pending, In Progress, In Review, Paused, Blocked, Cancelled, Completed.
+Pending is waiting for execution, not paused. Use pause with a checkpoint to stop and save progress.
+Use complete/finalize for completion and reopen for Completed work; there is no Suspended state.
 
 ${topicCli.HELP}`;
 
@@ -64,8 +72,35 @@ function summary(task) {
     children: task.children.map(({ id }) => id),
     reviewAssessment: task.reviewAssessment || null,
     ...(Object.keys(task.recovery).length ? { recovery: task.recovery } : {}),
+    ...(task.resumeContext ? { resumeContext: task.resumeContext } : {}),
     ...(task.topic ? { topic: task.topic } : {}),
   };
+}
+
+function normalizeName(value) {
+  return String(value).normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function findTasks(workspace, query) {
+  const name = normalizeName(query);
+  if (!name) throw new Error("task name must not be empty");
+  return core.listTasks(workspace, name);
+}
+
+function resolveTaskId(workspace, query) {
+  // Keep exact ID access independent of unrelated task records.
+  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(query) && fs.existsSync(core.taskPath(workspace, query))) {
+    return query;
+  }
+  const candidates = findTasks(workspace, query);
+  const exact = candidates.filter((task) => normalizeName(task.title) === normalizeName(query));
+  if (exact.length === 1) return exact[0].id;
+  const choices = exact.length ? exact : candidates;
+  const details = choices.map((task, index) =>
+    `  ${index + 1}. ${JSON.stringify(task.title)} | ${task.status.display} | ${task.status.timestamp} | ${task.id}`).join("\n");
+  throw new Error(choices.length
+    ? `${exact.length ? "Ambiguous task title" : "No exact task title match"}: ${JSON.stringify(query)}. Select a task before continuing:\n${details}`
+    : `task not found: ${JSON.stringify(query)}`);
 }
 
 function run(argv, io = console) {
@@ -99,9 +134,13 @@ function run(argv, io = console) {
         if (args.length) throw new Error(`unexpected arguments: ${args.join(" ")}`);
         output = core.listTasks(workspace).map(summary);
         break;
+      case "find":
+        if (args.length !== 1) throw new Error("find needs one task name or keyword");
+        output = findTasks(workspace, args[0]).map((task) => ({ ...summary(task), statusAt: task.status.timestamp }));
+        break;
       case "show": {
-        const task = core.readTask(workspace, args[0]);
-        if (args.length !== 1) throw new Error("show needs one task id");
+        if (args.length !== 1) throw new Error("show needs one task id or title");
+        const task = core.readTask(workspace, resolveTaskId(workspace, args[0]));
         if (!json) {
           io.log(task.text.replace(/\s+$/, ""));
           return 0;
@@ -134,10 +173,20 @@ function run(argv, io = console) {
         if (args.length !== 1) throw new Error("cancel needs one task id");
         output = summary(core.cancelTask(workspace, args[0]));
         break;
+      case "suspend":
+      case "stash":
+      case "pause": {
+        const query = args.shift();
+        const input = takeOption(args, "--input");
+        if (!query || !input || args.length) throw new Error("pause needs one task id or title and --input <checkpoint.json>");
+        const id = resolveTaskId(workspace, query);
+        output = summary(core.pauseTask(workspace, id, JSON.parse(fs.readFileSync(path.resolve(input), "utf8"))));
+        break;
+      }
       case "resume":
-        if (args.length !== 1) throw new Error("resume needs one task id");
+        if (args.length !== 1) throw new Error("resume needs one task id or title");
         {
-          const task = core.resumeTask(workspace, args[0]);
+          const task = core.resumeTask(workspace, resolveTaskId(workspace, args[0]));
           output = { ...summary(task), ...(task.topic ? { topicFreshness: topics.freshness(workspace, task) } : {}) };
         }
         break;

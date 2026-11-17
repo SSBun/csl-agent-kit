@@ -10,7 +10,7 @@ const recent = require("./recent.js");
 
 const STORE_VERSION = 5;
 const MAX_BYTES = 256 * 1024;
-const BUDGETS = Object.freeze({ title: 60, summary: 200, bodyTarget: 4000, body: 8000, indexPage: 4000, projectChips: 20, projectBodyWords: 1000 });
+const BUDGETS = Object.freeze({ title: 60, summary: 200, indexPage: 4000, projectChips: 20, bodyWords: 5000 });
 const segmenter = new Intl.Segmenter("zh", { granularity: "word" });
 const words = value => [...segmenter.segment(value)].filter(part => part.isWordLike).length;
 const characters = value => [...value].length;
@@ -92,8 +92,7 @@ function validateContent(content, scope = "project", enforceBudget = true, id) {
       if (content.title !== recent.TITLE || content.summary !== recent.SUMMARY) fail("INVALID_TEMP_MEMORY", "Temporary memory must use its fixed title and summary");
       if (recent.filter(content.body) !== content.body.trim()) fail("TEMP_DATE_RANGE", "Temporary cases must fall within today and the previous six UTC dates");
     }
-    if (scope === "project" && words(content.body) > BUDGETS.projectBodyWords) fail("MEMORY_BUDGET", "Project chip exceeds 1000 words");
-    if (scope === "user" && characters(content.body) > BUDGETS.body) fail("MEMORY_BUDGET", "User chip exceeds 8000 characters");
+
   }
 }
 function encodeEntry(content) {
@@ -163,10 +162,14 @@ function indexScope(root) { return indexMetadata(root)?.scope || (root === rootF
 function indexPages(root, scope = indexScope(root)) { return recall.compile({ entries: entries(root), scope }).files; }
 function indexText(root, scope) { return indexPages(root, scope)[0].content; }
 function rebuildIndex(root, scope) { atomicWrite(safePath(root, "index.md"), indexText(root, scope)); }
+function compactionStatus(root, scope = indexScope(root)) {
+  return entries(root).filter(e => e.exists && !(scope === "project" && recent.matches(e)))
+    .map(e => ({ id: e.id, words: words(e.body) })).filter(e => e.words > BUDGETS.bodyWords);
+}
 function budgetStatus(root, scope = indexScope(root)) {
   if (scope !== "project") return null;
   const active = entries(root).filter(e => e.exists);
-  return { count: active.length, limit: BUDGETS.projectChips, wordLimit: BUDGETS.projectBodyWords, oversized: active.map(e => ({ id: e.id, words: words(e.body) })).filter(e => e.words > BUDGETS.projectBodyWords), overCapacity: active.length > BUDGETS.projectChips };
+  return { count: active.length, limit: BUDGETS.projectChips, wordLimit: BUDGETS.bodyWords, oversized: compactionStatus(root, scope), overCapacity: active.length > BUDGETS.projectChips };
 }
 function inspectIndex(options = {}) {
   const root = rootFor(options), scope = options.scope || "project";
@@ -217,7 +220,10 @@ function mutate(options, input) {
     }
     try { rebuildIndex(root, scope); }
     catch (error) { fail("INDEX_STALE", "Current file was written but index refresh failed; reread entries and reindex", { cause: error.message }); }
-    return { operation: input.operation, entry: get(root, input.id) };
+    const entry = get(root, input.id);
+    const compaction = input.operation === "put" && !(scope === "project" && recent.matches(entry)) && words(entry.body) > BUDGETS.bodyWords
+      ? { required: true, wordLimit: BUDGETS.bodyWords, words: words(entry.body) } : null;
+    return { operation: input.operation, entry, compaction };
   });
 }
 function reindex(options) {
@@ -227,4 +233,4 @@ function reindex(options) {
   return withLock(root, () => { rebuildIndex(root, options.scope || "project"); return { root, rebuilt: true }; });
 }
 
-module.exports = { STORE_VERSION, MAX_BYTES, BUDGETS, words, characters, fail, hash, safePath, rootFor, readOptional, atomicWrite, validateCaseBody, validateContent, validateMutation, encodeEntry, parseEntry, get, pruneTemp, entries, list, indexMetadata, indexPages, indexText, rebuildIndex, inspectIndex, budgetStatus, withLock, mutate, reindex };
+module.exports = { STORE_VERSION, MAX_BYTES, BUDGETS, words, characters, fail, hash, safePath, rootFor, readOptional, atomicWrite, validateCaseBody, validateContent, validateMutation, encodeEntry, parseEntry, get, pruneTemp, entries, list, indexMetadata, indexPages, indexText, rebuildIndex, inspectIndex, budgetStatus, compactionStatus, withLock, mutate, reindex };

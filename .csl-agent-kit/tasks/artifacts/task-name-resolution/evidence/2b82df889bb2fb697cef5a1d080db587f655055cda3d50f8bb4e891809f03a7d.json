@@ -1,0 +1,65 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-name-resolution",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "51f04c422cd0c9ba7a9fbe5f1fa6a50c037c79f50501037cadaff836c0eabf9b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "372b774d3bb24eae0929a65d215cc2b4a6233ddf"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "372b774d3bb24eae0929a65d215cc2b4a6233ddf",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/scripts/csl-tasks.js",
+      "sha256": "8141754d186b63471943c046af742a65f89a6f630183b60600e0e6284effe13c",
+      "git": {
+        "head": {
+          "mode": "100755",
+          "object": "fa901be7eae5586335127aa14a2a83d6c03a60c5"
+        },
+        "index": [
+          {
+            "mode": "100755",
+            "object": "fa901be7eae5586335127aa14a2a83d6c03a60c5",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "8ffc3849abe80f94e34c80d6be8ebaeee2c67d5016fb4cc0c423329ad8996c64",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0b06d82d664f72193bae6ce25622eeac49911045"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0b06d82d664f72193bae6ce25622eeac49911045",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/references/pause-resume.md",
+      "sha256": "03c930c67f2d07aea5fdec22cb74899d92ce535d161fa253b4310bbc62e29f11",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

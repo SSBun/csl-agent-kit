@@ -79,8 +79,11 @@ test("index rebuild is deterministic and detects current-file drift", t => {
 
 test("project capacity and body budget permit merging existing files", t => {
   const { options, root } = fixture(t);
-  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "word ".repeat(1001);
-  assert.throws(() => store.mutate(options, oversized), { code: "MEMORY_BUDGET" });
+  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "word ".repeat(5001);
+  const saved = store.mutate(options, oversized);
+  assert.equal(saved.compaction.required, true);
+  assert.equal(store.get(root, "sample").body, oversized.content.body.trim());
+  store.mutate(options, { id: "sample", operation: "delete", expected: { hash: saved.entry.hash } });
   for (let i = 0; i < 20; i++) store.mutate(options, mutation(`entry-${i}`));
   assert.throws(() => store.mutate(options, mutation("overflow")), { code: "MEMORY_CAPACITY" });
   const current = store.get(root, "entry-0");
@@ -143,11 +146,12 @@ test("special badges are project-specific and ordinary or user memories remain o
   assert.equal(recent.kind({ id: "temp", title: "其他内容" }, "project"), null);
 });
 
-test("user storage uses the same current index and its character budget", t => {
+test("user storage uses the same current index and word budget", t => {
   const f = fixture(t), options = { ...f.options, scope: "user" }, root = store.rootFor(options);
-  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "字".repeat(8001);
-  assert.throws(() => store.mutate(options, oversized), { code: "MEMORY_BUDGET" });
-  store.mutate(options, mutation());
+  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "word ".repeat(5001);
+  assert.equal(store.mutate(options, oversized).compaction.required, true);
+  const current = store.get(root, "sample");
+  store.mutate(options, mutation("sample", current.hash));
   assert.equal(store.inspectIndex(options).index.scope, "user");
   assert.deepEqual(fs.readdirSync(root).sort(), ["entries", "index.md"]);
 });

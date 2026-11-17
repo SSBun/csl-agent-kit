@@ -1,0 +1,44 @@
+{
+  "operation": "用户明确请求重启Memory服务",
+  "previous": {
+    "pid": 13937,
+    "started": "2026-11-10T06:51:07.378Z",
+    "activeWorkspaceCount": 1,
+    "counts": { "exhausted": 120, "running": 1, "queued": 3 }
+  },
+  "stop": {
+    "interface": "POST /api/stop",
+    "ifIdle": false,
+    "response": { "stopping": true },
+    "method": "服务正常取消处理并保存队列状态，没有发送强杀信号"
+  },
+  "current": {
+    "running": true,
+    "pid": 5175,
+    "started": "2026-11-12T09:42:18.477Z",
+    "maxAgentsPerWorkspace": 10,
+    "activeWorkspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "activeBatches": 5,
+    "runningAgents": 5,
+    "agentSlots": [1, 2, 3, 4, 5],
+    "distinctSessionIds": 5,
+    "counts": { "exhausted": 120, "running": 5 },
+    "schedulerError": null
+  },
+  "limits": {
+    "bodyWords": 5000,
+    "description": "独立CLI进程读取当前源码配置；新后台进程由相同源码启动。未以真实超阈值输入验收模型压缩保真。"
+  },
+  "followup": {
+    "pid": 5175,
+    "running": true,
+    "maxAgentsPerWorkspace": 10,
+    "activeBatchCount": 3,
+    "schedulerError": null,
+    "liveTraces": [
+      { "available": true, "eventMatches": true, "agent": 1, "status": "running" },
+      { "available": true, "eventMatches": true, "agent": 3, "status": "running" }
+    ]
+  },
+  "verification": "父Agent直接调用本机服务接口读取；此文件是有时间点的观察记录，不证明持续状态或Reviewer独立网络核对。"
+}

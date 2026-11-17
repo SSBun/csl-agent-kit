@@ -82,12 +82,12 @@ async function main() {
           let model;
           try { model = await models.resolveModel(); } catch (error) { model = { error: error.message }; }
           const jobs = queue.all();
-          return json(response, 200, { running: true, protocol: store.STORE_VERSION, storagePolicy: "current-files-only/v1", pid: process.pid, started, model, agents: agent.states(), active: [...active.keys()], schedulerError, maintenanceErrors, counts: jobs.reduce((counts, { state }) => { counts[state.status] = (counts[state.status] || 0) + 1; return counts; }, {}) });
+          return json(response, 200, { running: true, protocol: store.STORE_VERSION, storagePolicy: "current-files-only/v1", pid: process.pid, started, model, agents: agent.states(), active: [...new Set([...active.values()].map(item => item.workspace))], activeBatches: [...active].map(([id, item]) => ({ id, workspace: item.workspace })), maxAgentsPerWorkspace: agent.MAX_AGENTS_PER_WORKSPACE, schedulerError, maintenanceErrors, counts: jobs.reduce((counts, { state }) => { counts[state.status] = (counts[state.status] || 0) + 1; return counts; }, {}) });
         }
         if (url.pathname === "/api/index") return json(response, 200, store.inspectIndex(optionsFrom(params)));
         if (url.pathname === "/api/agent-live") {
           if (typeof params.workspace !== "string" || !params.workspace.trim()) store.fail("WORKSPACE_REQUIRED", "Select a workspace to inspect its Memory Agent");
-          return json(response, 200, manager.inspect(params.workspace));
+          return json(response, 200, manager.inspect(params.workspace, params.event ? runtime.jobId(params.event) : undefined));
         }
         if (url.pathname === "/api/agents") return json(response, 200, { items: agent.states() });
         if (url.pathname === "/api/memory-groups") return json(response, 200, library.groups(params));
@@ -127,7 +127,7 @@ async function main() {
       }
       const effects = state.effects || [];
       queue.update(event.id, { status: "running", attempts: state.attempts + 1, error: null, started: new Date().toISOString() });
-      const controller = active.get(event.workspace);
+      const controller = active.get(event.id).controller;
       await manager.run(event, {
         signal: controller.signal,
         recordModel: (model) => queue.update(event.id, { model }),
@@ -148,7 +148,7 @@ async function main() {
       } catch (persistError) { console.error("Cannot persist job failure", event.id, persistError.message); }
     } finally {
       unlock?.();
-      active.delete(event.workspace);
+      active.delete(event.id);
     }
   }
 
@@ -161,7 +161,6 @@ async function main() {
         queue.compactCompleted();
         maintenanceErrors = maintenance.schedule(queue.all());
       }
-      const seen = new Set();
       const dispatchErrors = [];
       // Conversation work takes precedence; each workspace runs independently.
       // Exhausted records remain inspectable without blocking later work.
@@ -176,11 +175,10 @@ async function main() {
           dispatchErrors.push(`${workspace}: ${error.code || "MEMORY_ERROR"}: ${error.message}`);
           continue;
         }
-        if (seen.has(workspace)) continue;
-        seen.add(workspace);
-        // Retry once within the same workspace; other workspaces run in parallel.
-        if (!["queued", "failed", "interrupted"].includes(item.state.status) || active.has(workspace)) continue;
-        active.set(workspace, new AbortController());
+        // Reserve each batch before dispatch, including while its session starts.
+        if (!["queued", "failed", "interrupted"].includes(item.state.status) || active.has(item.event.id)) continue;
+        if ([...active.values()].filter(item => item.workspace === workspace).length >= agent.MAX_AGENTS_PER_WORKSPACE) continue;
+        active.set(item.event.id, { workspace, controller: new AbortController() });
         void processJob(item);
       }
       schedulerError = dispatchErrors.length ? dispatchErrors.join("\n") : null;
@@ -191,7 +189,7 @@ async function main() {
     if (stopping) return;
     stopping = true;
     clearInterval(interval);
-    for (const controller of active.values()) controller.abort();
+    for (const { controller } of active.values()) controller.abort();
     server.close();
     const wait = setInterval(() => {
       if (active.size) return;

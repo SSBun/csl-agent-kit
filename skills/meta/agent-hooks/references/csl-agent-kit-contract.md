@@ -5,9 +5,9 @@ CSL AGENT KIT CONTRACT ACTIVE
 Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.
 
 - Use Task Target to let the user recheck implementation goals before substantive work; exploration-only work proceeds without a generic Target confirmation under the shared protocol.
-- Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.
+- Pause execution for required alignment, unresolved user decisions, material authorization changes, independent safety boundaries, or an explicit user stop request. Waiting at such a boundary does not itself change the task state.
 - Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.
-- Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.
+- Do not explain why Task Target confirmation is required unless the user explicitly asks. Do not append workflow, mode, rule-source or protocol explanations to a confirmation request.
 
 This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.
 
@@ -50,6 +50,14 @@ Choose exactly one workflow from the user's authorized outcome:
 
 An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
 
+## Task State Semantics
+
+The task system uses Pending, In Progress, In Review, Paused, Blocked, Cancelled and Completed. Pending is waiting for execution, Paused is an intentional interruption with saved recovery information, and Blocked has a concrete obstacle. There is no Suspended state. In task-management context, pause, suspend, stash, and equivalent requests mean the Paused procedure; they do not mean Git stash or process suspension.
+
+For a request only to pause or cancel an existing task, resolve and focus its original record without resuming, reopening or creating a replacement. Follow the owning Skill's lifecycle-only stop branch and shared state-transition protocol. Do not reopen Completed work merely to pause it, or bypass Blocked conditions. A pause is successful only after the saved Paused state and recovery checkpoint have been read back and checked. Stopping Agent execution or returning to Pending is not a saved pause. Preserve unresolved review obligations and existing authorization holds; stopping does not accept or change the implementation Target.
+
+The shared state-transition protocol owns the full transition table; task Skills own the commands and recovery details. Keep the current allowed In Progress to Pending transition for actual waiting, never as a substitute for pause. Task state, review-gate state and model execution state are separate.
+
 ## Persistent Topics
 
 When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
@@ -66,7 +74,7 @@ SOLO does not grant unlimited authority or user acceptance. Retain the user's ac
 
 ## Task Target
 
-When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.
+When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution. For lifecycle-only stop requests, focus the original record while preserving its state and use the narrow stop branch above; do not run execution startup.
 
 Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
 

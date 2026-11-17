@@ -1,0 +1,67 @@
+[
+  {
+    "phase": "creation-reserved",
+    "a": 10,
+    "b": 2,
+    "eleventh": "AGENT_BUSY",
+    "duplicate": "AGENT_BUSY"
+  },
+  {
+    "phase": "running",
+    "a": 10,
+    "b": 2,
+    "uniqueSessionIds": 12,
+    "isolatedLive": true
+  },
+  {
+    "phase": "cancel-one",
+    "result": "INTERRUPTED",
+    "otherRunning": 9,
+    "cancelledDisposed": true
+  },
+  {
+    "phase": "reuse-idle",
+    "createdAnotherSession": false,
+    "retainedSlotsA": 10,
+    "activeSessionsA": 10
+  },
+  {
+    "phase": "settled",
+    "completed": 13,
+    "interrupted": 1,
+    "unexpected": []
+  },
+  {
+    "phase": "unresolved-write",
+    "followupOffered": true,
+    "result": "MEMORY_WRITE_UNRESOLVED",
+    "failedSessionDisposed": true,
+    "peerSessionsRetained": 9
+  },
+  {
+    "phase": "resolved-write",
+    "result": "completed",
+    "retainedSlotsA": 10
+  },
+  {
+    "phase": "close",
+    "allDisposed": true,
+    "stoppedStates": 12
+  },
+  {
+    "phase": "reconcile",
+    "stateFiles": 12,
+    "slotsA": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  }
+]

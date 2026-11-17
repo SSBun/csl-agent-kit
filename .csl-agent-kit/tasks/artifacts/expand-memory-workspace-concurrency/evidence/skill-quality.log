@@ -1,0 +1,3 @@
+WARNING agent-memory — /Users/caishilin/Desktop/personal/csl-agent-kit/skills/meta/agent-memory
+  warning [context-budget] Estimated initial-load tokens exceed the 1000-token budget: 1835.
+Summary: 0 passed, 1 warning, 0 failed.

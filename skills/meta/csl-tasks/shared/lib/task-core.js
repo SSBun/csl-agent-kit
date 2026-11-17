@@ -13,6 +13,7 @@ const STATE_DISPLAY = {
   pending: "Pending",
   in_progress: "In Progress",
   in_review: "In Review",
+  paused: "Paused",
   completed: "Completed",
   blocked: "Blocked",
   cancelled: "Cancelled",
@@ -57,6 +58,9 @@ function normalizeKind(kind, allowLegacyAuto = false) {
 
 function normalizeState(state) {
   const value = String(state || "").toLowerCase().replace(/[ -]+/g, "_");
+  if (["suspend", "suspended", "stash", "stashed"].includes(value)) {
+    throw new Error("there is no Suspended task state; use pause with a recovery checkpoint to enter Paused");
+  }
   if (!STATE_DISPLAY[value]) throw new Error(`invalid task state: ${state}`);
   return value;
 }
@@ -324,6 +328,32 @@ function resultsOf(text) {
   return map;
 }
 
+const RESUME_FIELDS = {
+  progress: "Progress", results: "Partial results", verification: "Verification",
+  remaining: "Remaining work", decisions: "Decisions", nextAction: "Next action",
+  dependencies: "Dependencies", transfer: "Transfer requirements",
+};
+
+function resumeContextOf(text) {
+  const found = sectionsOf(text, "Resume Context");
+  if (!found.length) return undefined;
+  if (found.length !== 1) throw new Error("duplicate Resume Context section");
+  const body = found[0].body;
+  const context = {};
+  if (body.filter((line) => line === "- Schema: task-resume-context/v1").length !== 1) {
+    throw new Error("Resume Context requires task-resume-context/v1");
+  }
+  for (const [key, label] of Object.entries(RESUME_FIELDS)) {
+    const prefix = `- ${label}: `;
+    const values = body.filter((line) => line.startsWith(prefix));
+    if (values.length !== 1) throw new Error(`Resume Context requires exactly one ${label}`);
+    const value = JSON.parse(values[0].slice(prefix.length));
+    if (typeof value !== "string" || !value.trim()) throw new Error(`Resume Context requires nonempty ${label}`);
+    context[key] = value;
+  }
+  return context;
+}
+
 function recoveryOf(text) {
   const recovery = {};
   for (const [name, fields] of [
@@ -584,6 +614,9 @@ function readTask(workspace, id) {
 }
 
 function parseTask(id, text, file) {
+  const status = statusOf(text);
+  const resumeContext = resumeContextOf(text);
+  if (status.state === "paused" && !resumeContext) throw new Error("Paused requires a Resume Context checkpoint");
   const kindValue = fieldOf(text, "Kind");
   const kind = kindValue ? normalizeKind(kindValue, true) : undefined;
   const parent = fieldOf(text, "Parent");
@@ -592,7 +625,7 @@ function parseTask(id, text, file) {
     file,
     text,
     title: titleOf(text),
-    status: statusOf(text),
+    status,
     kind,
     parent: !parent || parent === "none" ? undefined : parent,
     topic: topics.taskTopic(text),
@@ -600,6 +633,7 @@ function parseTask(id, text, file) {
     targets: targetsOf(text),
     results: resultsOf(text),
     recovery: recoveryOf(text),
+    resumeContext,
     review: text.match(REVIEW_PATTERN),
     reviewAssessment: reviewAssessmentOf(text),
     reviewLedger: reviewLedgerOf(text),
@@ -794,6 +828,7 @@ function writeTaskAndIndex(workspace, task, text, options) {
 function setState(workspace, id, requested) {
   const state = normalizeState(requested);
   if (state === "completed") throw new Error("use complete to enter Completed");
+  if (state === "paused") throw new Error("use pause with a fresh recovery checkpoint to enter Paused");
   const task = readTask(workspace, id);
   const allowed = {
     pending: new Set(["in_progress", "blocked", "cancelled"]),
@@ -801,6 +836,7 @@ function setState(workspace, id, requested) {
     in_review: new Set(["in_progress", "blocked", "cancelled"]),
     blocked: new Set(["in_progress", "cancelled"]),
     cancelled: new Set(["in_progress"]),
+    paused: new Set(["in_progress", "cancelled"]),
     completed: new Set(),
   };
   if (state === "in_progress") {
@@ -818,12 +854,35 @@ function setState(workspace, id, requested) {
   if (state === "blocked" && !section(task.text, "Block")) throw new Error("Blocked requires an active Block section");
   let text = replaceStatus(task.text, state);
   if (state === "cancelled") text = invalidateReviewGate(text, "Task cancelled; refresh evidence before continuing");
+  if (task.status.state === "paused") text = invalidateReviewGate(text, "Task resumed after pause; recheck artifacts and refresh evidence");
   if (task.status.state === "in_review" && state !== "in_review") {
     text = invalidateReviewGate(text, "Task left In Review; rerun the applicable review after revisions");
     text = replaceSection(text, "Verification", undefined);
   }
   if (task.status.state === "blocked" && state !== "blocked") text = replaceSection(text, "Block", undefined);
   return writeTaskAndIndex(workspace, task, text);
+}
+
+function pauseTask(workspace, id, context) {
+  const task = readTask(workspace, id);
+  if (!["pending", "in_progress", "in_review"].includes(task.status.state)) {
+    throw new Error("pause requires Pending, In Progress, or In Review; keep Blocked tasks blocked");
+  }
+  if (!context || typeof context !== "object" || Array.isArray(context)
+    || Object.keys(context).some((key) => !Object.hasOwn(RESUME_FIELDS, key))) {
+    throw new Error("pause requires a recovery checkpoint object with only documented fields");
+  }
+  const body = ["- Schema: task-resume-context/v1", `- Saved at: ${localTimestamp()}`];
+  for (const [key, label] of Object.entries(RESUME_FIELDS)) {
+    const value = context[key];
+    if (typeof value !== "string" || !value.trim() || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value)) {
+      throw new Error(`pause requires nonempty ${key} text without control characters`);
+    }
+    body.push(`- ${label}: ${JSON.stringify(value.trim())}`);
+  }
+  let text = replaceSection(task.text, "Resume Context", body);
+  text = invalidateReviewGate(text, "Task paused; recheck artifacts and refresh evidence before continuing");
+  return writeTaskAndIndex(workspace, task, replaceStatus(text, "paused"));
 }
 
 function cancelTask(workspace, id) {
@@ -1128,11 +1187,20 @@ function validateWorkspace(workspace) {
   return errors;
 }
 
-function listTasks(workspace) {
+function listTasks(workspace, query) {
   if (!fs.existsSync(tasksDir(workspace))) return [];
+  const name = query === undefined ? undefined : normalizedTitle(query);
   return fs.readdirSync(tasksDir(workspace))
     .filter((file) => ID_PATTERN.test(file.slice(0, -3)) && file.endsWith(".md"))
-    .map((file) => readTask(workspace, file.slice(0, -3)));
+    .flatMap((file) => {
+      const id = file.slice(0, -3);
+      if (name === undefined) return [readTask(workspace, id)];
+      const location = topics.safePath(workspace, `tasks/tasks/${file}`);
+      const text = fs.readFileSync(location, "utf8");
+      if (!normalizedTitle(titleOf(text)).includes(name) && !id.includes(name)) return [];
+      readVersions.set(location, text);
+      return [parseTask(id, text, location)];
+    });
 }
 
 module.exports = {
@@ -1147,6 +1215,7 @@ module.exports = {
   updatedIndex,
   STATE_DISPLAY,
   cancelTask,
+  pauseTask,
   checkTaskIndex,
   completeTask,
   finalizeTask,

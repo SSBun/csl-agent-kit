@@ -69,6 +69,8 @@ Read back affected content and inspect the current index before claiming success
 
 ## 6. Handle limits and report results
 
+普通记忆正文超过5000词时，先保存完整更新，再根据writer返回的compaction提示重新读取正文与最新hash，合并重复内容并精炼表达。保留有效知识、独有条件、否定、例外、关键数值和未变case日期；不要截断、删除待压缩文件或跨scope转移以绕过阈值。无法保真压缩时保留已保存更新并明确报告待压缩，后续批次继续处理；不要仅因词数拒绝更新或宣称已达标。项目temp不参与正文词数压缩，仍按其时间窗口维护。
+
 On `CONFLICT`, reread and reassess; do not force an overwrite. On `LOCKED`, do not remove an unknown active lock. On `INDEX_STALE` or a missing tool response, inspect current files before retrying: a write may already have succeeded, and rollback is not implied.
 
 Use an index-repair operation only when it is available and authorized. Otherwise report what was saved, what remains uncertain, and the required recovery action. Do not invent a tool, bypass the writer, or claim recovery succeeded.

@@ -1,0 +1,493 @@
+diff --git a/skills/meta/agent-hooks/references/csl-agent-kit-contract.md b/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
+index 1d5e94c..99b1db1 100644
+--- a/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
++++ b/skills/meta/agent-hooks/references/csl-agent-kit-contract.md
+@@ -5,9 +5,9 @@ CSL AGENT KIT CONTRACT ACTIVE
+ Use Task workflows automatically for every eligible request. Infer the correct task family from the authorized outcome and route it without asking the user to select an internal tool; users should not need to know Skill names or internal lifecycle mechanics.
+ 
+ - Use Task Target to let the user recheck implementation goals before substantive work; exploration-only work proceeds without a generic Target confirmation under the shared protocol.
+-- Pause only for required alignment, unresolved user decisions, material authorization changes, or independent safety boundaries.
++- Pause execution for required alignment, unresolved user decisions, material authorization changes, independent safety boundaries, or an explicit user stop request. Waiting at such a boundary does not itself change the task state.
+ - Keep canonical task state recoverable and completion evidence-backed so interrupted work can resume safely.
+-- Explain the workflow's value only when it helps the user understand a pause or decision; do not narrate routine internal bookkeeping.
++- Do not explain why Task Target confirmation is required unless the user explicitly asks. Do not append workflow, mode, rule-source or protocol explanations to a confirmation request.
+ 
+ This contract owns only stable task-family routing and cross-workflow gates. The selected Skill owns the exact procedure.
+ 
+@@ -50,6 +50,14 @@ Choose exactly one workflow from the user's authorized outcome:
+ 
+ An explicit compatible user selection wins. Complexity, step count, or file count alone does not make a Queue. If a user-owned ambiguity prevents choosing the workflow honestly, ask one focused question rather than silently selecting a workflow.
+ 
++## Task State Semantics
++
++The task system uses Pending, In Progress, In Review, Paused, Blocked, Cancelled and Completed. Pending is waiting for execution, Paused is an intentional interruption with saved recovery information, and Blocked has a concrete obstacle. There is no Suspended state. In task-management context, pause, suspend, stash, and equivalent requests mean the Paused procedure; they do not mean Git stash or process suspension.
++
++For a request only to pause or cancel an existing task, resolve and focus its original record without resuming, reopening or creating a replacement. Follow the owning Skill's lifecycle-only stop branch and shared state-transition protocol. Do not reopen Completed work merely to pause it, or bypass Blocked conditions. A pause is successful only after the saved Paused state and recovery checkpoint have been read back and checked. Stopping Agent execution or returning to Pending is not a saved pause. Preserve unresolved review obligations and existing authorization holds; stopping does not accept or change the implementation Target.
++
++The shared state-transition protocol owns the full transition table; task Skills own the commands and recovery details. Keep the current allowed In Progress to Pending transition for actual waiting, never as a substitute for pause. Task state, review-gate state and model execution state are separate.
++
+ ## Persistent Topics
+ 
+ When the user names a persistent maintenance Topic or the owning task has an explicit Topic binding, load `topic` for shared specification and association rules. Topic is an optional context/ownership layer, not a fourth execution family: select task-plan, task or task-queue from the current authorized outcome as usual. Standalone tasks remain fully supported. Topic may span implementation, improvement, bug fixes and bounded reviews over time; it is not restricted to multi-platform delivery.
+@@ -66,7 +74,7 @@ SOLO does not grant unlimited authority or user acceptance. Retain the user's ac
+ 
+ ## Task Target
+ 
+-When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution.
++When a Task workflow applies, activate and focus its owning record before task-direct exploration or requested deliverable changes. Lifecycle writes needed for activation and alignment may happen first, but they never authorize execution. For lifecycle-only stop requests, focus the original record while preserving its state and use the narrow stop branch above; do not run execution startup.
+ 
+ Apply the selected task-family Skill, including its required Task Target alignment gate, before substantive work. Only the main interaction owner handles user-facing alignment and independent safety gates.
+ 
+diff --git a/skills/meta/csl-tasks/shared/lib/task-core.js b/skills/meta/csl-tasks/shared/lib/task-core.js
+index 372b774..21db3e8 100644
+--- a/skills/meta/csl-tasks/shared/lib/task-core.js
++++ b/skills/meta/csl-tasks/shared/lib/task-core.js
+@@ -13,6 +13,7 @@ const STATE_DISPLAY = {
+   pending: "Pending",
+   in_progress: "In Progress",
+   in_review: "In Review",
++  paused: "Paused",
+   completed: "Completed",
+   blocked: "Blocked",
+   cancelled: "Cancelled",
+@@ -57,6 +58,9 @@ function normalizeKind(kind, allowLegacyAuto = false) {
+ 
+ function normalizeState(state) {
+   const value = String(state || "").toLowerCase().replace(/[ -]+/g, "_");
++  if (["suspend", "suspended", "stash", "stashed"].includes(value)) {
++    throw new Error("there is no Suspended task state; use pause with a recovery checkpoint to enter Paused");
++  }
+   if (!STATE_DISPLAY[value]) throw new Error(`invalid task state: ${state}`);
+   return value;
+ }
+@@ -324,6 +328,32 @@ function resultsOf(text) {
+   return map;
+ }
+ 
++const RESUME_FIELDS = {
++  progress: "Progress", results: "Partial results", verification: "Verification",
++  remaining: "Remaining work", decisions: "Decisions", nextAction: "Next action",
++  dependencies: "Dependencies", transfer: "Transfer requirements",
++};
++
++function resumeContextOf(text) {
++  const found = sectionsOf(text, "Resume Context");
++  if (!found.length) return undefined;
++  if (found.length !== 1) throw new Error("duplicate Resume Context section");
++  const body = found[0].body;
++  const context = {};
++  if (body.filter((line) => line === "- Schema: task-resume-context/v1").length !== 1) {
++    throw new Error("Resume Context requires task-resume-context/v1");
++  }
++  for (const [key, label] of Object.entries(RESUME_FIELDS)) {
++    const prefix = `- ${label}: `;
++    const values = body.filter((line) => line.startsWith(prefix));
++    if (values.length !== 1) throw new Error(`Resume Context requires exactly one ${label}`);
++    const value = JSON.parse(values[0].slice(prefix.length));
++    if (typeof value !== "string" || !value.trim()) throw new Error(`Resume Context requires nonempty ${label}`);
++    context[key] = value;
++  }
++  return context;
++}
++
+ function recoveryOf(text) {
+   const recovery = {};
+   for (const [name, fields] of [
+@@ -584,6 +614,9 @@ function readTask(workspace, id) {
+ }
+ 
+ function parseTask(id, text, file) {
++  const status = statusOf(text);
++  const resumeContext = resumeContextOf(text);
++  if (status.state === "paused" && !resumeContext) throw new Error("Paused requires a Resume Context checkpoint");
+   const kindValue = fieldOf(text, "Kind");
+   const kind = kindValue ? normalizeKind(kindValue, true) : undefined;
+   const parent = fieldOf(text, "Parent");
+@@ -592,7 +625,7 @@ function parseTask(id, text, file) {
+     file,
+     text,
+     title: titleOf(text),
+-    status: statusOf(text),
++    status,
+     kind,
+     parent: !parent || parent === "none" ? undefined : parent,
+     topic: topics.taskTopic(text),
+@@ -600,6 +633,7 @@ function parseTask(id, text, file) {
+     targets: targetsOf(text),
+     results: resultsOf(text),
+     recovery: recoveryOf(text),
++    resumeContext,
+     review: text.match(REVIEW_PATTERN),
+     reviewAssessment: reviewAssessmentOf(text),
+     reviewLedger: reviewLedgerOf(text),
+@@ -794,6 +828,7 @@ function writeTaskAndIndex(workspace, task, text, options) {
+ function setState(workspace, id, requested) {
+   const state = normalizeState(requested);
+   if (state === "completed") throw new Error("use complete to enter Completed");
++  if (state === "paused") throw new Error("use pause with a fresh recovery checkpoint to enter Paused");
+   const task = readTask(workspace, id);
+   const allowed = {
+     pending: new Set(["in_progress", "blocked", "cancelled"]),
+@@ -801,6 +836,7 @@ function setState(workspace, id, requested) {
+     in_review: new Set(["in_progress", "blocked", "cancelled"]),
+     blocked: new Set(["in_progress", "cancelled"]),
+     cancelled: new Set(["in_progress"]),
++    paused: new Set(["in_progress", "cancelled"]),
+     completed: new Set(),
+   };
+   if (state === "in_progress") {
+@@ -818,6 +854,7 @@ function setState(workspace, id, requested) {
+   if (state === "blocked" && !section(task.text, "Block")) throw new Error("Blocked requires an active Block section");
+   let text = replaceStatus(task.text, state);
+   if (state === "cancelled") text = invalidateReviewGate(text, "Task cancelled; refresh evidence before continuing");
++  if (task.status.state === "paused") text = invalidateReviewGate(text, "Task resumed after pause; recheck artifacts and refresh evidence");
+   if (task.status.state === "in_review" && state !== "in_review") {
+     text = invalidateReviewGate(text, "Task left In Review; rerun the applicable review after revisions");
+     text = replaceSection(text, "Verification", undefined);
+@@ -826,6 +863,28 @@ function setState(workspace, id, requested) {
+   return writeTaskAndIndex(workspace, task, text);
+ }
+ 
++function pauseTask(workspace, id, context) {
++  const task = readTask(workspace, id);
++  if (!["pending", "in_progress", "in_review"].includes(task.status.state)) {
++    throw new Error("pause requires Pending, In Progress, or In Review; keep Blocked tasks blocked");
++  }
++  if (!context || typeof context !== "object" || Array.isArray(context)
++    || Object.keys(context).some((key) => !Object.hasOwn(RESUME_FIELDS, key))) {
++    throw new Error("pause requires a recovery checkpoint object with only documented fields");
++  }
++  const body = ["- Schema: task-resume-context/v1", `- Saved at: ${localTimestamp()}`];
++  for (const [key, label] of Object.entries(RESUME_FIELDS)) {
++    const value = context[key];
++    if (typeof value !== "string" || !value.trim() || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value)) {
++      throw new Error(`pause requires nonempty ${key} text without control characters`);
++    }
++    body.push(`- ${label}: ${JSON.stringify(value.trim())}`);
++  }
++  let text = replaceSection(task.text, "Resume Context", body);
++  text = invalidateReviewGate(text, "Task paused; recheck artifacts and refresh evidence before continuing");
++  return writeTaskAndIndex(workspace, task, replaceStatus(text, "paused"));
++}
++
+ function cancelTask(workspace, id) {
+   return setState(workspace, id, "cancelled");
+ }
+@@ -1128,11 +1187,20 @@ function validateWorkspace(workspace) {
+   return errors;
+ }
+ 
+-function listTasks(workspace) {
++function listTasks(workspace, query) {
+   if (!fs.existsSync(tasksDir(workspace))) return [];
++  const name = query === undefined ? undefined : normalizedTitle(query);
+   return fs.readdirSync(tasksDir(workspace))
+     .filter((file) => ID_PATTERN.test(file.slice(0, -3)) && file.endsWith(".md"))
+-    .map((file) => readTask(workspace, file.slice(0, -3)));
++    .flatMap((file) => {
++      const id = file.slice(0, -3);
++      if (name === undefined) return [readTask(workspace, id)];
++      const location = topics.safePath(workspace, `tasks/tasks/${file}`);
++      const text = fs.readFileSync(location, "utf8");
++      if (!normalizedTitle(titleOf(text)).includes(name) && !id.includes(name)) return [];
++      readVersions.set(location, text);
++      return [parseTask(id, text, location)];
++    });
+ }
+ 
+ module.exports = {
+@@ -1147,6 +1215,7 @@ module.exports = {
+   updatedIndex,
+   STATE_DISPLAY,
+   cancelTask,
++  pauseTask,
+   checkTaskIndex,
+   completeTask,
+   finalizeTask,
+diff --git a/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md b/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md
+index 62e3294..5f8efe7 100644
+--- a/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md
++++ b/skills/meta/csl-tasks/shared/protocols/task-target-alignment.md
+@@ -34,6 +34,12 @@ Switching to `confirm` restores its graded confirmation procedure at the next re
+ 
+ Task Target gives the user a second look at the Agent's understanding of their goal before substantive work that requires a checkpoint. Exploration-only work uses the exemption below. Outside that exemption, authorization self-checking establishes that a candidate is faithful enough to present; it does not establish that the user has checked that understanding. A detailed request, complete authorization coverage, or high model confidence never substitutes for the first non-trivial goal checkpoint.
+ 
++## Lifecycle-Only Stop Requests
++
++An explicit request only to pause or cancel an existing task is bounded lifecycle maintenance, not a request to start or continue its implementation. Resolve and read the original record, focus it without changing its current state, and follow `task-state-transitions.md` plus the owning Skill's stop procedure. Saving actual progress, the recovery checkpoint and necessary lifecycle records, then calling pause/cancel/sync/check/show, is the narrow bootstrap exception for that request. Do not create a replacement task, resume/reopen merely to stop it, perform new deliverable work, or form a new implementation Target. No generic Target checkpoint is required for this stop-only branch; it never supplies `accepted_target` evidence or clears an outstanding alignment, safety or authorization hold.
++
++A request to implement or fix something and then pause is still implementation work and retains its normal gate. A request merely to stop model execution or suspend a process does not by itself authorize task-state changes. Completed, Blocked, already Paused and Cancelled records follow their existing-state branches; a pause request never authorizes reopening a completed task.
++
+ ## Exploration Without a Target Checkpoint
+ 
+ In `confirm`, continue authorized exploration without displaying a confirmation block or waiting for a generic Target acceptance. Exploration means the current deliverable is information: source inspection, search, research, analysis, comparison, recommendations, or a plan for later implementation. Canonical task/plan records and an explicitly requested findings report are permitted outputs; product code, operational configuration, and other implementation deliverables remain read-only. Classify the authorized work and candidate commitments, not a task title or the word “explore”. A request to investigate **and fix** is an implementation request and retains its normal checkpoint.
+@@ -157,7 +163,7 @@ L2 asks the user to recheck their goal as understood by the Agent; L4 requests a
+ Resolve mode first: if `solo`, use the SOLO execution path and do not enter the grading procedure below. Otherwise apply this order:
+ 
+ 1. Determine whether the current session is the interaction owner or has a complete delegation packet. A delegated child applies the delegated gate and returns without entering L0-L4.
+-2. If no task workflow applies, choose L0.
++2. If the request is solely lifecycle stopping, apply the narrow Lifecycle-Only Stop Requests branch and return without forming an implementation Target. Otherwise, if no task workflow applies, choose L0.
+ 3. If no honest Target can be formed because of user-owned ambiguity, choose L3.
+ 4. Form the minimum candidate Target from the Authorization Ledger.
+ 5. Run both material-equivalence counterfactuals across every commitment atom.
+@@ -217,7 +223,7 @@ For `show_checkpoint` and `continue_unchanged`, `authorizedClauses` contains `{
+ 
+ `continue_unchanged` requires complete authorized-clause coverage with `accepted_target` evidence for every clause, empty `confirmationItems`, and null `checkpointReason`. The owner must verify that the cited proposal and later acceptance cover the whole unchanged Target in the current scope; source-role or index checks alone cannot prove this. Other actions use empty lists and null reason.
+ 
+-Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 在内部决策包中标明适用的安全规则或动作边界；这不要求向用户展示规则来源或阻断原因。
++Do not persist this packet in the canonical task record, expose its L-code by default, or store chain-of-thought. An L2 packet has only preserved atom IDs; all commitment-difference and unresolved-user-decision fields are empty. Goal rechecking is not an invented user-owned ambiguity. L3 names the one unresolved user question. L4 names at least one changed commitment dimension. S1 在内部决策包中标明适用的安全规则或动作边界；不得向用户附带内部规则来源或阻断原因。
+ 
+ `continue_exploration` has null `level`, empty goal-check lists and null `checkpointReason`. It describes an authorized investigation, never accepted-target reuse or execution permission; an optional progress statement is not a displayed confirmation action.
+ 
+@@ -254,8 +260,8 @@ Apply this presentation whenever the protocol calls for displaying a Task Target
+ 
+ - 常规目标确认只输出完整目标和一句简短确认问题，然后结束本轮。不要复述目标、解释为何需要确认，或补充等待提示。
+ - 不附带内部流程说明，包括确认依据、规则来源、协议原文、Skill 路径、L 级别、action/reason code、模式和任务记账信息。正文、脚注、括号、引用及结尾补充均遵守此限制；例如不得追加“此次确认依据 task 技能引用的目标对齐规则……”。
+-- 只有影响用户决定的具体事实需要说明，例如范围新增、缺少权限或必要输入、配置错误、无法恢复此前确认或实际审批拒绝。直接说明事实及所需决定，不把内部触发原因逐项翻译成提示。安全确认可暂停执行并直接请求确认，无需附带阻断原因或规则来源；保留动作、对象和后果等决定所需信息。
+-- 用户明确询问规则来源、模式或流程时，直接回答所问内容。更高优先级明确要求披露时，仅给出必需信息；这两种情况均不扩展为例行流程说明。
++- 只有影响用户决定的具体事实需要说明，例如范围新增、缺少权限或必要输入、配置错误、无法恢复此前确认或实际审批拒绝。直接说明事实及所需决定，不把内部触发原因逐项翻译成提示。安全确认可暂停执行并直接请求确认，不附带内部阻断原因或规则来源；保留动作、对象和后果等决定所需信息。
++- 不主动解释目标确认原因，不附带内部阻断原因、规则来源、协议原文或 Skill 路径。只有用户明确询问目标确认原因或相关依据时，才直接回答所问内容；该回答不扩展为后续确认的例行说明。
+ - 发送前检查目标正文之外的内容：删除不帮助用户判断目标、范围或真实阻断的流程提示。不得因此隐瞒真实阻断或跳过必要确认。
+ 
+ ### L2 Checkpoint
+@@ -325,7 +331,7 @@ Compute safety independently from L0-L4:
+ - `S0 NONE`: no separate governing safety or permission gate applies.
+ - `S1 REQUIRED`: publication, payment, destructive action, credentials, permissions, privacy data, deployment, or another external side effect is governed by a separate workflow.
+ 
+-L2 或 L4 的目标接受不解除 S1。SOLO 路径跳过范围内框架或 SOP 的确认性暂停，包括名为 Safety Confirmation 的步骤；实质保障、宿主限制和更高优先级门禁仍然保留。在 `confirm` 模式下，到达实际动作边界时，主会话暂停依赖确认的执行，单独展示本地化的 `**Safety Confirmation**`：说明动作、受影响对象和后果，并提出一句简短确认问题。不要求附带阻断原因、规则名称或来源；更高优先级明确要求披露时，遵循“用户可见文案边界”的最少披露要求。等待明确确认后才能继续该动作；确认不替代必要权限、输入或其他实质保障。委派子 Agent 到达此边界时返回主会话，不直接展示确认。不要把安全批准附在 L2 或 L4 的确认问题后；安全确认也不接受一个实质不同的目标。
++L2 或 L4 的目标接受不解除 S1。SOLO 路径跳过范围内框架或 SOP 的确认性暂停，包括名为 Safety Confirmation 的步骤；实质保障、宿主限制和更高优先级门禁仍然保留。在 `confirm` 模式下，到达实际动作边界时，主会话暂停依赖确认的执行，单独展示本地化的 `**Safety Confirmation**`：说明动作、受影响对象和后果，并提出一句简短确认问题。不附带内部阻断原因、规则名称或来源。等待明确确认后才能继续该动作；确认不替代必要权限、输入或其他实质保障。委派子 Agent 到达此边界时返回主会话，不直接展示确认。不要把安全批准附在 L2 或 L4 的确认问题后；安全确认也不接受一个实质不同的目标。
+ 
+ ## Consumer Responsibilities
+ 
+diff --git a/skills/meta/csl-tasks/shared/scripts/csl-tasks.js b/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+index fa901be..7f33eea 100755
+--- a/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
++++ b/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+@@ -12,13 +12,17 @@ const HELP = `Usage: node csl-tasks.js [--workspace <dir>] <command> [arguments]
+ Commands:
+   create <id> --title <title> --kind task|plan|queue --target "T1: ..." [--target ...]
+   list [--json]
+-  show <id> [--json]
++  show <id-or-title> [--json]
++  find <name-or-keyword> [--json]
+   validate [id]
+   check <id|task-file>
+   sync <id>
+   status <id> <pending|in-progress|in-review|blocked|cancelled>
+   cancel <id>
+-  resume <id>
++  pause <id-or-title> --input <checkpoint.json>
++    suspend and stash are aliases for pause; both require the same checkpoint
++    checkpoint fields: progress, results, verification, remaining, decisions, nextAction, dependencies, transfer
++  resume <id-or-title>
+   reopen <id>
+   link <parent-id> <child-id>
+   next <queue-id> [--json]
+@@ -37,6 +41,10 @@ Commands:
+     R1 also requires --clarity <text> --impact <text> --risk <text> --verification <text>
+   topic <command> [arguments]
+ 
++Task states: Pending, In Progress, In Review, Paused, Blocked, Cancelled, Completed.
++Pending is waiting for execution, not paused. Use pause with a checkpoint to stop and save progress.
++Use complete/finalize for completion and reopen for Completed work; there is no Suspended state.
++
+ ${topicCli.HELP}`;
+ 
+ function takeOption(args, name, { many = false } = {}) {
+@@ -64,10 +72,37 @@ function summary(task) {
+     children: task.children.map(({ id }) => id),
+     reviewAssessment: task.reviewAssessment || null,
+     ...(Object.keys(task.recovery).length ? { recovery: task.recovery } : {}),
++    ...(task.resumeContext ? { resumeContext: task.resumeContext } : {}),
+     ...(task.topic ? { topic: task.topic } : {}),
+   };
+ }
+ 
++function normalizeName(value) {
++  return String(value).normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
++}
++
++function findTasks(workspace, query) {
++  const name = normalizeName(query);
++  if (!name) throw new Error("task name must not be empty");
++  return core.listTasks(workspace, name);
++}
++
++function resolveTaskId(workspace, query) {
++  // Keep exact ID access independent of unrelated task records.
++  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(query) && fs.existsSync(core.taskPath(workspace, query))) {
++    return query;
++  }
++  const candidates = findTasks(workspace, query);
++  const exact = candidates.filter((task) => normalizeName(task.title) === normalizeName(query));
++  if (exact.length === 1) return exact[0].id;
++  const choices = exact.length ? exact : candidates;
++  const details = choices.map((task, index) =>
++    `  ${index + 1}. ${JSON.stringify(task.title)} | ${task.status.display} | ${task.status.timestamp} | ${task.id}`).join("\n");
++  throw new Error(choices.length
++    ? `${exact.length ? "Ambiguous task title" : "No exact task title match"}: ${JSON.stringify(query)}. Select a task before continuing:\n${details}`
++    : `task not found: ${JSON.stringify(query)}`);
++}
++
+ function run(argv, io = console) {
+   const args = [...argv];
+   if (args.includes("--help") || args.length === 0) {
+@@ -99,9 +134,13 @@ function run(argv, io = console) {
+         if (args.length) throw new Error(`unexpected arguments: ${args.join(" ")}`);
+         output = core.listTasks(workspace).map(summary);
+         break;
++      case "find":
++        if (args.length !== 1) throw new Error("find needs one task name or keyword");
++        output = findTasks(workspace, args[0]).map((task) => ({ ...summary(task), statusAt: task.status.timestamp }));
++        break;
+       case "show": {
+-        const task = core.readTask(workspace, args[0]);
+-        if (args.length !== 1) throw new Error("show needs one task id");
++        if (args.length !== 1) throw new Error("show needs one task id or title");
++        const task = core.readTask(workspace, resolveTaskId(workspace, args[0]));
+         if (!json) {
+           io.log(task.text.replace(/\s+$/, ""));
+           return 0;
+@@ -134,10 +173,20 @@ function run(argv, io = console) {
+         if (args.length !== 1) throw new Error("cancel needs one task id");
+         output = summary(core.cancelTask(workspace, args[0]));
+         break;
++      case "suspend":
++      case "stash":
++      case "pause": {
++        const query = args.shift();
++        const input = takeOption(args, "--input");
++        if (!query || !input || args.length) throw new Error("pause needs one task id or title and --input <checkpoint.json>");
++        const id = resolveTaskId(workspace, query);
++        output = summary(core.pauseTask(workspace, id, JSON.parse(fs.readFileSync(path.resolve(input), "utf8"))));
++        break;
++      }
+       case "resume":
+-        if (args.length !== 1) throw new Error("resume needs one task id");
++        if (args.length !== 1) throw new Error("resume needs one task id or title");
+         {
+-          const task = core.resumeTask(workspace, args[0]);
++          const task = core.resumeTask(workspace, resolveTaskId(workspace, args[0]));
+           output = { ...summary(task), ...(task.topic ? { topicFreshness: topics.freshness(workspace, task) } : {}) };
+         }
+         break;
+diff --git a/skills/meta/task-plan/SKILL.md b/skills/meta/task-plan/SKILL.md
+index 33cf5e7..1c7ce8f 100644
+--- a/skills/meta/task-plan/SKILL.md
++++ b/skills/meta/task-plan/SKILL.md
+@@ -17,7 +17,7 @@ Use the host Agent's existing read, search, research, shell, and subagent capabi
+ 
+ Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+ 
+-This skill owns planning-task activation, the planned-task Target meaning, permitted lifecycle writes, and the post-alignment planning workflow. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for task persistence.
++This skill owns planning-task activation, the planned-task Target meaning, permitted lifecycle writes, and the post-alignment planning workflow. Read [任务状态转换](../csl-tasks/shared/protocols/task-state-transitions.md) before lifecycle operations; pause-only requests use its existing-record stop branch rather than the planning startup steps below. Pending means an implementation-ready handoff, not suspension. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` for task persistence.
+ 
+ ## Workflow
+ 
+@@ -44,7 +44,7 @@ Use `task`'s Task Artifacts contract: the shared core adds the top-level directo
+ - `Execution Log`: follow [Task Execution Log](../task/SKILL.md#execution-log) for timely, concise discovery and decision entries, explicit supersession, privacy and evidence-invalidation boundaries. Log planning events, not unperformed implementation. It replaces the former recovery bullets without becoming a second plan or interview transcript. On resume, reconcile it with current Decisions/Plan, existing evidence and actual artifacts; historical entries never grant implementation authorization.
+ - `Block`: when a missing decision, evidence or capability necessary for current planning prevents an implementation-ready plan, with `Reason` and `Unblock when`; set the task Blocked after adding it. Missing future execution prerequisites alone belong in the Plan handoff.
+ 
+-Leave an implementation-ready record Pending. Do not score an unimplemented outcome or manufacture a completion Self Assessment for this planning-only handoff; later execution of the same record uses `task`'s mandatory three-dimension S/A/B/C Self Assessment contract. Do not record Result evidence, review, verification, or completion for work that has not been implemented; planning-only task-record writes do not trigger the deliverable-change review loop. The canonical plan record is the default handoff: do not create a `.csl-agent-kit/tasks/artifacts/` file merely to mirror its Scope, Decisions, or Plan. When the user explicitly authorizes execution, hand the same record to `task`, which resumes it under the single-task completion gate and applies implementation alignment. Exploration does not supply prior Target acceptance: normally the implementation Target receives its first checkpoint then. If the user separately accepted the complete implementation Target and that acceptance remains recoverable and applicable, `task` may inherit it without a duplicate checkpoint. Target acceptance alone never permits execution.
++Leave an implementation-ready record Pending. 如果规划尚未完成而用户要求暂时搁置，按[暂停与恢复](../task/references/pause-resume.md)保存当前发现、部分规划产物、待定事项和后续调查入口，进入 Paused；恢复仍限于获准规划，不产生实现授权。Do not score an unimplemented outcome or manufacture a completion Self Assessment for this planning-only handoff; later execution of the same record uses `task`'s mandatory three-dimension S/A/B/C Self Assessment contract. Do not record Result evidence, review, verification, or completion for work that has not been implemented; planning-only task-record writes do not trigger the deliverable-change review loop. The canonical plan record is the default handoff: do not create a `.csl-agent-kit/tasks/artifacts/` file merely to mirror its Scope, Decisions, or Plan. When the user explicitly authorizes execution, hand the same record to `task`, which resumes it under the single-task completion gate and applies implementation alignment. Exploration does not supply prior Target acceptance: normally the implementation Target receives its first checkpoint then. If the user separately accepted the complete implementation Target and that acceptance remains recoverable and applicable, `task` may inherit it without a duplicate checkpoint. Target acceptance alone never permits execution.
+ 
+ If the requested work contains several independently acceptable outcomes and the user wants them managed automatically, stop planning the execution graph and route to `task-queue`.
+ 
+diff --git a/skills/meta/task-queue/SKILL.md b/skills/meta/task-queue/SKILL.md
+index 1e81376..46d7bb2 100644
+--- a/skills/meta/task-queue/SKILL.md
++++ b/skills/meta/task-queue/SKILL.md
+@@ -15,7 +15,7 @@ Coordinate multiple canonical tasks through the current host Agent. This is host
+ 
+ Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+ 
+-This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
++This skill owns Queue-parent activation, the integration Target meaning, permitted lifecycle writes, and the post-alignment Queue workflow. Read [任务状态转换](../csl-tasks/shared/protocols/task-state-transitions.md) before lifecycle operations; pause-only requests use its existing-record stop branch, not Queue startup or automatic child resume. The shared protocol owns all Task Target alignment semantics. Use `node <collection-root>/csl-tasks/shared/scripts/csl-tasks.js --workspace <workspace> ...` as the only task-state core.
+ 
+ ## Build the Task Graph
+ 
+@@ -42,12 +42,12 @@ Apply `task`'s optional Topic contract independently to an associated parent and
+ ## Sequential Execution
+ 
+ 1. Confirm the parent is In Progress.
+-2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
++2. Run `next <parent-id>` to select the first child not Completed. If it is Paused, Blocked, or Cancelled, stop before automatic resume; continue only after the user explicitly resumes that work and any actual unblock condition is met. The ordered child list is the resume cursor; do not create another cursor file or field.
+ 3. Resume and execute that child under the full `task` lifecycle, including R0/R1/R2 classification, the mandatory `task-review` loop for R2 or explicit ordinary review, Result, mandatory Self Assessment, final verification, completion, and index check. Each child records its own Simplicity, Stability and Completeness grades using S/A/B/C under `task`'s Self Assessment contract; delegated handoff returns to the owner without another user checkpoint. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
+ 4. Run `next` again only after the current child completes.
+-5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
++5. Stop and return to the main session when the current child is Blocked, Paused, or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
+ 
+-On resume, inspect the current Plan, Execution Log and applicable evidence/Block of the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Log order does not select a child or permit skipping a blocked one. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's assessment, terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
++On resume, inspect the current Plan, Execution Log and applicable evidence/Block of the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Log order does not select a child or permit skipping a blocked one. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's assessment, terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent records an explicit cancellation and does not implicitly cancel or delete children; use Paused for an intentional temporary interruption. Resume explicitly when the user continues.
+ 
+ ## Parent Final Gate
+ 
+@@ -63,4 +63,4 @@ Apply `task`'s Review Reports persistence contract to every parent or child `tas
+ 
+ Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
+ 
+-Keep the workflow interactive. If the session must pause, leave canonical status and evidence sufficient for a later Codex or Pi Agent to resume deterministically. Routing fixtures are in `evals/`.
++Keep the workflow interactive. 暂时搁置时执行 [暂停与恢复](../task/references/pause-resume.md)：分别保存实际暂停的活动子任务和父任务的恢复摘要，父任务暂停不自动改变子任务状态或停止运行中的 Agent。恢复时检查摘要和实际产物，不跳过 Paused 子任务；跨电脑明确携带记录、依赖及部分成果。Routing fixtures are in `evals/`.
+diff --git a/skills/meta/task/SKILL.md b/skills/meta/task/SKILL.md
+index 0b06d82..ce127d8 100644
+--- a/skills/meta/task/SKILL.md
++++ b/skills/meta/task/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: task
+-description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
++description: Create, resume, pause, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use for saving current progress before switching work, portable recovery in a new session or computer, every user-requested file creation, modification, move, rename, or deletion, and any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
+ ---
+ 
+ # Task
+@@ -13,6 +13,8 @@ Manage one outcome through the host Agent. Use the host's existing file, shell,
+ 
+ Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+ 
++Read [任务状态转换](../csl-tasks/shared/protocols/task-state-transitions.md) before lifecycle operations. It owns the seven-state meaning, allowed transitions and lifecycle-only stop branch; [暂停与恢复](references/pause-resume.md) owns checkpoint details.
++
+ This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-alignment task workflow. The shared protocol owns all Task Target alignment semantics.
+ 
+ ## Storage and Core
+@@ -51,6 +53,8 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
+ 
+ ## Activation and Ownership
+ 
++- 用户仅要求暂停或取消已有任务时，先应用共享协议的 Lifecycle-Only Stop Requests 和[状态维护分支](../csl-tasks/shared/protocols/task-state-transitions.md#仅维护已有任务状态)：读取并 focus 原记录，保持当前状态，不运行下方 Start or Resume 执行启动步骤，不为暂停先 resume/reopen，也不创建替代任务。已完成任务不能仅因暂停请求重开；已有暂停、受阻或取消状态按专属分支处理。
++- 当用户按任务名称要求查看、暂停或恢复时，先按[名称定位](references/pause-resume.md#按任务名称定位)只读查找原记录；唯一完整名称可用，同名或部分名称展示候选供选择，不能要求用户先查 ID，也不能创建替代任务。内部生命周期与 focus 仍使用解析后的原 ID。
+ - Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
+ - Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. The shared alignment protocol's narrow, read-only lookup of an explicitly selected Topic to form an honest Target is also permitted; it is not general source exploration. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only minimal user/project Memory index orientation, the minimal task index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
+ - The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.
+@@ -67,7 +71,7 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
+ 2. For a new task, choose a lowercase kebab-case ID and run:
+    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
+    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
+-3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
++3. Run `resume <id>` for new, Pending, Paused, Blocked, or Cancelled work. For Paused, read its saved checkpoint from the owning record; after alignment, reconcile actual artifacts under [暂停与恢复](references/pause-resume.md). Activation alone does not prove restored content. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
+ 4. Immediately after creation, resume, or reopen succeeds, emit the real host tool call itself—for example, `task_focus(<id>)`—in the same reply as the lifecycle command; treat both calls as one atomic batch. Planning or listing `task_focus` without emitting it does not satisfy this step. If binding fails (for example, the record lives outside the session workspace), disclose that failure explicitly instead of silently skipping.
+ 5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. Classify the current authorized work before inspecting task-direct sources: standalone exploration uses the protocol's `continue_exploration` exemption without displaying a confirmation block or waiting; implementation follows its normal gate. A main session owns user-facing gates; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming a plan for implementation, an explicit request to execute supplies execution authorization; reuse a recoverable, materially equivalent accepted implementation Target when available, otherwise perform its first implementation checkpoint. Prior exploration alone is not Target acceptance.
+ 6. After the protocol aligns the current Target, read relevant Markdown memory with ordinary file tools, apply applicable experience and verify decision-changing claims against authoritative sources. On resume, read the current Plan, Decisions, Execution Log and applicable Result/Block, then reconcile them with actual artifacts before choosing the next action; follow Execution Log's recovery boundaries below. Apply Capability Preflight below before work that depends on those capabilities.
+@@ -154,7 +158,7 @@ On resume, read the log together with current Plan/Decisions, Target, Result and
+ 
+ Execution Log is ordinary task content included in the review fingerprint. After edits, run `sync` and `check`; it has no append-only bookkeeping exemption. Finish pending log updates before self-check and assessment, and freeze the log with the reviewed scope. Do not append during review or after final verification without refreshing affected evidence, assessment and any required fresh review. Review feedback and terminal lifecycle observations stay in Review Reports, Result and Verification rather than being duplicated as log entries that invalidate their own gates.
+ 
+-Use `show <id>` without `--json`, or read the canonical file, to retrieve the full log. The existing JSON `recovery` projection remains a legacy reader of old Plan bullets and Block facts, not an Execution Log summary. Do not infer progress from it or backfill untouched records.
++Use `show <id>` without `--json`, or read the canonical file, to retrieve the full log. The existing JSON `recovery` projection remains a legacy reader of old Plan bullets and Block facts, not an Execution Log summary. The separate `resumeContext` projection exposes the saved pause checkpoint; neither is current-state proof. Do not infer progress from it or backfill untouched records.
+ 
+ ### Topic
+ 
+@@ -289,9 +293,13 @@ Do not backfill untouched historical tasks or create an empty section for a skip
+ 
+ Run proportionate host-native checks yourself; the core never executes arbitrary commands. Record the current outcome with `verify <id> passed|failed --evidence <one-line observation>`. A failed check blocks completion. Re-run and replace verification after relevant changes.
+ 
++### Paused
++
++用户在任务管理语境中要求 pause、suspend、stash、暂存、搁置、先放一放、先做别的或以后继续时，统一识别为主动暂停意图，读取并执行[暂停与恢复](references/pause-resume.md)；没有 Suspended 状态。Pending、Cancelled 或停止 Agent 执行都不能代替 Paused。用户可提供任务名称；唯一完整名称可直接解析，同名或部分名称先选候选，内部保留原 ID。使用 `pause <id-or-title> --input <checkpoint.json>` 保存恢复摘要并进入 Paused；不能用 Cancelled 代替主动暂停。摘要必须覆盖当前停止点、部分结果及位置、验证情况、剩余事项、决策、下一步、依赖和跨电脑转移要求。记录可移植不等于代码及产物已同步，缺失项必须明确。暂停失败不得声称已保存；必须回读 Paused、完整摘要并核对本次停止点及索引，再报告暂停成功。恢复不依赖原聊天，但仍须核对实际产物及授权。
++
+ ### Block
+ 
+-Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for a reversible soft stop; cancelled work is not completed and can resume.
++Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for an explicit cancellation; cancelled work is not completed and can resume after an explicit request. Use Paused for an intentional temporary interruption.
+ 
+ Keep the required user input or external condition explicit. Neither an Execution Log entry nor navigation showing Block facts establishes that the unblock condition has occurred; recheck it before resuming.
+ 

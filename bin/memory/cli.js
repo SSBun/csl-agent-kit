@@ -30,7 +30,7 @@ const HELP = `CSL Memory（只保存当前知识）
    "content":{"title":"宽主题","summary":"收录范围","body":"- [2026-11-09] 知识及条件。"}}
 已有文件expected.hash必须等于当前完整文件SHA256，新文件使用null；delete不含content。
 文件仅保存title、summary和带日期case；不保存type、sources、revision、关系或删除标记。
-每项目最多20片，每片1000词；用户正文最多8000字符。合并先保存并回读，再删除旧文件。
+每项目最多20片；项目与用户级普通正文超过5000词时先保存完整更新并返回compaction.required，再压缩合并；Memory Agent自动继续处理，直接CLI调用者须继续压缩或报告待处理。项目temp不设词数预算，按最近7个UTC自然日保留；底层单次读写安全限制仍适用。合并先保存并回读，再删除旧文件。
 不提供history/change/commits/proposal/restore/recover。写入无历史、来源审计或恢复副本。
 索引过期时读取当前entries并reindex；错误不代表文件写入已回滚。
 后台队列仅服务待处理工作，完成后释放输入；不是记忆历史。

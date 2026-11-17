@@ -1,0 +1,406 @@
+diff --git a/pi/extensions/csl-task-overlay.ts b/pi/extensions/csl-task-overlay.ts
+index bedf104..e973c8c 100644
+--- a/pi/extensions/csl-task-overlay.ts
++++ b/pi/extensions/csl-task-overlay.ts
+@@ -16,7 +16,7 @@
+  * Format parsed (per `task`):
+  *   `- [Title](tasks/slug.md) — Status (YYYY-MM-DD HH:MM)`
+  * Status words (English canonical + legacy Chinese):
+- *   Pending / In Progress / In Review / Completed / Blocked / Cancelled
++ *   Pending / In Progress / In Review / Paused / Completed / Blocked / Cancelled
+  *   待办 / 进行中 / 审查中 / 已完成 / 未标注
+  */
+ import { readFileSync } from "node:fs";
+@@ -116,13 +116,14 @@ interface TaskRow {
+ 	progress?: string;
+ }
+ 
+-type Status = "pending" | "in_progress" | "in_review" | "completed" | "blocked" | "cancelled" | "aborted" | "unknown";
++type Status = "pending" | "in_progress" | "in_review" | "paused" | "completed" | "blocked" | "cancelled" | "aborted" | "unknown";
+ 
+ const STATUS_WORDS: Record<string, Status> = {
+ 	// English canonical
+ 	pending: "pending",
+ 	"in progress": "in_progress",
+ 	"in review": "in_review",
++	paused: "paused",
+ 	completed: "completed",
+ 	blocked: "blocked",
+ 	cancelled: "cancelled",
+@@ -132,6 +133,7 @@ const STATUS_WORDS: Record<string, Status> = {
+ 	待办: "pending",
+ 	进行中: "in_progress",
+ 	审查中: "in_review",
++	已暂停: "paused",
+ 	已完成: "completed",
+ 	未标注: "unknown",
+ };
+@@ -140,6 +142,7 @@ const GLYPH: Record<Status, string> = {
+ 	pending: "⏳",
+ 	in_progress: "🔄",
+ 	in_review: "🔍",
++	paused: "⏸️",
+ 	completed: "✅",
+ 	blocked: "🚫",
+ 	cancelled: "⏹️",
+@@ -252,13 +255,13 @@ function isEmpty(rows: TaskRow[]): boolean {
+ }
+ 
+ /**
+- * Count active tasks for the heading ratio. Completed, Cancelled, aborted, and
++ * Count active tasks for the heading ratio. Completed, Paused, Cancelled, aborted, and
+  * unknown records are excluded so paused or abandoned history does not inflate
+  * the "active" number.
+  */
+ function countActive(rows: TaskRow[]): number {
+ 	return rows.filter(
+-		(row) => !["completed", "cancelled", "unknown", "aborted"].includes(row.status),
++		(row) => !["completed", "paused", "cancelled", "unknown", "aborted"].includes(row.status),
+ 	).length;
+ }
+ 
+@@ -267,10 +270,11 @@ const STATUS_RANK: Record<Status, number> = {
+ 	in_review: 1,
+ 	pending: 2,
+ 	blocked: 3,
+-	cancelled: 4,
+-	aborted: 5,
+-	completed: 6,
+-	unknown: 7,
++	paused: 4,
++	cancelled: 5,
++	aborted: 6,
++	completed: 7,
++	unknown: 8,
+ };
+ 
+ function taskIdForRow(row: TaskRow): string | undefined {
+@@ -322,6 +326,11 @@ function renderRows(rows: TaskRow[], cwd: string, linkTitles = false, focusedTas
+ 	return out;
+ }
+ 
++function panelError(error: unknown): string {
++	const detail = String(error).replace(/[\x00-\x1f\x7f-\x9f]/g, " ").slice(0, 500);
++	return `⚠ Task panel unavailable: ${detail}`;
++}
++
+ class TaskWidget extends Container {
+ 	private readonly requestRender: () => void;
+ 
+@@ -346,6 +355,17 @@ class TaskWidget extends Container {
+ 	}
+ 
+ 	render(width: number): string[] {
++		try {
++			// Storage may change after refresh and before the TUI paints this widget.
++			storage.layout(this.cwd);
++			return this.renderContents(width);
++		} catch (error) {
++			// Do not mutate the UI or request another render from this error boundary.
++			return [truncateToWidth(panelError(error), Math.max(0, width), "")];
++		}
++	}
++
++	private renderContents(width: number): string[] {
+ 		if (this.topicRows.length === 0) return width > 2 ? super.render(width).map((line) => truncateToWidth(line, width, "")) : [""];
+ 		const topicLines = renderTopicLines(this.topicRows, getCapabilities().hyperlinks, this.theme, this.cwd);
+ 		// No vertical breakpoint: even tiny terminals keep separate column budgets.
+@@ -373,12 +393,23 @@ interface RefreshState {
+  */
+ function refresh(ctx: RefreshCtx, state: RefreshState): void {
+ 	if (!ctx.hasUI) return;
+-	try { storage.layout(ctx.cwd); } catch (error) {
++	try {
++		refreshWidget(ctx, state);
++	} catch (error) {
+ 		progressCache.clear();
+ 		state.widget = undefined;
+-		ctx.ui.setWidget(WIDGET_KEY, [`⚠ Task storage unavailable: ${String(error)}`], { placement: "aboveEditor" });
+-		return;
++		const message = panelError(error);
++		try {
++			ctx.ui.setWidget(WIDGET_KEY, [message], { placement: "aboveEditor" });
++		} catch {
++			// A failed UI update must not escape the standalone interval callback.
++			console.error(message);
++		}
+ 	}
++}
++
++function refreshWidget(ctx: RefreshCtx, state: RefreshState): void {
++	storage.layout(ctx.cwd);
+ 	invalidateProgressCache(ctx.cwd);
+ 	const rows = renderRows(
+ 		loadTasks(ctx.cwd),
+@@ -567,6 +598,7 @@ function formatGrouped(rows: TaskRow[], cwd: string, linkTitles = false): string
+ 		in_review: [],
+ 		pending: [],
+ 		blocked: [],
++		paused: [],
+ 		cancelled: [],
+ 		aborted: [],
+ 		completed: [],
+@@ -583,12 +615,13 @@ function formatGrouped(rows: TaskRow[], cwd: string, linkTitles = false): string
+ 		in_review: "In Review",
+ 		pending: "Pending",
+ 		blocked: "Blocked",
++		paused: "Paused",
+ 		cancelled: "Cancelled",
+ 		aborted: "Aborted",
+ 		completed: "Completed",
+ 		unknown: "Untriaged",
+ 	};
+-	const order: Status[] = ["in_progress", "in_review", "pending", "blocked", "cancelled", "aborted", "completed", "unknown"];
++	const order: Status[] = ["in_progress", "in_review", "pending", "blocked", "paused", "cancelled", "aborted", "completed", "unknown"];
+ 	for (const status of order) {
+ 		const group = groups[status];
+ 		if (group.length === 0) continue;
+diff --git a/skills/meta/csl-tasks/shared/lib/task-core.js b/skills/meta/csl-tasks/shared/lib/task-core.js
+index 372b774..f862ec6 100644
+--- a/skills/meta/csl-tasks/shared/lib/task-core.js
++++ b/skills/meta/csl-tasks/shared/lib/task-core.js
+@@ -13,6 +13,7 @@ const STATE_DISPLAY = {
+   pending: "Pending",
+   in_progress: "In Progress",
+   in_review: "In Review",
++  paused: "Paused",
+   completed: "Completed",
+   blocked: "Blocked",
+   cancelled: "Cancelled",
+@@ -324,6 +325,32 @@ function resultsOf(text) {
+   return map;
+ }
+ 
++const RESUME_FIELDS = {
++  progress: "Progress", results: "Partial results", verification: "Verification",
++  remaining: "Remaining work", decisions: "Decisions", nextAction: "Next action",
++  dependencies: "Dependencies", transfer: "Transfer requirements",
++};
++
++function resumeContextOf(text) {
++  const found = sectionsOf(text, "Resume Context");
++  if (!found.length) return undefined;
++  if (found.length !== 1) throw new Error("duplicate Resume Context section");
++  const body = found[0].body;
++  const context = {};
++  if (body.filter((line) => line === "- Schema: task-resume-context/v1").length !== 1) {
++    throw new Error("Resume Context requires task-resume-context/v1");
++  }
++  for (const [key, label] of Object.entries(RESUME_FIELDS)) {
++    const prefix = `- ${label}: `;
++    const values = body.filter((line) => line.startsWith(prefix));
++    if (values.length !== 1) throw new Error(`Resume Context requires exactly one ${label}`);
++    const value = JSON.parse(values[0].slice(prefix.length));
++    if (typeof value !== "string" || !value.trim()) throw new Error(`Resume Context requires nonempty ${label}`);
++    context[key] = value;
++  }
++  return context;
++}
++
+ function recoveryOf(text) {
+   const recovery = {};
+   for (const [name, fields] of [
+@@ -584,6 +611,9 @@ function readTask(workspace, id) {
+ }
+ 
+ function parseTask(id, text, file) {
++  const status = statusOf(text);
++  const resumeContext = resumeContextOf(text);
++  if (status.state === "paused" && !resumeContext) throw new Error("Paused requires a Resume Context checkpoint");
+   const kindValue = fieldOf(text, "Kind");
+   const kind = kindValue ? normalizeKind(kindValue, true) : undefined;
+   const parent = fieldOf(text, "Parent");
+@@ -592,7 +622,7 @@ function parseTask(id, text, file) {
+     file,
+     text,
+     title: titleOf(text),
+-    status: statusOf(text),
++    status,
+     kind,
+     parent: !parent || parent === "none" ? undefined : parent,
+     topic: topics.taskTopic(text),
+@@ -600,6 +630,7 @@ function parseTask(id, text, file) {
+     targets: targetsOf(text),
+     results: resultsOf(text),
+     recovery: recoveryOf(text),
++    resumeContext,
+     review: text.match(REVIEW_PATTERN),
+     reviewAssessment: reviewAssessmentOf(text),
+     reviewLedger: reviewLedgerOf(text),
+@@ -794,6 +825,7 @@ function writeTaskAndIndex(workspace, task, text, options) {
+ function setState(workspace, id, requested) {
+   const state = normalizeState(requested);
+   if (state === "completed") throw new Error("use complete to enter Completed");
++  if (state === "paused") throw new Error("use pause with a fresh recovery checkpoint to enter Paused");
+   const task = readTask(workspace, id);
+   const allowed = {
+     pending: new Set(["in_progress", "blocked", "cancelled"]),
+@@ -801,6 +833,7 @@ function setState(workspace, id, requested) {
+     in_review: new Set(["in_progress", "blocked", "cancelled"]),
+     blocked: new Set(["in_progress", "cancelled"]),
+     cancelled: new Set(["in_progress"]),
++    paused: new Set(["in_progress", "cancelled"]),
+     completed: new Set(),
+   };
+   if (state === "in_progress") {
+@@ -818,6 +851,7 @@ function setState(workspace, id, requested) {
+   if (state === "blocked" && !section(task.text, "Block")) throw new Error("Blocked requires an active Block section");
+   let text = replaceStatus(task.text, state);
+   if (state === "cancelled") text = invalidateReviewGate(text, "Task cancelled; refresh evidence before continuing");
++  if (task.status.state === "paused") text = invalidateReviewGate(text, "Task resumed after pause; recheck artifacts and refresh evidence");
+   if (task.status.state === "in_review" && state !== "in_review") {
+     text = invalidateReviewGate(text, "Task left In Review; rerun the applicable review after revisions");
+     text = replaceSection(text, "Verification", undefined);
+@@ -826,6 +860,28 @@ function setState(workspace, id, requested) {
+   return writeTaskAndIndex(workspace, task, text);
+ }
+ 
++function pauseTask(workspace, id, context) {
++  const task = readTask(workspace, id);
++  if (!["pending", "in_progress", "in_review"].includes(task.status.state)) {
++    throw new Error("pause requires Pending, In Progress, or In Review; keep Blocked tasks blocked");
++  }
++  if (!context || typeof context !== "object" || Array.isArray(context)
++    || Object.keys(context).some((key) => !Object.hasOwn(RESUME_FIELDS, key))) {
++    throw new Error("pause requires a recovery checkpoint object with only documented fields");
++  }
++  const body = ["- Schema: task-resume-context/v1", `- Saved at: ${localTimestamp()}`];
++  for (const [key, label] of Object.entries(RESUME_FIELDS)) {
++    const value = context[key];
++    if (typeof value !== "string" || !value.trim() || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value)) {
++      throw new Error(`pause requires nonempty ${key} text without control characters`);
++    }
++    body.push(`- ${label}: ${JSON.stringify(value.trim())}`);
++  }
++  let text = replaceSection(task.text, "Resume Context", body);
++  text = invalidateReviewGate(text, "Task paused; recheck artifacts and refresh evidence before continuing");
++  return writeTaskAndIndex(workspace, task, replaceStatus(text, "paused"));
++}
++
+ function cancelTask(workspace, id) {
+   return setState(workspace, id, "cancelled");
+ }
+@@ -1147,6 +1203,7 @@ module.exports = {
+   updatedIndex,
+   STATE_DISPLAY,
+   cancelTask,
++  pauseTask,
+   checkTaskIndex,
+   completeTask,
+   finalizeTask,
+diff --git a/skills/meta/csl-tasks/shared/scripts/csl-tasks.js b/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+index fa901be..fde60dd 100755
+--- a/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
++++ b/skills/meta/csl-tasks/shared/scripts/csl-tasks.js
+@@ -18,6 +18,8 @@ Commands:
+   sync <id>
+   status <id> <pending|in-progress|in-review|blocked|cancelled>
+   cancel <id>
++  pause <id> --input <checkpoint.json>
++    checkpoint fields: progress, results, verification, remaining, decisions, nextAction, dependencies, transfer
+   resume <id>
+   reopen <id>
+   link <parent-id> <child-id>
+@@ -64,6 +66,7 @@ function summary(task) {
+     children: task.children.map(({ id }) => id),
+     reviewAssessment: task.reviewAssessment || null,
+     ...(Object.keys(task.recovery).length ? { recovery: task.recovery } : {}),
++    ...(task.resumeContext ? { resumeContext: task.resumeContext } : {}),
+     ...(task.topic ? { topic: task.topic } : {}),
+   };
+ }
+@@ -134,6 +137,13 @@ function run(argv, io = console) {
+         if (args.length !== 1) throw new Error("cancel needs one task id");
+         output = summary(core.cancelTask(workspace, args[0]));
+         break;
++      case "pause": {
++        const id = args.shift();
++        const input = takeOption(args, "--input");
++        if (!id || !input || args.length) throw new Error("pause needs one task id and --input <checkpoint.json>");
++        output = summary(core.pauseTask(workspace, id, JSON.parse(fs.readFileSync(path.resolve(input), "utf8"))));
++        break;
++      }
+       case "resume":
+         if (args.length !== 1) throw new Error("resume needs one task id");
+         {
+diff --git a/skills/meta/task-plan/SKILL.md b/skills/meta/task-plan/SKILL.md
+index 33cf5e7..35a5f78 100644
+--- a/skills/meta/task-plan/SKILL.md
++++ b/skills/meta/task-plan/SKILL.md
+@@ -44,7 +44,7 @@ Use `task`'s Task Artifacts contract: the shared core adds the top-level directo
+ - `Execution Log`: follow [Task Execution Log](../task/SKILL.md#execution-log) for timely, concise discovery and decision entries, explicit supersession, privacy and evidence-invalidation boundaries. Log planning events, not unperformed implementation. It replaces the former recovery bullets without becoming a second plan or interview transcript. On resume, reconcile it with current Decisions/Plan, existing evidence and actual artifacts; historical entries never grant implementation authorization.
+ - `Block`: when a missing decision, evidence or capability necessary for current planning prevents an implementation-ready plan, with `Reason` and `Unblock when`; set the task Blocked after adding it. Missing future execution prerequisites alone belong in the Plan handoff.
+ 
+-Leave an implementation-ready record Pending. Do not score an unimplemented outcome or manufacture a completion Self Assessment for this planning-only handoff; later execution of the same record uses `task`'s mandatory three-dimension S/A/B/C Self Assessment contract. Do not record Result evidence, review, verification, or completion for work that has not been implemented; planning-only task-record writes do not trigger the deliverable-change review loop. The canonical plan record is the default handoff: do not create a `.csl-agent-kit/tasks/artifacts/` file merely to mirror its Scope, Decisions, or Plan. When the user explicitly authorizes execution, hand the same record to `task`, which resumes it under the single-task completion gate and applies implementation alignment. Exploration does not supply prior Target acceptance: normally the implementation Target receives its first checkpoint then. If the user separately accepted the complete implementation Target and that acceptance remains recoverable and applicable, `task` may inherit it without a duplicate checkpoint. Target acceptance alone never permits execution.
++Leave an implementation-ready record Pending. 如果规划尚未完成而用户要求暂时搁置，按[暂停与恢复](../task/references/pause-resume.md)保存当前发现、部分规划产物、待定事项和后续调查入口，进入 Paused；恢复仍限于获准规划，不产生实现授权。Do not score an unimplemented outcome or manufacture a completion Self Assessment for this planning-only handoff; later execution of the same record uses `task`'s mandatory three-dimension S/A/B/C Self Assessment contract. Do not record Result evidence, review, verification, or completion for work that has not been implemented; planning-only task-record writes do not trigger the deliverable-change review loop. The canonical plan record is the default handoff: do not create a `.csl-agent-kit/tasks/artifacts/` file merely to mirror its Scope, Decisions, or Plan. When the user explicitly authorizes execution, hand the same record to `task`, which resumes it under the single-task completion gate and applies implementation alignment. Exploration does not supply prior Target acceptance: normally the implementation Target receives its first checkpoint then. If the user separately accepted the complete implementation Target and that acceptance remains recoverable and applicable, `task` may inherit it without a duplicate checkpoint. Target acceptance alone never permits execution.
+ 
+ If the requested work contains several independently acceptable outcomes and the user wants them managed automatically, stop planning the execution graph and route to `task-queue`.
+ 
+diff --git a/skills/meta/task-queue/SKILL.md b/skills/meta/task-queue/SKILL.md
+index 1e81376..14747d1 100644
+--- a/skills/meta/task-queue/SKILL.md
++++ b/skills/meta/task-queue/SKILL.md
+@@ -42,10 +42,10 @@ Apply `task`'s optional Topic contract independently to an associated parent and
+ ## Sequential Execution
+ 
+ 1. Confirm the parent is In Progress.
+-2. Run `next <parent-id>` to select the first child not Completed. The ordered child list is the resume cursor; do not create another cursor file or field.
++2. Run `next <parent-id>` to select the first child not Completed. If it is Paused, Blocked, or Cancelled, stop before automatic resume; continue only after the user explicitly resumes that work and any actual unblock condition is met. The ordered child list is the resume cursor; do not create another cursor file or field.
+ 3. Resume and execute that child under the full `task` lifecycle, including R0/R1/R2 classification, the mandatory `task-review` loop for R2 or explicit ordinary review, Result, mandatory Self Assessment, final verification, completion, and index check. Each child records its own Simplicity, Stability and Completeness grades using S/A/B/C under `task`'s Self Assessment contract; delegated handoff returns to the owner without another user checkpoint. The accepted parent Target and current Plan delegate the child alignment: do not display another child checkpoint. When a subagent executes it, provide the main task ID, child task ID, exact delegated outcome, done conditions, and scope in the dispatch.
+ 4. Run `next` again only after the current child completes.
+-5. Stop and return to the main session when the current child is Blocked or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
++5. Stop and return to the main session when the current child is Blocked, Paused, or Cancelled, verification fails, the user must decide, an S1 action boundary is reached, or a material child-distribution graph change is required. Re-align the parent before executing a changed graph; do not let a child prompt the user or skip ahead.
+ 
+ On resume, inspect the current Plan, Execution Log and applicable evidence/Block of the parent and the task returned by `next`; verify workspace reality before trusting old evidence. Log order does not select a child or permit skipping a blocked one. Reopening a completed child requires an active parent: reopen a Completed parent first. Reopening the child invalidates the active parent's assessment, terminal review and Verification evidence and returns an In Review parent to In Progress, so repeat the final integration gate after the child completes again. A cancelled parent is a reversible soft stop and does not implicitly cancel or delete children. Resume explicitly when the user continues.
+ 
+@@ -63,4 +63,4 @@ Apply `task`'s Review Reports persistence contract to every parent or child `tas
+ 
+ Apply the mandatory task-review stall guard independently to each child and to any parent-owned deliverable review. A stalled child or parent becomes Blocked and stops Queue progression until its recorded unblock condition occurs.
+ 
+-Keep the workflow interactive. If the session must pause, leave canonical status and evidence sufficient for a later Codex or Pi Agent to resume deterministically. Routing fixtures are in `evals/`.
++Keep the workflow interactive. 暂时搁置时执行 [暂停与恢复](../task/references/pause-resume.md)：分别保存实际暂停的活动子任务和父任务的恢复摘要，父任务暂停不自动改变子任务状态或停止运行中的 Agent。恢复时检查摘要和实际产物，不跳过 Paused 子任务；跨电脑明确携带记录、依赖及部分成果。Routing fixtures are in `evals/`.
+diff --git a/skills/meta/task/SKILL.md b/skills/meta/task/SKILL.md
+index 0b06d82..25dcd48 100644
+--- a/skills/meta/task/SKILL.md
++++ b/skills/meta/task/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: task
+-description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
++description: Create, resume, pause, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use for saving current progress before switching work, portable recovery in a new session or computer, every user-requested file creation, modification, move, rename, or deletion, and any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
+ ---
+ 
+ # Task
+@@ -67,7 +67,7 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
+ 2. For a new task, choose a lowercase kebab-case ID and run:
+    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
+    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
+-3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
++3. Run `resume <id>` for new, Pending, Paused, Blocked, or Cancelled work. For Paused, read its saved checkpoint from the owning record; after alignment, reconcile actual artifacts under [暂停与恢复](references/pause-resume.md). Activation alone does not prove restored content. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
+ 4. Immediately after creation, resume, or reopen succeeds, emit the real host tool call itself—for example, `task_focus(<id>)`—in the same reply as the lifecycle command; treat both calls as one atomic batch. Planning or listing `task_focus` without emitting it does not satisfy this step. If binding fails (for example, the record lives outside the session workspace), disclose that failure explicitly instead of silently skipping.
+ 5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. Classify the current authorized work before inspecting task-direct sources: standalone exploration uses the protocol's `continue_exploration` exemption without displaying a confirmation block or waiting; implementation follows its normal gate. A main session owns user-facing gates; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming a plan for implementation, an explicit request to execute supplies execution authorization; reuse a recoverable, materially equivalent accepted implementation Target when available, otherwise perform its first implementation checkpoint. Prior exploration alone is not Target acceptance.
+ 6. After the protocol aligns the current Target, read relevant Markdown memory with ordinary file tools, apply applicable experience and verify decision-changing claims against authoritative sources. On resume, read the current Plan, Decisions, Execution Log and applicable Result/Block, then reconcile them with actual artifacts before choosing the next action; follow Execution Log's recovery boundaries below. Apply Capability Preflight below before work that depends on those capabilities.
+@@ -154,7 +154,7 @@ On resume, read the log together with current Plan/Decisions, Target, Result and
+ 
+ Execution Log is ordinary task content included in the review fingerprint. After edits, run `sync` and `check`; it has no append-only bookkeeping exemption. Finish pending log updates before self-check and assessment, and freeze the log with the reviewed scope. Do not append during review or after final verification without refreshing affected evidence, assessment and any required fresh review. Review feedback and terminal lifecycle observations stay in Review Reports, Result and Verification rather than being duplicated as log entries that invalidate their own gates.
+ 
+-Use `show <id>` without `--json`, or read the canonical file, to retrieve the full log. The existing JSON `recovery` projection remains a legacy reader of old Plan bullets and Block facts, not an Execution Log summary. Do not infer progress from it or backfill untouched records.
++Use `show <id>` without `--json`, or read the canonical file, to retrieve the full log. The existing JSON `recovery` projection remains a legacy reader of old Plan bullets and Block facts, not an Execution Log summary. The separate `resumeContext` projection exposes the saved pause checkpoint; neither is current-state proof. Do not infer progress from it or backfill untouched records.
+ 
+ ### Topic
+ 
+@@ -289,9 +289,13 @@ Do not backfill untouched historical tasks or create an empty section for a skip
+ 
+ Run proportionate host-native checks yourself; the core never executes arbitrary commands. Record the current outcome with `verify <id> passed|failed --evidence <one-line observation>`. A failed check blocks completion. Re-run and replace verification after relevant changes.
+ 
++### Paused
++
++用户要求暂时搁置、先处理其他工作或保存进度供新会话继续时，读取并执行[暂停与恢复](references/pause-resume.md)。使用 `pause <id> --input <checkpoint.json>` 保存恢复摘要并进入 Paused；不能用 Cancelled 代替主动暂停。摘要必须覆盖当前停止点、部分结果及位置、验证情况、剩余事项、决策、下一步、依赖和跨电脑转移要求。记录可移植不等于代码及产物已同步，缺失项必须明确。暂停失败不得声称已保存；恢复不依赖原聊天，但仍须核对实际产物及授权。
++
+ ### Block
+ 
+-Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for a reversible soft stop; cancelled work is not completed and can resume.
++Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` when stopping the task; cancelled work is not completed and can resume. Use Paused for an intentional temporary interruption.
+ 
+ Keep the required user input or external condition explicit. Neither an Execution Log entry nor navigation showing Block facts establishes that the unblock condition has occurred; recheck it before resuming.
+ 

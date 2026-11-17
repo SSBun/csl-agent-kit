@@ -15,3 +15,4 @@ summary: 宿主Hook接入、持久规则注入、信任及设置解析；区分�
 - [2026-11-05] Pi jiti的moduleCache=false不清原生CommonJS缓存；设置扩展重载只清无状态task-mode直接依赖，不清无关模块或改配置，需同进程升级后重载验证。csl_review_config只读解析，主Agent MUST 把launch.model传入Reviewer；未设置项继承当时父会话值，不拦截全部subagent、不覆盖Editor或已有子Agent恢复契约。
 - [2026-11-05] Hook运行指导随包自包含，以bundled CLI为行为权威，语言服从现行指令，项目RFC仅背景。Pi adapter以ctx.cwd构建事件，按toolCallId记write/edit前状态：成功返回工作区相对changed_files，失败/工作区外为空，其他工具unknown。validate-rules复用V1解析器校验候选frontmatter及语义；脚本可执行性和宿主effective状态仍查agent-hooks show。
 - [2026-11-10] CSL Reviewer的用户指定默认模型为gpt-6.1-sol、思考强度low；会话报告的完整解析值为magpie/codex/gpt-6.1-sol:low，适用于后续新启动的Reviewer，已有子代理保持原配置。本批未独立读取实际配置；此设置不表示Memory后台或前台主模型也已变更。
+- [2026-11-10] 已读取内置及用户级Agent Rules，两处路径条款现一致：聊天用纯文本绝对路径，Markdown文件用标准链接，网页不变。会话报告注入合并及差异检查通过，未测试或改Codex模型缓存；本批未验注入及会话加载。此前只读研究报告read-agent-rules.js拼接非空层且不检测冲突，Pi的csl-context-hooks.ts追加Hook上下文至event.systemPrompt；这不证明当时禁止URI的developer消息来自CSL，仓库未定位原文来源。MUST NOT 将文件一致等同实际加载、全规则无冲突或高优先级限制已消除。

@@ -1,6 +1,6 @@
 ---
 name: task
-description: Create, resume, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use before every user-requested file creation, modification, move, rename, or deletion, even when trivial, and for any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
+description: Create, resume, pause, update, cancel, review, verify, and complete a canonical workspace task for one outcome. Use for saving current progress before switching work, portable recovery in a new session or computer, every user-requested file creation, modification, move, rename, or deletion, and any concrete non-trivial outcome. Activate and apply its Task Target protocol before substantive work; exploration proceeds without a generic confirmation. Skip only no-file simple factual answers and open-ended conversation without a concrete outcome.
 ---
 
 # Task
@@ -12,6 +12,8 @@ Manage one outcome through the host Agent. Use the host's existing file, shell, 
 所有用户可见回复均遵循共享协议的“用户可见文案边界”，不得附带内部流程说明块。
 
 Resolve the collection root as the parent of this skill directory. Before forming, presenting, or accepting a Task Target, read `<collection-root>/csl-tasks/shared/protocols/task-target-alignment.md` in full and treat it as the authoritative detailed alignment contract. Read it again after resume or compaction when it is no longer present in context. If it is unavailable, stop before substantive work and report the missing runtime dependency.
+
+Read [任务状态转换](../csl-tasks/shared/protocols/task-state-transitions.md) before lifecycle operations. It owns the seven-state meaning, allowed transitions and lifecycle-only stop branch; [暂停与恢复](references/pause-resume.md) owns checkpoint details.
 
 This skill owns task activation, the single-outcome Target meaning, permitted lifecycle writes, and the post-alignment task workflow. The shared protocol owns all Task Target alignment semantics.
 
@@ -51,6 +53,8 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
 
 ## Activation and Ownership
 
+- 用户仅要求暂停或取消已有任务时，先应用共享协议的 Lifecycle-Only Stop Requests 和[状态维护分支](../csl-tasks/shared/protocols/task-state-transitions.md#仅维护已有任务状态)：读取并 focus 原记录，保持当前状态，不运行下方 Start or Resume 执行启动步骤，不为暂停先 resume/reopen，也不创建替代任务。已完成任务不能仅因暂停请求重开；已有暂停、受阻或取消状态按专属分支处理。
+- 当用户按任务名称要求查看、暂停或恢复时，先按[名称定位](references/pause-resume.md#按任务名称定位)只读查找原记录；唯一完整名称可用，同名或部分名称展示候选供选择，不能要求用户先查 ID，也不能创建替代任务。内部生命周期与 focus 仍使用解析后的原 ID。
 - Create, resume, or reopen the owning record as soon as the request either asks to create, modify, move, rename, or delete any file, or establishes a concrete, non-trivial, independently acceptable outcome.
 - Activate it before substantive discussion, repository exploration, research, planning, delegation, implementation, or any focused target-forming clarification performed after the outcome exists. The shared alignment protocol's narrow, read-only lookup of an explicitly selected Topic to form an honest Target is also permitted; it is not general source exploration. For a requested file mutation, activation and—when the host provides one—an actually emitted `task_focus(<id>)` call must also precede the first requested deliverable edit. Before activation, allow only minimal user/project Memory index orientation, the minimal task index and candidate-record lookup needed to resolve ownership, and the one focused question permitted by the shared protocol when no honest Target yet exists.
 - The lifecycle writes needed to create, resume, reopen, focus, sync, check, and align the owning task are the bootstrap exception to the first-edit rule; they do not authorize editing the requested deliverable.
@@ -67,7 +71,7 @@ The category describes the artifact's stable purpose, not its lifecycle state. D
 2. For a new task, choose a lowercase kebab-case ID and run:
    `create <id> --title <title> --kind task --target "T1: <observable condition>"`.
    Repeat `--target` for additional conditions. If the request cannot support any honest observable Target, ask one focused question; create the record as soon as the answer establishes the outcome.
-3. Run `resume <id>` for new, Pending, Blocked, or Cancelled work. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
+3. Run `resume <id>` for new, Pending, Paused, Blocked, or Cancelled work. For Paused, read its saved checkpoint from the owning record; after alignment, reconcile actual artifacts under [暂停与恢复](references/pause-resume.md). Activation alone does not prove restored content. Use `reopen <id>` only for the same completed outcome; add the next Target ID before continuing.
 4. Immediately after creation, resume, or reopen succeeds, emit the real host tool call itself—for example, `task_focus(<id>)`—in the same reply as the lifecycle command; treat both calls as one atomic batch. Planning or listing `task_focus` without emitting it does not satisfy this step. If binding fails (for example, the record lives outside the session workspace), disclose that failure explicitly instead of silently skipping.
 5. Apply the shared Task Target Alignment Protocol to the active record. For this workflow, the conversational Target means the intended outcome and observable completion condition; before alignment, the permitted lifecycle writes are create, resume, reopen, focus, sync, and check. Classify the current authorized work before inspecting task-direct sources: standalone exploration uses the protocol's `continue_exploration` exemption without displaying a confirmation block or waiting; implementation follows its normal gate. A main session owns user-facing gates; a delegated child validates the main session's packet and either continues the named task or returns to the main session without prompting the user. When resuming a plan for implementation, an explicit request to execute supplies execution authorization; reuse a recoverable, materially equivalent accepted implementation Target when available, otherwise perform its first implementation checkpoint. Prior exploration alone is not Target acceptance.
 6. After the protocol aligns the current Target, read relevant Markdown memory with ordinary file tools, apply applicable experience and verify decision-changing claims against authoritative sources. On resume, read the current Plan, Decisions, Execution Log and applicable Result/Block, then reconcile them with actual artifacts before choosing the next action; follow Execution Log's recovery boundaries below. Apply Capability Preflight below before work that depends on those capabilities.
@@ -154,7 +158,7 @@ On resume, read the log together with current Plan/Decisions, Target, Result and
 
 Execution Log is ordinary task content included in the review fingerprint. After edits, run `sync` and `check`; it has no append-only bookkeeping exemption. Finish pending log updates before self-check and assessment, and freeze the log with the reviewed scope. Do not append during review or after final verification without refreshing affected evidence, assessment and any required fresh review. Review feedback and terminal lifecycle observations stay in Review Reports, Result and Verification rather than being duplicated as log entries that invalidate their own gates.
 
-Use `show <id>` without `--json`, or read the canonical file, to retrieve the full log. The existing JSON `recovery` projection remains a legacy reader of old Plan bullets and Block facts, not an Execution Log summary. Do not infer progress from it or backfill untouched records.
+Use `show <id>` without `--json`, or read the canonical file, to retrieve the full log. The existing JSON `recovery` projection remains a legacy reader of old Plan bullets and Block facts, not an Execution Log summary. The separate `resumeContext` projection exposes the saved pause checkpoint; neither is current-state proof. Do not infer progress from it or backfill untouched records.
 
 ### Topic
 
@@ -289,9 +293,13 @@ Do not backfill untouched historical tasks or create an empty section for a skip
 
 Run proportionate host-native checks yourself; the core never executes arbitrary commands. Record the current outcome with `verify <id> passed|failed --evidence <one-line observation>`. A failed check blocks completion. Re-run and replace verification after relevant changes.
 
+### Paused
+
+用户在任务管理语境中要求 pause、suspend、stash、暂存、搁置、先放一放、先做别的或以后继续时，统一识别为主动暂停意图，读取并执行[暂停与恢复](references/pause-resume.md)；没有 Suspended 状态。Pending、Cancelled 或停止 Agent 执行都不能代替 Paused。用户可提供任务名称；唯一完整名称可直接解析，同名或部分名称先选候选，内部保留原 ID。使用 `pause <id-or-title> --input <checkpoint.json>` 保存恢复摘要并进入 Paused；不能用 Cancelled 代替主动暂停。摘要必须覆盖当前停止点、部分结果及位置、验证情况、剩余事项、决策、下一步、依赖和跨电脑转移要求。记录可移植不等于代码及产物已同步，缺失项必须明确。暂停失败不得声称已保存；必须回读 Paused、完整摘要并核对本次停止点及索引，再报告暂停成功。恢复不依赖原聊天，但仍须核对实际产物及授权。
+
 ### Block
 
-Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for a reversible soft stop; cancelled work is not completed and can resume.
+Add only while Blocked, with `Reason` and observable `Unblock when`. Add the section before `status <id> blocked`. Resuming removes it. Use `cancel <id>` for an explicit cancellation; cancelled work is not completed and can resume after an explicit request. Use Paused for an intentional temporary interruption.
 
 Keep the required user input or external condition explicit. Neither an Execution Log entry nor navigation showing Block facts establishes that the unblock condition has occurred; recheck it before resuming.
 

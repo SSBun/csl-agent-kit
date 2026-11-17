@@ -1,0 +1,55 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "task-state-transition-diagram",
+  "files": [
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/task-state-transition-diagram/reports/task-state-transitions.md",
+      "sha256": "cc45f83f2d816df330b71f4441d9ef6dab54c26950330cfbed47e36bd9da736e",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/task-state-transition-diagram/reports/task-state-transitions.png",
+      "sha256": "a5b0d2b8460803981ad11098558accbf8ed47a4c5d67514f249159efc54f0d37",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/task-state-transition-diagram/reports/task-state-transitions.svg",
+      "sha256": "d8a5637328d1f4ae9511fa77c7cb170e9cb4c616cb813f6cb9cb16511f936a34",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/csl-tasks/shared/lib/task-core.js",
+      "sha256": "51f04c422cd0c9ba7a9fbe5f1fa6a50c037c79f50501037cadaff836c0eabf9b",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "372b774d3bb24eae0929a65d215cc2b4a6233ddf"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "372b774d3bb24eae0929a65d215cc2b4a6233ddf",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/references/pause-resume.md",
+      "sha256": "03c930c67f2d07aea5fdec22cb74899d92ce535d161fa253b4310bbc62e29f11",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    }
+  ]
+}

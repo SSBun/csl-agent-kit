@@ -1,0 +1,23 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "remove-guard-reason-disclosure",
+  "files": [
+    {
+      "path": "skills/meta/csl-tasks/shared/protocols/task-target-alignment.md",
+      "sha256": "3d0b5f4e203a096ab2ce9cf69584bfd28c2ed4b109d77f0674501965290436f3",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "62e329484fb84fadfa075a340da48edac4b58c3d"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "62e329484fb84fadfa075a340da48edac4b58c3d",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

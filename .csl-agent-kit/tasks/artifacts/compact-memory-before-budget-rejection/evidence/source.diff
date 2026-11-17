@@ -1,0 +1,247 @@
+diff --git a/bin/memory/agent.js b/bin/memory/agent.js
+index d125792..3d71236 100644
+--- a/bin/memory/agent.js
++++ b/bin/memory/agent.js
+@@ -25,7 +25,7 @@ function tools(context) {
+       return { content: [{ type: "text", text: JSON.stringify(store.get(store.rootFor(optionsFor(context.event, scope)), id)) }] };
+     },
+   }, {
+-    name: "memory_apply", label: "Memory mutation", description: "当前内容条件写入。mutation JSON只含id、operation、expected:{hash}，put另含content:{title,summary,body}。正文为带日期case，不含来源、类型或历史字段；删除永久移除文件。",
++    name: "memory_apply", label: "Memory mutation", description: "当前内容条件写入。mutation JSON只含id、operation、expected:{hash}，put另含content:{title,summary,body}。正文为带日期case，不含来源、类型或历史字段；删除永久移除文件。普通正文超过5000词仍保存完整更新，返回compaction.required；随后重新读取并压缩合并，保留知识、条件和未变日期。",
+     parameters: { type: "object", properties: { scope: { type: "string", enum: ["user", "project"] }, mutation: { type: "string" } }, required: ["scope", "mutation"], additionalProperties: false },
+     execute: async (_id, { scope, mutation }) => {
+       if (!context.event || context.signal?.aborted) store.fail("INTERRUPTED", "No active maintenance batch");
+@@ -106,23 +106,33 @@ function createManager() {
+       });
+       signal?.addEventListener("abort", abort, { once: true });
+       timer = setTimeout(() => { timedOut = true; void worker.session.abort(); }, 5 * 60 * 1000);
++      const pendingCompaction = () => writableScopes.filter(scope => !event.maintenance || scope === event.maintenance.scope)
++        .flatMap(scope => store.compactionStatus(worker.roots[scope], scope).map(entry => ({ scope, ...entry })));
++      const prompt = async text => {
++        await worker.session.prompt(text, { expandPromptTemplates: false });
++        if (timedOut) store.fail("MODEL_TIMEOUT", "Five-minute deadline exceeded; inspect current files before retry");
++        if (signal?.aborted) store.fail("INTERRUPTED", "Memory processing cancelled");
++        const last = [...worker.session.messages].reverse().find(message => message.role === "assistant");
++        if (!last || last.stopReason !== "stop") {
++          const detail = String(last?.errorMessage || "provider returned no diagnostic").replace(/\bBearer\s+\S+/gi, "Bearer [redacted]").replace(/\bsk-[A-Za-z0-9_-]+/g, "[redacted-key]").slice(0, 2000);
++          store.fail("MODEL_FAILED", `Memory run did not finish: ${detail}`);
++        }
++      };
+       const instruction = event.maintenance ? "执行指定scope周期复查，不是用户发言；候选仅为起点，超项目容量需检查完整索引。" : "处理会话增量，同时核对相关旧记忆，不仅新增。";
+-      await worker.session.prompt(`${instruction}旧格式scope只读，不要升级；修改前重新读取当前内容。此前效果仅作提示，无历史恢复。\n${JSON.stringify({ utcWindow: recent.window(), writableScopes, projectBudget: store.budgetStatus(worker.roots.project), maintenance: event.maintenance || null, previousEffects: runtime.read(`jobs/${runtime.jobId(event.id)}.json`)?.effects || [], messages: event.messages })}`, { expandPromptTemplates: false });
+-      if (timedOut) store.fail("MODEL_TIMEOUT", "Five-minute deadline exceeded; inspect current files before retry");
+-      if (signal?.aborted) store.fail("INTERRUPTED", "Memory processing cancelled");
+-      const last = [...worker.session.messages].reverse().find(message => message.role === "assistant");
+-      if (!last || last.stopReason !== "stop") {
+-        const detail = String(last?.errorMessage || "provider returned no diagnostic").replace(/\bBearer\s+\S+/gi, "Bearer [redacted]").replace(/\bsk-[A-Za-z0-9_-]+/g, "[redacted-key]").slice(0, 2000);
+-        store.fail("MODEL_FAILED", `Memory run did not finish: ${detail}`);
++      await prompt(`${instruction}旧格式scope只读，不要升级；修改前重新读取当前内容。此前效果仅作提示，无历史恢复。普通正文5000词是压缩触发阈值，不是拒绝更新的条件；先保存完整更新，再读取最新hash压缩合并，不截断或丢失有效知识、条件和未变日期。\n${JSON.stringify({ utcWindow: recent.window(), writableScopes, projectBudget: store.budgetStatus(worker.roots.project), compaction: pendingCompaction(), maintenance: event.maintenance || null, previousEffects: runtime.read(`jobs/${runtime.jobId(event.id)}.json`)?.effects || [], messages: event.messages })}`);
++      let compaction = pendingCompaction();
++      if (compaction.length) {
++        await prompt(`以下普通记忆已保存但仍超过${store.BUDGETS.bodyWords}词。现在重新读取完整内容和最新hash，合并重复内容、精炼表达并写回；保留有效知识、独有条件、否定、例外及未变case日期。项目temp不参与词数压缩。不要删除待压缩文件、截断正文或跨scope转移以绕限。无法保真压缩时保留完整已保存更新，明确报告待压缩，不宣称已达标。\n${JSON.stringify({ compaction, utcWindow: recent.window() })}`);
++        compaction = pendingCompaction();
+       }
+       if (failures.length) store.fail("TOOL_FAILED", `Tool failures: ${[...new Set(failures)].join("; ")}; inspect current files`);
+       if (writableScopes.includes("project") && (!event.maintenance || event.maintenance.scope === "project")) {
+         const budget = store.budgetStatus(worker.roots.project);
+-        if (budget.overCapacity || budget.oversized.length) store.fail("MEMORY_BUDGET_UNRESOLVED", "Project still exceeds budget", budget);
++        if (budget.overCapacity) store.fail("MEMORY_BUDGET_UNRESOLVED", "Project still exceeds file capacity", budget);
+       }
+-      worker.batches++; persist(workspace, { state: "idle", event: null, batches: worker.batches, lastEvent: event.id });
+-      live.finish(workspace, "completed", "本批处理完成。");
+-      return { model: worker.selection, summary: worker.session.getLastAssistantText() || "请读取当前记忆。" };
++      worker.batches++; persist(workspace, { state: "idle", event: null, batches: worker.batches, lastEvent: event.id, compaction });
++      live.finish(workspace, "completed", compaction.length ? "更新已保存；仍有正文待压缩。" : "本批处理完成。");
++      return { model: worker.selection, compaction, summary: worker.session.getLastAssistantText() || "请读取当前记忆。" };
+     } catch (error) {
+       live.finish(workspace, signal?.aborted ? "interrupted" : "failed", error.message);
+       persist(workspace, { state: signal?.aborted ? "interrupted" : "failed", event: event.id, error: `${error.code || "MEMORY_ERROR"}: ${error.message}` });
+diff --git a/bin/memory/cli.js b/bin/memory/cli.js
+index 1b37144..be331d2 100644
+--- a/bin/memory/cli.js
++++ b/bin/memory/cli.js
+@@ -30,7 +30,7 @@ const HELP = `CSL Memory（只保存当前知识）
+    "content":{"title":"宽主题","summary":"收录范围","body":"- [2026-11-09] 知识及条件。"}}
+ 已有文件expected.hash必须等于当前完整文件SHA256，新文件使用null；delete不含content。
+ 文件仅保存title、summary和带日期case；不保存type、sources、revision、关系或删除标记。
+-每项目最多20片，每片1000词；用户正文最多8000字符。合并先保存并回读，再删除旧文件。
++每项目最多20片；项目与用户级普通正文超过5000词时先保存完整更新并返回compaction.required，再压缩合并；Memory Agent自动继续处理，直接CLI调用者须继续压缩或报告待处理。项目temp不设词数预算，按最近7个UTC自然日保留；底层单次读写安全限制仍适用。合并先保存并回读，再删除旧文件。
+ 不提供history/change/commits/proposal/restore/recover。写入无历史、来源审计或恢复副本。
+ 索引过期时读取当前entries并reindex；错误不代表文件写入已回滚。
+ 后台队列仅服务待处理工作，完成后释放输入；不是记忆历史。
+diff --git a/bin/memory/store.js b/bin/memory/store.js
+index e96f805..17e4298 100644
+--- a/bin/memory/store.js
++++ b/bin/memory/store.js
+@@ -10,7 +10,7 @@ const recent = require("./recent.js");
+ 
+ const STORE_VERSION = 5;
+ const MAX_BYTES = 256 * 1024;
+-const BUDGETS = Object.freeze({ title: 60, summary: 200, bodyTarget: 4000, body: 8000, indexPage: 4000, projectChips: 20, projectBodyWords: 1000 });
++const BUDGETS = Object.freeze({ title: 60, summary: 200, indexPage: 4000, projectChips: 20, bodyWords: 5000 });
+ const segmenter = new Intl.Segmenter("zh", { granularity: "word" });
+ const words = value => [...segmenter.segment(value)].filter(part => part.isWordLike).length;
+ const characters = value => [...value].length;
+@@ -92,8 +92,7 @@ function validateContent(content, scope = "project", enforceBudget = true, id) {
+       if (content.title !== recent.TITLE || content.summary !== recent.SUMMARY) fail("INVALID_TEMP_MEMORY", "Temporary memory must use its fixed title and summary");
+       if (recent.filter(content.body) !== content.body.trim()) fail("TEMP_DATE_RANGE", "Temporary cases must fall within today and the previous six UTC dates");
+     }
+-    if (scope === "project" && words(content.body) > BUDGETS.projectBodyWords) fail("MEMORY_BUDGET", "Project chip exceeds 1000 words");
+-    if (scope === "user" && characters(content.body) > BUDGETS.body) fail("MEMORY_BUDGET", "User chip exceeds 8000 characters");
++
+   }
+ }
+ function encodeEntry(content) {
+@@ -163,10 +162,14 @@ function indexScope(root) { return indexMetadata(root)?.scope || (root === rootF
+ function indexPages(root, scope = indexScope(root)) { return recall.compile({ entries: entries(root), scope }).files; }
+ function indexText(root, scope) { return indexPages(root, scope)[0].content; }
+ function rebuildIndex(root, scope) { atomicWrite(safePath(root, "index.md"), indexText(root, scope)); }
++function compactionStatus(root, scope = indexScope(root)) {
++  return entries(root).filter(e => e.exists && !(scope === "project" && recent.matches(e)))
++    .map(e => ({ id: e.id, words: words(e.body) })).filter(e => e.words > BUDGETS.bodyWords);
++}
+ function budgetStatus(root, scope = indexScope(root)) {
+   if (scope !== "project") return null;
+   const active = entries(root).filter(e => e.exists);
+-  return { count: active.length, limit: BUDGETS.projectChips, wordLimit: BUDGETS.projectBodyWords, oversized: active.map(e => ({ id: e.id, words: words(e.body) })).filter(e => e.words > BUDGETS.projectBodyWords), overCapacity: active.length > BUDGETS.projectChips };
++  return { count: active.length, limit: BUDGETS.projectChips, wordLimit: BUDGETS.bodyWords, oversized: compactionStatus(root, scope), overCapacity: active.length > BUDGETS.projectChips };
+ }
+ function inspectIndex(options = {}) {
+   const root = rootFor(options), scope = options.scope || "project";
+@@ -217,7 +220,10 @@ function mutate(options, input) {
+     }
+     try { rebuildIndex(root, scope); }
+     catch (error) { fail("INDEX_STALE", "Current file was written but index refresh failed; reread entries and reindex", { cause: error.message }); }
+-    return { operation: input.operation, entry: get(root, input.id) };
++    const entry = get(root, input.id);
++    const compaction = input.operation === "put" && !(scope === "project" && recent.matches(entry)) && words(entry.body) > BUDGETS.bodyWords
++      ? { required: true, wordLimit: BUDGETS.bodyWords, words: words(entry.body) } : null;
++    return { operation: input.operation, entry, compaction };
+   });
+ }
+ function reindex(options) {
+@@ -227,4 +233,4 @@ function reindex(options) {
+   return withLock(root, () => { rebuildIndex(root, options.scope || "project"); return { root, rebuilt: true }; });
+ }
+ 
+-module.exports = { STORE_VERSION, MAX_BYTES, BUDGETS, words, characters, fail, hash, safePath, rootFor, readOptional, atomicWrite, validateCaseBody, validateContent, validateMutation, encodeEntry, parseEntry, get, pruneTemp, entries, list, indexMetadata, indexPages, indexText, rebuildIndex, inspectIndex, budgetStatus, withLock, mutate, reindex };
++module.exports = { STORE_VERSION, MAX_BYTES, BUDGETS, words, characters, fail, hash, safePath, rootFor, readOptional, atomicWrite, validateCaseBody, validateContent, validateMutation, encodeEntry, parseEntry, get, pruneTemp, entries, list, indexMetadata, indexPages, indexText, rebuildIndex, inspectIndex, budgetStatus, compactionStatus, withLock, mutate, reindex };
+diff --git a/docs/memory.md b/docs/memory.md
+index 0414bcb..ee71e6b 100644
+--- a/docs/memory.md
++++ b/docs/memory.md
+@@ -16,7 +16,7 @@ memory/
+     wide-topic.md   # 必要专题
+ ```
+ 
+-两个基础文件属于项目作用域，用户级仍按实际知识组织。它们沿用相同的title、summary和case格式，共占20个文件额度中的两个，各自遵守1000词限制，不增加type或其他元数据。首次维护可写项目时用已有可核实知识补齐；缺知识或容量则报告，不编造经验或写占位case。日常维护保留其文件身份；专题可保留，重叠内容先保存回读再移除重复case。明确遗忘仍删除指定知识，不为入口保留已要求遗忘的内容。这不恢复旧Task的Context/Lessons文件、Skill或自动导入流程。
++两个基础文件属于项目作用域，用户级仍按实际知识组织。它们沿用相同的title、summary和case格式，共占20个文件额度中的两个，各自在超过5000词时触发压缩，不增加type或其他元数据。首次维护可写项目时用已有可核实知识补齐；缺知识或容量则报告，不编造经验或写占位case。日常维护保留其文件身份；专题可保留，重叠内容先保存回读再移除重复case。明确遗忘仍删除指定知识，不为入口保留已要求遗忘的内容。这不恢复旧Task的Context/Lessons文件、Skill或自动导入流程。
+ 
+ `entries`是权威正文；`index.md`只描述当前集合，列出标题、摘要、相对链接及完整文件SHA256。索引头使用 `csl-memory-index/v4`、`formatVersion: 5`、scope、generation与当前count。generation由当前文件身份计算，不生成代际目录、卡片、manifest或备份。格式版本属于当前索引，不写入知识文件。
+ 
+@@ -34,7 +34,7 @@ summary: 主题边界、知识准入与当前正文检索。
+ 
+ 不保存sources、type、retrieval、schema、id、revision、updated、deleted等文件元数据，不保存来源审计、前后版本、提案、审查、墓碑或恢复副本，也不转存到任务附件或别的目录。技术概念、必要API名称与知识性链接可以留正文，但不能把历史来源记录改名后塞回case。
+ 
+-项目最多20个当前文件，每片正文1000词，使用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike计数；用户正文最多8000个Unicode字符。title最多60字符、summary最多200字符，均为单行。每个正文非空行必须为有效UTC日历日的 `- [YYYY-MM-DD] case`。实质新增或纠正才更新该case日期，格式调整、重排和其他case变化不刷新日期。旧知识缺少可信日期时不编造转换日。
++项目最多20个当前文件。项目与用户级普通文件每份正文超过5000词时触发压缩，使用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike计数。writer先保存完整更新并返回compaction提示，不因词数拒绝写入；Memory Agent重新读取内容和最新hash，合并重复内容并精炼表达，保留有效知识、必要条件、例外及未变case日期。无法保真收敛时保留完整更新并标记待压缩，后续批次继续处理，不因词数将整批判失败。直接CLI写入也返回compaction.required，由调用者继续压缩或明确报告待处理。项目temp不设正文词数预算，底层单次读写安全限制仍适用。title最多60字符、summary最多200字符，均为单行。每个正文非空行必须为有效UTC日历日的 `- [YYYY-MM-DD] case`。实质新增或纠正才更新该case日期，格式调整、重排和其他case变化不刷新日期。旧知识缺少可信日期时不编造转换日。
+ 
+ ## 最近七天上下文与特殊徽标
+ 
+@@ -42,7 +42,7 @@ summary: 主题边界、知识准入与当前正文检索。
+ 
+ 窗口按UTC自然日计算，包含当天及前6天。消息入队保留真实时间，后台从该批有时间的消息提炼临时case；没有可靠时间的旧队列输入不用于新建temp条目。整理、周期复查和重试不续期，未来或过期日期拒绝写入。后台跨UTC日期重建模型会话，避免沿用过时上下文。
+ 
+-temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文沿用日期列表，可以为空。它计入项目20个文件及1000词预算。固定摘要避免条目过期后，旧意图仍泄漏在标题或索引中。同名非临时文件不自动转换或覆盖，用户级同名文件不受此规则影响。
++temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文沿用日期列表，可以为空。它计入项目20个文件，但不设正文词数预算，不因词数进入超限整理；内容按最近7个UTC自然日的窗口保留。固定摘要避免条目过期后，旧意图仍泄漏在标题或索引中。同名非临时文件不自动转换或覆盖，用户级同名文件不受此规则影响。
+ 
+ 初始化和后台每分钟调度检查清理过期条目，即使当天没有模型任务也执行；停机期间不运行，下次启动补清。API、宿主提示再次过滤过期内容；普通文件读取须同样检查日期。读响应中的hash始终指向完整磁盘文件，不能用过滤后的正文重算写入条件。空文件继续作为临时入口，过期条目不归档、不自动转入长期知识。
+ 
+diff --git a/skills/meta/agent-memory/SKILL.md b/skills/meta/agent-memory/SKILL.md
+index 8487e07..53a5602 100644
+--- a/skills/meta/agent-memory/SKILL.md
++++ b/skills/meta/agent-memory/SKILL.md
+@@ -38,7 +38,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ 
+ ## 内容与容量
+ 
+-项目基础文件固定为 `entries/context.md`（项目基础信息：定位、职责、结构及稳定约定）与 `entries/lessons.md`（通用经验：可复用的触发条件、防护动作及检查）。这是新 Memory 的两个普通知识文件，不恢复旧 Task 的Context/Lessons路径、Skill或写入流程，也不增加类型字段。两文件计入20个文件上限，各自遵守1000词限制；“通用”指项目内跨任务复用，不自动提升为用户级。
++项目基础文件固定为 `entries/context.md`（项目基础信息：定位、职责、结构及稳定约定）与 `entries/lessons.md`（通用经验：可复用的触发条件、防护动作及检查）。这是新 Memory 的两个普通知识文件，不恢复旧 Task 的Context/Lessons路径、Skill或写入流程，也不增加类型字段。两文件计入20个文件上限，各自在超过5000词时触发压缩；“通用”指项目内跨任务复用，不自动提升为用户级。
+ 
+ 首次维护可写项目时，核对并补齐两个基础文件；只用可核实知识，不写空壳、占位case或编造经验。缺少必要知识或容量时报告缺项；旧格式作用域仍只读。已有重叠专题按下述先保存、回读、再移除重复case的顺序归并，保留独有内容和日期。日常维护 MUST 保留两个基础入口，不因拆分、合并或腾配额而删除或改名；用户明确要求遗忘时仍移除指定知识，不为保留入口而保留已要求遗忘的内容。
+ 
+@@ -47,7 +47,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ - title最多60个Unicode字符，summary最多200个，均为单行；summary说明收录范围。
+ - 正文每个非空行固定为 `- [YYYY-MM-DD] 知识及必要条件`。不用独立标题、段落、嵌套列表、表格或围栏；行内代码、知识链接可用。一个case完整保留条件、否定、例外、单位和关键数值。
+ - 日期用有效UTC日历日。新增或实质纠正case才更新其日期，未变case保留原日期，排版或重排不刷新。不凭空编造旧知识日期；无可靠日期时报告转换阻塞。
+-- 每项目最多20个当前文件，每片1000词；用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike段计数。用户正文最多8000个Unicode字符。索引不占知识文件配额，无最低正文长度。
++- 每项目最多20个当前文件；项目与用户级普通文件每份正文超过5000词时触发压缩，用 `Intl.Segmenter("zh", {granularity:"word"})` 的isWordLike段计数。5000词是整理阈值，不是拒绝更新的硬上限：writer先保存完整更新并返回compaction提示，Memory Agent MUST 重新读取最新内容与hash，压缩合并后写回。无法保真收敛时 MUST 保留已保存更新并明确报告待压缩；后续批次继续处理，不因词数将整批判失败。项目temp不设正文词数预算，仅按下节时间窗口保留。底层单次读写安全限制仍适用。索引不占知识文件配额，无最低正文长度。
+ - 长期主题只留影响未来判断的稳定偏好、事实、条件经验；temp仅按下节短期例外维护。允许零修改；不收临时进度、确认经过、流水、凭据、隐藏推理、无依据推测或可直接从权威资料重建的大段重复文本。
+ - 短句提炼但不丢独有信息，不保存会话、事件、任务、事务编号和来源审查过程。规则已有载体时只留必要提示，不复制规范。
+ 
+@@ -55,7 +55,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ 
+ 项目额外保留特殊文件 `entries/temp.md`，供新Agent了解用户近期意图、关注点、未决问题及必要背景。它是短期内容的明确例外，不替代Task权威状态，不授予继续执行权限，不复制完整对话或任务日志。context、lessons仍为长期知识，不适用临时期满删除。
+ 
+-- temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文仍用带日期case，可以为空。它计入20个项目文件与每份1000词上限；不创建占位case。
++- temp固定title为「近期上下文」，summary为「最近7个UTC自然日的用户意图与必要背景；不是执行授权。」；正文仍用带日期case，可以为空。它计入20个项目文件，但不受普通文件5000词预算约束，也不因正文词数进入超限整理；不创建占位case。
+ - 保留窗口为UTC当天及前6个自然日。临时case的日期 MUST 来自该批消息的真实UTC时间；缺少时间的消息 MUST NOT 猜日期写入temp。旧内容 MUST NOT 因重排、复查或重试刷新日期，未来日期和窗口外日期不可写入。
+ - 会话批次 SHOULD 合并有效近期背景，移除被新意图替代的内容；周期批次 MUST NOT 新增临时条目或续期。过期内容 MUST NOT 自动转存到长期主题；长期知识的提炼仍须满足独立的知识准入要求。
+ - 系统在初始化和后台每分钟调度检查时确定性清理过期正文，保留空文件；停机期间不执行清理，下次初始化补清。API与新Agent提示再次按当前日期过滤。普通文件读取者 MUST 忽略窗口外条目，不能因正文尚待清理就采信。索引及完整文件hash仍对应磁盘实际内容。
+@@ -86,7 +86,7 @@ scope仅有user与project，按事实的适用范围选择，不按重要性提
+ 
+ CONFLICT后重读并重新判断，不强制覆盖；LOCKED时查明所有者，不删未知活动锁。INDEX_STALE表示当前文件已经改变但索引未成功刷新，应回读entries后执行reindex，不假定回滚。中断不会提供历史还原；不根据工具响应缺失认定未写入。
+ 
+-合并先保存、回读完整替代知识，再检查当前正文引用并删除冗余文件。容量已满时合并到既有主题腾出空间，不能先删再存、截断正文或移入user绕限。仅在明确失效、完整替代或明确遗忘请求时删除；久未使用不构成依据。无法保真收敛或引用属于未授权项目时保留文件并报告阻塞。
++合并先保存、回读完整替代知识，再检查当前正文引用并删除冗余文件。正文超出5000词时 MUST 合并重复表达、精炼措辞，保留独有条件、否定、例外、关键数值和未变case日期；MUST NOT 截断、静默丢弃有效知识、删除待压缩文件或跨scope转移以绕过阈值。直接CLI写入同样保存超阈值正文并返回compaction.required，调用者 MUST 继续压缩或明确保留为待压缩，不能把提示当作更新失败。容量已满时合并到既有主题腾出空间，不能先删再存、截断正文或移入user绕限。仅在明确失效、完整替代或明确遗忘请求时删除；久未使用不构成依据。无法保真收敛或引用属于未授权项目时保留文件并报告阻塞。
+ 
+ ## 后台维护与升级
+ 
+diff --git a/skills/meta/agent-memory/references/recording-prompt.md b/skills/meta/agent-memory/references/recording-prompt.md
+index 6bd0864..5388648 100644
+--- a/skills/meta/agent-memory/references/recording-prompt.md
++++ b/skills/meta/agent-memory/references/recording-prompt.md
+@@ -69,6 +69,8 @@ Read back affected content and inspect the current index before claiming success
+ 
+ ## 6. Handle limits and report results
+ 
++普通记忆正文超过5000词时，先保存完整更新，再根据writer返回的compaction提示重新读取正文与最新hash，合并重复内容并精炼表达。保留有效知识、独有条件、否定、例外、关键数值和未变case日期；不要截断、删除待压缩文件或跨scope转移以绕过阈值。无法保真压缩时保留已保存更新并明确报告待压缩，后续批次继续处理；不要仅因词数拒绝更新或宣称已达标。项目temp不参与正文词数压缩，仍按其时间窗口维护。
++
+ On `CONFLICT`, reread and reassess; do not force an overwrite. On `LOCKED`, do not remove an unknown active lock. On `INDEX_STALE` or a missing tool response, inspect current files before retrying: a write may already have succeeded, and rollback is not implied.
+ 
+ Use an index-repair operation only when it is available and authorized. Otherwise report what was saved, what remains uncertain, and the required recovery action. Do not invent a tool, bypass the writer, or claim recovery succeeded.
+diff --git a/tests/memory-store.test.js b/tests/memory-store.test.js
+index 92f8348..1027b30 100644
+--- a/tests/memory-store.test.js
++++ b/tests/memory-store.test.js
+@@ -79,8 +79,11 @@ test("index rebuild is deterministic and detects current-file drift", t => {
+ 
+ test("project capacity and body budget permit merging existing files", t => {
+   const { options, root } = fixture(t);
+-  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "word ".repeat(1001);
+-  assert.throws(() => store.mutate(options, oversized), { code: "MEMORY_BUDGET" });
++  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "word ".repeat(5001);
++  const saved = store.mutate(options, oversized);
++  assert.equal(saved.compaction.required, true);
++  assert.equal(store.get(root, "sample").body, oversized.content.body.trim());
++  store.mutate(options, { id: "sample", operation: "delete", expected: { hash: saved.entry.hash } });
+   for (let i = 0; i < 20; i++) store.mutate(options, mutation(`entry-${i}`));
+   assert.throws(() => store.mutate(options, mutation("overflow")), { code: "MEMORY_CAPACITY" });
+   const current = store.get(root, "entry-0");
+@@ -143,11 +146,12 @@ test("special badges are project-specific and ordinary or user memories remain o
+   assert.equal(recent.kind({ id: "temp", title: "其他内容" }, "project"), null);
+ });
+ 
+-test("user storage uses the same current index and its character budget", t => {
++test("user storage uses the same current index and word budget", t => {
+   const f = fixture(t), options = { ...f.options, scope: "user" }, root = store.rootFor(options);
+-  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "字".repeat(8001);
+-  assert.throws(() => store.mutate(options, oversized), { code: "MEMORY_BUDGET" });
+-  store.mutate(options, mutation());
++  const oversized = mutation(); oversized.content.body = "- [2026-11-09] " + "word ".repeat(5001);
++  assert.equal(store.mutate(options, oversized).compaction.required, true);
++  const current = store.get(root, "sample");
++  store.mutate(options, mutation("sample", current.hash));
+   assert.equal(store.inspectIndex(options).index.scope, "user");
+   assert.deepEqual(fs.readdirSync(root).sort(), ["entries", "index.md"]);
+ });

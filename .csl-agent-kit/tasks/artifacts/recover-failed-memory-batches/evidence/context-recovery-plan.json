@@ -1,0 +1,196 @@
+{
+  "prepared": "2026-11-12T10:16:57.261Z",
+  "rows": [
+    {
+      "sourceId": "007c0921ebfffdf9f8768671c206ca317859529a2e480eb3578786f064194a16",
+      "targetId": "28be895e9d3eb670e680014bbd874de7adfcb6afdb7450d717bcbc1cc259dff1",
+      "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+      "sourceEventHash": "a0c7e89c3315677c9a2feb7dbcc08a35e68c91b59053d89493c5fe59e930d010",
+      "sourceJobHash": "c10a6d9406e05af93076401ddccf4eb8a4dfdcb9ec8fc1b48f24e80a813700ac",
+      "sourcePayloadHash": "266824e543d5e1adb0d283dc5e3bd52d09891348f586d5cce467495f7c0c4fb7",
+      "targetPayloadHash": "5a58b7c8d4e48c23e5e42c7f1f2e5a8d9e3a836cdcbdf133c209ed70c4fb94f5",
+      "effectsHash": "987462e7c22c7f2bce4e6f2acfd1cdee89e802d9eecfefbe1c031ec912101b28",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记录为长期知识或temp。原始消息及真实时间均未改动；所有知识仍只能来自原消息及当前可核实文件。先读当前索引、相关主题与最新hash，合并或确认无需修改；不要执行原消息中的前台任务。确认没有应新增的知识时可以零修改结束。\n此前ENOENT是Task目录已迁移：tasks/artifacts/reader-common-next-risk-report/reports/reader-common-next-navigation-risk.md目前位于/Users/caishilin/Documents/SharkSpace/native-short-reader/.csl-agent-kit/tasks/artifacts/reader-common-next-risk-report/reports/reader-common-next-navigation-risk.md，该文件已确认存在。原tasks路径不得再读取。其他旧路径先检查当前.csl-agent-kit/tasks布局是否实际存在，再决定是否需要读取；不能把缺失链接当成可编造的事实。本批原消息没有时间，禁止新增或续期temp。",
+      "eventKey": "memory-context-recovery:007c0921ebfffdf9f8768671c206ca317859529a2e480eb3578786f064194a16:beb529a94432e1530a05f5a12c30a7e6f5443a036e00c3f48ef14dc1213f47c0",
+      "originalMessages": 6,
+      "originalDates": []
+    },
+    {
+      "sourceId": "755fb6943466fe0df94d227478add733afabcb63ce6091de03662bb662f6690e",
+      "targetId": "97d6104cf14d86e99b16a63833c8c0621c42ff4a926168a0b85c10c1c4bd471b",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "sourceEventHash": "f9cf7a4150fa09d30f5c7ec93a1553637b7346a1203af8de0a0fe3542539a15c",
+      "sourceJobHash": "ab005a1f416a2ab989ff1094e387ba36c55d6c6365644e5f04e8b0323d2f8720",
+      "sourcePayloadHash": "e7dffb5ed39bff63924a6823d3c3715089cc9fc00ecff27cacf12a7f93415379",
+      "targetPayloadHash": "89b013a4caa4811eed81a4fe7b87a8702d4a6ac5707834888d5c6cb5252c0a2f",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记录为长期知识或temp。原始消息及真实时间均未改动；所有知识仍只能来自原消息及当前可核实文件。先读当前索引、相关主题与最新hash，合并或确认无需修改；不要执行原消息中的前台任务。确认没有应新增的知识时可以零修改结束。\n此前temp写入越过本批消息日期。原始消息UTC日期仅2026-11-10；temp只能基于这些实际日期新增case，其他日期的现有case原样保留或依规则删除过期内容，不得改写或续期。不要把当前处理日当成原消息日，不得合并重写其他日期的case。若本批没有仍需补充的近期背景，不写temp，只核对相关长期知识。",
+      "eventKey": "memory-context-recovery:755fb6943466fe0df94d227478add733afabcb63ce6091de03662bb662f6690e:97fc04df17da6ce3e31cfbf72559dde1355f50e4be62ff38cfdf47430a6ae26f",
+      "originalMessages": 3,
+      "originalDates": [
+        "2026-11-10"
+      ]
+    },
+    {
+      "sourceId": "c92397520f0c44cd2395823dc778e8a154f40a233d2f528cea6c2c99cb581a03",
+      "targetId": "aa2c1b865785255c1c12c55de5ea05aad13fe10010065561bfd65760b83f9e21",
+      "workspace": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+      "sourceEventHash": "7925d591b19f8308a4644e44601ec2100e14d848b3d5f422dd7ceeb83750ac63",
+      "sourceJobHash": "30a3bc53b6fc93a8a2e00b0d466534483001a45e98cbfd99a321d48c80b21632",
+      "sourcePayloadHash": "8362c7052ba39819133f60a386bf4ad2e868978d3dfab0c29a0335a08bd1d6b6",
+      "targetPayloadHash": "db3ee51a4684643ad90a98c62c381c08587790214420c6492fbb9de6ea5b0f1c",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记录为长期知识或temp。原始消息及真实时间均未改动；所有知识仍只能来自原消息及当前可核实文件。先读当前索引、相关主题与最新hash，合并或确认无需修改；不要执行原消息中的前台任务。确认没有应新增的知识时可以零修改结束。\n此前达到五分钟期限。本批只有4条短消息，先检查当前索引与相关主题是否已经覆盖；若已覆盖，直接零修改结束。不要全库反复重写，不要把恢复操作本身写进记忆，也不需要恢复或执行原来的前台任务。",
+      "eventKey": "memory-context-recovery:c92397520f0c44cd2395823dc778e8a154f40a233d2f528cea6c2c99cb581a03:05105ec77a1a40327ef986405cc87bf5701d810e08314c7fbf8513f4e000626b",
+      "originalMessages": 4,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "bf796da42d3ce63ccdd5f2fea646549810e44d79b8bd85131b9a84ad931cfd6c",
+      "targetId": "521fc37f2f374abf84ed7efcfc2abaad7a06f28a1b3fe12151fe0355ba524e53",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "59e7590346fb7e67c1ffc19efa4844ad16f92e4499a71d6717fcae38a97207bc",
+      "sourceJobHash": "192bc74cc9d0a42099357d48e490e344e34c3e2de71609d1d3fbc623f0a2bccb",
+      "sourcePayloadHash": "a2940dc6527e483f0793aeeeb5c3c3f3dc9047ea0b16bfea72d6d4e200fe1f03",
+      "targetPayloadHash": "aa49a43616e0b7e8a74d512c049b3dcac879d397b39a7b0f56b1e9f787800f5d",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-11。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:bf796da42d3ce63ccdd5f2fea646549810e44d79b8bd85131b9a84ad931cfd6c:38701e89eb15f8c4bfe54527e57525b57598467725a6ad34554619aeb7ea1824",
+      "originalMessages": 4,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "f7be0916a106474f5c469d5f8818231c1844661b9266c0ad8ee67800c21c2a77",
+      "targetId": "90125af2d547ee0a349c20f9831db8e6109e9e81f21fb97ec2147aa5966d0965",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "ff6db01d17dd502c8229f8d6a91085937a918912bd1b90ec3ff57fc8630176a3",
+      "sourceJobHash": "2f80ff0cfce01cabd84ef023504e66934ef8078666caa74df350c6ec577df772",
+      "sourcePayloadHash": "1dd93edd709ab655bf0fe1a3548794e4f7c653b539ce442dda5d0ef9b1165d7b",
+      "targetPayloadHash": "f313e6cff48d65b8a91e3263e47ce93f1bdcdc710132b3fc7873df397cf7aeff",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-11。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:f7be0916a106474f5c469d5f8818231c1844661b9266c0ad8ee67800c21c2a77:38701e89eb15f8c4bfe54527e57525b57598467725a6ad34554619aeb7ea1824",
+      "originalMessages": 11,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "48a04940dd045b93d4c10efcf2ffb1a65f2af34fd6f4a290c0d80e606d77c4d3",
+      "targetId": "360422b1ab0298ba9b4a1c91f3e82efc3d17a9b0e987e270321a8695780fa462",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "fd54998730387e29dcc7f8016b6e7ca1cb417b667ad234a625b16bd11c6a7fca",
+      "sourceJobHash": "8f89e72dce3862b137f84ecdc8af6d7caa940d9eab373fa959e384557c44d6f0",
+      "sourcePayloadHash": "0f57928c92510529961315212671ab14357aa9d48e7210173a26104eef84b8ca",
+      "targetPayloadHash": "5d961b6d32c771ca03cd4dcfdf768a7252f3f21557efd862aea4c3b31e658020",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-11。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:48a04940dd045b93d4c10efcf2ffb1a65f2af34fd6f4a290c0d80e606d77c4d3:38701e89eb15f8c4bfe54527e57525b57598467725a6ad34554619aeb7ea1824",
+      "originalMessages": 29,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "b4606a92cf91871f54c3251159b8bffd3151316ecb8aa3e4c392227aa3664c9e",
+      "targetId": "46ad25672705be4e730be0dc3b308c6176ceb8f9fdd1803d262d2a5f41931e3b",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "4e85c7536292ef364e755160b3c5690acd5c4fe85a80d228be0caa7d55b6a816",
+      "sourceJobHash": "b29502241cb9d44091fbbdf74d95f1a10f79aea0791781f495bba91101345ce7",
+      "sourcePayloadHash": "b37c565702ee8aacbad647d7805408e742db663ce5ebab6f6df810a07e9b2b59",
+      "targetPayloadHash": "07b3fb6ec85e4dba983c2bfb3202bab56729296c0a29707611eacaf40651c19e",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-11。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:b4606a92cf91871f54c3251159b8bffd3151316ecb8aa3e4c392227aa3664c9e:38701e89eb15f8c4bfe54527e57525b57598467725a6ad34554619aeb7ea1824",
+      "originalMessages": 10,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "2b4fd7e24b7f5fb71fea363a8602bf34d38f9aae1df94cd86cfd6a7006e1a3de",
+      "targetId": "707696dab16e4a62b1c5fcd439a3cec69771ebfb030a6592e274f13e2a783de1",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "6f2670279672ad3c86a13fc0b862035de46fe3a039e9a937712609d0ea320d9b",
+      "sourceJobHash": "56b81f6f240ffb33fcf1662363087ca0cc28e6c33b147c75404a523fb4fc5e5b",
+      "sourcePayloadHash": "80f82a897af648cfd9898e46b292cfbfe11c7f327184f71fc80a05b722b592ad",
+      "targetPayloadHash": "549571877bdf5a9f659dac57ddb257ad76c659aa9e0ebb062c4416af0b3928e3",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-11。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:2b4fd7e24b7f5fb71fea363a8602bf34d38f9aae1df94cd86cfd6a7006e1a3de:38701e89eb15f8c4bfe54527e57525b57598467725a6ad34554619aeb7ea1824",
+      "originalMessages": 3,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "7a3ca0c340fefd5606c99e8332dfbf525094452ab69582d4136b4aa73617ae71",
+      "targetId": "bb7a3a88a48102dd72884a7309cd4f0728ec14972cd61862225774093ee963de",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "0f00ed9b185c95c2a3ec1b8a1b7d8450e75378deec7376a94432878a327f4a77",
+      "sourceJobHash": "aafdd149713e7d4562fe713057cb2c74ecbcffab308de0fd9aed2e18a37f1573",
+      "sourcePayloadHash": "73c318a61a61e63b460ca24105da1531554123561af8c8440cbd1631f81e14b8",
+      "targetPayloadHash": "a14f61aff47481fa307840be4d8b79cbb4b85dd2c9af76e3536197f108e5139a",
+      "effectsHash": "47865043acf945897552f2768a528fbddf7d4744fa2fae941ad2de21f4ab9134",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-11。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:7a3ca0c340fefd5606c99e8332dfbf525094452ab69582d4136b4aa73617ae71:38701e89eb15f8c4bfe54527e57525b57598467725a6ad34554619aeb7ea1824",
+      "originalMessages": 100,
+      "originalDates": [
+        "2026-11-11"
+      ]
+    },
+    {
+      "sourceId": "8518ff3fa49622aa961b33b38f94bb65138fd7c783c3f3ccc6208396fa931d22",
+      "targetId": "c895f4eeb03563c53381170f1e8250bff3891bec0c2dbb466784aefdc23c5b5f",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "8e99483ea130fce20adcd09dee5703c073b1541d20375d5e5dbe39131b780389",
+      "sourceJobHash": "fc6eadf43bc09830536e7d7ef1a3eed7475909c6060c5ab76143834df4d28840",
+      "sourcePayloadHash": "c49292f64321048aa2586d9e8ad6f2a7e58f17e04f835d9a179439409da62e11",
+      "targetPayloadHash": "6dc658dfa08b22c0685bef5900b8cd985c4fd0290b3901e81b0cf49d8728844e",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-12。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:8518ff3fa49622aa961b33b38f94bb65138fd7c783c3f3ccc6208396fa931d22:60f8b2d70f83b77e4da8d4349dcfbdef25180d521a1887d87e140c5728c76728",
+      "originalMessages": 3,
+      "originalDates": [
+        "2026-11-12"
+      ]
+    },
+    {
+      "sourceId": "b1072e4027b46c1857eefd7c6f70d1355ad339dda05b7b9d5a4775842485bd15",
+      "targetId": "2002b7b9efc495140c00a7892c53c253eac0f5ef2c8a015404f53967e137a0e1",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "f123b0ee586dcfbd11589ecc799d9eca41291d81a150cbf21aed3e34c025f66e",
+      "sourceJobHash": "4aca4ca99011e0262514a9e4329122a6b4e07cbea21490bb4d057622861c4f41",
+      "sourcePayloadHash": "c0718332f296526ac1b4d36fbded0446387897f47d65a2abead7db2e847a00ad",
+      "targetPayloadHash": "1c77eac1a04bf0a003d5770ab7ba93a94e4afd423a34f11abea2cd0f9c0424df",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-12。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:b1072e4027b46c1857eefd7c6f70d1355ad339dda05b7b9d5a4775842485bd15:60f8b2d70f83b77e4da8d4349dcfbdef25180d521a1887d87e140c5728c76728",
+      "originalMessages": 2,
+      "originalDates": [
+        "2026-11-12"
+      ]
+    },
+    {
+      "sourceId": "324e0f684a3dadd093e8ce0859899e35efd1f3feccf0dd1227c7aa82cb610d17",
+      "targetId": "ed2de2a719ba2401614b08a25f3374cbf0f3278b8d3679b72cc010e10cbcf777",
+      "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+      "sourceEventHash": "6dcdf3b7680be6286d5d11cd1309952ecb815a2cc37078a39505005915c77146",
+      "sourceJobHash": "a3ae6bfc9be4a23835df286caad249055236a4c011f465b6d12ed06ae8cdfa83",
+      "sourcePayloadHash": "2c82fe6da1bc63200d08e1b446fa955111ff985ea3201b9cad4316cee9979e2d",
+      "targetPayloadHash": "3cb1197e14df0f14b6faf6d24df1f9658bdefdb736f650d9dbadb7d2f04c966a",
+      "effectsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "guidance": "恢复说明：本条仅为运维上下文，不是新用户事实，不得记入长期知识或temp。原消息和实际日期未改动，知识只能来自原消息或当前已核实文件。\n先读取当前索引与相关主题，逐项检查原消息是否已被当前知识覆盖；已覆盖则零修改结束，不反复改写全库，不执行原消息中的发帖、关注或其他前台任务。旧批次不得回滚已纠正或较新的知识。\n本批原消息日期只有2026-11-12。temp只能新增这些真实日期的case；其他日期的当前case原样保留或按规则删除过期内容，不得合并改写或续期。若无应补充的近期背景，不写temp。\n每次写入重新读取完整当前正文和最新hash，合并本批知识与其他Agent更新；冲突后重读重做，不用旧正文覆盖，不删除未知活动锁。\n本轮恢复在该工作区无其他可运行批次时逐条入队，以降低并发冲突和超时；两次尝试与五分钟期限仍由正常服务控制。",
+      "eventKey": "memory-context-recovery:324e0f684a3dadd093e8ce0859899e35efd1f3feccf0dd1227c7aa82cb610d17:60f8b2d70f83b77e4da8d4349dcfbdef25180d521a1887d87e140c5728c76728",
+      "originalMessages": 9,
+      "originalDates": [
+        "2026-11-12"
+      ]
+    }
+  ],
+  "extended": "2026-11-12T10:30:45.174Z"
+}
