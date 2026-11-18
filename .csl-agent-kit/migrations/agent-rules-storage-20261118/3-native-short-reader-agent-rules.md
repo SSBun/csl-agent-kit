@@ -1,0 +1,1 @@
+- Match RxSwift/RxCocoa APIs to the version in the target shell's Podfile.lock. For RxSwift 5.x, use `subscribeOn`, `observeOn`, and `catchError` instead of `subscribe(on:)`, `observe(on:)`, and `catch`; verify the installed API declarations rather than treating `swiftc -parse` as a compatibility check.

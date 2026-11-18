@@ -1,0 +1,55 @@
+{
+  "说明": "仅迁移 Agent Rules；恢复副本不作为规则加载源。不涉及 Memory、Task 或 SOP 迁移。",
+  "项目": [
+    {
+      "源": "/Users/caishilin/Desktop/personal/MyTwitter/.agents/agent-rules.md",
+      "目标": "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/agent-rules.md",
+      "恢复副本": "/Users/caishilin/Desktop/personal/csl-agent-kit/.csl-agent-kit/migrations/agent-rules-storage-20261118/1-MyTwitter-agent-rules.md",
+      "sha256": "233bd168e8036bba27f8548ec1d9ca2d6fa24979edf248b17207c20acee98534",
+      "字节数": 3670,
+      "权限": 420,
+      "状态": "迁移、加载验证及旧源清理完成"
+    },
+    {
+      "源": "/Users/caishilin/Desktop/personal/iTermate/.agents/agent-rules.md",
+      "目标": "/Users/caishilin/Desktop/personal/iTermate/.csl-agent-kit/agent-rules.md",
+      "恢复副本": "/Users/caishilin/Desktop/personal/csl-agent-kit/.csl-agent-kit/migrations/agent-rules-storage-20261118/2-iTermate-agent-rules.md",
+      "sha256": "55a855d6e9c5875becb63328dfd05a7d2767fc0020701f41064279934d011148",
+      "字节数": 344,
+      "权限": 420,
+      "状态": "迁移、加载验证及旧源清理完成"
+    },
+    {
+      "源": "/Users/caishilin/Documents/SharkSpace/native-short-reader/.agents/agent-rules.md",
+      "目标": "/Users/caishilin/Documents/SharkSpace/native-short-reader/.csl-agent-kit/agent-rules.md",
+      "恢复副本": "/Users/caishilin/Desktop/personal/csl-agent-kit/.csl-agent-kit/migrations/agent-rules-storage-20261118/3-native-short-reader-agent-rules.md",
+      "sha256": "8234ea2be511500653e9d9ac9b36cde06ea4363b381ebb30c6050507434d5ac0",
+      "字节数": 305,
+      "权限": 384,
+      "状态": "迁移、加载验证及旧源清理完成"
+    }
+  ],
+  "宿主缓存修正": [
+    {
+      "文件": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0/skills/meta/agent-hooks/scripts/read-agent-rules.js",
+      "恢复副本": "/Users/caishilin/Desktop/personal/csl-agent-kit/.csl-agent-kit/migrations/agent-rules-storage-20261118/cache-csl-agent-market-read-agent-rules.js.original",
+      "原sha256": "829c7075ab89ffab1876e09518a929b8ab3fdddcc9ecb6db266543594bfcfc1c",
+      "新sha256": "71648a2a915e481449ec6cd9843d780aa5a4a9d9cb2c3096ace4af2f96e4a9eb",
+      "状态": "已修正"
+    },
+    {
+      "文件": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0/skills/meta/agent-hooks/scripts/read-agent-rules.js",
+      "恢复副本": "/Users/caishilin/Desktop/personal/csl-agent-kit/.csl-agent-kit/migrations/agent-rules-storage-20261118/cache-CSL-read-agent-rules.js.original",
+      "原sha256": "829c7075ab89ffab1876e09518a929b8ab3fdddcc9ecb6db266543594bfcfc1c",
+      "新sha256": "71648a2a915e481449ec6cd9843d780aa5a4a9d9cb2c3096ace4af2f96e4a9eb",
+      "状态": "已修正"
+    },
+    {
+      "文件": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0/skills/meta/agent-rules/SKILL.md",
+      "恢复副本": "/Users/caishilin/Desktop/personal/csl-agent-kit/.csl-agent-kit/migrations/agent-rules-storage-20261118/cache-CSL-SKILL.md.original",
+      "原sha256": "55570bf31967f3970d2b72050efb575a14ff70626c034999dbd0da4e4ce2fa49",
+      "新sha256": "5575fe077fa1a3b1e09cb644b113133c6fc589561c0bd65d30102ad1bdcff37c",
+      "状态": "已修正"
+    }
+  ]
+}

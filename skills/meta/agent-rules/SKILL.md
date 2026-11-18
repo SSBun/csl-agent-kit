@@ -9,7 +9,7 @@ Manage unconditional Agent behavior rules loaded at session start.
 
 ## Storage and loading
 
-遵守[统一存储规范](../agent-migration/references/storage.md)的目标布局与过渡门禁。先核实实际注入器支持新路径；旧项目由 `agent-migration` 显式迁移，禁止双写或将尚未支持的路径报告为已生效。
+遵守[统一存储规范](../agent-migration/references/storage.md)的目标布局与过渡门禁。当前注入器只读取项目的 `.csl-agent-kit/agent-rules.md`，不回退读取 `.agents/agent-rules.md`。新增和更新规则只写新路径；发现旧文件时，先按 `agent-migration` 核对并显式迁移，禁止双写或把未迁移的规则报告为已加载。
 
 | Scope | Path | Purpose |
 |---|---|---|

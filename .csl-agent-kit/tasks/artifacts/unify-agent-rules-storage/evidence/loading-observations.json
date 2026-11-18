@@ -1,0 +1,164 @@
+[
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/Desktop/personal/csl-agent-kit",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.codex/plugins/cache/csl-agent-market/csl-agent-kit/2.0.0",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/MyTwitter",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Desktop/personal/iTermate",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "pi",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "codex",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  },
+  {
+    "kit": "/Users/caishilin/.claude/plugins/cache/CSL/CSL/2.0.0",
+    "workspace": "/Users/caishilin/Documents/SharkSpace/native-short-reader",
+    "host": "claude-code",
+    "result": "规则内容和 Built-in → User → Project 顺序匹配"
+  }
+]

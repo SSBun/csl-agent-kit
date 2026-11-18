@@ -1,5 +1,9 @@
 # 任务索引
 
+- [统一 Agent Rules 存储目录](tasks/unify-agent-rules-storage.md) — Completed (2026-11-18 11:52)
+
+- [将当前项目登记为 Orca 工作区](tasks/register-orca-workspace.md) — Completed (2026-11-18 11:37)
+
 - [编写基于领域与架构的 Agent 开发 SOP](tasks/ddd-agent-development-sop.md) — Completed (2026-11-13 16:06)
 
 - [统一任务系统状态转换与暂停语义](tasks/align-task-state-transitions.md) — Completed (2026-11-13 12:02)

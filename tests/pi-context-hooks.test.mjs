@@ -166,8 +166,8 @@ test("formats Agent Hooks session prompts into Pi context", () => {
 test("rebuilds Pi Agent Hooks context before every agent turn", async () => {
   const root = createFixture();
   writeFileSync(join(root, "agent-rules.md"), "- User Agent Rule.\n");
-  mkdirSync(join(root, ".agents"), { recursive: true });
-  writeFileSync(join(root, ".agents", "agent-rules.md"), "- Project Agent Rule.\n");
+  mkdirSync(join(root, ".csl-agent-kit"), { recursive: true });
+  writeFileSync(join(root, ".csl-agent-kit", "agent-rules.md"), "- Project Agent Rule.\n");
   const previous = process.env.CSL_AGENT_KIT_HOME;
   process.env.CSL_AGENT_KIT_HOME = root;
   const { api, handlers } = fakePi();

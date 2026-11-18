@@ -1,0 +1,41 @@
+{
+  "说明": "清理后的最终核对；未运行单元或项目测试。扫描不跟随目录符号链接，不扫描系统库、依赖、缓存和历史恢复材料。挂载卷均为应用安装镜像，未发现独立项目卷。",
+  "剩余旧规则": [],
+  "当前规则": [
+    "/Users/caishilin/.csl-agent-kit/agent-rules.md",
+    "/Users/caishilin/Desktop/personal/MyTwitter/.csl-agent-kit/agent-rules.md",
+    "/Users/caishilin/Desktop/personal/iTermate/.csl-agent-kit/agent-rules.md",
+    "/Users/caishilin/Documents/SharkSpace/native-short-reader/.csl-agent-kit/agent-rules.md"
+  ],
+  "扫描错误": [
+    "[Errno 1] Operation not permitted: '/Users/caishilin/Pictures/Photos Library.photoslibrary'"
+  ],
+  "排除目录名": [
+    ".Trash",
+    ".build",
+    ".cache",
+    ".git",
+    ".gradle",
+    ".m2",
+    ".npm",
+    ".pub-cache",
+    ".rustup",
+    ".venv",
+    "Cache",
+    "Caches",
+    "DerivedData",
+    "Library",
+    "Pods",
+    "artifacts",
+    "build",
+    "conversations",
+    "logs",
+    "memory",
+    "migrations",
+    "node_modules",
+    "sessions",
+    "vendor"
+  ],
+  "迁移规则": "3 份目标及恢复副本的摘要与权限一致；旧源不存在；清理后加载匹配",
+  "宿主缓存": "3 份修正文件摘要匹配"
+}

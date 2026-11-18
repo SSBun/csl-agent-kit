@@ -2,7 +2,7 @@
 schema: csl-memory-index/v4
 formatVersion: 5
 scope: project
-generation: 1158ca3e5b14700a2c454183f6921578e0ad77a7ba963e64064678bddecd5ffc
+generation: 2e70a77ef3b248db1001e7c4d386a6dfb12b3b03d078a062dd1c6e749aee3dee
 count: 10
 entries: entries
 ---
@@ -21,7 +21,7 @@ sha256: 7fe6d1caad58cb0e8bb0788f025abb38b6e898887a63333c21c505ea343cf427
 
 项目定位、组件职责、命名、语言及本机数据边界；专题细节按当前索引读取。
 
-sha256: d1c0b75c4430e5aa73ed2d551bad3a0d0b4688d790cbd2869269f1d818409a3f
+sha256: 332ad4ea106565cd42222eab43278d86db1614363b75c2ae1d5de1768613e564
 
 ## [宿主与自动化](entries/hosts-and-automation.md)
 
@@ -69,4 +69,4 @@ sha256: b6605482cc59b460850f5cd0976cb841838301411b700d2f20b37f5d84f59947
 
 最近7个UTC自然日的用户意图与必要背景；不是执行授权。
 
-sha256: b2ffb14938f27d5767b5d3f724741bcdf4f6aaa81ae7123f3553a7f3b4e9914f
+sha256: c3c84eaaf76308c54761a014cb68ce3354d719ecf8cd97222a28f44702f51183

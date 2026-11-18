@@ -1,0 +1,106 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "unify-agent-rules-storage",
+  "files": [
+    {
+      "path": ".csl-agent-kit/migrations/agent-rules-storage-20261118/manifest.json",
+      "sha256": "a038ce865ea9c49e2802e347ed7a10267d4b16ff9845ac68988a2dfbc63f6faa",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/unify-agent-rules-storage/evidence/final-verification.json",
+      "sha256": "64b33911a36823ea254e15f7d473f338cadfd4b0e76bf0fcfde06009bbe19470",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/unify-agent-rules-storage/evidence/loading-observations.json",
+      "sha256": "b12a62819f9bfcac552e88bc424ec7b7fde732f3baf9a2a5c0ef9c054d996e0f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": ".csl-agent-kit/tasks/artifacts/unify-agent-rules-storage/evidence/migrate-rules.py",
+      "sha256": "26cd117d7c3f681dabdb9d9b685be2fe84da6801664459b383f0a3bedf1e1b9c",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/scripts/read-agent-rules.js",
+      "sha256": "71648a2a915e481449ec6cd9843d780aa5a4a9d9cb2c3096ace4af2f96e4a9eb",
+      "git": {
+        "head": {
+          "mode": "100755",
+          "object": "4d0b3ba08885fbbb9d67617daf85ae60b7539837"
+        },
+        "index": [
+          {
+            "mode": "100755",
+            "object": "4d0b3ba08885fbbb9d67617daf85ae60b7539837",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-rules/SKILL.md",
+      "sha256": "827cdf6e9ca09d140ca79b91d5ed1f5ddf5d67d87d861ec31571c27fa2070dd0",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d2fc8f9f5bfb637491f04be14e743c2277f306df"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d2fc8f9f5bfb637491f04be14e743c2277f306df",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/agent-hooks.test.js",
+      "sha256": "8b7a49047fbfdb627dcdf96a8c231e0eeb4b1914d90df4b708d419a94e70b1e6",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "540d065915e9dc7ef892ba645bf22869454e4eac"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "540d065915e9dc7ef892ba645bf22869454e4eac",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "tests/pi-context-hooks.test.mjs",
+      "sha256": "deaa61865230536192ef179eac33c49632b8a3dde84c4040d485886bb9de52eb",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "ae30fd07c73cd1175fa4b3e3313a590c47b82d25"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "ae30fd07c73cd1175fa4b3e3313a590c47b82d25",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

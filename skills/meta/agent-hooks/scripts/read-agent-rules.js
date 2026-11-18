@@ -13,7 +13,7 @@ const workspace = process.env.AGENT_HOOKS_WORKSPACE || process.cwd();
 const files = [
   path.resolve(__dirname, "..", "..", "agent-rules", "agent-rules.md"),
   path.join(dataRoot, "agent-rules.md"),
-  path.join(workspace, ".agents", "agent-rules.md"),
+  path.join(workspace, ".csl-agent-kit", "agent-rules.md"),
 ];
 
 function readRules(file) {

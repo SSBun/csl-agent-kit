@@ -604,11 +604,14 @@ test("inner scope injects built-in, user, and project agent-rules.md in order", 
 
     const userFile = path.join(data, "agent-rules.md");
     const userRules = "- user rule one\n- user rule two\n";
-    const projectFile = path.join(data, ".agents", "agent-rules.md");
+    const projectFile = path.join(data, ".csl-agent-kit", "agent-rules.md");
     const projectRules = "- project rule\n";
     fs.writeFileSync(userFile, userRules);
     fs.mkdirSync(path.dirname(projectFile), { recursive: true });
     fs.writeFileSync(projectFile, projectRules);
+    const legacyProjectFile = path.join(data, ".agents", "agent-rules.md");
+    fs.mkdirSync(path.dirname(legacyProjectFile), { recursive: true });
+    fs.writeFileSync(legacyProjectFile, "- ignored legacy project rule\n");
 
     payload = agentHooks.createEvent({ event: "session-start", host: "pi", workspace: data });
     result = agentHooks.runEvent(payload, { host: "pi", workspace: data });
@@ -619,6 +622,8 @@ test("inner scope injects built-in, user, and project agent-rules.md in order", 
     assert.ok(builtInIndex >= 0 && builtInIndex < userIndex && userIndex < projectIndex);
     assert.equal(fs.readFileSync(userFile, "utf8"), userRules);
     assert.equal(fs.readFileSync(projectFile, "utf8"), projectRules);
+    assert.doesNotMatch(prompt.content, /ignored legacy project rule/);
+    assert.equal(fs.readFileSync(legacyProjectFile, "utf8"), "- ignored legacy project rule\n");
   } finally {
     if (previous === undefined) delete process.env.CSL_AGENT_KIT_HOME;
     else process.env.CSL_AGENT_KIT_HOME = previous;
