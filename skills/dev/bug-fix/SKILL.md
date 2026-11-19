@@ -25,6 +25,7 @@ Use a tight reproduce -> diagnose -> fix -> verify loop. Prefer the smallest com
    - Compare failing behavior against nearby tests, recent changes, and existing patterns.
    - Inspect production code and tests together; do not assume the test is wrong.
    - Form one working hypothesis at a time and verify it with code or command output.
+   - Apply the shared Contract’s Execution Evidence rules. Trace the actual inputs and state through the verified entry point and relevant branches to the failure. Check whether execution reaches the proposed fix and whether its conditions hold. Check for earlier blockers, alternate paths, and later overrides. The presence of related code does not establish the cause.
 
 4. **Fix minimally**
    - Change only files needed for the failure.
@@ -36,6 +37,7 @@ Use a tight reproduce -> diagnose -> fix -> verify loop. Prefer the smallest com
    - Re-run the narrow failing command if it differs from the original path.
    - Run the adjacent or broader test command that could catch regressions.
    - If no automated regression test was practical, run a smoke check and record the remaining risk.
+   - Verify the changed path in the same scenario. Confirm that the active path uses the mock field. Check whether the actual action triggers the bound callback in the relevant state. Report static reachability, build success, and runtime observations separately. Identify critical results that remain unknown. Run only authorized commands and tests.
 
 6. **Report evidence**
    - Summarize the root cause, changed files, and verification commands with pass/fail results.

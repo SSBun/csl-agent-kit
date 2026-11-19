@@ -38,6 +38,8 @@ An owning task invokes one fresh pass at a time. Any Critical Finding or Concern
 
 Read only enough surrounding context to prove an issue; do not expand into an unrelated audit.
 
+For a claim about implementation status, a fix, or a mock, apply the shared Contract’s Execution Evidence rules. Start from the requirements and independently identify the active entry point. Check decisive conditions, blockers, state changes, and use of the result before reading detailed author evidence. A historical or alternate path, user confirmation, or previous task completion does not establish current behavior. Resolve an evidence gap with additional evidence or a narrower conclusion. Classify the gap by whether it prevents Target verification. Report unknowns as unverified risks when material. Do not require independent review solely because a routine investigation has an evidence gap.
+
 ## Findings
 
 - **Critical Findings:** demonstrated target failure or material correctness, security, privacy, data-integrity, regression, or compatibility harm.

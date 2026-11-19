@@ -10,10 +10,11 @@ const path = require("node:path");
 
 const dataRoot = process.env.CSL_AGENT_KIT_HOME || path.join(os.homedir(), ".csl-agent-kit");
 const workspace = process.env.AGENT_HOOKS_WORKSPACE || process.cwd();
+const projectRules = path.join(workspace, ".csl-agent-kit", "agent-rules.md");
 const files = [
   path.resolve(__dirname, "..", "..", "agent-rules", "agent-rules.md"),
   path.join(dataRoot, "agent-rules.md"),
-  path.join(workspace, ".csl-agent-kit", "agent-rules.md"),
+  projectRules,
 ];
 
 function readRules(file) {
@@ -27,3 +28,7 @@ function readRules(file) {
 
 const rules = files.map(readRules).filter(Boolean);
 if (rules.length > 0) process.stdout.write(`## Agent Rules\n\n${rules.join("\n")}\n`);
+
+if (!fs.existsSync(projectRules) && fs.existsSync(path.join(workspace, ".agents", "agent-rules.md"))) {
+  process.stdout.write("\n## Agent Rules migration notice\n\nThe project still uses `.agents/agent-rules.md`. The hook did not load its rules. Tell the user to migrate the file to `.csl-agent-kit/agent-rules.md`.\n");
+}

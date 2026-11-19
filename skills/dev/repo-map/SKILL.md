@@ -17,7 +17,7 @@ Include:
 - Project glossary: 8-20 repo-specific domain/code terms, with source paths.
 - Working map: file structure, modules, key types, and core data/control flows.
 
-Exclude subjective opinions, risks, recommendations, confidence ratings, open questions, and audit findings.
+Exclude subjective opinions, recommendations, confidence ratings, unrelated open questions, and audit findings. Report coverage limits that affect the conclusion, including unconfirmed entry points.
 
 ## Workflow
 
@@ -27,8 +27,8 @@ Exclude subjective opinions, risks, recommendations, confidence ratings, open qu
 4. Use CodeGraph when available for callers, callees, impact, and symbol lookup. Confirm important conclusions by reading files.
 5. Identify boundary types: app roots, controllers, services, stores, reducers, models, protocols, dependency containers, API clients, persistence layers, and coordinators.
 6. Build a small glossary from project usage, marking inferred terms explicitly.
-7. Trace relationships from entry points to domain logic and persistence/API/UI boundaries.
-8. Stop once the map is useful for the next task.
+7. Trace relationships from entry points to domain logic and persistence/API/UI boundaries. For a specific scenario, use host wiring, callers, or routing configuration to identify the active entry point and checked version. Label candidate paths as current, alternate, or historical. If the entry point remains unknown, report the candidates and the missing evidence. Check relevant branches for blockers, alternate handling, and use of the result. Do not generalize across modes or present search matches as proof of current behavior.
+8. Stop once the map is useful for the next task. Apply the shared Contract’s Execution Evidence rules. Trace only the paths necessary to support the map and its conclusions. Keep a repository-wide audit outside the scope.
 
 ## References
 

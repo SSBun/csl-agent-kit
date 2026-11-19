@@ -1,5 +1,11 @@
 # 任务索引
 
+- [统一新增操作规则的英文格式](tasks/english-execution-evidence-rules.md) — Completed (2026-11-19 14:57)
+
+- [提示迁移旧路径 Agent Rules](tasks/warn-legacy-agent-rules.md) — Completed (2026-11-19 14:55)
+
+- [修复 Agent Rules 加载及规则语言与格式问题](tasks/resolve-agent-rules-review-findings.md) — Completed (2026-11-19 14:57)
+
 - [统一 Agent Rules 存储目录](tasks/unify-agent-rules-storage.md) — Completed (2026-11-18 11:52)
 
 - [将当前项目登记为 Orca 工作区](tasks/register-orca-workspace.md) — Completed (2026-11-18 11:37)

@@ -30,6 +30,8 @@ A bare `/tldr` is not a brief cue. Target type, size, length, complexity, and Ag
 - Detailed: read a URL target first; prefer primary sources for topics and authoritative, directly relevant files for projects.
 - Never turn project understanding into a durable report, exhaustive inventory, audit, or implementation plan.
 - Separate facts from inference. Disclose conflicts, uncertainty, inaccessible material, and partial coverage.
+- For code behavior questions, apply the shared Contract’s Execution Evidence rules. Check the scenario, version, and active entry point. Follow the decisive branches to where the result is used. In brief mode, shorten the response and keep the checks that support the main conclusion.
+- Distinguish code presence, static reachability, build results, and runtime observations. If missing entry point, state, or configuration evidence could change the answer, state the facts and unknowns in the main conclusion. An empty search result does not establish absence. A fixed table and private reasoning are unnecessary.
 
 ## Output
 
