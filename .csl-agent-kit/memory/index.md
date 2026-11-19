@@ -2,7 +2,7 @@
 schema: csl-memory-index/v4
 formatVersion: 5
 scope: project
-generation: 2e70a77ef3b248db1001e7c4d386a6dfb12b3b03d078a062dd1c6e749aee3dee
+generation: db914cbcf2698cdc29de669d3be7df3675ccab192c3a5d7c5dd2f797cc6e8d58
 count: 10
 entries: entries
 ---
@@ -27,7 +27,7 @@ sha256: 332ad4ea106565cd42222eab43278d86db1614363b75c2ae1d5de1768613e564
 
 宿主Hook接入、持久规则注入、信任及设置解析；区分安装、配置、实际加载与运行效果。
 
-sha256: ea42afb412201a6c3c851348c8463d1065b4de6ebe61bb7d688326c91a53ebe7
+sha256: 79c5ca0f5fb2bcf6197884e4293e7fee3560eb860c1ebac54f09df747f492f4e
 
 ## [交互与使用体验](entries/interaction-and-experience.md)
 
@@ -45,7 +45,7 @@ sha256: 8550c8ce36dcde283b394cca45a36170b622d82328e51e05089dc722297c849d
 
 跨任务复用的质量检查、格式变更、证据判断、协作及Pi异常处理要求；提交保护细节见提交保护与命令检测主题。
 
-sha256: 694e9dc4c9cb9d2ab254ae2cb5a53e6996eefd2d0be2ce2de426375e21a306e1
+sha256: 1293b732d26f82ef330d6bf1df0210a7a72fcba58249c42ea6d0cdb8b347a426
 
 ## [运行与数据管理](entries/runtime-and-data.md)
 
@@ -69,4 +69,4 @@ sha256: b6605482cc59b460850f5cd0976cb841838301411b700d2f20b37f5d84f59947
 
 最近7个UTC自然日的用户意图与必要背景；不是执行授权。
 
-sha256: c3c84eaaf76308c54761a014cb68ce3354d719ecf8cd97222a28f44702f51183
+sha256: 368fe62b43978de3c7b353a4fae13a36dc80fd9e6833780035babb4a96a0eb18

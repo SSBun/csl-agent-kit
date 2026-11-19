@@ -6,6 +6,8 @@
 
 - [修复 Agent Rules 加载及规则语言与格式问题](tasks/resolve-agent-rules-review-findings.md) — Completed (2026-11-19 14:57)
 
+- [优化技能的场景执行路径与结论证据核验](tasks/verify-scenario-execution-evidence.md) — Completed (2026-11-18 17:57)
+
 - [统一 Agent Rules 存储目录](tasks/unify-agent-rules-storage.md) — Completed (2026-11-18 11:52)
 
 - [将当前项目登记为 Orca 工作区](tasks/register-orca-workspace.md) — Completed (2026-11-18 11:37)

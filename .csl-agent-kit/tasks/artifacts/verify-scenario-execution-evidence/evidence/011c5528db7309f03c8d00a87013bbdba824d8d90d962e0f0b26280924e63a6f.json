@@ -1,0 +1,158 @@
+{
+  "schema": "task-snapshot/v1",
+  "taskId": "verify-scenario-execution-evidence",
+  "files": [
+    {
+      "path": "evals/README.md",
+      "sha256": "da6ea126f58b8b6b01b85b6ab03afebdcd51a534413f4da2368a0aae29b8096e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d5e472afda538a117be11bb9f08fe72c3fc6c9dc"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d5e472afda538a117be11bb9f08fe72c3fc6c9dc",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "evals/execution-evidence/README.md",
+      "sha256": "e40ed653aa8b8ec9d19f8d1db78b7eabc47735f50984a84ff1340ad2e62f78f4",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "evals/execution-evidence/cases.json",
+      "sha256": "eaad3962a833541c175ce777952b2632f7c7cd5f841db66042e66e897b3dbc7f",
+      "git": {
+        "head": null,
+        "index": []
+      }
+    },
+    {
+      "path": "skills/dev/bug-fix/SKILL.md",
+      "sha256": "e435b728d7aedde14552e852e2ede6ec4b05206e77ed137ffe2ddae8d369d217",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "4db8d4ab3a4887237dc03a8f26b6eaa7c2346e49"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "4db8d4ab3a4887237dc03a8f26b6eaa7c2346e49",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/repo-map/SKILL.md",
+      "sha256": "65bc51a05406934bc3fa78e24dfd4d5c6b27ba63979997bf45c8af6ba99d3661",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "403a1b044ab7c80225f712840e13f96a5d994bc3"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "403a1b044ab7c80225f712840e13f96a5d994bc3",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/dev/tldr/SKILL.md",
+      "sha256": "69c894223b3e5db9916df2d577db4be4b953b7d05ba7826b8711ea0faef5a8b0",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "cf8e76aa3c7615037710e7785aab226b415dc0da"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "cf8e76aa3c7615037710e7785aab226b415dc0da",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/agent-hooks/references/csl-agent-kit-contract.md",
+      "sha256": "5efd6b3e8e844a7c14e1731788ee29dd17182ea58d945ba58d056330ca8bec46",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "99b1db198988a91f891176d96f50aa375c5168b8"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "99b1db198988a91f891176d96f50aa375c5168b8",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/SKILL.md",
+      "sha256": "4ab5b297f6f9c374d8d6472d1c82c2e9dbfb3a1080ff69f5bb447ca10f19d3ca",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "0ce4814ee4dc6bfb2bec23070d68ac852e6270e9"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "0ce4814ee4dc6bfb2bec23070d68ac852e6270e9",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task-review/references/review_workflow.md",
+      "sha256": "8fcd930cd0509003b28b9932125c9263ee2328eb8c24ad72e821665cc88e771e",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "d4fc07822db4e987d595dd15fa104ff1085e04cb"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "d4fc07822db4e987d595dd15fa104ff1085e04cb",
+            "stage": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "skills/meta/task/SKILL.md",
+      "sha256": "3faedf781292f6b72f5c9ad3d3ab52ff4965a46099d7e02db3f788ceea29936c",
+      "git": {
+        "head": {
+          "mode": "100644",
+          "object": "ce127d8efdc205acdea31748e20cf367319ba2eb"
+        },
+        "index": [
+          {
+            "mode": "100644",
+            "object": "ce127d8efdc205acdea31748e20cf367319ba2eb",
+            "stage": 0
+          }
+        ]
+      }
+    }
+  ]
+}

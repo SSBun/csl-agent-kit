@@ -72,7 +72,10 @@ METHOD
 1. Compare original requirements and effective revisions, accepted constraints,
    and the Target. Look for commitments lost in the handoff.
 2. Inspect actual artifacts and diff, relevant unchanged callers, failure paths,
-   and boundaries. Do not expand into an unrelated repository audit.
+   and boundaries. For implementation claims, establish the scenario's actual
+   entry point and trace decisive conditions, blockers, state changes and result
+   consumers before reading author evidence. A historical or alternate path does
+   not establish current behavior. Do not expand into an unrelated repository audit.
 3. Read author evidence; check its version, coverage, and what it actually proves.
    Previously checked behavior is not exempt. Rerun checks only when useful and
    authorized; separate your own checks from inherited observations.

@@ -5,6 +5,7 @@
 ## 结构
 
 - `task-target-alignment/`：Task Target Alignment gold cases、suite 说明和未来报告边界。
+- [execution-evidence/](execution-evidence/README.md)：场景执行路径与结论证据的合成代码案例、对照变体及人工判读说明；不包含新的模型 runner。
 - `scripts/`：跨评测套件复用的确定性 validator、runner、scorer 与 compare 工具。
 - `skills/`：评测专用 Agent Skills 的 canonical source。
 - `<suite>/results/`：生成的模型 predictions 和报告，默认不纳入版本控制。
